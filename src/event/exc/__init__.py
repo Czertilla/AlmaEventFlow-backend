@@ -1,0 +1,1 @@
+# Event exceptions package

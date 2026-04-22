@@ -1,0 +1,29 @@
+/logs
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+**/.py
+.python-version
+
+# Virtual environments
+.venv
+
+# data
+data/
+*.rar
+*.zip
+
+# secret
+.env*
+.mongo-keyfile
+
+# vs-code
+.vscode
+.kilocode
+generated_documents
+docs

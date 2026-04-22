@@ -1,0 +1,62 @@
+from uuid import UUID
+from fastapi import APIRouter, Depends
+from logging import getLogger
+
+from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.pagination import SPage, SPageParam
+from profile.dependency.diet import DietUOWDep
+from profile.schema.diet import (
+    DietCreate,
+    DietPatch,
+    DietPut,
+    DietRead,
+)
+from profile.service.diet import DietService
+
+router = APIRouter(prefix="/diets", tags=["diet"])
+
+logger = getLogger(__name__)
+
+
+@router.get("")
+async def get_many(
+    uow: DietUOWDep,
+    user: UserJWTDep,
+    page_param=Depends(SPageParam),
+) -> SPage[DietRead]:
+    return await DietService(uow).read_many(page_param)
+
+
+@router.get("/{id}")
+async def get_diet(
+    id: UUID, user: UserJWTDep, uow: DietUOWDep
+) -> DietRead:
+    return await DietService(uow).read(id)
+
+
+@router.post("/new")
+async def create_diet(
+    diet: DietCreate, user: SuperUserJWTDep, uow: DietUOWDep
+) -> DietRead:
+    return await DietService(uow).create(diet)
+
+
+@router.put("/{id}")
+async def put_diet(
+    id: UUID, diet: DietPut, user: SuperUserJWTDep, uow: DietUOWDep
+) -> DietRead:
+    return await DietService(uow).put(diet)
+
+
+@router.patch("/{id}")
+async def patch_diet(
+    id: UUID, diet: DietPatch, user: SuperUserJWTDep, uow: DietUOWDep
+) -> DietRead:
+    return await DietService(uow).patch(diet)
+
+
+@router.delete("/{id}")
+async def delete_diet(
+    id: UUID, user: SuperUserJWTDep, uow: DietUOWDep
+) -> None:
+    await DietService(uow).delete(id)

@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "standart": {
+      "format": "%(asctime)s [%(process)s] %(levelname)-8s | %(name)s:%(funcName)s:%(lineno)s - %(message)s"
+    },
+    "colorized": {
+      "class": "core.config.logger.formatter.ColorizedFormatter"
+    },
+    "json": {
+      "class": "core.config.logger.formatter.JSONFormatter"
+    },
+    "tg": {
+      "class": "core.config.logger.formatter.TGFormatter"
+    }
+  },
+  "handlers": {
+    "console": {
+      "class": "logging.StreamHandler",
+      "level": "INFO",
+      "formatter": "colorized",
+      "stream": "ext://sys.stdout"
+    },
+    "file_debug": {
+      "class": "logging.handlers.TimedRotatingFileHandler",
+      "level": "DEBUG",
+      "formatter": "standart",
+      "backupCount": 365,
+      "filename": "logs/app.log",
+      "encoding": "utf-8",
+      "when": "midnight"
+    },
+    "file_json": {
+      "class": "logging.handlers.RotatingFileHandler",
+      "level": "WARNING",
+      "formatter": "json",
+      "maxBytes": 50000,
+      "backupCount": 3,
+      "filename": "logs/app.jsonl",
+      "encoding": "utf-8"
+    },
+    "tg_crit": {
+      "class": "core.config.logger.handler.TelegramLogHandler",
+      "level": "CRITICAL",
+      "formatter": "tg"
+    }
+  },
+  "root": {
+    "level": "DEBUG",
+    "handlers": [
+      "console",
+      "file_debug",
+      "file_json",
+      "tg_crit"
+    ]
+  }
+}

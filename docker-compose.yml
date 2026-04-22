@@ -1,0 +1,205 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgis/postgis:16-master
+    container_name: db
+    command: -p ${DB_PORT}
+    env_file:
+      - .env
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - data-volume:/var/lib/postgresql/data
+      - ./docker/postgres:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+  mongo:
+    build:
+      context: .
+      dockerfile: docker/mongo/Dockerfile
+    # image: mongo:latest
+    container_name: mongo
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}-init
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
+      - MONGO_REPLICA_SET_NAME=rs0
+    ports:
+      - 27017:27017
+    volumes:
+      - ./docker/mongo/init/:/docker-entrypoint-initdb.d/:ro
+      - ./docker/mongo/config.yml:/etc/mongod.conf:ro
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    command: ["mongod", "--config", "/etc/mongod.conf"]
+    healthcheck:
+      test: >
+        mongosh --quiet --eval 'try {rs.initiate({_id : "rs0",members: [{ _id : 0, host : "mongo:27017" },]}).ok} catch { rs.status().ok }' --username ${MONGO_USER} --password ${MONGO_PASS} --authenticationDatabase admin
+      interval: 5s
+      timeout: 15s
+      start_period: 15s
+      retries: 10
+
+  rabbit:
+    image: rabbitmq:3.10.7-management
+    container_name: rabbit
+    ports:
+      - 15672:15672
+      - 5672:5672
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+    restart: unless-stopped
+
+  kafka:
+    image: confluentinc/cp-kafka:7.7.3
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # обязательные параметры KRaft
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
+
+      # листенеры: отдельный для контроллера и два для клиентов
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+      KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+
+      # минимальные настройки для одиночного брокера
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+      # лог-директория KRaft (эпhemeral, без volume)
+      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
+      # любой валидный base64 UUID; пример из документации Confluent
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+    healthcheck:
+        test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server kafka:29092 >/dev/null 2>&1 || exit 1"]
+        interval: 10s
+        timeout: 10s
+        retries: 10
+        start_period: 30s
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis/data:/data
+    command: redis-server --appendonly yes --save 60 1
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  user:
+    build:
+      context: .
+      dockerfile: src/user/DockerFile
+    env_file:
+      - .env
+    container_name: user
+    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && uvicorn user.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - 8001:8000
+    volumes:
+      - type: bind
+        source: ./logs/user/
+        target: /app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+      # redis:
+      #   condition: service_healthy
+      rabbit:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=Host(`${APP_HOST}`) && PathPrefix(`/user`)"
+      - "traefik.http.routers.user.entrypoints=websecure"
+      - "traefik.http.routers.user.tls.certresolver=myresolver"
+      - "traefik.http.services.user.loadbalancer.server.port=8000"
+
+  mail:
+    build:
+      context: .
+      dockerfile: src/mail/DockerFile
+    env_file:
+      - .env
+    container_name: mail
+    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && uvicorn mail.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - 8002:8000
+    volumes:
+      - type: bind
+        source: ./logs/mail/
+        target: /app/logs
+    depends_on:
+      # redis:
+      #   condition: service_healthy
+      rabbit:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mail.rule=Host(`${APP_HOST}`) && PathPrefix(`/mail`)"
+      - "traefik.http.routers.mail.entrypoints=websecure"
+      - "traefik.http.routers.mail.tls.certresolver=myresolver"
+      - "traefik.http.services.mail.loadbalancer.server.port=8000"
+
+  traefik:
+    image: traefik:v3.4
+    env_file:
+      - .env
+    command:
+      # - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory" #
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8088:8080
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+
+volumes:
+  data-volume:
+  mongo-data:
+  mongo-config:
