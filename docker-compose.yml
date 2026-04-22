@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  db:
+  pg:
     image: postgis/postgis:16-master
-    container_name: db
+    container_name: pg
     command: -p ${DB_PORT}
     env_file:
       - .env
@@ -47,23 +47,10 @@ services:
     healthcheck:
       test: >
         mongosh --quiet --eval 'try {rs.initiate({_id : "rs0",members: [{ _id : 0, host : "mongo:27017" },]}).ok} catch { rs.status().ok }' --username ${MONGO_USER} --password ${MONGO_PASS} --authenticationDatabase admin
-      interval: 5s
-      timeout: 15s
-      start_period: 15s
-      retries: 10
-
-  rabbit:
-    image: rabbitmq:3.10.7-management
-    container_name: rabbit
-    ports:
-      - 15672:15672
-      - 5672:5672
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
-      interval: 5s
-      timeout: 10s
-      retries: 20
-    restart: unless-stopped
+      interval: 10s
+      timeout: 20s
+      start_period: 30s
+      retries: 15
 
   kafka:
     image: confluentinc/cp-kafka:7.7.3
@@ -116,10 +103,48 @@ services:
       retries: 10
     restart: unless-stopped
 
+  aef:
+    build:
+      context: .
+      dockerfile: src/aef/Dockerfile
+    env_file:
+      - .env
+    environment:
+      - MONOLITH=true
+    container_name: aef
+    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && uvicorn aef.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - 8000:8000
+    volumes:
+      - type: bind
+        source: ./logs/aef/
+        target: /app/logs
+    depends_on:
+      pg:
+        condition: service_healthy
+      user:
+        condition: service_no_longer_running
+      mail:
+        condition: service_no_longer_running
+      profile:
+        condition: service_no_longer_running
+      event:
+        condition: service_no_longer_running
+      org:
+        condition: service_no_longer_running
+      geo:
+        condition: service_no_longer_running
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.aef.rule=Host(`${APP_HOST}`)"
+      - "traefik.http.routers.aef.entrypoints=websecure"
+      - "traefik.http.routers.aef.tls.certresolver=myresolver"
+      - "traefik.http.services.aef.loadbalancer.server.port=8000"
+
   user:
     build:
       context: .
-      dockerfile: src/user/DockerFile
+      dockerfile: src/user/Dockerfile
     env_file:
       - .env
     container_name: user
@@ -131,12 +156,14 @@ services:
         source: ./logs/user/
         target: /app/logs
     depends_on:
-      db:
+      pg:
         condition: service_healthy
       # redis:
       #   condition: service_healthy
-      rabbit:
+      kafka:
         condition: service_healthy
+      aef:
+        condition: service_no_longer_running
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.user.rule=Host(`${APP_HOST}`) && PathPrefix(`/user`)"
@@ -147,7 +174,7 @@ services:
   mail:
     build:
       context: .
-      dockerfile: src/mail/DockerFile
+      dockerfile: src/mail/Dockerfile
     env_file:
       - .env
     container_name: mail
@@ -161,14 +188,136 @@ services:
     depends_on:
       # redis:
       #   condition: service_healthy
-      rabbit:
-        condition: service_healthy
+      aef:
+        condition: service_no_longer_running
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mail.rule=Host(`${APP_HOST}`) && PathPrefix(`/mail`)"
       - "traefik.http.routers.mail.entrypoints=websecure"
       - "traefik.http.routers.mail.tls.certresolver=myresolver"
       - "traefik.http.services.mail.loadbalancer.server.port=8000"
+
+  profile:
+    build:
+      context: .
+      dockerfile: src/profile/Dockerfile
+    env_file:
+      - .env
+    container_name: profile
+    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && uvicorn profile.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - 8003:8000
+    volumes:
+      - type: bind
+        source: ./logs/profile/
+        target: /app/logs
+    depends_on:
+      pg:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      aef:
+        condition: service_no_longer_running
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.profile.rule=Host(`${APP_HOST}`) && PathPrefix(`/profile`)"
+      - "traefik.http.routers.profile.entrypoints=websecure"
+      - "traefik.http.routers.profile.tls.certresolver=myresolver"
+      - "traefik.http.services.profile.loadbalancer.server.port=8000"
+
+  event:
+    build:
+      context: .
+      dockerfile: src/event/Dockerfile
+    env_file:
+      - .env
+    container_name: event
+    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && uvicorn event.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - 8004:8000
+    volumes:
+      - type: bind
+        source: ./logs/event/
+        target: /app/logs
+    depends_on:
+      pg:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      aef:
+        condition: service_no_longer_running
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.event.rule=Host(`${APP_HOST}`) && PathPrefix(`/event`)"
+      - "traefik.http.routers.event.entrypoints=websecure"
+      - "traefik.http.routers.event.tls.certresolver=myresolver"
+      - "traefik.http.services.event.loadbalancer.server.port=8000"
+
+  org:
+    build:
+      context: .
+      dockerfile: src/org/Dockerfile
+    env_file:
+      - .env
+    container_name: org
+    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && uvicorn org.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - 8005:8000
+    volumes:
+      - type: bind
+        source: ./logs/org/
+        target: /app/logs
+    depends_on:
+      pg:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      aef:
+        condition: service_no_longer_running
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.org.rule=Host(`${APP_HOST}`) && PathPrefix(`/org`)"
+      - "traefik.http.routers.org.entrypoints=websecure"
+      - "traefik.http.routers.org.tls.certresolver=myresolver"
+      - "traefik.http.services.org.loadbalancer.server.port=8000"
+
+  geo:
+    build:
+      context: .
+      dockerfile: src/geo/Dockerfile
+    env_file:
+      - .env
+    container_name: geo
+    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && uvicorn geo.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - 8006:8000
+    volumes:
+      - type: bind
+        source: ./logs/geo/
+        target: /app/logs
+    depends_on:
+      pg:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      aef:
+        condition: service_no_longer_running
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.geo.rule=Host(`${APP_HOST}`) && PathPrefix(`/geo`)"
+      - "traefik.http.routers.geo.entrypoints=websecure"
+      - "traefik.http.routers.geo.tls.certresolver=myresolver"
+      - "traefik.http.services.geo.loadbalancer.server.port=8000"
 
   traefik:
     image: traefik:v3.4
