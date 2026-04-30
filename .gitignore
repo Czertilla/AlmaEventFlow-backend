@@ -22,8 +22,3 @@ data/
 .env*
 .mongo-keyfile
 
-# vs-code
-.vscode
-.kilocode
-generated_documents
-docs
