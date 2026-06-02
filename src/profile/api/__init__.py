@@ -10,5 +10,7 @@ kafka_routers = load_common(__name__, "router", (KafkaRouter))
 
 def include_routers(app: FastAPI):
     include_mq_routers(app, kafka_root, kafka_routers)
+    service_router = APIRouter(prefix="/profile")
     for router in api_routers:
-        app.include_router(router)
+        service_router.include_router(router)
+    app.include_router(service_router)

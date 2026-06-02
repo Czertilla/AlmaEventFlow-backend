@@ -4,17 +4,17 @@ services:
   pg:
     image: postgis/postgis:16-master
     container_name: pg
-    command: -p ${DB_PORT}
+    command: -p ${DB_PORT:-5432}
     env_file:
       - .env
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${DB_PORT:-5432}:${DB_PORT:-5432}
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_DB: ${DB_NAME:-postgres}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME:-postgres}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -122,21 +122,9 @@ services:
     depends_on:
       pg:
         condition: service_healthy
-      user:
-        condition: service_no_longer_running
-      mail:
-        condition: service_no_longer_running
-      profile:
-        condition: service_no_longer_running
-      event:
-        condition: service_no_longer_running
-      org:
-        condition: service_no_longer_running
-      geo:
-        condition: service_no_longer_running
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.aef.rule=Host(`${APP_HOST}`)"
+      - "traefik.http.routers.aef.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`)"
       - "traefik.http.routers.aef.entrypoints=websecure"
       - "traefik.http.routers.aef.tls.certresolver=myresolver"
       - "traefik.http.services.aef.loadbalancer.server.port=8000"
@@ -162,11 +150,9 @@ services:
       #   condition: service_healthy
       kafka:
         condition: service_healthy
-      aef:
-        condition: service_no_longer_running
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.user.rule=Host(`${APP_HOST}`) && PathPrefix(`/user`)"
+      - "traefik.http.routers.user.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/user`)"
       - "traefik.http.routers.user.entrypoints=websecure"
       - "traefik.http.routers.user.tls.certresolver=myresolver"
       - "traefik.http.services.user.loadbalancer.server.port=8000"
@@ -185,14 +171,12 @@ services:
       - type: bind
         source: ./logs/mail/
         target: /app/logs
-    depends_on:
+    # depends_on:
       # redis:
       #   condition: service_healthy
-      aef:
-        condition: service_no_longer_running
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mail.rule=Host(`${APP_HOST}`) && PathPrefix(`/mail`)"
+      - "traefik.http.routers.mail.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/mail`)"
       - "traefik.http.routers.mail.entrypoints=websecure"
       - "traefik.http.routers.mail.tls.certresolver=myresolver"
       - "traefik.http.services.mail.loadbalancer.server.port=8000"
@@ -218,11 +202,9 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-      aef:
-        condition: service_no_longer_running
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.profile.rule=Host(`${APP_HOST}`) && PathPrefix(`/profile`)"
+      - "traefik.http.routers.profile.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/profile`)"
       - "traefik.http.routers.profile.entrypoints=websecure"
       - "traefik.http.routers.profile.tls.certresolver=myresolver"
       - "traefik.http.services.profile.loadbalancer.server.port=8000"
@@ -248,11 +230,9 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-      aef:
-        condition: service_no_longer_running
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.event.rule=Host(`${APP_HOST}`) && PathPrefix(`/event`)"
+      - "traefik.http.routers.event.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/event`)"
       - "traefik.http.routers.event.entrypoints=websecure"
       - "traefik.http.routers.event.tls.certresolver=myresolver"
       - "traefik.http.services.event.loadbalancer.server.port=8000"
@@ -278,11 +258,9 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-      aef:
-        condition: service_no_longer_running
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.org.rule=Host(`${APP_HOST}`) && PathPrefix(`/org`)"
+      - "traefik.http.routers.org.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/org`)"
       - "traefik.http.routers.org.entrypoints=websecure"
       - "traefik.http.routers.org.tls.certresolver=myresolver"
       - "traefik.http.services.org.loadbalancer.server.port=8000"
@@ -310,11 +288,9 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-      aef:
-        condition: service_no_longer_running
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.geo.rule=Host(`${APP_HOST}`) && PathPrefix(`/geo`)"
+      - "traefik.http.routers.geo.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/geo`)"
       - "traefik.http.routers.geo.entrypoints=websecure"
       - "traefik.http.routers.geo.tls.certresolver=myresolver"
       - "traefik.http.services.geo.loadbalancer.server.port=8000"

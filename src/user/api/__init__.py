@@ -3,6 +3,7 @@ from core.broker.kafka import stream_router
 
 from user.services.auth import fastapi_users, auth_backend
 from user.services.oauth2 import google_oauth_client
+from user.api.v1.auth import router as auth_router
 from user.api.v1.verify import get_verify_router
 from user.api.v1.check import router as check_router
 from user.api.kafka.sub.person import router as person_router
@@ -11,25 +12,27 @@ from user.config.settings import settings
 
 from fastapi import APIRouter
 
+PREFIX = "/user"
+
 
 def include_routers(app: APIRouter):
     include_mq_routers(app, stream_router, [person_router])
 
     app.include_router(
-        fastapi_users.get_auth_router(auth_backend),
-        prefix="/v1/auth/jwt",
+        auth_router,
+        prefix=f"{PREFIX}/v1/auth/jwt",
         tags=["auth"],
     )
 
     app.include_router(
         fastapi_users.get_register_router(UserRead, UserCreate),
-        prefix="/v1/auth",
+        prefix=f"{PREFIX}/v1/auth",
         tags=["auth"],
     )
 
     app.include_router(
         fastapi_users.get_reset_password_router(),
-        prefix="/v1/auth",
+        prefix=f"{PREFIX}/v1/auth",
         tags=["auth"],
     )
 
@@ -37,17 +40,17 @@ def include_routers(app: APIRouter):
         fastapi_users.get_users_router(
             UserRead, UserUpdate, requires_verification=True
         ),
-        prefix="/v1/users",
+        prefix=f"{PREFIX}/v1/users",
         tags=["users"],
     )
 
     app.include_router(
-        fastapi_users.get_verify_router(UserRead), prefix="/v1/auth", tags=["auth"]
+        fastapi_users.get_verify_router(UserRead), prefix=f"{PREFIX}/v1/auth", tags=["auth"]
     )
 
     app.include_router(
         get_verify_router(fastapi_users.get_user_manager, UserRead),
-        prefix="/v1/auth",
+        prefix=f"{PREFIX}/v1/auth",
         tags=["auth"],
     )
 
@@ -59,7 +62,7 @@ def include_routers(app: APIRouter):
             associate_by_email=True,
             is_verified_by_default=True,
         ),
-        prefix="/v1/auth/google",
+        prefix=f"{PREFIX}/v1/auth/google",
         tags=["auth"],
     )
 
@@ -69,9 +72,9 @@ def include_routers(app: APIRouter):
             UserRead,
             settings.OAUTH_STATE_SECRET.get_secret_value(),
         ),
-        prefix="/v1/auth/associate/google",
+        prefix=f"{PREFIX}/v1/auth/associate/google",
         tags=["auth"],
     )
 
 
-    app.include_router(check_router)
+    app.include_router(check_router, prefix=PREFIX)
