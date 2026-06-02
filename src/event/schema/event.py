@@ -3,6 +3,7 @@ from pydantic import BaseModel, ConfigDict
 import datetime
 
 from core.utils.mixin.pydantic import PatchModel, TimestampMixin, UUIDMixin
+from event.enum.status import EventStatus
 
 
 class EventCreate(BaseModel):
@@ -11,7 +12,7 @@ class EventCreate(BaseModel):
     description: str | None = None
     location_id: UUID | None = None
     organizer_id: UUID | None = None
-    status_id: int = 0
+    status: EventStatus = EventStatus.draft
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -25,7 +26,7 @@ class EventPatchData(PatchModel):
     description: str | None = None
     location_id: UUID | None = None
     organizer_id: UUID | None = None
-    status_id: int = 0
+    status: EventStatus = EventStatus.draft
 
 
 class EventPatch(EventPatchData, UUIDMixin): ...

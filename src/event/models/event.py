@@ -26,7 +26,7 @@ class EventStatusORM(ModuleBase, Base, SmallSerialMixin):
 
     name: Mapped[str] = mapped_column(String(64))
 
-    events: Mapped[list["EventORM"]] = relationship(back_populates="status")
+    events: Mapped[list["EventORM"]] = relationship(back_populates="status_rel")
 
 
 class EventORM(ModuleBase, Base, UUIDMixin, TimestampMixin):
@@ -37,7 +37,7 @@ class EventORM(ModuleBase, Base, UUIDMixin, TimestampMixin):
     description: Mapped[str | None] = mapped_column(String(1024))
     location_id: Mapped[UUID | None] = mapped_column(ForeignKey("location.id"))
     status_id: Mapped[int] = mapped_column(
-        ForeignKey("event_status.id"), default=0
+        ForeignKey("event_status.id"), default=1
     )
     organizer_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("organization.id", ondelete="SET NULL")
@@ -49,11 +49,18 @@ class EventORM(ModuleBase, Base, UUIDMixin, TimestampMixin):
     organizer: Mapped[Optional["OrganizationORM"]] = relationship(
         foreign_keys=[organizer_id]
     )
-    status: Mapped[Optional["EventStatusORM"]] = relationship(
+    status_rel: Mapped[Optional["EventStatusORM"]] = relationship(
         back_populates="events"
     )
+
+    @property
+    def status(self) -> str:
+        if self.status_rel:
+            return self.status_rel.name
+        return "draft"
+
     links: Mapped[list["EventLinkORM"]] = relationship(back_populates="event")
     stages: Mapped[list["EventStageORM"]] = relationship(back_populates="event")
-    participation: Mapped[list["ParticipationORM"]] = relationship(
+    participations: Mapped[list["ParticipationORM"]] = relationship(
         back_populates="event"
     )

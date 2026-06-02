@@ -32,6 +32,9 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=64), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
+    op.execute(
+        "INSERT INTO event_status (name) VALUES ('draft'), ('template'), ('active'), ('archived')"
+    )
     op.create_table(
         "location",
         sa.Column("id", sa.Uuid(), nullable=False),
@@ -49,7 +52,7 @@ def upgrade() -> None:
     op.create_table(
         "organization",
         sa.Column("id", sa.Uuid(), nullable=False),
-        sa.Column('principal_id', sa.Uuid(), nullable=True),
+        sa.Column("principal_id", sa.Uuid(), nullable=True),
         sa.Column("type", sa.String(length=16), nullable=False),
         sa.Column("name", sa.String(length=128), nullable=False),
         sa.ForeignKeyConstraint(
