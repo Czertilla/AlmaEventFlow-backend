@@ -8,9 +8,11 @@ from profile.exc.passport import (
     PassportNotExistsException,
     PassportOwnershipException,
 )
+from profile.filter.passport import PassportFilter
 from profile.models.passport import PassportORM, NameVariantORM
 from profile.schema.passport import (
     PassportCreate,
+    PassportItemRead,
     PassportPatch,
     PassportPut,
     PassportRead,
@@ -81,18 +83,21 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         async with self.uow:
             return PassportRead.model_validate(await self._read(passport_id))
 
-    async def read_many_by_profile(
-        self, profile_id: UUID, page_params: SPageParam
-    ) -> SPage[PassportRead]:
+    async def search_by_profile(
+        self,
+        profile_id: UUID,
+        filter: PassportFilter,
+        page_params: SPageParam = SPageParam(),
+    ) -> SPage[PassportItemRead]:
         async with self.uow as uow:
-            passports, total = await uow.passports.get_many_by_profile(
-                profile_id=profile_id,
-                limit=page_params.limit,
-                offset=page_params.offset,
+            passports, total = await uow.passports.search(
+                filter,
+                page_params,
+                scope=[PassportORM.profile_id == profile_id],
             )
             return SPage(
                 items=[
-                    PassportRead.model_validate(passport)
+                    PassportItemRead.model_validate(passport)
                     for passport in passports
                 ],
                 pagination=SPagination(

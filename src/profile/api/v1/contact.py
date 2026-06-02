@@ -1,11 +1,13 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
 from core.schema.pagination import SPage, SPageParam
 from profile.dependency.contact import ContactUOWDep, PersonContactUOWDep
 from profile.exc.user import NonPersonalUserException
+from profile.filter.contact import ContactFilter
 from profile.schema.contact import (
     ContactCreate,
     ContactItemCreate,
@@ -25,12 +27,15 @@ logger = getLogger(__name__)
 
 @router.get("/my")
 async def get_my_contacts(
-    user: ActiveUserJWTDep, uow: ContactUOWDep, page_params=Depends(SPageParam)
+    user: ActiveUserJWTDep,
+    uow: ContactUOWDep,
+    filter: ContactFilter = FilterDepends(ContactFilter),
+    page_params=Depends(SPageParam),
 ) -> SPage[ContactItemRead]:
     if user.person_id is None:
         raise NonPersonalUserException()
-    return await ContactService(uow).read_many_by_person(
-        user.person_id, page_params
+    return await ContactService(uow).search_by_person(
+        user.person_id, filter, page_params
     )
 
 

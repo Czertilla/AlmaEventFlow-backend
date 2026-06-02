@@ -1,9 +1,12 @@
 from uuid import UUID
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.pagination import SPage, SPageParam
 from org.dependency.faculty import FacultyUOWDep
+from org.filter.faculty import FacultyFilter
 from org.schema.faculty import (
     FacultyCreate,
     FacultyPatch,
@@ -18,13 +21,22 @@ router = APIRouter(prefix="/faculties", tags=["faculty"])
 
 logger = getLogger(__name__)
 
+@router.get("")
+async def list_faculties(
+    uow: FacultyUOWDep,
+    user: UserJWTDep,
+    filter: FacultyFilter = FilterDepends(FacultyFilter),
+    page_param=Depends(SPageParam),
+) -> SPage[FacultyRead]:
+    return await FacultyService(uow).search(filter, page_param)
+
 @router.get("/{faculty_id}")
 async def get_faculty(
     faculty_id: UUID, user: UserJWTDep, uow: FacultyUOWDep
 ) -> FacultyRead:
     return await FacultyService(uow).read(faculty_id)
 
-@router.post("/new")
+@router.post("")
 async def create_faculty(
     faculty: FacultyCreate,
     user: SuperUserJWTDep,

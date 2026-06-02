@@ -2,8 +2,10 @@ from logging import getLogger
 from uuid import UUID
 
 from core.schema.message.org import OrganizationData
+from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
 from org.exc.collective import CollectiveNotExistsException
+from org.filter.collective import CollectiveFilter
 from org.models.collective import CollectiveORM
 from org.models.organization import OrganizationORM
 from org.schema.collective import (
@@ -65,7 +67,7 @@ class CollectiveService(BaseService[CollectiveUOW]):
             )
             await uow.commit()
         await on_organization_created(
-            OrganizationData(**result.model_dump(), type="collective")
+            OrganizationData(**result.model_dump(exclude={"type"}), type="collective")
         )
         return result
 
@@ -83,22 +85,36 @@ class CollectiveService(BaseService[CollectiveUOW]):
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(**result.model_dump(), type="collective")
+            OrganizationData(**result.model_dump(exclude={"type"}), type="collective")
         )
         return result
 
     async def put(self, collective_put: CollectivePut) -> CollectiveRead:
         async with self.uow as uow:
             result = CollectiveRead.model_validate(
-                await self.uow.session.merge(CollectiveORM(collective_put))
+                await self.uow.collectives.upsert(collective_put.model_dump())
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(
-                OrganizationData(**result.model_dump(), type="collective")
-            )
+            OrganizationData(**result.model_dump())
         )
         return result
+
+    async def search(
+        self, filter: CollectiveFilter, pagination: SPageParam
+    ) -> SPage[CollectiveRead]:
+        async with self.uow:
+            items, total = await self.uow.collectives.search(
+                filter, pagination
+            )
+            return SPage(
+                items=[CollectiveRead.model_validate(item) for item in items],
+                pagination=SPagination.sql_validate(
+                    page=pagination.page,
+                    limit=pagination.limit,
+                    total=total,
+                ),
+            )
 
     async def delete(self, collective_id: UUID) -> None:
         async with self.uow as uow:

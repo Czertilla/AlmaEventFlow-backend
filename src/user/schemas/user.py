@@ -3,6 +3,7 @@ import uuid
 from pydantic import BaseModel, ConfigDict, Field
 from fastapi_users import schemas
 
+
 class CreateUpdateUserModel(schemas.CreateUpdateDictModel):
     def create_update_dict(self):
         return self.model_dump(
@@ -13,10 +14,16 @@ class CreateUpdateUserModel(schemas.CreateUpdateDictModel):
                 "is_active",
                 "is_verified",
                 "oauth_accounts",
-                "person_id"
+                "person_id",
+                "invite_token",
             },
         )
-    
+
+
+class InviteTokenData(BaseModel):
+    person_id: uuid.UUID
+    aud: list[str] = ["invite"]
+    exp: int
 
 
 class UserRead(CreateUpdateUserModel, schemas.BaseUser[uuid.UUID]):
@@ -28,6 +35,7 @@ class UserRead(CreateUpdateUserModel, schemas.BaseUser[uuid.UUID]):
 
 class UserCreate(CreateUpdateUserModel, schemas.BaseUserCreate):
     username: str
+    invite_token: str | None = None
 
 
 class UserUpdate(CreateUpdateUserModel, schemas.BaseUserUpdate):
@@ -38,6 +46,16 @@ class UserOauthAccount(UserRead, schemas.BaseOAuthAccountMixin): ...
 
 
 class SUser(UserOauthAccount): ...
+
+
+class InviteTokenCreate(BaseModel):
+    person_id: uuid.UUID
+    expires_in: int | None = None
+
+
+class InviteTokenRead(BaseModel):
+    token: str
+    expires_at: int
 
 
 class OAuthAccountDict(TypedDict):

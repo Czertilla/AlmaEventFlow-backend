@@ -4,4 +4,4 @@ from core.utils.exc.http import VancedHTTPException
 
 class ProfileNotExistsException(VancedHTTPException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = {"detail": "Profile not found"}
+    detail = "PROFILE_NOT_FOUND"

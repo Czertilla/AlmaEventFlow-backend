@@ -4,6 +4,7 @@ from geoalchemy2 import WKTElement
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
+    SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
 
@@ -14,6 +15,7 @@ class AddressAlchemyRepo(
     SQLAlchemyRepository[Model],
     IDRepositoryMixin[Model, UUID],
     UpsertRepositoryMixin[Model, UUID],
+    SearchRepositoryMixin[Model],
 ):
     model = Model
 

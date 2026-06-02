@@ -6,7 +6,10 @@ from fastapi_users.models import UP, UOAP
 from sqlalchemy import select
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
-from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin
+from core.database.sqlalchemy.mixins.repositories import (
+    IDRepositoryMixin,
+    SearchRepositoryMixin,
+)
 
 from user.models.user import UserORM as Model, OAuthAccountORM as OauthModel
 
@@ -14,6 +17,7 @@ from user.models.user import UserORM as Model, OAuthAccountORM as OauthModel
 class UserRepo(
     SQLAlchemyRepository[Model],
     IDRepositoryMixin[Model, UUID],
+    SearchRepositoryMixin[Model],
     BaseUserDatabase[Model, UUID],
 ):
     model = Model
@@ -33,6 +37,9 @@ class UserRepo(
 
     async def exists_username(self, username: str) -> bool:
         return await self.exists(Model.username == username)
+
+    async def exists_person(self, person_id: UUID) -> bool:
+        return await self.exists(Model.person_id == person_id)
 
     async def get_by_oauth_account(
         self, oauth: str, account_id: str
@@ -80,19 +87,5 @@ class UserRepo(
         self.session.add(oauth_account)
         return user
 
-    async def get_many_cron(
-        self,
-        offset: int,
-        limit: int,
-    ):
-        stmt = (
-            select(Model)
-            .order_by(Model.edited_at)
-            .order_by(Model.created_at)
-            .limit(limit)
-            .offset(offset)
-        )
-        return (
-            (await self.execute(stmt)).unique().scalars().all(),
-            await self.count(),
-        )
+    async def search(self, filter, pagination, *, options=None):
+        return await super().search(filter, pagination)

@@ -9,6 +9,7 @@ from profile.exc.contact import (
     ContactOwnershipException,
 )
 from profile.exc.person import PersonNotExistsException
+from profile.filter.contact import ContactFilter
 from profile.models.contact import ContactORM
 from profile.schema.contact import (
     ContactCreate,
@@ -72,14 +73,17 @@ class ContactService(BaseService[ContactUOW | PersonContactUOW]):
         async with self.uow:
             return ContactRead.model_validate(await self._read(contact_id))
 
-    async def read_many_by_person(
-        self, person_id: UUID, page_params: SPageParam = SPageParam()
+    async def search_by_person(
+        self,
+        person_id: UUID,
+        filter: ContactFilter,
+        page_params: SPageParam = SPageParam(),
     ) -> SPage[ContactItemRead]:
         async with self.uow as uow:
-            contacts, total = await uow.contacts.get_many_by_person(
-                person_id=person_id,
-                limit=page_params.limit,
-                offset=page_params.offset,
+            contacts, total = await uow.contacts.search(
+                filter,
+                page_params,
+                scope=[ContactORM.person_id == person_id],
             )
             return SPage(
                 items=[

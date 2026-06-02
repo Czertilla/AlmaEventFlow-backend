@@ -1,8 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.pagination import SPage, SPageParam
 from geo.dependency.address import AddressUOWDep
+from geo.filter.address import AddressFilter
 from geo.schema.address import (
     AddressCreate,
     AddressPatch,
@@ -17,13 +20,22 @@ router = APIRouter(prefix="/addresses", tags=["address"])
 
 logger = getLogger(__name__)
 
+@router.get("")
+async def get_addresses(
+    uow: AddressUOWDep,
+    user: UserJWTDep,
+    filter: AddressFilter = FilterDepends(AddressFilter),
+    page_param=Depends(SPageParam),
+) -> SPage[AddressRead]:
+    return await AddressService(uow).search(filter, page_param)
+
 @router.get("/{address_id}")
 async def get_address(
     address_id: int, user: UserJWTDep, uow: AddressUOWDep
 ) -> AddressRead:
     return await AddressService(uow).read(address_id)
 
-@router.post("/new")
+@router.post("")
 async def create_address(
     address: AddressCreate,
     user: SuperUserJWTDep,

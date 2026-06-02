@@ -3,20 +3,52 @@ from typing import Annotated, Optional
 from uuid import UUID
 import jwt
 
-from fastapi import Depends, status
-from fastapi.security import HTTPAuthorizationCredentials, APIKeyCookie
+from fastapi import Depends, Request, status
+from fastapi.security import (
+    HTTPAuthorizationCredentials,
+    HTTPBearer,
+    APIKeyCookie,
+)
 
 from core.schema.user import UserJWT
 from core.config.settings import settings
 from core.utils.exc.http import VancedHTTPException
 
 
-security = APIKeyCookie(name=settings.AUTH_COOKIE_NAME)
-optional_security = APIKeyCookie(
-    name=settings.AUTH_COOKIE_NAME, auto_error=False
-)
-
 logger = getLogger(__name__)
+
+
+bearer_scheme = HTTPBearer(auto_error=False)
+cookie_scheme = APIKeyCookie(name=settings.AUTH_COOKIE_NAME, auto_error=False)
+
+
+async def get_token(
+    request: Request,
+    bearer: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+    cookie: Optional[str] = Depends(cookie_scheme),
+) -> str:
+    token = None
+    if bearer is not None:
+        token = bearer.credentials
+    elif cookie is not None:
+        token = cookie
+    if token is None:
+        raise VancedHTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+        )
+    return token
+
+
+async def get_optional_token(
+    bearer: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+    cookie: Optional[str] = Depends(cookie_scheme),
+) -> Optional[str]:
+    if bearer is not None:
+        return bearer.credentials
+    if cookie is not None:
+        return cookie
+    return None
 
 
 class JWTAuth:
@@ -78,9 +110,9 @@ class JWTAuth:
 
     def __call__(
         self,
-        credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+        token: Annotated[str, Depends(get_token)],
     ) -> UserJWT:
-        user = self.extract_user_snapshot(credentials)
+        user = self.extract_user_snapshot(token)
         self.verify_requires(user)
         return user
 
@@ -88,15 +120,13 @@ class JWTAuth:
 class OptionalJWTAuth(JWTAuth):
     def __call__(
         self,
-        credentials: Annotated[
-            Optional[HTTPAuthorizationCredentials], Depends(optional_security)
-        ],
+        token: Annotated[Optional[str], Depends(get_optional_token)],
     ) -> Optional[UserJWT]:
-        if credentials is None:
+        if token is None:
             return None
 
         try:
-            return self.extract_user_snapshot(credentials)
+            return self.extract_user_snapshot(token)
         except VancedHTTPException:
             return None
 

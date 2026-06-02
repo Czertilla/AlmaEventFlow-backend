@@ -4,8 +4,9 @@ from core.utils.exc.http import VancedHTTPException
 
 class PassportNotExistsException(VancedHTTPException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = {"detail": "Passport not found"}
+    detail = "PASSPORT_NOT_FOUND"
+
 
 class PassportOwnershipException(VancedHTTPException):
     status_code = status.HTTP_403_FORBIDDEN
-    detail = {"detail": "Unable to override passport ownership"}
+    detail = "UNABLE_TO_OVERRIDE_PASSPORT_OWNERSHIP"

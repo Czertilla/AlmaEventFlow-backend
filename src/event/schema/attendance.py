@@ -8,6 +8,7 @@ class AttendanceCreate(BaseModel):
     member_id: UUID
     participation_id: UUID
     is_attended: bool | None = False
+    is_verified: bool | None = False
     comment: str | None = Field(max_length=512, default=None)
 
     model_config = ConfigDict(from_attributes=True)
@@ -20,8 +21,11 @@ class AttendancePatchData(PatchModel):
     is_attended: bool | None = None
     comment: str | None = Field(max_length=512, default=None)
 
+class AttendancePrincipalPatchData(AttendancePatchData):
+    is_verified: bool | None = None
 
-class AttendancePatch(AttendancePatchData, UUIDMixin): ...
+
+class AttendancePatch(AttendancePrincipalPatchData, UUIDMixin): ...
 
 
 class AttendancePutData(AttendanceCreate): ...

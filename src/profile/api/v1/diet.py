@@ -1,10 +1,12 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.pagination import SPage, SPageParam
 from profile.dependency.diet import DietUOWDep
+from profile.filter.diet import DietFilter
 from profile.schema.diet import (
     DietCreate,
     DietPatch,
@@ -22,9 +24,10 @@ logger = getLogger(__name__)
 async def get_many(
     uow: DietUOWDep,
     user: UserJWTDep,
+    filter: DietFilter = FilterDepends(DietFilter),
     page_param=Depends(SPageParam),
 ) -> SPage[DietRead]:
-    return await DietService(uow).read_many(page_param)
+    return await DietService(uow).search(filter, page_param)
 
 
 @router.get("/{id}")
@@ -34,7 +37,7 @@ async def get_diet(
     return await DietService(uow).read(id)
 
 
-@router.post("/new")
+@router.post("")
 async def create_diet(
     diet: DietCreate, user: SuperUserJWTDep, uow: DietUOWDep
 ) -> DietRead:

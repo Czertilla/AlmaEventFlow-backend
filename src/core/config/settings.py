@@ -82,10 +82,20 @@ class Settings(BaseSettings):
     AUTH_COOKIE_MAX_AGE: int = 3600
     AUTH_COOKIE_NAME: str = "auth"
 
+    ACCESS_TOKEN_EXPIRE_SECONDS: int = 900
+    REFRESH_TOKEN_EXPIRE_SECONDS: int = 604800
+
+    REFRESH_COOKIE_NAME: str = "refresh"
+    AUTH_COOKIE_DOMAIN: str | None = None
+    AUTH_COOKIE_SAMESITE: str = "lax"
+    AUTH_COOKIE_SECURE: bool = True
+
+    INVITE_TOKEN_LIFETIME: int = 604800
+
     MAX_PAGE_SIZE: int = 100
     """Maximum number of items to be displayed on a single page. Default is 100."""
 
-    BOT_TG_TOKEN: str = "7249436779:AAGyLcR9HjDE066bxWAMmfYTF7nRFFf4aCI"
+    BOT_TG_TOKEN: str | None = None
 
     DEV_ID_LIST: list[int] = [715648962]
 

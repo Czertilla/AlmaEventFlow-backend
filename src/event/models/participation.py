@@ -30,7 +30,7 @@ class ParticipationORM(ModuleBase, Base, UUIDMixin):
     collective: Mapped["CollectiveORM"] = relationship(
         foreign_keys=[collective_id]
     )
-    event: Mapped["EventORM"] = relationship(back_populates="participation")
+    event: Mapped["EventORM"] = relationship(back_populates="participations")
     rewards: Mapped[list["RewardORM"]] = relationship(
         back_populates="participation",
     )

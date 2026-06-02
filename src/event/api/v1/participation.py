@@ -1,9 +1,12 @@
 from uuid import UUID
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.pagination import SPage, SPageParam
 from event.dependency.participation import ParticipationUOWDep
+from event.filter.participation import ParticipationFilter
 from ...schema.participation import (
     ParticipationCreate,
     ParticipationPatch,
@@ -17,6 +20,16 @@ from event.service.participation import ParticipationService
 router = APIRouter(prefix="/participations", tags=["participation"])
 
 logger = getLogger(__name__)
+
+
+@router.get("")
+async def get_participations(
+    uow: ParticipationUOWDep,
+    user: UserJWTDep,
+    filter: ParticipationFilter = FilterDepends(ParticipationFilter),
+    page_param=Depends(SPageParam),
+) -> SPage[ParticipationRead]:
+    return await ParticipationService(uow).search(filter, page_param)
 
 
 @router.post("")

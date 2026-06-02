@@ -1,13 +1,12 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from org.models.organization import OrganizationORM
 
 if TYPE_CHECKING:
-    from .collective import CollectiveORM
-    from .faculty import FacultyORM
+    pass
 
 
 class UniversityORM(OrganizationORM):

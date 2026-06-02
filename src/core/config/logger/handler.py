@@ -9,7 +9,7 @@ from aiogram import Bot
 from aiogram.types import InputMediaDocument, BufferedInputFile
 from logging import LogRecord, Handler
 
-from core.config.settings import getSettings
+from core.config.settings import settings
 from logging import getLogger
 
 
@@ -33,12 +33,14 @@ class TelegramLogHandler(Handler):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        settings = getSettings()
-        self.bot = Bot(token=settings.BOT_TG_TOKEN)
-        self.chat_id_list = settings.DEV_ID_LIST
+        if settings.BOT_TG_TOKEN:
+            self.bot = Bot(token=settings.BOT_TG_TOKEN)
+            self.chat_id_list = settings.DEV_ID_LIST
 
     def emit(self, record: LogRecord):
         """Sends a log record to Telegram asynchronously."""
+        if not settings.BOT_TG_TOKEN:
+            return
         try:
             log_entry = self.format(record)
             event_loop = asyncio.get_event_loop()

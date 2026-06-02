@@ -17,7 +17,7 @@ async def send_verify_message(
 ) -> SendVerifyMessageRequest:
     logger.debug(f"Sending verify message to {email} with token")
     await broker.publish(
-        message=SendVerifyMessageRequest(email=email, token=token),
-        queue=EmailQueue.VERIFY,
+        SendVerifyMessageRequest(email=email, token=token),
+        EmailQueue.VERIFY,
     )
     return JSONResponse(content="OK")

@@ -42,7 +42,7 @@ async def get_student(
     return await StudentService(uow).read(student_id)
 
 
-@router.post("/new")
+@router.post("")
 async def create_student(
     student: StudentCreate, user: UserJWTDep, uow: StudentUOWDep
 ) -> StudentRead:
@@ -91,7 +91,7 @@ async def get_student_degree(
     return await StudentDegreeService(uow).read(degree_id)
 
 
-@degree_router.post("/new")
+@degree_router.post("")
 async def create_student_degree(
     degree: StudentDegreeCreate, user: SuperUserJWTDep, uow: StudentUOWDep
 ) -> StudentDegreeRead:
@@ -140,7 +140,7 @@ async def get_student_group(
     return await StudentGroupService(uow).read(group_id)
 
 
-@group_router.post("/new")
+@group_router.post("")
 async def create_student_group(
     group: StudentGroupCreate, user: SuperUserJWTDep, uow: StudentUOWDep
 ) -> StudentGroupRead:

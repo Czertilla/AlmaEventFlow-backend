@@ -1,9 +1,11 @@
 from logging import getLogger
 from uuid import UUID
 
+from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
 
 from org.exc.organization import OrganizationNotExistsException
+from org.filter.organization import OrganizationFilter
 from org.models.organization import OrganizationORM
 from org.schema.organization import (
     OrganizationCreate,
@@ -93,6 +95,22 @@ class OrganizationService(BaseService[OrganizationUOW]):
             await uow.commit()
         await on_organization_updated(result)
         return result
+
+    async def search(
+        self, filter: OrganizationFilter, pagination: SPageParam
+    ) -> SPage[OrganizationRead]:
+        async with self.uow:
+            items, total = await self.uow.organizations.search(
+                filter, pagination
+            )
+            return SPage(
+                items=[OrganizationRead.model_validate(item) for item in items],
+                pagination=SPagination.sql_validate(
+                    page=pagination.page,
+                    limit=pagination.limit,
+                    total=total,
+                ),
+            )
 
     async def delete(self, organization_id: UUID) -> None:
         async with self.uow as uow:

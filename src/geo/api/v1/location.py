@@ -1,9 +1,12 @@
 from uuid import UUID
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.pagination import SPage, SPageParam
 from geo.dependency.location import LocationUOWDep
+from geo.filter.location import LocationFilter
 from geo.schema.location import (
     LocationCreate,
     LocationPatch,
@@ -18,13 +21,22 @@ router = APIRouter(prefix="/locations", tags=["location"])
 
 logger = getLogger(__name__)
 
+@router.get("")
+async def get_locations(
+    uow: LocationUOWDep,
+    user: UserJWTDep,
+    filter: LocationFilter = FilterDepends(LocationFilter),
+    page_param=Depends(SPageParam),
+) -> SPage[LocationRead]:
+    return await LocationService(uow).search(filter, page_param)
+
 @router.get("/{location_id}")
 async def get_location(
     location_id: UUID, user: UserJWTDep, uow: LocationUOWDep
 ) -> LocationRead:
     return await LocationService(uow).read(location_id)
 
-@router.post("/new")
+@router.post("")
 async def create_location(
     location: LocationCreate,
     user: SuperUserJWTDep,

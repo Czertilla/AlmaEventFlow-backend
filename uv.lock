@@ -7,19 +7,6 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "aio-pika"
-version = "9.5.7"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "aiormq" },
-    { name = "yarl" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/42/ad/0ddde89d7a018f4304aac687e5b65c07d308644f51da3c4ae411184bb237/aio_pika-9.5.7.tar.gz", hash = "sha256:0569b59d3c7b36ca76abcb213cdc3677e2a4710a3c371dd27359039f9724f4ee", size = 47298 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/da/be/9b08e7c4d1b3b9a1184e63965d13c811366444cb42c6e809910ab17e916c/aio_pika-9.5.7-py3-none-any.whl", hash = "sha256:684316a0e92157754bb2d6927c5568fd997518b123add342e97405aa9066772b", size = 54297 },
-]
-
-[[package]]
 name = "aiobotocore"
 version = "2.26.0"
 source = { registry = "https://pypi.org/simple" }
@@ -135,19 +122,6 @@ wheels = [
 ]
 
 [[package]]
-name = "aiormq"
-version = "6.9.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pamqp" },
-    { name = "yarl" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/8b/95/feddc2fd77f995837ee8909794101ce5c9c6e7bb399d4e60d5d16f04d74a/aiormq-6.9.0.tar.gz", hash = "sha256:1c31f2098ad2beee6e95d0ad969c836876c1e3113e8c67142eb58565fedcab4c", size = 30526 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c9/35/85c151d382c327182c160f5814416276012941afe378101bd254f946bc60/aiormq-6.9.0-py3-none-any.whl", hash = "sha256:e1d88db819d197646cabaea6d6b53497a5ba358a5b6ae8f45f61dcb446821fa6", size = 31781 },
-]
-
-[[package]]
 name = "aiosignal"
 version = "1.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -195,8 +169,10 @@ dependencies = [
     { name = "asyncpg" },
     { name = "bcrypt" },
     { name = "beanie" },
+    { name = "colorama" },
     { name = "fastapi" },
-    { name = "faststream", extra = ["kafka", "rabbit"] },
+    { name = "fastapi-filter", extra = ["sqlalchemy"] },
+    { name = "faststream", extra = ["kafka"] },
     { name = "passlib" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -245,8 +221,10 @@ requires-dist = [
     { name = "asyncpg", specifier = ">=0.30.0" },
     { name = "bcrypt", specifier = ">=4.3.0" },
     { name = "beanie", specifier = ">=2.0.0" },
+    { name = "colorama", specifier = ">=0.4.6" },
     { name = "fastapi", specifier = ">=0.117.1" },
-    { name = "faststream", extras = ["kafka", "rabbit"], specifier = ">=0.5.48" },
+    { name = "fastapi-filter", extras = ["sqlalchemy"], specifier = ">=2.0.1" },
+    { name = "faststream", extras = ["kafka"], specifier = ">=0.5.48" },
     { name = "passlib", specifier = ">=1.7.4" },
     { name = "pydantic", specifier = ">=2.11.9" },
     { name = "pydantic-settings", specifier = ">=2.10.1" },
@@ -747,6 +725,24 @@ wheels = [
 ]
 
 [[package]]
+name = "fastapi-filter"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/43/ed/c36cfcd849519fd2d23051ad81a91fc5e8cfa7109496fc8a10ad565a5fe9/fastapi_filter-2.0.1.tar.gz", hash = "sha256:cffda370097af7e404f1eb188aca58b199084bfaf7cec881e40b404adf12566e", size = 9857 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5e/88/afc022ad64d12f730141fc50758ecf9d60de5fed11335dc16e3127617f05/fastapi_filter-2.0.1-py3-none-any.whl", hash = "sha256:711d48707ec62f7c9e12a7713fc0f6a99858a9e3741b4d108102d5599e77197d", size = 11586 },
+]
+
+[package.optional-dependencies]
+sqlalchemy = [
+    { name = "sqlalchemy" },
+]
+
+[[package]]
 name = "fastapi-mail"
 version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -819,9 +815,6 @@ wheels = [
 [package.optional-dependencies]
 kafka = [
     { name = "aiokafka" },
-]
-rabbit = [
-    { name = "aio-pika" },
 ]
 
 [[package]]
@@ -1400,15 +1393,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a1/d4/1fc4078c65507b51b96ca8f8c3ba19e6a61c8253c72794544580a7b6c24d/packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f", size = 165727 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484", size = 66469 },
-]
-
-[[package]]
-name = "pamqp"
-version = "3.3.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fb/62/35bbd3d3021e008606cd0a9532db7850c65741bbf69ac8a3a0d8cfeb7934/pamqp-3.3.0.tar.gz", hash = "sha256:40b8795bd4efcf2b0f8821c1de83d12ca16d5760f4507836267fd7a02b06763b", size = 30993 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ac/8d/c1e93296e109a320e508e38118cf7d1fc2a4d1c2ec64de78565b3c445eb5/pamqp-3.3.0-py2.py3-none-any.whl", hash = "sha256:c901a684794157ae39b52cbf700db8c9aae7a470f13528b9d7b4e5f7202f8eb0", size = 33848 },
 ]
 
 [[package]]

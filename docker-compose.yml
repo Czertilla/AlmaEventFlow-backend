@@ -112,7 +112,7 @@ services:
     environment:
       - MONOLITH=true
     container_name: aef
-    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && uvicorn aef.main:app --host 0.0.0.0 --port 8000"]
+    command: ["/app/aef/run.sh"]
     ports:
       - 8000:8000
     volumes:
@@ -295,20 +295,34 @@ services:
       - "traefik.http.routers.geo.tls.certresolver=myresolver"
       - "traefik.http.services.geo.loadbalancer.server.port=8000"
 
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://${API_SUBDOMAIN}.${APP_HOST}
+    container_name: frontend
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`${APP_HOST}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
   traefik:
-    image: traefik:v3.4
+    image: traefik:v3.7
     env_file:
       - .env
     command:
       # - "--log.level=DEBUG"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entryPoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory" #
-      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    - "--api.insecure=true"
+    - "--providers.docker=true"
+    - "--providers.docker.exposedbydefault=false"
+    - "--entryPoints.websecure.address=:443"
+    - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+    - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
+    - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "443:443"
       - "8080:8080"

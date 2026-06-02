@@ -1,7 +1,7 @@
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
-from core.utils.mixin.pydantic import PatchModel, IDMixin, UUIDMixin
+from core.utils.mixin.pydantic import IDMixin, PatchModel, UUIDMixin
 
 from profile.schema.person import PersonRead
 from profile.schema.profile import ProfileRead
@@ -68,7 +68,7 @@ class StudentCreate(BaseModel, UUIDMixin):
     model_config = ConfigDict(from_attributes=True)
 
 
-class StudentRead(StudentCreate, IDMixin):
+class StudentRead(StudentCreate):
     person: PersonRead | None = None
     profile: ProfileRead | None = None
     group: StudentGroupRead | None = None

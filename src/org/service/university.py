@@ -2,8 +2,10 @@ from logging import getLogger
 from uuid import UUID
 
 from core.schema.message.org import OrganizationData
+from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
 from org.exc.university import UniversityNotExistsException
+from org.filter.university import UniversityFilter
 from org.models.university import UniversityORM
 from org.models.organization import OrganizationORM
 from org.schema.university import (
@@ -64,7 +66,7 @@ class UniversityService(BaseService[UniversityUOW]):
             )
             await uow.commit()
         await on_organization_created(
-            OrganizationData(**result.model_dump(), type="university")
+            OrganizationData(**result.model_dump(exclude={"type"}), type="university")
         )
         return result
 
@@ -82,22 +84,36 @@ class UniversityService(BaseService[UniversityUOW]):
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(**result.model_dump(), type="university")
+            OrganizationData(**result.model_dump(exclude={"type"}), type="university")
         )
         return result
 
     async def put(self, university_put: UniversityPut) -> UniversityRead:
         async with self.uow as uow:
             result = UniversityRead.model_validate(
-                await self.uow.session.merge(UniversityORM(university_put))
+                await self.uow.universities.upsert(university_put.model_dump())
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(
-                OrganizationData(**result.model_dump(), type="university")
-            )
+            OrganizationData(**result.model_dump())
         )
         return result
+
+    async def search(
+        self, filter: UniversityFilter, pagination: SPageParam
+    ) -> SPage[UniversityRead]:
+        async with self.uow:
+            items, total = await self.uow.universities.search(
+                filter, pagination
+            )
+            return SPage(
+                items=[UniversityRead.model_validate(item) for item in items],
+                pagination=SPagination.sql_validate(
+                    page=pagination.page,
+                    limit=pagination.limit,
+                    total=total,
+                ),
+            )
 
     async def delete(self, university_id: UUID) -> None:
         async with self.uow as uow:

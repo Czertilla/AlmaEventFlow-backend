@@ -1,9 +1,12 @@
 from uuid import UUID
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.pagination import SPage, SPageParam
 from event.dependency.link import LinkUOWDep
+from event.filter.link import LinkFilter
 from ...schema.link import (
     LinkCreate,
     LinkPatch,
@@ -17,6 +20,16 @@ from event.service.link import LinkService
 router = APIRouter(prefix="/links", tags=["link"])
 
 logger = getLogger(__name__)
+
+
+@router.get("")
+async def get_links(
+    uow: LinkUOWDep,
+    user: UserJWTDep,
+    filter: LinkFilter = FilterDepends(LinkFilter),
+    page_param=Depends(SPageParam),
+) -> SPage[LinkRead]:
+    return await LinkService(uow).search(filter, page_param)
 
 
 @router.post("")

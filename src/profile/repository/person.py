@@ -5,6 +5,7 @@ from sqlalchemy.orm import selectinload, with_loader_criteria
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
+    SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
 
@@ -16,6 +17,7 @@ class PersonRepo(
     SQLAlchemyRepository[Model],
     IDRepositoryMixin[Model, UUID],
     UpsertRepositoryMixin[Model, UUID],
+    SearchRepositoryMixin[Model],
 ):
     model = Model
 
@@ -32,8 +34,8 @@ class PersonRepo(
         self, data, options=(with_contacts, with_main_contacts)
     ):
         return await super().add_n_return(data, options)
-    
-    async def update_one(self, id, data, flush = False):
+
+    async def update_one(self, id, data, flush=False):
         stmt = (
             update(self.model)
             .where(self.model.id == id)
@@ -61,5 +63,10 @@ class PersonRepo(
             await self.count(),
         )
 
-    async def upsert(self, data, options = all_options):
+    async def search(self, filter, pagination, *, options=None):
+        return await super().search(
+            filter, pagination, options=options or self.all_options
+        )
+
+    async def upsert(self, data, options=all_options):
         return await super().upsert(data, options)

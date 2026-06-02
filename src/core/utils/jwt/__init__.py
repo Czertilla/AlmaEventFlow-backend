@@ -3,7 +3,6 @@ from .auth import (
     OptionalJWTAuth,
     create_jwt_auth,
     create_optional_jwt_auth,
-    security,
 )
 
 __all__ = [
@@ -11,5 +10,4 @@ __all__ = [
     "OptionalJWTAuth",
     "create_jwt_auth",
     "create_optional_jwt_auth",
-    "security",
 ]

@@ -1,9 +1,12 @@
 from uuid import UUID
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.pagination import SPage, SPageParam
 from event.dependency.member import MemberUOWDep
+from event.filter.member import MemberFilter
 from ...schema.member import (
     MemberCreate,
     MemberPatch,
@@ -17,6 +20,16 @@ from event.service.member import MemberService
 router = APIRouter(prefix="/members", tags=["member"])
 
 logger = getLogger(__name__)
+
+
+@router.get("")
+async def get_members(
+    uow: MemberUOWDep,
+    user: UserJWTDep,
+    filter: MemberFilter = FilterDepends(MemberFilter),
+    page_param=Depends(SPageParam),
+) -> SPage[MemberRead]:
+    return await MemberService(uow).search(filter, page_param)
 
 
 @router.post("")

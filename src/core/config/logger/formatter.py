@@ -17,6 +17,8 @@ class ColorizedFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Formats the log record with color based on the log level"""
+        if not hasattr(record, "err_id"):
+            record.err_id = "-"
         log_fmt = FORMATS.get(record.levelno, FORMATS[logging.INFO])
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
@@ -27,6 +29,8 @@ class JSONFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Formats the log record as a JSON string."""
+        if not hasattr(record, "err_id"):
+            record.err_id = None
         log_entry = {
             "timestamp": self.formatTime(record),
             "level": record.levelname,
@@ -35,11 +39,11 @@ class JSONFormatter(logging.Formatter):
         }
         if record.exc_info:
             log_entry["exception"] = {
-                "type": str(record.exc_info[0].__name__),  # Название исключения
-                "message": str(record.exc_info[1]),  # Текст ошибки
+                "type": str(record.exc_info[0].__name__),
+                "message": str(record.exc_info[1]),
                 "traceback": "".join(
                     traceback.format_exception(*record.exc_info)
-                ),  # Полный traceback
+                ),
             }
         if err_id := getattr(record, "err_id", None):
             log_entry["err_id"] = str(err_id)
@@ -48,7 +52,7 @@ class JSONFormatter(logging.Formatter):
 
 class TGFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
-        err_id = html.escape(str(getattr(record, "err_id", "?")))
+        err_id = html.escape(str(getattr(record, "err_id", "-")))
         message = html.escape(record.getMessage())
         exc_type = (
             "" if record.exc_info is None else html.escape(record.exc_info[0].__name__)

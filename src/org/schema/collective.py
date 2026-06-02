@@ -13,7 +13,8 @@ class CollectiveCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class CollectiveRead(CollectiveCreate, UUIDMixin): ...
+class CollectiveRead(CollectiveCreate, UUIDMixin):
+    type: str = Field(default="collective", repr=False)
 
 
 class CollectivePatchData(CollectiveCreate, PatchModel):

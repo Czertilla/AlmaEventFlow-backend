@@ -1,11 +1,13 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.pagination import SPage, SPageParam
 from profile.exc.user import NonPersonalUserException
 from profile.dependency.profile import ProfileUOWDep
+from profile.filter.profile import ProfileFilter
 from profile.schema.profile import (
     ProfileCreate,
     ProfilePatch,
@@ -23,9 +25,10 @@ logger = getLogger(__name__)
 async def get_many(
     uow: ProfileUOWDep,
     user: UserJWTDep,
+    filter: ProfileFilter = FilterDepends(ProfileFilter),
     page_param=Depends(SPageParam),
 ) -> SPage[ProfileRead]:
-    return await ProfileService(uow).read_many(page_param)
+    return await ProfileService(uow).search(filter, page_param)
 
 
 @router.get("/my")
@@ -37,7 +40,7 @@ async def get_my_profile(
     return await ProfileService(uow).read(user.person_id)
 
 
-@router.post("/new")
+@router.post("")
 async def create_profile(
     profile: ProfileCreate, user: SuperUserJWTDep, uow: ProfileUOWDep
 ) -> ProfileRead:

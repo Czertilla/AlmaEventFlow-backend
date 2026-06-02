@@ -1,8 +1,10 @@
 from logging import getLogger
 
+from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
 
 from geo.exc.location import LocationNotExistsException
+from geo.filter.location import LocationFilter
 from geo.models.location import LocationORM
 from geo.schema.location import (
     LocationCreate,
@@ -73,3 +75,11 @@ class LocationService(BaseService[LocationUOW]):
         async with self.uow as uow:
             await self.uow.locations.delete_one(location_id)
             await uow.commit()
+
+    async def search(self, filter: LocationFilter, page_params: SPageParam = SPageParam()) -> SPage[LocationRead]:
+        async with self.uow as uow:
+            items, total = await uow.locations.search(filter, page_params)
+            return SPage(
+                items=[LocationRead.model_validate(item) for item in items],
+                pagination=SPagination(page=page_params.page, limit=page_params.limit, total=total),
+            )

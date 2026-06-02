@@ -7,7 +7,9 @@ from redis import Redis
 from core.utils.requirer import required_field
 from core.dependencies.redis import redis
 from core.service.base import BaseService, required_transaction
+from core.schema.pagination import SPage, SPageParam, SPagination
 from core.utils.s3_client import S3Client
+from event.filter.reward import RewardFilter
 from event.models.reward import RewardORM
 from event.schema.reward import (
     RewardCreate,
@@ -100,7 +102,7 @@ class RewardService(BaseService[RewardUOW]):
 
     async def patch(self, reward_patch: RewardPatch) -> RewardRead:
         async with self.uow as uow:
-            reward_data = reward_patch.model_dump(exclude_unset=True)
+            reward_data = reward_patch.model_dump()
             reward = await self._update(reward_patch.id, reward_data)
             result = RewardRead.model_validate(reward)
             if reward_patch.file:
@@ -132,3 +134,15 @@ class RewardService(BaseService[RewardUOW]):
             if file_id:
                 await self.s3.delete_file(str(file_id))
             await uow.commit()
+
+    async def search(
+        self, filter: RewardFilter, page_params: SPageParam = SPageParam()
+    ) -> SPage[RewardRead]:
+        async with self.uow as uow:
+            items, total = await uow.rewards.search(filter, page_params)
+            return SPage(
+                items=[RewardRead.model_validate(item) for item in items],
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
+            )

@@ -4,6 +4,7 @@ from uuid import UUID
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
 from profile.exc.profile import ProfileNotExistsException
+from profile.filter.profile import ProfileFilter
 from profile.models.profile import ProfileORM
 from profile.schema.profile import (
     ProfileCreate,
@@ -62,14 +63,11 @@ class ProfileService(BaseService[ProfileExtendedUOW]):
             profile = await self._read(profile_id)
             return ProfileRead.model_validate(profile)
 
-    async def read_many(
-        self, page_params: SPageParam = SPageParam()
+    async def search(
+        self, filter: ProfileFilter, page_params: SPageParam = SPageParam()
     ) -> SPage[ProfileRead]:
         async with self.uow as uow:
-            profiles, total = await uow.profiles.get_many_cron(
-                limit=page_params.limit,
-                offset=page_params.offset,
-            )
+            profiles, total = await uow.profiles.search(filter, page_params)
             return SPage(
                 items=[
                     ProfileRead.model_validate(profile) for profile in profiles

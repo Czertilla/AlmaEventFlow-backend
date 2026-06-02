@@ -1,13 +1,16 @@
-from typing import Annotated
 from uuid import UUID
 from fastapi import APIRouter, Depends
 from logging import getLogger
+
+from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
 from core.schema.pagination import SPage, SPageParam
 from profile.dependency.contact import ContactUOWDep, PersonContactUOWDep
 from profile.exc.user import NonPersonalUserException
 from profile.dependency.person import PersonUOWDep
+from profile.filter.contact import ContactFilter
+from profile.filter.person import PersonFilter
 from profile.schema.contact import (
     ContactCreate,
     ContactItemCreate,
@@ -33,12 +36,13 @@ logger = getLogger(__name__)
 
 
 @router.get("")
-async def get_many(
+async def search_person(
     uow: PersonUOWDep,
     user: UserJWTDep,
+    filter: PersonFilter = FilterDepends(PersonFilter),
     page_param=Depends(SPageParam),
 ) -> SPage[PersonItemRead]:
-    return await PersonService(uow).read_many(page_param)
+    return await PersonService(uow).search(filter, page_param)
 
 
 @router.get("/my")
@@ -74,12 +78,12 @@ async def patch_my_person(
 
 @router.get("/{person_id}")
 async def get_person(
-    person_id: UUID, user: ActiveUserJWTDep, uow: PersonUOWDep
+    person_id: UUID, uow: PersonUOWDep
 ) -> PersonRead:
     return await PersonService(uow).read(person_id)
 
 
-@router.post("/new")
+@router.post("")
 async def create_person(
     person: PersonCreate, user: UserJWTDep, uow: PersonUOWDep
 ) -> PersonRead:
@@ -108,7 +112,7 @@ async def delete_person(
 
 
 contact_router = APIRouter(
-prefix="/{person_id}/contacts", tags=["person", "contact"]
+    prefix="/{person_id}/contacts", tags=["person", "contact"]
 )
 
 
@@ -117,9 +121,12 @@ async def get_person_contacts(
     person_id: UUID,
     user: UserJWTDep,
     uow: ContactUOWDep,
+    filter: ContactFilter = FilterDepends(ContactFilter),
     page_params=Depends(SPageParam),
 ) -> SPage[ContactItemRead]:
-    return await ContactService(uow).read_many_by_person(person_id, page_params)
+    return await ContactService(uow).search_by_person(
+        person_id, filter, page_params
+    )
 
 
 @contact_router.post("")

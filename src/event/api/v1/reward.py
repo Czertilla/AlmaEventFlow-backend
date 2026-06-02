@@ -1,11 +1,14 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, UploadFile
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.dependencies.redis import RedisDep
 from core.dependencies.s3 import S3Dep
+from core.schema.pagination import SPage, SPageParam
 from event.dependency.reward import RewardUOWDep
+from event.filter.reward import RewardFilter
 from event.schema.reward import (
     RewardCreate,
     RewardCreateData,
@@ -20,6 +23,16 @@ from event.service.reward import RewardService
 router = APIRouter(prefix="/rewards", tags=["reward"])
 
 logger = getLogger(__name__)
+
+
+@router.get("")
+async def get_rewards(
+    uow: RewardUOWDep,
+    user: UserJWTDep,
+    filter: RewardFilter = FilterDepends(RewardFilter),
+    page_param=Depends(SPageParam),
+) -> SPage[RewardRead]:
+    return await RewardService(uow).search(filter, page_param)
 
 
 @router.post("")

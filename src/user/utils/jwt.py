@@ -4,8 +4,8 @@ from fastapi_users.jwt import generate_jwt
 from fastapi_users.models import UP
 
 
-class JwtStrategy(Base):
-    async def write_token(self, user: UP):
+class AccessStrategy(Base):
+    async def write_token(self, user: UP) -> str:
         data = {
             "sub": str(user.id),
             "aud": self.token_audience,

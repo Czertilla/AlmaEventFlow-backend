@@ -6,6 +6,7 @@ from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
     UpsertRepositoryMixin,
+    SearchRepositoryMixin,
 )
 
 from event.models.member import MemberORM as Model, MemberRoleAssociation
@@ -16,8 +17,12 @@ class MemberRepo(
     SQLAlchemyRepository[Model],
     IDRepositoryMixin[Model, UUID],
     UpsertRepositoryMixin[Model, UUID],
+    SearchRepositoryMixin[Model],
 ):
     model = Model
+
+    async def search(self, filter, pagination, *, options=None):
+        return await super().search(filter, pagination, options=options)
 
     async def create_member_with_roles(
         self, member_data: dict, role_ids: list[UUID]

@@ -12,7 +12,8 @@ class UniversityCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class UniversityRead(UniversityCreate, UUIDMixin): ...
+class UniversityRead(UniversityCreate, UUIDMixin):
+    type: str = Field(default="university", repr=False)
 
 
 class UniversityPatchData(UniversityCreate, PatchModel):

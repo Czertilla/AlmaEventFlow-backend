@@ -2,6 +2,7 @@ from logging import getLogger
 from uuid import UUID
 
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from core.service.base import BaseService, required_transaction
 from core.schema.pagination import SPage, SPageParam, SPagination
@@ -57,11 +58,16 @@ class EventService(BaseService[EventUOW]):
         event_data["status_id"] = await self._resolve_status_id(event_create.status)
         event = await self.uow.events.add_n_return(data=event_data)
         await self.uow.session.flush(objects=[event])
+        event = await self.uow.events.get_by_id(
+            event.id, options=(selectinload(EventORM.status_rel),)
+        )
         return event
 
     @required_transaction
     async def _read(self, event_id: UUID) -> EventORM | None:
-        event = await self.uow.events.get_by_id(event_id)
+        event = await self.uow.events.get_by_id(
+            event_id, options=(selectinload(EventORM.status_rel),)
+        )
         return event
 
     @required_transaction
@@ -69,6 +75,10 @@ class EventService(BaseService[EventUOW]):
         self, event_id: UUID, event_data: dict, *, flush: bool = False
     ) -> EventORM:
         event = await self.uow.events.update_one(event_id, event_data, flush)
+        if event:
+            event = await self.uow.events.get_by_id(
+                event.id, options=(selectinload(EventORM.status_rel),)
+            )
         return event
 
     @required_transaction

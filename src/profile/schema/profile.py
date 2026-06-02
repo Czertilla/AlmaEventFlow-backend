@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 from datetime import date
 
@@ -10,7 +11,7 @@ from profile.schema.organization import OrganizationRead
 
 class ProfileCreate(BaseModel, UUIDMixin):
     birthdate: date | None = None
-    workplace_id: int | None = None
+    workplace_id: UUID | None = None
     diet_id: int | None = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -24,7 +25,7 @@ class ProfileRead(ProfileCreate, UUIDMixin, TimestampMixin):
 
 class ProfilePatchData(PatchModel):
     birthdate: date | None = None
-    workplace_id: int | None = None
+    workplace_id: UUID | None = None
     diet_id: int | None = None
 
     model_config = ConfigDict(from_attributes=True)

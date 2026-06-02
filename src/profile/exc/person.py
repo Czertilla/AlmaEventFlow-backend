@@ -4,4 +4,4 @@ from core.utils.exc.http import VancedHTTPException
 
 class PersonNotExistsException(VancedHTTPException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = {"detail": "Person not found"}
+    detail = "PERSON_NOT_FOUND"

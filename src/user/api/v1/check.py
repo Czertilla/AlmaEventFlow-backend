@@ -1,8 +1,16 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
+from core.dependencies.auth import SuperUserJWTDep
 from core.schema.pagination import SPage, SPageParam
 from user.dependencies.user import get_user_uow
-from user.schemas.user import CheckResponse, UserRead
+from user.filter.user import UserFilter
+from user.schemas.user import (
+    CheckResponse,
+    InviteTokenCreate,
+    InviteTokenRead,
+    UserRead,
+)
 from user.services.user import UserService
 from user.uow.user import UserUOW
 
@@ -22,6 +30,16 @@ async def check_username(
 @router.get("")
 async def get_many(
     uow: Annotated[UserUOW, Depends(get_user_uow)],
+    filter: UserFilter = FilterDepends(UserFilter),
     page_param=Depends(SPageParam),
 ) -> SPage[UserRead]:
-    return await UserService(uow).get_many(page_param)
+    return await UserService(uow).search(filter, page_param)
+
+
+@router.post("/invite")
+async def create_invite_token(
+    uow: Annotated[UserUOW, Depends(get_user_uow)],
+    user: SuperUserJWTDep,
+    invite_data: InviteTokenCreate,
+) -> InviteTokenRead:
+    return await UserService(uow).create_invite_token(invite_data)

@@ -2,6 +2,8 @@ from logging import getLogger
 from uuid import UUID
 
 from core.service.base import BaseService, required_transaction
+from core.schema.pagination import SPage, SPageParam, SPagination
+from event.filter.stage import StageFilter
 from event.models.stage import EventStageORM
 from event.schema.stage import (
     StageCreate,
@@ -52,7 +54,7 @@ class StageService(BaseService[StageUOW]):
 
     async def patch(self, stage_patch: StagePatch) -> StageRead:
         async with self.uow as uow:
-            stage_data = stage_patch.model_dump(exclude_unset=True)
+            stage_data = stage_patch.model_dump()
             stage = await self._update(stage_patch.id, stage_data)
             result = StageRead.model_validate(stage)
             await uow.commit()
@@ -71,3 +73,15 @@ class StageService(BaseService[StageUOW]):
         async with self.uow as uow:
             await self._delete(stage_id)
             await uow.commit()
+
+    async def search(
+        self, filter: StageFilter, page_params: SPageParam = SPageParam()
+    ) -> SPage[StageRead]:
+        async with self.uow as uow:
+            items, total = await uow.stages.search(filter, page_params)
+            return SPage(
+                items=[StageRead.model_validate(item) for item in items],
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
+            )

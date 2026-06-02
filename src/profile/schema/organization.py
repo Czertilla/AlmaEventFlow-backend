@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-from core.utils.mixin.pydantic import PatchModel, IDMixin
+from core.utils.mixin.pydantic import PatchModel, UUIDMixin
 
 
 class OrganizationCreate(BaseModel):
@@ -10,7 +10,7 @@ class OrganizationCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class OrganizationRead(OrganizationCreate, IDMixin): ...
+class OrganizationRead(OrganizationCreate, UUIDMixin): ...
 
 
 class OrganizationPatchData(PatchModel):
@@ -18,10 +18,10 @@ class OrganizationPatchData(PatchModel):
     acronym: str | None = Field(max_length=16, default=None)
 
 
-class OrganizationPatch(OrganizationPatchData, IDMixin): ...
+class OrganizationPatch(OrganizationPatchData, UUIDMixin): ...
 
 
 class OrganizationPutData(OrganizationCreate): ...
 
 
-class OrganizationPut(OrganizationPutData, IDMixin): ...
+class OrganizationPut(OrganizationPutData, UUIDMixin): ...

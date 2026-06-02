@@ -2,12 +2,13 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from core.utils.mixin.pydantic import PatchModel, UUIDMixin
-from event.schema.role import RolePreview, RoleRead
+from event.schema.role import RolePreview
 
 
 class MemberCreateData(BaseModel):
     person_id: UUID
-    roles: list[UUID] = Field(max_length=25)
+    roles: list[UUID] = Field(max_length=25, default=[])
+    is_active: bool = True
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -22,6 +23,7 @@ class MemberRead(MemberCreate, UUIDMixin):
 
 class MemberPatchData(PatchModel):
     roles: list[UUID] | None = Field(max_length=25, default=None)
+    is_active: bool = None
 
 
 class MemberPatch(MemberPatchData, UUIDMixin): ...
@@ -29,6 +31,7 @@ class MemberPatch(MemberPatchData, UUIDMixin): ...
 
 class MemberPutData(BaseModel):
     roles: list[UUID] = Field(max_length=25, default=[])
+    is_active: bool = True
 
     model_config = ConfigDict(from_attributes=True)
 

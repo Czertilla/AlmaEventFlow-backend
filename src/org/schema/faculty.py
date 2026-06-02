@@ -13,7 +13,8 @@ class FacultyCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FacultyRead(FacultyCreate, UUIDMixin): ...
+class FacultyRead(FacultyCreate, UUIDMixin):
+    type: str = Field(default="faculty", repr=False)
 
 
 class FacultyPatchData(FacultyCreate, PatchModel):

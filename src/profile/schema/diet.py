@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-from core.utils.mixin.pydantic import PatchModel, UUIDMixin
+from core.utils.mixin.pydantic import IDMixin, PatchModel
 
 
 class DietCreate(BaseModel):
@@ -10,7 +10,7 @@ class DietCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class DietRead(DietCreate, UUIDMixin): ...
+class DietRead(DietCreate, IDMixin): ...
 
 
 class DietPatchData(PatchModel):
@@ -18,10 +18,10 @@ class DietPatchData(PatchModel):
     description: str | None = Field(max_length=512, default=None)
 
 
-class DietPatch(DietPatchData, UUIDMixin): ...
+class DietPatch(DietPatchData, IDMixin): ...
 
 
 class DietPutData(DietCreate): ...
 
 
-class DietPut(DietPutData, UUIDMixin): ...
+class DietPut(DietPutData, IDMixin): ...

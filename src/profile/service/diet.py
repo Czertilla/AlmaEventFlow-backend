@@ -1,8 +1,10 @@
 from logging import getLogger
 
+from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
 
 from profile.exc.diet import DietNotExistsException
+from profile.filter.diet import DietFilter
 from profile.models.diet import DietORM
 from profile.schema.diet import (
     DietCreate,
@@ -36,6 +38,18 @@ class DietService(BaseService[DietUOW]):
         if diet is None:
             raise DietNotExistsException()
         return diet
+
+    async def search(
+        self, filter: DietFilter, page_params: SPageParam = SPageParam()
+    ) -> SPage[DietRead]:
+        async with self.uow as uow:
+            diets, total = await uow.diets.search(filter, page_params)
+            return SPage(
+                items=[DietRead.model_validate(diet) for diet in diets],
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
+            )
 
     async def create(self, diet_create: DietCreate) -> DietRead:
         async with self.uow as uow:

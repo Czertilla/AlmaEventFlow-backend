@@ -2,8 +2,10 @@ from logging import getLogger
 from uuid import UUID
 
 from core.schema.message.org import OrganizationData
+from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
 from org.exc.faculty import FacultyNotExistsException
+from org.filter.faculty import FacultyFilter
 from org.models.faculty import FacultyORM
 from org.models.organization import OrganizationORM
 from org.schema.faculty import (
@@ -59,7 +61,7 @@ class FacultyService(BaseService[FacultyUOW]):
             )
             await uow.commit()
         await on_organization_created(
-            OrganizationData(**result.model_dump(), type="faculty")
+            OrganizationData(**result.model_dump(exclude={"type"}), type="faculty")
         )
         return result
 
@@ -75,22 +77,36 @@ class FacultyService(BaseService[FacultyUOW]):
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(**result.model_dump(), type="faculty")
+            OrganizationData(**result.model_dump(exclude={"type"}), type="faculty")
         )
         return result
 
     async def put(self, faculty_put: FacultyPut) -> FacultyRead:
         async with self.uow as uow:
             result = FacultyRead.model_validate(
-                await self.uow.session.merge(FacultyORM(faculty_put))
+                await self.uow.faculties.upsert(faculty_put.model_dump())
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(
-                OrganizationData(**result.model_dump(), type="faculty")
-            )
+            OrganizationData(**result.model_dump())
         )
         return result
+
+    async def search(
+        self, filter: FacultyFilter, pagination: SPageParam
+    ) -> SPage[FacultyRead]:
+        async with self.uow:
+            items, total = await self.uow.faculties.search(
+                filter, pagination
+            )
+            return SPage(
+                items=[FacultyRead.model_validate(item) for item in items],
+                pagination=SPagination.sql_validate(
+                    page=pagination.page,
+                    limit=pagination.limit,
+                    total=total,
+                ),
+            )
 
     async def delete(self, faculty_id: UUID) -> None:
         async with self.uow as uow:

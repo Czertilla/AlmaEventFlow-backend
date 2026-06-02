@@ -1,11 +1,12 @@
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import update
 from sqlalchemy.orm import selectinload, joinedload, with_loader_criteria
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
+    SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
 
@@ -19,6 +20,7 @@ class ProfileRepo(
     SQLAlchemyRepository[Model],
     IDRepositoryMixin[Model, UUID],
     UpsertRepositoryMixin[Model, UUID],
+    SearchRepositoryMixin[Model],
 ):
     model = Model
 
@@ -54,20 +56,7 @@ class ProfileRepo(
     async def upsert(self, data, options=all_options):
         return await super().upsert(data, options)
 
-    async def get_many_cron(
-        self,
-        offset: int,
-        limit: int,
-    ):
-        stmt = (
-            select(Model)
-            .order_by(Model.edited_at)
-            .order_by(Model.created_at)
-            .limit(limit)
-            .offset(offset)
-            .options(*self.all_options)
-        )
-        return (
-            (await self.execute(stmt)).unique().scalars().all(),
-            await self.count(),
+    async def search(self, filter, pagination, *, options=None):
+        return await super().search(
+            filter, pagination, options=options or self.all_options
         )

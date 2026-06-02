@@ -1,6 +1,8 @@
 from typing import Any, Callable, Optional, TypeVar, Union
 from functools import wraps
 from logging import getLogger
+from datetime import datetime, timedelta
+import hashlib
 import uuid
 import jwt
 from fastapi.security import OAuth2PasswordRequestForm
@@ -18,12 +20,26 @@ from fastapi_users.jwt import generate_jwt, decode_jwt
 from pydantic import BaseModel
 
 from core.schema.pagination import SPage, SPageParam, SPagination
-from core.service.base import BaseService, T, required_transaction, autocommit
+from core.service.base import BaseService, T, required_transaction
+from core.config.settings import settings
 
-from user.config.settings import settings
-from user.exceptions.user import UsernameAlreadyExists
+from user.exceptions.user import (
+    UsernameAlreadyExists,
+    InviteTokenInvalid,
+    InviteTokenExpired,
+    PersonAlreadyHasAccount,
+)
+from user.exceptions.profile import PersonNotExistsException
+from user.filter.user import UserFilter
 from user.models.user import UserORM
-from user.schemas.user import OAuthAccountDict, UserOauthAccount, UserRead
+from user.schemas.user import (
+    OAuthAccountDict,
+    UserOauthAccount,
+    UserRead,
+    InviteTokenCreate,
+    InviteTokenRead,
+    InviteTokenData,
+)
 from user.uow.user import UserUOW
 from user.api.kafka.pub.mail import send_verify_message
 
@@ -64,10 +80,12 @@ class UserService(
         def decorator(func) -> Callable[..., Schema]:
             @wraps(func)
             async def wrapper(self: "UserService", *args, **kwargs) -> UserRead:
-                async with self.uow:
-                    return schema_type.model_validate(
+                async with self.uow as uow:
+                    result = schema_type.model_validate(
                         await func(self, *args, **kwargs)
                     )
+                    await uow.commit()
+                    return result
 
             return wrapper
 
@@ -105,7 +123,6 @@ class UserService(
         return await self._get_by_oauth_account(oauth, account_id)
 
     @user_transaction(UserRead)
-    @autocommit
     async def create(
         self,
         user_create: schemas.UC,
@@ -117,13 +134,20 @@ class UserService(
             raise exceptions.UserAlreadyExists()
         if await self.uow.users.exists_username(user_create.username):
             raise UsernameAlreadyExists()
+        invite_token_data = None
+        invite_token = getattr(user_create, "invite_token", None)
+        if invite_token:
+            invite_token_data = await self._validate_invite_token(invite_token)
         user_dict = (
             user_create.create_update_dict()
             if safe
             else user_create.create_update_dict_superuser()
         )
         password = user_dict.pop("password")
+        user_dict.pop("invite_token", None)
         user_dict["hashed_password"] = self.password_helper.hash(password)
+        if invite_token_data:
+            user_dict["person_id"] = invite_token_data.person_id
         created_user = await self.uow.users.create(user_dict)
         await self.on_after_register(created_user, request)
         return created_user
@@ -193,7 +217,6 @@ class UserService(
         return user
 
     @user_transaction(UserOauthAccount)
-    @autocommit
     async def oauth_callback(
         self,
         oauth_name: str,
@@ -241,7 +264,6 @@ class UserService(
         return user
 
     @user_transaction(UserOauthAccount)
-    @autocommit
     async def oauth_associate_callback(
         self,
         user: models.UOAP,
@@ -295,7 +317,6 @@ class UserService(
         return await self.on_after_request_verify(user, token, request)
 
     @user_transaction(UserRead)
-    @autocommit
     async def verify(
         self, token: str, request: Optional[Request] = None
     ) -> UserRead:
@@ -328,14 +349,11 @@ class UserService(
         await self.on_after_verify(verified_user, request)
         return verified_user
 
-    async def get_many(
-        self, page_params: SPageParam = SPageParam()
+    async def search(
+        self, filter: UserFilter, page_params: SPageParam = SPageParam()
     ) -> SPage[UserRead]:
         async with self.uow as uow:
-            users, total = await uow.users.get_many_cron(
-                limit=page_params.limit,
-                offset=page_params.offset,
-            )
+            users, total = await uow.users.search(filter, page_params)
             return SPage(
                 items=[UserRead.model_validate(user) for user in users],
                 pagination=SPagination(
@@ -366,7 +384,6 @@ class UserService(
         await self.on_after_forgot_password(user, token, request)
 
     @user_transaction(UserRead)
-    @autocommit
     async def reset_password(
         self, token: str, password: str, request: Optional[Request] = None
     ) -> UserRead:
@@ -400,7 +417,6 @@ class UserService(
         return updated_user
 
     @user_transaction(UserRead)
-    @autocommit
     async def update(
         self,
         user_update: schemas.UU,
@@ -476,7 +492,13 @@ class UserService(
         request: Optional[Request] = None,
         response: Optional[Response] = None,
     ) -> None:
-        return  # pragma: no cover
+        if response is None:
+            return
+        from user.services.auth import set_refresh_cookie
+        refresh_already = getattr(response, "_refresh_token_created", False)
+        if not refresh_already:
+            raw_refresh, _ = await self.create_session(user.id)
+            set_refresh_cookie(response, raw_refresh)
 
     async def on_before_delete(
         self, user: models.UP, request: Optional[Request] = None
@@ -533,6 +555,7 @@ class UserService(
                 validated_update_dict["hashed_password"] = (
                     self.password_helper.hash(value)
                 )
+                await self.uow.sessions.revoke_all_for_user(user.id)
             elif (
                 field == "username"
                 and value is not None
@@ -545,3 +568,118 @@ class UserService(
             else:
                 validated_update_dict[field] = value
         return await self.uow.users.update(user, validated_update_dict)
+
+    async def create_invite_token(
+        self, invite_data: InviteTokenCreate
+    ) -> InviteTokenRead:
+        async with self.uow:
+            person = await self.uow.persons.get_by_id(invite_data.person_id)
+            if person is None:
+                raise PersonNotExistsException()
+            has_account = await self.uow.users.exists_person(invite_data.person_id)
+            if has_account:
+                raise PersonAlreadyHasAccount()
+        lifetime = invite_data.expires_in or settings.INVITE_TOKEN_LIFETIME
+        token_data = InviteTokenData(
+            person_id=invite_data.person_id,
+            exp=lifetime,
+        )
+        token = generate_jwt(
+            token_data.model_dump(mode="json"),
+            settings.USER_SECRET.get_secret_value(),
+            lifetime,
+        )
+        from datetime import datetime, timezone
+        expires_at = int(datetime.now(timezone.utc).timestamp()) + lifetime
+        return InviteTokenRead(token=token, expires_at=expires_at)
+
+    async def _validate_invite_token(self, token: str) -> InviteTokenData:
+        try:
+            data = decode_jwt(
+                token,
+                settings.USER_SECRET.get_secret_value(),
+                ["invite"],
+            )
+        except jwt.ExpiredSignatureError:
+            raise InviteTokenExpired()
+        except jwt.PyJWTError:
+            raise InviteTokenInvalid()
+        try:
+            token_data = InviteTokenData(**data)
+        except Exception:
+            raise InviteTokenInvalid()
+        person = await self.uow.persons.get_by_id(token_data.person_id)
+        if person is None:
+            raise PersonNotExistsException()
+        has_account = await self.uow.users.exists_person(token_data.person_id)
+        if has_account:
+            raise PersonAlreadyHasAccount()
+        return token_data
+
+    async def create_session(
+        self, user_id: uuid.UUID
+    ) -> tuple[str, str]:
+        from user.utils.token import generate_refresh_token
+
+        raw, hashed = generate_refresh_token()
+        async with self.uow as uow:
+            await uow.sessions.add_one({
+                "token_hash": hashed,
+                "user_id": user_id,
+                "expires_at": datetime.utcnow()
+                + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRE_SECONDS),
+            })
+            await uow.commit()
+        return raw, hashed
+
+    async def rotate_session(
+        self, raw_token: str
+    ) -> tuple[str, str, uuid.UUID] | None:
+        from user.utils.token import generate_refresh_token
+
+        token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+        async with self.uow as uow:
+            stored = await uow.sessions.get_by_token_hash(token_hash)
+            if stored is None:
+                return None
+            user_id = stored.user_id
+            if stored.expires_at < datetime.utcnow():
+                return None
+            if stored.is_revoked:
+                await uow.sessions.revoke_all_for_user(user_id)
+                await uow.commit()
+                return None
+            await uow.sessions.revoke(stored.id)
+            new_raw, new_hashed = generate_refresh_token()
+            await uow.sessions.add_one({
+                "token_hash": new_hashed,
+                "user_id": user_id,
+                "expires_at": datetime.utcnow()
+                + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRE_SECONDS),
+            })
+            await uow.commit()
+        return new_raw, new_hashed, user_id
+
+    async def revoke_session(self, raw_token: str) -> None:
+        token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+        async with self.uow as uow:
+            stored = await uow.sessions.get_by_token_hash(token_hash)
+            if stored is not None:
+                await uow.sessions.revoke(stored.id)
+                await uow.commit()
+
+    async def revoke_all_user_sessions(self, user_id: uuid.UUID) -> None:
+        async with self.uow as uow:
+            await uow.sessions.revoke_all_for_user(user_id)
+            await uow.commit()
+
+    async def get_session_from_request(
+        self, request: Request
+    ) -> str | None:
+        return request.cookies.get(settings.REFRESH_COOKIE_NAME)
+
+    async def cleanup_expired_sessions(self) -> int:
+        async with self.uow as uow:
+            count = await uow.sessions.delete_expired()
+            await uow.commit()
+        return count

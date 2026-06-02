@@ -1,5 +1,6 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
@@ -7,6 +8,7 @@ from core.schema.pagination import SPage, SPageParam
 from profile.dependency.profile import ProfilePassportUOWDep
 from profile.exc.user import NonPersonalUserException
 from profile.dependency.passport import PassportUOWDep
+from profile.filter.passport import PassportFilter
 from profile.schema.passport import (
     PassportCreate,
     PassportItemCreate,
@@ -34,13 +36,14 @@ logger = getLogger(__name__)
 async def get_my_passports(
     user: UserJWTDep,
     uow: ProfilePassportUOWDep,
+    filter: PassportFilter = FilterDepends(PassportFilter),
     page_params=Depends(SPageParam),
 ) -> SPage[PassportItemRead]:
     if user.person_id is None:
         raise NonPersonalUserException()
     await ProfileService(uow).ensure_existance(user.person_id)
-    return await PassportService(uow).read_many_by_profile(
-        user.person_id, page_params
+    return await PassportService(uow).search_by_profile(
+        user.person_id, filter, page_params
     )
 
 

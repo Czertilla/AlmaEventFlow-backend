@@ -1,61 +1,62 @@
-from core.utils.exc.http import BaseHTTPException
+from fastapi import status
+from core.utils.exc.http import VancedHTTPException
 
 
-class EventNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Event not found"
+class EventNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "EVENT_NOT_FOUND"
 
 
-class ParticipationNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Participation not found"
+class ParticipationNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "PARTICIPATION_NOT_FOUND"
 
 
-class LocationNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Location not found"
+class LocationNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "LOCATION_NOT_FOUND"
 
 
-class CollectiveNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Collective not found"
+class CollectiveNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "COLLECTIVE_NOT_FOUND"
 
 
-class StageNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Stage not found"
+class StageNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "STAGE_NOT_FOUND"
 
 
-class RewardNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Reward not found"
+class RewardNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "REWARD_NOT_FOUND"
 
 
-class LinkNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Link not found"
+class LinkNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "LINK_NOT_FOUND"
 
 
-class OrganizationNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Organization not found"
+class OrganizationNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "ORGANIZATION_NOT_FOUND"
 
 
-class RoleNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Role not found"
+class RoleNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "ROLE_NOT_FOUND"
 
 
-class MemberNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Member not found"
+class MemberNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "MEMBER_NOT_FOUND"
 
 
-class PersonNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Person not found"
+class PersonNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "PERSON_NOT_FOUND"
 
 
-class AttendanceNotExistsException(BaseHTTPException):
-    status_code = 404
-    detail = "Attendance not found"
+class AttendanceNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "ATTENDANCE_NOT_FOUND"

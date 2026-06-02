@@ -1,8 +1,13 @@
 from abc import ABC, abstractmethod
+from sqlalchemy import Result
 from typing import Any
 
 
 class AbstractRepository(ABC):
+    @abstractmethod
+    async def execute(self, stmt, flush: bool = False) -> Result:
+        raise NotImplementedError
+    
     @abstractmethod
     def add_one() -> None:
         raise NotImplementedError

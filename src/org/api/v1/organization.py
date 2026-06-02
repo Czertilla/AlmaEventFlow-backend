@@ -1,9 +1,12 @@
 from uuid import UUID
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.pagination import SPage, SPageParam
 from org.dependency.organization import OrganizationUOWDep
+from org.filter.organization import OrganizationFilter
 from org.schema.organization import (
     OrganizationCreate,
     OrganizationPatch,
@@ -17,7 +20,17 @@ router = APIRouter(prefix="/organizations", tags=["organization"])
 logger = getLogger(__name__)
 
 
-@router.post("/new")
+@router.get("")
+async def list_organizations(
+    uow: OrganizationUOWDep,
+    user: UserJWTDep,
+    filter: OrganizationFilter = FilterDepends(OrganizationFilter),
+    page_param=Depends(SPageParam),
+) -> SPage[OrganizationRead]:
+    return await OrganizationService(uow).search(filter, page_param)
+
+
+@router.post("")
 async def create_organization(
     organization: OrganizationCreate,
     user: SuperUserJWTDep,

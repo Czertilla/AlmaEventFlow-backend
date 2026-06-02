@@ -1,4 +1,3 @@
-from functools import wraps
 from logging import getLogger
 from uuid import UUID
 
@@ -11,6 +10,7 @@ from profile.api.kafka.pub.person import (
     on_person_updated,
 )
 from profile.exc.person import PersonNotExistsException
+from profile.filter.person import PersonFilter
 from profile.models.person import PersonORM
 from profile.schema.person import (
     PersonCreate,
@@ -76,14 +76,11 @@ class PersonService(BaseService[PersonUOW]):
         async with self.uow:
             return PersonRead.model_validate(await self._read(person_id, True))
 
-    async def read_many(
-        self, page_params: SPageParam = SPageParam()
+    async def search(
+        self, filter: PersonFilter, page_params: SPageParam = SPageParam()
     ) -> SPage[PersonItemRead]:
         async with self.uow as uow:
-            persons, total = await uow.persons.get_many_cron(
-                limit=page_params.limit,
-                offset=page_params.offset,
-            )
+            persons, total = await uow.persons.search(filter, page_params)
             return SPage(
                 items=[
                     PersonItemRead.model_validate(person) for person in persons

@@ -2,6 +2,8 @@ from logging import getLogger
 from uuid import UUID
 
 from core.service.base import BaseService, required_transaction
+from core.schema.pagination import SPage, SPageParam, SPagination
+from event.filter.role import RoleFilter
 from event.models.role import RoleORM
 from event.schema.role import (
     RoleCreate,
@@ -52,7 +54,7 @@ class RoleService(BaseService[RoleUOW]):
 
     async def patch(self, role_patch: RolePatch) -> RoleRead:
         async with self.uow as uow:
-            role_data = role_patch.model_dump(exclude_unset=True)
+            role_data = role_patch.model_dump()
             role = await self._update(role_patch.id, role_data)
             result = RoleRead.model_validate(role)
             await uow.commit()
@@ -71,3 +73,15 @@ class RoleService(BaseService[RoleUOW]):
         async with self.uow as uow:
             await self._delete(role_id)
             await uow.commit()
+
+    async def search(
+        self, filter: RoleFilter, page_params: SPageParam = SPageParam()
+    ) -> SPage[RoleRead]:
+        async with self.uow as uow:
+            items, total = await uow.roles.search(filter, page_params)
+            return SPage(
+                items=[RoleRead.model_validate(item) for item in items],
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
+            )

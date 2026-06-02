@@ -1,8 +1,10 @@
 from logging import getLogger
 
+from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
 
 from geo.exc.address import AddressNotExistsException
+from geo.filter.address import AddressFilter
 from geo.models.address import AddressORM
 from geo.schema.address import (
     AddressCreate,
@@ -12,7 +14,7 @@ from geo.schema.address import (
 )
 from geo.uow.address import AddressUOW
 
-logger = getLogger()
+logger = getLogger(__name__)
 
 
 class AddressService(BaseService[AddressUOW]):
@@ -75,3 +77,11 @@ class AddressService(BaseService[AddressUOW]):
         async with self.uow as uow:
             await self.uow.addresses.delete_one(address_id)
             await uow.commit()
+
+    async def search(self, filter: AddressFilter, page_params: SPageParam = SPageParam()) -> SPage[AddressRead]:
+        async with self.uow as uow:
+            items, total = await uow.addresses.search(filter, page_params)
+            return SPage(
+                items=[AddressRead.model_validate(item) for item in items],
+                pagination=SPagination(page=page_params.page, limit=page_params.limit, total=total),
+            )

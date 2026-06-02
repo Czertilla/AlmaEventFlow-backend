@@ -1,7 +1,8 @@
+from uuid import UUID
 from pydantic import BaseModel, ConfigDict
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
-from core.utils.mixin.pydantic import PatchModel, UUIDMixin
+from core.utils.mixin.pydantic import PatchModel
 
 if TYPE_CHECKING:
     from .event import EventRead
@@ -16,7 +17,7 @@ class OrganizationCreate(BaseModel):
 
 
 class OrganizationRead(OrganizationCreate):
-    id: int
+    id: UUID
     events: list["EventRead"] = []
 
 
@@ -29,11 +30,11 @@ class OrganizationPatchData(PatchModel):
 
 
 class OrganizationPatch(OrganizationPatchData):
-    id: int
+    id: UUID
 
 
 class OrganizationPutData(OrganizationCreate): ...
 
 
 class OrganizationPut(OrganizationPutData):
-    id: int
+    id: UUID

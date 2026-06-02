@@ -2,6 +2,8 @@ from logging import getLogger
 from uuid import UUID
 
 from core.service.base import BaseService, required_transaction
+from core.schema.pagination import SPage, SPageParam, SPagination
+from event.filter.link import LinkFilter
 from event.models.link import EventLinkORM
 from event.schema.link import (
     LinkCreate,
@@ -52,7 +54,7 @@ class LinkService(BaseService[LinkUOW]):
 
     async def patch(self, link_patch: LinkPatch) -> LinkRead:
         async with self.uow as uow:
-            link_data = link_patch.model_dump(exclude_unset=True)
+            link_data = link_patch.model_dump()
             link = await self._update(link_patch.id, link_data)
             result = LinkRead.model_validate(link)
             await uow.commit()
@@ -71,3 +73,15 @@ class LinkService(BaseService[LinkUOW]):
         async with self.uow as uow:
             await self._delete(link_id)
             await uow.commit()
+
+    async def search(
+        self, filter: LinkFilter, page_params: SPageParam = SPageParam()
+    ) -> SPage[LinkRead]:
+        async with self.uow as uow:
+            items, total = await uow.links.search(filter, page_params)
+            return SPage(
+                items=[LinkRead.model_validate(item) for item in items],
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
+            )

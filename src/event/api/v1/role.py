@@ -1,9 +1,12 @@
 from uuid import UUID
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.pagination import SPage, SPageParam
 from event.dependency.role import RoleUOWDep
+from event.filter.role import RoleFilter
 from ...schema.role import (
     RoleCreate,
     RolePatch,
@@ -17,6 +20,16 @@ from event.service.role import RoleService
 router = APIRouter(prefix="/roles", tags=["role"])
 
 logger = getLogger(__name__)
+
+
+@router.get("")
+async def get_roles(
+    uow: RoleUOWDep,
+    user: UserJWTDep,
+    filter: RoleFilter = FilterDepends(RoleFilter),
+    page_param=Depends(SPageParam),
+) -> SPage[RoleRead]:
+    return await RoleService(uow).search(filter, page_param)
 
 
 @router.post("")
