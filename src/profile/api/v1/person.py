@@ -5,6 +5,7 @@ from logging import getLogger
 from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
+from core.schema.error import ErrorCode, auth_responses, detail_400, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from profile.dependency.contact import ContactUOWDep, PersonContactUOWDep
 from profile.exc.user import NonPersonalUserException
@@ -35,7 +36,7 @@ router = APIRouter(prefix="/persons", tags=["person"])
 logger = getLogger(__name__)
 
 
-@router.get("")
+@router.get("", responses={**auth_responses()})
 async def search_person(
     uow: PersonUOWDep,
     user: UserJWTDep,
@@ -45,7 +46,7 @@ async def search_person(
     return await PersonService(uow).search(filter, page_param)
 
 
-@router.get("/my")
+@router.get("/my", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def get_my_person(
     user: ActiveUserJWTDep, uow: PersonUOWDep
 ) -> PersonRead:
@@ -54,7 +55,7 @@ async def get_my_person(
     return await PersonService(uow).read(user.person_id)
 
 
-@router.put("/my")
+@router.put("/my", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def put_my_person(
     person_data: PersonPutData, user: UserJWTDep, uow: PersonUOWDep
 ) -> PersonRead:
@@ -65,7 +66,7 @@ async def put_my_person(
     )
 
 
-@router.patch("/my")
+@router.patch("/my", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def patch_my_person(
     person_data: PersonPatchData, user: UserJWTDep, uow: PersonUOWDep
 ) -> PersonRead:
@@ -76,35 +77,35 @@ async def patch_my_person(
     )
 
 
-@router.get("/{person_id}")
+@router.get("/{person_id}", responses={**auth_responses(), **entity_not_found_responses("person")})
 async def get_person(
     person_id: UUID, uow: PersonUOWDep
 ) -> PersonRead:
     return await PersonService(uow).read(person_id)
 
 
-@router.post("")
+@router.post("", responses={**auth_responses()})
 async def create_person(
     person: PersonCreate, user: UserJWTDep, uow: PersonUOWDep
 ) -> PersonRead:
     return await PersonService(uow).create(person)
 
 
-@router.put("/{person_id}")
+@router.put("/{person_id}", responses={**auth_responses(), **entity_not_found_responses("person")})
 async def put_person(
     person: PersonPut, user: SuperUserJWTDep, uow: PersonUOWDep
 ) -> PersonRead:
     return await PersonService(uow).put(person)
 
 
-@router.patch("/{person_id}")
+@router.patch("/{person_id}", responses={**auth_responses(), **entity_not_found_responses("person")})
 async def patch_person(
     person: PersonPatch, user: SuperUserJWTDep, uow: PersonUOWDep
 ) -> PersonRead:
     return await PersonService(uow).patch(person)
 
 
-@router.delete("/{person_id}")
+@router.delete("/{person_id}", responses={**auth_responses(), **entity_not_found_responses("person")})
 async def delete_person(
     person_id: UUID, user: SuperUserJWTDep, uow: PersonUOWDep
 ) -> None:
@@ -116,7 +117,7 @@ contact_router = APIRouter(
 )
 
 
-@contact_router.get("")
+@contact_router.get("", responses={**auth_responses()})
 async def get_person_contacts(
     person_id: UUID,
     user: UserJWTDep,
@@ -129,7 +130,7 @@ async def get_person_contacts(
     )
 
 
-@contact_router.post("")
+@contact_router.post("", responses={**auth_responses()})
 async def create_person_contact(
     person_id: UUID,
     contact: ContactItemCreate,

@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from logging import getLogger
 
 from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
+from core.schema.error import auth_responses, entity_not_found_responses
 from profile.dependency.student import StudentUOWDep
 from profile.schema.student import (
     StudentCreate,
@@ -35,21 +36,21 @@ router = APIRouter(prefix="/students", tags=["student"])
 logger = getLogger(__name__)
 
 
-@router.get("/{student_id}")
+@router.get("/{student_id}", responses={**auth_responses(), **entity_not_found_responses("student")})
 async def get_student(
     student_id: UUID, user: ActiveUserJWTDep, uow: StudentUOWDep
 ) -> StudentRead:
     return await StudentService(uow).read(student_id)
 
 
-@router.post("")
+@router.post("", responses={**auth_responses()})
 async def create_student(
     student: StudentCreate, user: UserJWTDep, uow: StudentUOWDep
 ) -> StudentRead:
     return await StudentService(uow).create(student)
 
 
-@router.put("/{student_id}")
+@router.put("/{student_id}", responses={**auth_responses(), **entity_not_found_responses("student")})
 async def put_student(
     student_id: UUID,
     student: StudentPutData,
@@ -61,7 +62,7 @@ async def put_student(
     )
 
 
-@router.patch("/{student_id}")
+@router.patch("/{student_id}", responses={**auth_responses(), **entity_not_found_responses("student")})
 async def patch_student(
     student_id: UUID,
     student: StudentPatchData,
@@ -73,7 +74,7 @@ async def patch_student(
     )
 
 
-@router.delete("/{student_id}")
+@router.delete("/{student_id}", responses={**auth_responses(), **entity_not_found_responses("student")})
 async def delete_student(
     student_id: UUID, user: SuperUserJWTDep, uow: StudentUOWDep
 ) -> None:
@@ -84,21 +85,21 @@ async def delete_student(
 degree_router = APIRouter(prefix="/degrees", tags=["student", "degree"])
 
 
-@degree_router.get("/{degree_id}")
+@degree_router.get("/{degree_id}", responses={**auth_responses(), **entity_not_found_responses("student_degree")})
 async def get_student_degree(
     degree_id: UUID, user: UserJWTDep, uow: StudentUOWDep
 ) -> StudentDegreeRead:
     return await StudentDegreeService(uow).read(degree_id)
 
 
-@degree_router.post("")
+@degree_router.post("", responses={**auth_responses()})
 async def create_student_degree(
     degree: StudentDegreeCreate, user: SuperUserJWTDep, uow: StudentUOWDep
 ) -> StudentDegreeRead:
     return await StudentDegreeService(uow).create(degree)
 
 
-@degree_router.put("/{degree_id}")
+@degree_router.put("/{degree_id}", responses={**auth_responses(), **entity_not_found_responses("student_degree")})
 async def put_student_degree(
     degree_id: UUID,
     degree: StudentDegreePutData,
@@ -110,7 +111,7 @@ async def put_student_degree(
     )
 
 
-@degree_router.patch("/{degree_id}")
+@degree_router.patch("/{degree_id}", responses={**auth_responses(), **entity_not_found_responses("student_degree")})
 async def patch_student_degree(
     degree_id: UUID,
     degree: StudentDegreePatchData,
@@ -122,7 +123,7 @@ async def patch_student_degree(
     )
 
 
-@degree_router.delete("/{degree_id}")
+@degree_router.delete("/{degree_id}", responses={**auth_responses(), **entity_not_found_responses("student_degree")})
 async def delete_student_degree(
     degree_id: UUID, user: SuperUserJWTDep, uow: StudentUOWDep
 ) -> None:
@@ -133,21 +134,21 @@ async def delete_student_degree(
 group_router = APIRouter(prefix="/groups", tags=["student", "group"])
 
 
-@group_router.get("/{group_id}")
+@group_router.get("/{group_id}", responses={**auth_responses(), **entity_not_found_responses("student_group")})
 async def get_student_group(
     group_id: UUID, user: UserJWTDep, uow: StudentUOWDep
 ) -> StudentGroupRead:
     return await StudentGroupService(uow).read(group_id)
 
 
-@group_router.post("")
+@group_router.post("", responses={**auth_responses()})
 async def create_student_group(
     group: StudentGroupCreate, user: SuperUserJWTDep, uow: StudentUOWDep
 ) -> StudentGroupRead:
     return await StudentGroupService(uow).create(group)
 
 
-@group_router.put("/{group_id}")
+@group_router.put("/{group_id}", responses={**auth_responses(), **entity_not_found_responses("student_group")})
 async def put_student_group(
     group_id: UUID,
     group: StudentGroupPutData,
@@ -159,7 +160,7 @@ async def put_student_group(
     )
 
 
-@group_router.patch("/{group_id}")
+@group_router.patch("/{group_id}", responses={**auth_responses(), **entity_not_found_responses("student_group")})
 async def patch_student_group(
     group_id: UUID,
     group: StudentGroupPatchData,
@@ -171,7 +172,7 @@ async def patch_student_group(
     )
 
 
-@group_router.delete("/{group_id}")
+@group_router.delete("/{group_id}", responses={**auth_responses(), **entity_not_found_responses("student_group")})
 async def delete_student_group(
     group_id: UUID, user: SuperUserJWTDep, uow: StudentUOWDep
 ) -> None:

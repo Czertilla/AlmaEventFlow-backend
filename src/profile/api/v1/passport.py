@@ -4,6 +4,7 @@ from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import ErrorCode, auth_responses, detail_400, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from profile.dependency.profile import ProfilePassportUOWDep
 from profile.exc.user import NonPersonalUserException
@@ -32,7 +33,7 @@ router = APIRouter(prefix="/passports", tags=["passport"])
 logger = getLogger(__name__)
 
 
-@router.post("/my")
+@router.post("/my", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def get_my_passports(
     user: UserJWTDep,
     uow: ProfilePassportUOWDep,
@@ -47,7 +48,7 @@ async def get_my_passports(
     )
 
 
-@router.post("/my/new")
+@router.post("/my/new", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def create_my_passport(
     passport_data: PassportCreate, user: UserJWTDep, uow: ProfilePassportUOWDep
 ) -> PassportRead:
@@ -57,7 +58,7 @@ async def create_my_passport(
     return await PassportService(uow).create(passport_data)
 
 
-@router.put("/my/{passport_id}")
+@router.put("/my/{passport_id}", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def put_my_passport(
     passport_id: UUID,
     passport_data: PassportItemCreate,
@@ -76,7 +77,7 @@ async def put_my_passport(
     )
 
 
-@router.patch("/my/{passport_id}")
+@router.patch("/my/{passport_id}", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def patch_my_passport(
     passport_id: UUID,
     passport_data: PassportPatchData,
@@ -94,7 +95,7 @@ async def patch_my_passport(
     )
 
 
-@router.delete("/my/{passport_id}")
+@router.delete("/my/{passport_id}", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def delete_my_passport(
     passport_id: UUID,
     passport_data: PassportPatchData,
@@ -112,7 +113,7 @@ async def delete_my_passport(
     )
 
 
-@router.post("/{passport_id}")
+@router.post("/{passport_id}", responses={**auth_responses(), **entity_not_found_responses("passport")})
 async def get_passport(
     passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
 ) -> PassportRead:
@@ -120,7 +121,7 @@ async def get_passport(
     return await PassportService(uow).read(passport_id)
 
 
-@router.put("/{passport_id}")
+@router.put("/{passport_id}", responses={**auth_responses(), **entity_not_found_responses("passport")})
 async def put_passport(
     passport_id: UUID,
     passport: PassportPutData,
@@ -132,7 +133,7 @@ async def put_passport(
     )
 
 
-@router.patch("/{passport_id}")
+@router.patch("/{passport_id}", responses={**auth_responses(), **entity_not_found_responses("passport")})
 async def patch_passport(
     passport_id: UUID,
     passport: PassportPatchData,
@@ -144,14 +145,14 @@ async def patch_passport(
     )
 
 
-@router.delete("/{passport_id}")
+@router.delete("/{passport_id}", responses={**auth_responses(), **entity_not_found_responses("passport")})
 async def delete_passport(
     passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
 ) -> None:
     await PassportService(uow).delete(passport_id)
 
 
-@router.post("/{passport_id}/name-variant")
+@router.post("/{passport_id}/name-variant", responses={**auth_responses(), **entity_not_found_responses("passport")})
 async def get_name_variant(
     passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
 ) -> NameVariantRead | None:
@@ -159,7 +160,7 @@ async def get_name_variant(
     return await NameVariantService(uow).read(passport_id)
 
 
-@router.put("/{passport_id}/name-variant")
+@router.put("/{passport_id}/name-variant", responses={**auth_responses(), **entity_not_found_responses("passport")})
 async def put_name_variant(
     passport_id: UUID,
     name_variant_data: NameVariantPutData,
@@ -172,7 +173,7 @@ async def put_name_variant(
     )
 
 
-@router.patch("/{passport_id}/name-variant")
+@router.patch("/{passport_id}/name-variant", responses={**auth_responses(), **entity_not_found_responses("passport")})
 async def patch_name_variant(
     passport_id: UUID,
     name_variant_data: NameVariantPatchData,
@@ -185,7 +186,7 @@ async def patch_name_variant(
     )
 
 
-@router.delete("/{passport_id}/name-variant")
+@router.delete("/{passport_id}/name-variant", responses={**auth_responses(), **entity_not_found_responses("passport")})
 async def delete_name_variant(
     passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
 ) -> None:

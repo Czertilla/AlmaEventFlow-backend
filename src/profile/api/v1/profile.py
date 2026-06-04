@@ -4,6 +4,7 @@ from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import ErrorCode, auth_responses, detail_400, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from profile.exc.user import NonPersonalUserException
 from profile.dependency.profile import ProfileUOWDep
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/profiles", tags=["profile"])
 logger = getLogger(__name__)
 
 
-@router.get("")
+@router.get("", responses={**auth_responses()})
 async def get_many(
     uow: ProfileUOWDep,
     user: UserJWTDep,
@@ -31,7 +32,7 @@ async def get_many(
     return await ProfileService(uow).search(filter, page_param)
 
 
-@router.get("/my")
+@router.get("/my", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def get_my_profile(
     user: UserJWTDep, uow: ProfileUOWDep
 ) -> ProfileRead:
@@ -40,14 +41,14 @@ async def get_my_profile(
     return await ProfileService(uow).read(user.person_id)
 
 
-@router.post("")
+@router.post("", responses={**auth_responses()})
 async def create_profile(
     profile: ProfileCreate, user: SuperUserJWTDep, uow: ProfileUOWDep
 ) -> ProfileRead:
     return await ProfileService(uow).create(profile)
 
 
-@router.put("/my")
+@router.put("/my", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def put_my_profile(
     profile: ProfilePut, user: UserJWTDep, uow: ProfileUOWDep
 ) -> ProfileRead:
@@ -56,7 +57,7 @@ async def put_my_profile(
     return await ProfileService(uow).put(profile)
 
 
-@router.patch("/my")
+@router.patch("/my", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def patch_my_profile(
     profile: ProfilePatch, user: UserJWTDep, uow: ProfileUOWDep
 ) -> ProfileRead:
@@ -65,14 +66,14 @@ async def patch_my_profile(
     return await ProfileService(uow).patch(profile)
 
 
-@router.get("/{profile_id}")
+@router.get("/{profile_id}", responses={**auth_responses(), **entity_not_found_responses("profile")})
 async def get_profile(
     profile_id: UUID, user: UserJWTDep, uow: ProfileUOWDep
 ) -> ProfileRead:
     return await ProfileService(uow).read(profile_id)
 
 
-@router.put("/{profile_id}")
+@router.put("/{profile_id}", responses={**auth_responses(), **entity_not_found_responses("profile")})
 async def put_profile(
     profile: ProfilePut,
     user: SuperUserJWTDep,
@@ -81,14 +82,14 @@ async def put_profile(
     return await ProfileService(uow).put(profile)
 
 
-@router.patch("/{profile_id}")
+@router.patch("/{profile_id}", responses={**auth_responses(), **entity_not_found_responses("profile")})
 async def patch_profile(
     profile: ProfilePatch, user: SuperUserJWTDep, uow: ProfileUOWDep
 ) -> ProfileRead:
     return await ProfileService(uow).patch(profile)
 
 
-@router.delete("/{profile_id}")
+@router.delete("/{profile_id}", responses={**auth_responses(), **entity_not_found_responses("profile")})
 async def delete_profile(
     profile_id: UUID, user: SuperUserJWTDep, uow: ProfileUOWDep
 ) -> None:

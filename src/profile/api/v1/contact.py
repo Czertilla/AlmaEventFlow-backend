@@ -4,6 +4,7 @@ from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
+from core.schema.error import ErrorCode, auth_responses, detail_400, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from profile.dependency.contact import ContactUOWDep, PersonContactUOWDep
 from profile.exc.user import NonPersonalUserException
@@ -25,7 +26,7 @@ router = APIRouter(prefix="/contacts", tags=["contact"])
 logger = getLogger(__name__)
 
 
-@router.get("/my")
+@router.get("/my", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def get_my_contacts(
     user: ActiveUserJWTDep,
     uow: ContactUOWDep,
@@ -39,7 +40,7 @@ async def get_my_contacts(
     )
 
 
-@router.post("/my")
+@router.post("/my", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def create_my_contact(
     user: UserJWTDep,
     contact_data: ContactItemCreate,
@@ -52,7 +53,7 @@ async def create_my_contact(
     )
 
 
-@router.put("/my/{contact_id}")
+@router.put("/my/{contact_id}", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def put_my_contact(
     contact_id: UUID,
     contact_data: ContactPutData,
@@ -67,7 +68,7 @@ async def put_my_contact(
     return await ContactService(uow).put(contact)
 
 
-@router.patch("/my/{contact_id}")
+@router.patch("/my/{contact_id}", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def patch_my_contact(
     contact_id: UUID,
     contact_data: ContactPatchData,
@@ -83,7 +84,7 @@ async def patch_my_contact(
     return await service.patch(contact)
 
 
-@router.delete("/my/{contact_id}")
+@router.delete("/my/{contact_id}", responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)})
 async def delete_my_contact(
     contact_id: UUID, user: UserJWTDep, uow: ContactUOWDep
 ) -> None:
@@ -95,7 +96,7 @@ async def delete_my_contact(
     await service.delete(contact_id)
 
 
-@router.get("/{id}")
+@router.get("/{id}", responses={**auth_responses(), **entity_not_found_responses("contact")})
 async def get_contact(
     uow: ContactUOWDep,
     user: UserJWTDep,
@@ -104,7 +105,7 @@ async def get_contact(
     return await ContactService(uow).read(id)
 
 
-@router.post("/{id}")
+@router.post("/{id}", responses={**auth_responses(), **entity_not_found_responses("contact")})
 async def create_contact(
     uow: ContactUOWDep,
     user: UserJWTDep,
@@ -113,7 +114,7 @@ async def create_contact(
     return await ContactService(uow).create(contact_data)
 
 
-@router.put("/{id}")
+@router.put("/{id}", responses={**auth_responses(), **entity_not_found_responses("contact")})
 async def put_contact(
     user: SuperUserJWTDep,
     uow: ContactUOWDep,
@@ -122,7 +123,7 @@ async def put_contact(
     return await ContactService(uow).put(contact)
 
 
-@router.patch("/{id}")
+@router.patch("/{id}", responses={**auth_responses(), **entity_not_found_responses("contact")})
 async def patch_contact(
     user: SuperUserJWTDep,
     uow: ContactUOWDep,
@@ -131,7 +132,7 @@ async def patch_contact(
     return await ContactService(uow).patch(contact)
 
 
-@router.delete("/{id}")
+@router.delete("/{id}", responses={**auth_responses(), **entity_not_found_responses("contact")})
 async def delete_contact(
     id: UUID, user: SuperUserJWTDep, uow: ContactUOWDep
 ) -> None:
