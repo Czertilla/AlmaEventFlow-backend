@@ -1,4 +1,5 @@
 from logging import getLogger
+from pathlib import Path
 from typing import Annotated, Optional
 from uuid import UUID
 import jwt
@@ -7,9 +8,9 @@ from fastapi import Depends, Request, status
 from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBearer,
-    APIKeyCookie,
 )
 
+from core.schema.error import ErrorCode
 from core.schema.user import UserJWT
 from core.config.settings import settings
 from core.utils.exc.http import VancedHTTPException
@@ -19,35 +20,33 @@ logger = getLogger(__name__)
 
 
 bearer_scheme = HTTPBearer(auto_error=False)
-cookie_scheme = APIKeyCookie(name=settings.AUTH_COOKIE_NAME, auto_error=False)
+
+
+def _load_rsa_public_key() -> str | None:
+    pub_key_path: str = settings.RSA_PUBLIC_KEY_PATH
+    try:
+        return Path(pub_key_path).read_text()
+    except (FileNotFoundError, OSError):
+        return None
 
 
 async def get_token(
     request: Request,
     bearer: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
-    cookie: Optional[str] = Depends(cookie_scheme),
 ) -> str:
-    token = None
-    if bearer is not None:
-        token = bearer.credentials
-    elif cookie is not None:
-        token = cookie
-    if token is None:
+    if bearer is None:
         raise VancedHTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated",
+            detail=ErrorCode.NOT_AUTHENTICATED,
         )
-    return token
+    return bearer.credentials
 
 
 async def get_optional_token(
     bearer: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
-    cookie: Optional[str] = Depends(cookie_scheme),
 ) -> Optional[str]:
     if bearer is not None:
         return bearer.credentials
-    if cookie is not None:
-        return cookie
     return None
 
 
@@ -55,7 +54,7 @@ class JWTAuth:
     def __init__(
         self,
         secret: str,
-        algorithm: str = "HS256",
+        algorithm: str = "RS256",
         token_audience: Optional[list[str]] = None,
         active: bool = True,
         verified: bool = True,
@@ -84,18 +83,24 @@ class JWTAuth:
             )
             raise VancedHTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials",
+                detail=ErrorCode.INVALID_AUTHENTICATION_CREDENTIALS,
                 err_id=err_id,
             )
 
     def verify_requires(self, user: UserJWT):
         if self.active > user.is_active:
-            raise VancedHTTPException(status.HTTP_401_UNAUTHORIZED)
+            raise VancedHTTPException(
+                status.HTTP_401_UNAUTHORIZED,
+                detail=ErrorCode.NOT_AUTHENTICATED,
+            )
         elif (
             self.verified > user.is_verified
             or self.superuser > user.is_superuser
         ):
-            raise VancedHTTPException(status.HTTP_403_FORBIDDEN)
+            raise VancedHTTPException(
+                status.HTTP_403_FORBIDDEN,
+                detail=ErrorCode.FORBIDDEN,
+            )
 
     def extract_user_snapshot(self, token: str) -> UserJWT:
         payload = self.decode_token(token)
@@ -132,21 +137,33 @@ class OptionalJWTAuth(JWTAuth):
 
 
 def create_jwt_auth(
-    secret: str = settings.USER_SECRET.get_secret_value(),
+    secret: str | None = None,
     *,
+    algorithm: str = "RS256",
     active: bool = True,
     verified: bool = True,
     superuser: bool = False,
 ) -> JWTAuth:
-    return JWTAuth(
-        secret=secret,
-        active=active,
-        verified=verified,
-        superuser=superuser,
-    )
+    if secret is None:
+        pub_key = _load_rsa_public_key()
+        if pub_key is not None:
+            secret = pub_key
+        else:
+            secret = settings.USER_SECRET.get_secret_value()
+            algorithm = "HS256"
+    return JWTAuth(secret=secret, algorithm=algorithm, active=active, verified=verified, superuser=superuser)
 
 
 def create_optional_jwt_auth(
-    secret: str = settings.USER_SECRET.get_secret_value(),
+    secret: str | None = None,
+    *,
+    algorithm: str = "RS256",
 ) -> OptionalJWTAuth:
-    return OptionalJWTAuth(secret=secret)
+    if secret is None:
+        pub_key = _load_rsa_public_key()
+        if pub_key is not None:
+            secret = pub_key
+        else:
+            secret = settings.USER_SECRET.get_secret_value()
+            algorithm = "HS256"
+    return OptionalJWTAuth(secret=secret, algorithm=algorithm)
