@@ -1,23 +1,10 @@
-from fastapi.responses import JSONResponse
-from core.broker.kafka import broker, KafkaBroker, KafkaRouter
-from core.schema.message.mail import SendVerifyMessageRequest
+from core.broker.kafka import KafkaRouter
 from core.enum.mq import EmailQueue
-from pydantic import EmailStr
-from logging import getLogger
 
-logger = getLogger(__name__)
+from user.utils.mail import send_verify_message
 
 
 router = KafkaRouter()
 
 
-@router.publisher(EmailQueue.VERIFY)
-async def send_verify_message(
-    email: EmailStr, token: str, broker: KafkaBroker = broker
-) -> SendVerifyMessageRequest:
-    logger.debug(f"Sending verify message to {email} with token")
-    await broker.publish(
-        SendVerifyMessageRequest(email=email, token=token),
-        EmailQueue.VERIFY,
-    )
-    return JSONResponse(content="OK")
+send_verify_message = router.publisher(EmailQueue.VERIFY)(send_verify_message)

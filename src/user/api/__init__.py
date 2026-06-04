@@ -1,7 +1,7 @@
 from core.utils.broker.router import include_mq_routers
 from core.broker.kafka import stream_router
 
-from user.services.auth import fastapi_users, auth_backend
+from user.services.auth import fastapi_users, auth_backend, oauth_backend
 from user.services.oauth2 import google_oauth_client
 from user.api.v1.auth import router as auth_router
 from user.api.v1.verify import get_verify_router
@@ -57,7 +57,7 @@ def include_routers(app: APIRouter):
     app.include_router(
         fastapi_users.get_oauth_router(
             google_oauth_client,
-            auth_backend,
+            oauth_backend,
             settings.OAUTH_STATE_SECRET.get_secret_value(),
             associate_by_email=True,
             is_verified_by_default=True,
