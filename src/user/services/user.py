@@ -1,7 +1,7 @@
 from typing import Any, Callable, Optional, TypeVar, Union
 from functools import wraps
 from logging import getLogger
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import hashlib
 import uuid
 import jwt
@@ -29,7 +29,7 @@ from user.exceptions.user import (
     InviteTokenExpired,
     PersonAlreadyHasAccount,
 )
-from user.exceptions.profile import PersonNotExistsException
+from user.exceptions.profile import InvitePersonNotExistsException
 from user.filter.user import UserFilter
 from user.models.user import UserORM
 from user.schemas.user import (
@@ -41,7 +41,9 @@ from user.schemas.user import (
     InviteTokenData,
 )
 from user.uow.user import UserUOW
-from user.api.kafka.pub.mail import send_verify_message
+from user.utils.mail import send_verify_message
+from user.utils.token import generate_refresh_token
+from user.utils.cookie import set_refresh_cookie
 
 SECRET = settings.PASS_SECRET
 
@@ -494,10 +496,9 @@ class UserService(
     ) -> None:
         if response is None:
             return
-        from user.services.auth import set_refresh_cookie
         refresh_already = getattr(response, "_refresh_token_created", False)
         if not refresh_already:
-            raw_refresh, _ = await self.create_session(user.id)
+            raw_refresh, _, _, _ = await self._create_session(user.id)
             set_refresh_cookie(response, raw_refresh)
 
     async def on_before_delete(
@@ -555,7 +556,7 @@ class UserService(
                 validated_update_dict["hashed_password"] = (
                     self.password_helper.hash(value)
                 )
-                await self.uow.sessions.revoke_all_for_user(user.id)
+                await self.uow.refresh_tokens.revoke_all_for_user(user.id)
             elif (
                 field == "username"
                 and value is not None
@@ -575,8 +576,10 @@ class UserService(
         async with self.uow:
             person = await self.uow.persons.get_by_id(invite_data.person_id)
             if person is None:
-                raise PersonNotExistsException()
-            has_account = await self.uow.users.exists_person(invite_data.person_id)
+                raise InvitePersonNotExistsException()
+            has_account = await self.uow.users.exists_person(
+                invite_data.person_id
+            )
             if has_account:
                 raise PersonAlreadyHasAccount()
         lifetime = invite_data.expires_in or settings.INVITE_TOKEN_LIFETIME
@@ -589,8 +592,7 @@ class UserService(
             settings.USER_SECRET.get_secret_value(),
             lifetime,
         )
-        from datetime import datetime, timezone
-        expires_at = int(datetime.now(timezone.utc).timestamp()) + lifetime
+        expires_at = int(datetime.utcnow().timestamp()) + lifetime
         return InviteTokenRead(token=token, expires_at=expires_at)
 
     async def _validate_invite_token(self, token: str) -> InviteTokenData:
@@ -610,76 +612,94 @@ class UserService(
             raise InviteTokenInvalid()
         person = await self.uow.persons.get_by_id(token_data.person_id)
         if person is None:
-            raise PersonNotExistsException()
+            raise InvitePersonNotExistsException()
         has_account = await self.uow.users.exists_person(token_data.person_id)
         if has_account:
             raise PersonAlreadyHasAccount()
         return token_data
 
-    async def create_session(
-        self, user_id: uuid.UUID
-    ) -> tuple[str, str]:
-        from user.utils.token import generate_refresh_token
-
+    @required_transaction
+    async def _create_session(
+        self,
+        user_id: uuid.UUID,
+        device_info: str | None = None,
+        ip_address: str | None = None,
+    ) -> tuple[str, str, uuid.UUID, uuid.UUID]:
         raw, hashed = generate_refresh_token()
-        async with self.uow as uow:
-            await uow.sessions.add_one({
+        session = await self.uow.sessions.add_n_return(
+            {
+                "user_id": user_id,
+                "device_info": device_info,
+                "ip_address": ip_address,
+            }
+        )
+        await self.uow.refresh_tokens.add_one(
+            {
                 "token_hash": hashed,
                 "user_id": user_id,
-                "expires_at": datetime.utcnow()
+                "session_id": session.id,
+                "expires_at": datetime.now(timezone.utc)
                 + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRE_SECONDS),
-            })
-            await uow.commit()
-        return raw, hashed
+            }
+        )
+        return raw, hashed, user_id, session.id
 
-    async def rotate_session(
+    @required_transaction
+    async def _refresh_session(
         self, raw_token: str
     ) -> tuple[str, str, uuid.UUID] | None:
-        from user.utils.token import generate_refresh_token
-
         token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
-        async with self.uow as uow:
-            stored = await uow.sessions.get_by_token_hash(token_hash)
-            if stored is None:
-                return None
-            user_id = stored.user_id
-            if stored.expires_at < datetime.utcnow():
-                return None
-            if stored.is_revoked:
-                await uow.sessions.revoke_all_for_user(user_id)
-                await uow.commit()
-                return None
-            await uow.sessions.revoke(stored.id)
-            new_raw, new_hashed = generate_refresh_token()
-            await uow.sessions.add_one({
+        stored = await self.uow.refresh_tokens.get_by_token_hash(token_hash)
+        if stored is None:
+            return None
+        if stored.expires_at < datetime.now(timezone.utc):
+            return None
+        if stored.is_revoked:
+            return None
+        if stored.is_used:
+            await self.uow.refresh_tokens.revoke_all_by_session(
+                stored.session_id
+            )
+            return None
+        stored.is_used = True
+        await self.uow.session.flush()
+        await self.uow.sessions.update_last_used(stored.session_id)
+        new_raw, new_hashed = generate_refresh_token()
+        await self.uow.refresh_tokens.add_one(
+            {
                 "token_hash": new_hashed,
-                "user_id": user_id,
-                "expires_at": datetime.utcnow()
+                "user_id": stored.user_id,
+                "session_id": stored.session_id,
+                "expires_at": datetime.now(timezone.utc)
                 + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRE_SECONDS),
-            })
-            await uow.commit()
-        return new_raw, new_hashed, user_id
+            }
+        )
+        return new_raw, new_hashed, stored.user_id
 
-    async def revoke_session(self, raw_token: str) -> None:
+    @required_transaction
+    async def _revoke_session(self, raw_token: str) -> None:
         token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
-        async with self.uow as uow:
-            stored = await uow.sessions.get_by_token_hash(token_hash)
-            if stored is not None:
-                await uow.sessions.revoke(stored.id)
-                await uow.commit()
+        stored = await self.uow.refresh_tokens.get_by_token_hash(token_hash)
+        if stored is not None:
+            await self.uow.refresh_tokens.revoke(stored.id)
 
-    async def revoke_all_user_sessions(self, user_id: uuid.UUID) -> None:
-        async with self.uow as uow:
-            await uow.sessions.revoke_all_for_user(user_id)
-            await uow.commit()
+    @required_transaction
+    async def _revoke_all_user_sessions(self, user_id: uuid.UUID) -> None:
+        await self.uow.refresh_tokens.revoke_all_for_user(user_id)
 
-    async def get_session_from_request(
-        self, request: Request
-    ) -> str | None:
+    async def get_session_from_request(self, request: Request) -> str | None:
         return request.cookies.get(settings.REFRESH_COOKIE_NAME)
 
     async def cleanup_expired_sessions(self) -> int:
         async with self.uow as uow:
-            count = await uow.sessions.delete_expired()
+            count = await uow.refresh_tokens.delete_expired()
             await uow.commit()
         return count
+
+    async def update_session_metadata(
+        self,
+        user_id: uuid.UUID,
+        device_info: str | None,
+        ip_address: str | None,
+    ) -> None:
+        pass
