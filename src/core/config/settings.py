@@ -87,8 +87,11 @@ class Settings(BaseSettings):
 
     REFRESH_COOKIE_NAME: str = "refresh"
     AUTH_COOKIE_DOMAIN: str | None = None
-    AUTH_COOKIE_SAMESITE: str = "lax"
+    AUTH_COOKIE_SAMESITE: str = "strict"
     AUTH_COOKIE_SECURE: bool = True
+
+    RSA_PRIVATE_KEY_PATH: str = "rsa_private.pem"
+    RSA_PUBLIC_KEY_PATH: str = "rsa_public.pem"
 
     INVITE_TOKEN_LIFETIME: int = 604800
 
