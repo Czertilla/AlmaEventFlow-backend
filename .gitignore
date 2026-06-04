@@ -22,3 +22,7 @@ data/
 .env*
 .mongo-keyfile
 
+# auto-generated RSA keys for JWT
+rsa_private.pem
+rsa_public.pem
+
