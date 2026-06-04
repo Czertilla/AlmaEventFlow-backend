@@ -3,6 +3,7 @@ from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from geo.dependency.address import AddressUOWDep
 from geo.filter.address import AddressFilter
@@ -20,7 +21,7 @@ router = APIRouter(prefix="/addresses", tags=["address"])
 
 logger = getLogger(__name__)
 
-@router.get("")
+@router.get("", responses={**auth_responses()})
 async def get_addresses(
     uow: AddressUOWDep,
     user: UserJWTDep,
@@ -29,13 +30,13 @@ async def get_addresses(
 ) -> SPage[AddressRead]:
     return await AddressService(uow).search(filter, page_param)
 
-@router.get("/{address_id}")
+@router.get("/{address_id}", responses={**auth_responses(), **entity_not_found_responses("address")})
 async def get_address(
     address_id: int, user: UserJWTDep, uow: AddressUOWDep
 ) -> AddressRead:
     return await AddressService(uow).read(address_id)
 
-@router.post("")
+@router.post("", responses={**auth_responses()})
 async def create_address(
     address: AddressCreate,
     user: SuperUserJWTDep,
@@ -43,7 +44,7 @@ async def create_address(
 ) -> AddressRead:
     return await AddressService(uow).create(address)
 
-@router.put("/{address_id}")
+@router.put("/{address_id}", responses={**auth_responses(), **entity_not_found_responses("address")})
 async def put_address(
     address_id: int,
     address: AddressPutData,
@@ -54,7 +55,7 @@ async def put_address(
         AddressPut(id=address_id, **address.model_dump())
     )
 
-@router.patch("/{address_id}")
+@router.patch("/{address_id}", responses={**auth_responses(), **entity_not_found_responses("address")})
 async def patch_address(
     address_id: int,
     address: AddressPatchData,
@@ -65,7 +66,7 @@ async def patch_address(
         AddressPatch(id=address_id, **address.model_dump())
     )
 
-@router.delete("/{address_id}")
+@router.delete("/{address_id}", responses={**auth_responses(), **entity_not_found_responses("address")})
 async def delete_address(
     address_id: int, user: SuperUserJWTDep, uow: AddressUOWDep
 ) -> None:
