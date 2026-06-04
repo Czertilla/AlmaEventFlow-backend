@@ -4,6 +4,7 @@ from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from event.dependency.participation import ParticipationUOWDep
 from event.filter.participation import ParticipationFilter
@@ -22,7 +23,7 @@ router = APIRouter(prefix="/participations", tags=["participation"])
 logger = getLogger(__name__)
 
 
-@router.get("")
+@router.get("", responses={**auth_responses()})
 async def get_participations(
     uow: ParticipationUOWDep,
     user: UserJWTDep,
@@ -32,7 +33,7 @@ async def get_participations(
     return await ParticipationService(uow).search(filter, page_param)
 
 
-@router.post("")
+@router.post("", responses={**auth_responses()})
 async def create_participation(
     participation: ParticipationCreate,
     user: SuperUserJWTDep,
@@ -41,7 +42,7 @@ async def create_participation(
     return await ParticipationService(uow).create(participation)
 
 
-@router.get("/{participation_id}")
+@router.get("/{participation_id}", responses={**auth_responses(), **entity_not_found_responses("participation")})
 async def get_participation(
     participation_id: UUID,
     user: UserJWTDep,
@@ -50,7 +51,7 @@ async def get_participation(
     return await ParticipationService(uow).read(participation_id)
 
 
-@router.put("/{participation_id}")
+@router.put("/{participation_id}", responses={**auth_responses(), **entity_not_found_responses("participation")})
 async def put_participation(
     participation_id: UUID,
     participation: ParticipationPutData,
@@ -62,7 +63,7 @@ async def put_participation(
     )
 
 
-@router.patch("/{participation_id}")
+@router.patch("/{participation_id}", responses={**auth_responses(), **entity_not_found_responses("participation")})
 async def patch_participation(
     participation_id: UUID,
     participation: ParticipationPatchData,
@@ -74,7 +75,7 @@ async def patch_participation(
     )
 
 
-@router.delete("/{participation_id}")
+@router.delete("/{participation_id}", responses={**auth_responses(), **entity_not_found_responses("participation")})
 async def delete_participation(
     participation_id: UUID,
     user: SuperUserJWTDep,

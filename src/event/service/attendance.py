@@ -3,6 +3,7 @@ from uuid import UUID
 
 from sqlalchemy import select
 
+from core.schema.error import ErrorCode
 from core.service.base import BaseService, required_transaction
 from core.schema.pagination import SPage, SPageParam, SPagination
 from event.filter.attendance import AttendanceFilter
@@ -105,7 +106,7 @@ class AttendanceService(BaseService[AttendanceUOW]):
                 raise AttendanceNotExistsException()
             if attendance.is_verified:
                 raise VancedHTTPException(
-                    status_code=403, detail="ATTENDANCE_ALREADY_VERIFIED"
+                    status_code=403, detail=ErrorCode.ATTENDANCE_ALREADY_VERIFIED
                 )
 
             attendance_data = patch_data.model_dump()

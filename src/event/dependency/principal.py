@@ -2,6 +2,7 @@ from uuid import UUID
 
 from core.dependencies.auth import UserJWTDep
 from core.schema.user import UserJWT
+from core.schema.error import ErrorCode
 from core.utils.exc.http import VancedHTTPException
 from event.dependency.collective import CollectiveUOWDep
 from event.dependency.member import MemberUOWDep
@@ -21,7 +22,7 @@ async def verify_collective_principal(
             raise CollectiveNotExistsException()
         if not user.is_superuser and user.person_id != collective.principal_id:
             raise VancedHTTPException(
-                status_code=403, detail="NOT_COLLECTIVE_PRINCIPAL"
+                status_code=403, detail=ErrorCode.NOT_COLLECTIVE_PRINCIPAL
             )
     return collective, user
 
@@ -37,6 +38,6 @@ async def verify_member_person(
             raise MemberNotExistsException()
         if not user.is_superuser and user.person_id != member.person_id:
             raise VancedHTTPException(
-                status_code=403, detail="NOT_MEMBER_PERSON"
+                status_code=403, detail=ErrorCode.NOT_MEMBER_PERSON
             )
     return member, user

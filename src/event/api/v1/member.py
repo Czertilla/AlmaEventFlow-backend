@@ -4,6 +4,7 @@ from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from event.dependency.member import MemberUOWDep
 from event.filter.member import MemberFilter
@@ -22,7 +23,7 @@ router = APIRouter(prefix="/members", tags=["member"])
 logger = getLogger(__name__)
 
 
-@router.get("")
+@router.get("", responses={**auth_responses()})
 async def get_members(
     uow: MemberUOWDep,
     user: UserJWTDep,
@@ -32,21 +33,21 @@ async def get_members(
     return await MemberService(uow).search(filter, page_param)
 
 
-@router.post("")
+@router.post("", responses={**auth_responses()})
 async def create_member(
     member: MemberCreate, user: SuperUserJWTDep, uow: MemberUOWDep
 ) -> MemberRead:
     return await MemberService(uow).create(member)
 
 
-@router.get("/{member_id}")
+@router.get("/{member_id}", responses={**auth_responses(), **entity_not_found_responses("member")})
 async def get_member(
     member_id: UUID, user: UserJWTDep, uow: MemberUOWDep
 ) -> MemberRead:
     return await MemberService(uow).read(member_id)
 
 
-@router.put("/{member_id}")
+@router.put("/{member_id}", responses={**auth_responses(), **entity_not_found_responses("member")})
 async def put_member(
     member_id: UUID, member: MemberPut, user: SuperUserJWTDep, uow: MemberUOWDep
 ) -> MemberRead:
@@ -55,7 +56,7 @@ async def put_member(
     )
 
 
-@router.patch("/{member_id}")
+@router.patch("/{member_id}", responses={**auth_responses(), **entity_not_found_responses("member")})
 async def patch_member(
     member_id: UUID,
     member: MemberPatch,
@@ -67,7 +68,7 @@ async def patch_member(
     )
 
 
-@router.delete("/{member_id}")
+@router.delete("/{member_id}", responses={**auth_responses(), **entity_not_found_responses("member")})
 async def delete_member(
     member_id: UUID, user: SuperUserJWTDep, uow: MemberUOWDep
 ) -> None:

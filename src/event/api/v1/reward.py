@@ -4,6 +4,7 @@ from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import auth_responses, entity_not_found_responses
 from core.dependencies.redis import RedisDep
 from core.dependencies.s3 import S3Dep
 from core.schema.pagination import SPage, SPageParam
@@ -25,7 +26,7 @@ router = APIRouter(prefix="/rewards", tags=["reward"])
 logger = getLogger(__name__)
 
 
-@router.get("")
+@router.get("", responses={**auth_responses()})
 async def get_rewards(
     uow: RewardUOWDep,
     user: UserJWTDep,
@@ -35,7 +36,7 @@ async def get_rewards(
     return await RewardService(uow).search(filter, page_param)
 
 
-@router.post("")
+@router.post("", responses={**auth_responses()})
 async def create_reward(
     user: SuperUserJWTDep,
     participation_id: UUID,
@@ -52,7 +53,7 @@ async def create_reward(
     )
 
 
-@router.get("/{reward_id}")
+@router.get("/{reward_id}", responses={**auth_responses(), **entity_not_found_responses("reward")})
 async def get_reward(
     reward_id: UUID,
     user: UserJWTDep,
@@ -63,7 +64,7 @@ async def get_reward(
     return await RewardService(uow, redis, s3).read(reward_id)
 
 
-@router.put("/{reward_id}")
+@router.put("/{reward_id}", responses={**auth_responses(), **entity_not_found_responses("reward")})
 async def put_reward(
     reward_id: UUID,
     reward: RewardPutData,
@@ -77,7 +78,7 @@ async def put_reward(
     )
 
 
-@router.patch("/{reward_id}")
+@router.patch("/{reward_id}", responses={**auth_responses(), **entity_not_found_responses("reward")})
 async def patch_reward(
     reward_id: UUID,
     user: SuperUserJWTDep,
@@ -92,7 +93,7 @@ async def patch_reward(
     )
 
 
-@router.delete("/{reward_id}")
+@router.delete("/{reward_id}", responses={**auth_responses(), **entity_not_found_responses("reward")})
 async def delete_reward(
     reward_id: UUID, user: SuperUserJWTDep, s3: S3Dep, uow: RewardUOWDep
 ) -> None:

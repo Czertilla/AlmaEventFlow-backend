@@ -25,6 +25,7 @@ from event.service.attendance import AttendanceService
 from event.service.participation import ParticipationService
 from event.service.stage import StageService
 from event.uow.event import EventUOW
+from core.schema.error import ErrorCode
 from core.utils.exc.http import VancedHTTPException
 from event.exc.event import CollectiveNotExistsException
 from event.models.participation import ParticipationORM
@@ -135,11 +136,11 @@ class EventService(BaseService[EventUOW]):
             if not user.is_superuser:
                 if user.person_id != collective.principal_id:
                     raise VancedHTTPException(
-                        status_code=403, detail="NOT_COLLECTIVE_PRINCIPAL"
+                        status_code=403, detail=ErrorCode.NOT_COLLECTIVE_PRINCIPAL
                     )
                 if not collective.is_verified:
                     raise VancedHTTPException(
-                        status_code=403, detail="COLLECTIVE_NOT_VERIFIED"
+                        status_code=403, detail=ErrorCode.COLLECTIVE_NOT_VERIFIED
                     )
 
             event_create_data = event_data.model_dump(
@@ -214,7 +215,7 @@ class EventService(BaseService[EventUOW]):
             ).scalar_one_or_none()
             if not participation:
                 raise VancedHTTPException(
-                    status_code=403, detail="COLLECTIVE_NOT_PARTICIPATING"
+                    status_code=403, detail=ErrorCode.COLLECTIVE_NOT_PARTICIPATING
                 )
 
             event_data = event_put.model_dump(exclude={"id", "status"})
@@ -237,7 +238,7 @@ class EventService(BaseService[EventUOW]):
             ).scalar_one_or_none()
             if not participation:
                 raise VancedHTTPException(
-                    status_code=403, detail="COLLECTIVE_NOT_PARTICIPATING"
+                    status_code=403, detail=ErrorCode.COLLECTIVE_NOT_PARTICIPATING
                 )
 
             event_data = event_patch.model_dump(exclude={"status"}, exclude_unset=True)
@@ -263,7 +264,7 @@ class EventService(BaseService[EventUOW]):
             ).scalar_one_or_none()
             if not participation:
                 raise VancedHTTPException(
-                    status_code=403, detail="COLLECTIVE_NOT_PARTICIPATING"
+                    status_code=403, detail=ErrorCode.COLLECTIVE_NOT_PARTICIPATING
                 )
 
             await self._delete(event_id)
