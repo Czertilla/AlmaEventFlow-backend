@@ -4,6 +4,7 @@ from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from org.dependency.faculty import FacultyUOWDep
 from org.filter.faculty import FacultyFilter
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/faculties", tags=["faculty"])
 
 logger = getLogger(__name__)
 
-@router.get("")
+@router.get("", responses={**auth_responses()})
 async def list_faculties(
     uow: FacultyUOWDep,
     user: UserJWTDep,
@@ -30,13 +31,13 @@ async def list_faculties(
 ) -> SPage[FacultyRead]:
     return await FacultyService(uow).search(filter, page_param)
 
-@router.get("/{faculty_id}")
+@router.get("/{faculty_id}", responses={**auth_responses(), **entity_not_found_responses("faculty")})
 async def get_faculty(
     faculty_id: UUID, user: UserJWTDep, uow: FacultyUOWDep
 ) -> FacultyRead:
     return await FacultyService(uow).read(faculty_id)
 
-@router.post("")
+@router.post("", responses={**auth_responses()})
 async def create_faculty(
     faculty: FacultyCreate,
     user: SuperUserJWTDep,
@@ -44,7 +45,7 @@ async def create_faculty(
 ) -> FacultyRead:
     return await FacultyService(uow).create(faculty)
 
-@router.put("/{faculty_id}")
+@router.put("/{faculty_id}", responses={**auth_responses(), **entity_not_found_responses("faculty")})
 async def put_faculty(
     faculty_id: UUID,
     faculty: FacultyPutData,
@@ -55,7 +56,7 @@ async def put_faculty(
         FacultyPut(id=faculty_id, **faculty.model_dump())
     )
 
-@router.patch("/{faculty_id}")
+@router.patch("/{faculty_id}", responses={**auth_responses(), **entity_not_found_responses("faculty")})
 async def patch_faculty(
     faculty_id: UUID,
     faculty: FacultyPatchData,
@@ -66,7 +67,7 @@ async def patch_faculty(
         FacultyPatch(id=faculty_id, **faculty.model_dump())
     )
 
-@router.delete("/{faculty_id}")
+@router.delete("/{faculty_id}", responses={**auth_responses(), **entity_not_found_responses("faculty")})
 async def delete_faculty(
     faculty_id: UUID, user: SuperUserJWTDep, uow: FacultyUOWDep
 ) -> None:

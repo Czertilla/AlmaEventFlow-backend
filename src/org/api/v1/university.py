@@ -4,6 +4,7 @@ from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from org.dependency.university import UniversityUOWDep
 from org.filter.university import UniversityFilter
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/universities", tags=["university"])
 
 logger = getLogger(__name__)
 
-@router.get("")
+@router.get("", responses={**auth_responses()})
 async def list_universities(
     uow: UniversityUOWDep,
     user: UserJWTDep,
@@ -30,13 +31,13 @@ async def list_universities(
 ) -> SPage[UniversityRead]:
     return await UniversityService(uow).search(filter, page_param)
 
-@router.get("/{university_id}")
+@router.get("/{university_id}", responses={**auth_responses(), **entity_not_found_responses("university")})
 async def get_university(
     university_id: UUID, user: UserJWTDep, uow: UniversityUOWDep
 ) -> UniversityRead:
     return await UniversityService(uow).read(university_id)
 
-@router.post("")
+@router.post("", responses={**auth_responses()})
 async def create_university(
     university: UniversityCreate,
     user: SuperUserJWTDep,
@@ -44,7 +45,7 @@ async def create_university(
 ) -> UniversityRead:
     return await UniversityService(uow).create(university)
 
-@router.put("/{university_id}")
+@router.put("/{university_id}", responses={**auth_responses(), **entity_not_found_responses("university")})
 async def put_university(
     university_id: UUID,
     university: UniversityPutData,
@@ -55,7 +56,7 @@ async def put_university(
         UniversityPut(id=university_id, **university.model_dump())
     )
 
-@router.patch("/{university_id}")
+@router.patch("/{university_id}", responses={**auth_responses(), **entity_not_found_responses("university")})
 async def patch_university(
     university_id: UUID,
     university: UniversityPatchData,
@@ -66,7 +67,7 @@ async def patch_university(
         UniversityPatch(id=university_id, **university.model_dump())
     )
 
-@router.delete("/{university_id}")
+@router.delete("/{university_id}", responses={**auth_responses(), **entity_not_found_responses("university")})
 async def delete_university(
     university_id: UUID, user: SuperUserJWTDep, uow: UniversityUOWDep
 ) -> None:

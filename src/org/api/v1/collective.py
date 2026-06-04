@@ -4,6 +4,7 @@ from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from org.dependency.collective import CollectiveUOWDep
 from org.filter.collective import CollectiveFilter
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/collectives", tags=["collective"])
 
 logger = getLogger(__name__)
 
-@router.get("")
+@router.get("", responses={**auth_responses()})
 async def list_collectives(
     uow: CollectiveUOWDep,
     user: UserJWTDep,
@@ -30,13 +31,13 @@ async def list_collectives(
 ) -> SPage[CollectiveRead]:
     return await CollectiveService(uow).search(filter, page_param)
 
-@router.get("/{collective_id}")
+@router.get("/{collective_id}", responses={**auth_responses(), **entity_not_found_responses("collective")})
 async def get_collective(
     collective_id: UUID, user: UserJWTDep, uow: CollectiveUOWDep
 ) -> CollectiveRead:
     return await CollectiveService(uow).read(collective_id)
 
-@router.post("")
+@router.post("", responses={**auth_responses()})
 async def create_collective(
     collective: CollectiveCreate,
     user: SuperUserJWTDep,
@@ -44,7 +45,7 @@ async def create_collective(
 ) -> CollectiveRead:
     return await CollectiveService(uow).create(collective)
 
-@router.put("/{collective_id}")
+@router.put("/{collective_id}", responses={**auth_responses(), **entity_not_found_responses("collective")})
 async def put_collective(
     collective_id: UUID,
     collective: CollectivePutData,
@@ -55,7 +56,7 @@ async def put_collective(
         CollectivePut(id=collective_id, **collective.model_dump())
     )
 
-@router.patch("/{collective_id}")
+@router.patch("/{collective_id}", responses={**auth_responses(), **entity_not_found_responses("collective")})
 async def patch_collective(
     collective_id: UUID,
     collective: CollectivePatchData,
@@ -66,7 +67,7 @@ async def patch_collective(
         CollectivePatch(id=collective_id, **collective.model_dump())
     )
 
-@router.delete("/{collective_id}")
+@router.delete("/{collective_id}", responses={**auth_responses(), **entity_not_found_responses("collective")})
 async def delete_collective(
     collective_id: UUID, user: SuperUserJWTDep, uow: CollectiveUOWDep
 ) -> None:
