@@ -32,7 +32,11 @@ def get_verify_router(
             await user_manager.verify(token, request)
             return templates.TemplateResponse(
                 "verification_result.html",
-                {"request": request, "success": True, "login_url": "/"},
+                {
+                    "request": request,
+                    "success": True,
+                    "login_url": "https://aef.czertilla.ru/auth/login",
+                },
             )
         except exceptions.UserAlreadyVerified:
             return templates.TemplateResponse(
