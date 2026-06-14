@@ -7,6 +7,7 @@ class MemberFilter(Filter):
     order_by: list[str] | None = ["person__surname", "person__name", "person__patronymic"]
     is_active: bool = True
     collective_id: UUID | None = None
+    person_id: UUID | None = None
 
     class Constants(Filter.Constants):
         model = MemberORM

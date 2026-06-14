@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
+    "http://localhost:8100",
+    "http://127.0.0.1:8100",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://aef.czertilla.ru",
