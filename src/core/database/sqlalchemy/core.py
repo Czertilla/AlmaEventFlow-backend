@@ -7,14 +7,20 @@ from sqlalchemy import Result, SQLColumnExpression, exists, func, insert, select
 
 from ...utils.abstract.repository import AbstractRepository
 
-
-class Base(DeclarativeBase):
-    __abstract__ = True
-
+class BasePreference:
+    
     type_annotation_map = {
         dict[str, Any]: JSON,
         datetime: DateTime(timezone=True),
     }
+
+class Base(BasePreference, DeclarativeBase):
+    __abstract__ = True
+
+    # SQLAlchemy reads type_annotation_map only from the declarative base's own
+    # __dict__ (not via MRO), so it must be redeclared here, not just inherited
+    # from BasePreference.
+    type_annotation_map = BasePreference.type_annotation_map
 
 
 Model = TypeVar("Model", bound=Base)
