@@ -17,6 +17,7 @@ wheels/
 data/
 *.rar
 *.zip
+letsencrypt/
 
 # secret
 .env*
