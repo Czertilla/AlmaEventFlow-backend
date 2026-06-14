@@ -19,6 +19,9 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
+COPY rsa_private.pem .
+COPY rsa_public.pem .
+
 # 1. Перенос виртуальное окружение и код
 COPY --from=builder /app/.venv /app/.venv
 COPY --from=builder /app/pyproject.toml /app/pyproject.toml
