@@ -23,7 +23,7 @@ WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 COPY --from=builder /app/pyproject.toml /app/pyproject.toml
 COPY .env ./
-COPY static/ ./static/
+COPY templates/ ./templates/
 COPY src/core ./core
 COPY src/mail ./mail
 

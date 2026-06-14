@@ -1,12 +1,13 @@
 from typing import Type
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 from fastapi_users import exceptions, models, schemas
 from fastapi_users.manager import BaseUserManager, UserManagerDependency
 
-from core.schema.error import ErrorCode, ErrorModel
-from core.utils.exc.http import VancedHTTPException
+templates = Jinja2Templates(directory="templates/user")
 
 
 def get_verify_router(
@@ -17,32 +18,8 @@ def get_verify_router(
 
     @router.get(
         "/verify/email",
-        response_model=user_schema,
+        response_class=HTMLResponse,
         name="verify:verify",
-        responses={
-            status.HTTP_400_BAD_REQUEST: {
-                "model": ErrorModel,
-                "content": {
-                    "application/json": {
-                        "examples": {
-                            ErrorCode.VERIFY_USER_BAD_TOKEN.value: {
-                                "summary": "Bad token, not existing user or"
-                                "not the e-mail currently set for the user.",
-                                "value": {
-                                    "detail": ErrorCode.VERIFY_USER_BAD_TOKEN.value
-                                },
-                            },
-                            ErrorCode.VERIFY_USER_ALREADY_VERIFIED.value: {
-                                "summary": "The user is already verified.",
-                                "value": {
-                                    "detail": ErrorCode.VERIFY_USER_ALREADY_VERIFIED.value
-                                },
-                            },
-                        }
-                    }
-                },
-            }
-        },
     )
     async def verify(
         request: Request,
@@ -50,19 +27,30 @@ def get_verify_router(
         user_manager: BaseUserManager[models.UP, models.ID] = Depends(
             get_user_manager
         ),
-    ) -> models.UP:
+    ) -> HTMLResponse:
         try:
-            user = await user_manager.verify(token, request)
-            return schemas.model_validate(user_schema, user)
-        except (exceptions.InvalidVerifyToken, exceptions.UserNotExists):
-            raise VancedHTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=ErrorCode.VERIFY_USER_BAD_TOKEN,
+            await user_manager.verify(token, request)
+            return templates.TemplateResponse(
+                "verification_result.html",
+                {"request": request, "success": True, "login_url": "/"},
             )
         except exceptions.UserAlreadyVerified:
-            raise VancedHTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=ErrorCode.VERIFY_USER_ALREADY_VERIFIED,
+            return templates.TemplateResponse(
+                "verification_result.html",
+                {
+                    "request": request,
+                    "success": False,
+                    "title": "Уже подтверждён",
+                    "message": "Ваш аккаунт уже был подтверждён ранее.",
+                },
+            )
+        except (exceptions.InvalidVerifyToken, exceptions.UserNotExists):
+            return templates.TemplateResponse(
+                "verification_result.html",
+                {
+                    "request": request,
+                    "success": False,
+                },
             )
 
     return router

@@ -1,0 +1,148 @@
+{#
+  Страница результата подтверждения аккаунта (ответ на GET-переход из письма).
+
+  Ожидаемый контекст:
+    success   — bool: True — успех, False — ошибка
+    login_url — str:  ссылка на страницу входа (нужна только при success), по умолчанию "/"
+    title     — str:  (необязательно) переопределяет заголовок
+    message   — str:  (необязательно) переопределяет текст под заголовком
+
+  Пример (FastAPI):
+    return templates.TemplateResponse(
+        "verification_result.html.jinja2",
+        {"request": request, "success": True, "login_url": settings.frontend_login_url},
+    )
+#}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ "Аккаунт подтверждён" if success else "Ошибка подтверждения" }} — AlmaEventFlow</title>
+  <style>
+    :root {
+      --primary: #6C63FF;
+      --primary-shade: #5A52E0;
+      --success: #00D9A6;
+      --danger: #FF4757;
+      --bg: #f8f9fe;
+      --card: #ffffff;
+      --text: #1a1a2e;
+      --muted: #92949c;
+      --border: #e8e8f0;
+      --shadow: 0 8px 40px rgba(108, 99, 255, 0.12);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #7D75FF;
+        --primary-shade: #6C63FF;
+        --bg: #0f0f23;
+        --card: #1a1a35;
+        --text: #e8e8f0;
+        --muted: #8c8c8f;
+        --border: #2a2a45;
+        --shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    .icon {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      line-height: 1;
+      color: #fff;
+    }
+    .icon--success { background: var(--success); }
+    .icon--error   { background: var(--danger); }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 28px;
+      padding: 14px 32px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-shade));
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+    }
+    .btn:active { transform: translateY(0); }
+
+    .brand {
+      margin-top: 28px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    {% if success %}
+      <div class="icon icon--success">&#10003;</div>
+      <h1>{{ title or "Аккаунт подтверждён" }}</h1>
+      <p>{{ message or "Ваша почта успешно подтверждена. Теперь вы можете войти в свой аккаунт." }}</p>
+      <a class="btn" href="{{ login_url or '/' }}">Перейти ко входу</a>
+    {% else %}
+      <div class="icon icon--error">&#10005;</div>
+      <h1>{{ title or "Не удалось подтвердить" }}</h1>
+      <p>{{ message or "Ссылка недействительна или срок её действия истёк. Запросите письмо с подтверждением ещё раз." }}</p>
+    {% endif %}
+    <div class="brand">AlmaEventFlow</div>
+  </main>
+</body>
+</html>

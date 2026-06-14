@@ -22,7 +22,7 @@ WORKDIR /app
 # 1. Перенос виртуальное окружение и код
 COPY --from=builder /app/.venv /app/.venv
 COPY --from=builder /app/pyproject.toml /app/pyproject.toml
-COPY static/ ./static/
+COPY templates/ ./templates/
 COPY src .
 # 1.1 Перенос миграций
 COPY alembic.ini ./alembic.ini

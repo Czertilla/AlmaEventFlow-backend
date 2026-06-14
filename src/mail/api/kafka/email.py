@@ -15,7 +15,9 @@ logger = getLogger(__name__)
 
 @router.subscriber(EmailQueue.VERIFY)
 async def send_verify_message(request: SendVerifyMessageRequest) -> None:
-    with open("static/email/verify_message.html", "r", encoding="utf-8") as f:
+    with open(
+        "templates/email/verify_message.html", "r", encoding="utf-8"
+    ) as f:
         html = f.read().replace("{{token}}", request.token)
     message = MessageSchema(
         subject="Alma Event Flow email confirmation",
