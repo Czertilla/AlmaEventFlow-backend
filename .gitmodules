@@ -1,6 +1,3 @@
-[submodule "docs"]
-	path = docs
-	url = https://github.com/Czertilla/AlmaEventFlow-backend.wiki.git
 [submodule "frontend"]
 	path = frontend
 	url = https://github.com/Czertilla/AlmaEventFlow-frontend
