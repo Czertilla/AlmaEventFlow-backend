@@ -1,5 +1,5 @@
 from .attendance import AttendanceORM
-from .event import EventORM, EventStatusORM
+from .event import EventORM, EventLevelORM, EventStatusORM, EventTypeORM
 from .link import EventLinkORM
 from .location import LocationORM
 from .member import MemberORM
@@ -14,7 +14,9 @@ from .stage import EventStageORM
 __all__ = [
     "AttendanceORM",
     "EventORM",
-    "EventLinkORM",    
+    "EventLinkORM",
+    "EventLevelORM",
+    "EventTypeORM",
     "EventStatusORM",
     "FileORMEventLinkORM",
     "LocationORM",

@@ -1,14 +1,16 @@
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
-from event.enum.priority import Priority
+from event.enum.priority import EventPriorityEnumV1
 from event.schema.event import EventCreate
 from event.schema.stage import StageCreateData
 
 
 class MeParticipationCreate(BaseModel):
     event_id: UUID
-    priority_degree: Priority | None = Field(alias="priority", default=None)
+    priority_degree: EventPriorityEnumV1 | None = Field(
+        alias="EventPriorityEnumV1", default=None
+    )
     member_ids: list[UUID] | None = None
 
     model_config = ConfigDict(from_attributes=True)

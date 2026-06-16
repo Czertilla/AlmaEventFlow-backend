@@ -1,6 +1,7 @@
 from enum import StrEnum
 
-class Priority(StrEnum):
+
+class EventPriorityEnumV1(StrEnum):
     hight = "hight"
     medium = "medium"
     low = "low"

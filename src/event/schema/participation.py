@@ -3,12 +3,14 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from core.utils.mixin.pydantic import PatchModel, UUIDMixin
 
-from event.enum.priority import Priority
+from event.enum.priority import EventPriorityEnumV1
 
 
 class ParticipationCreateData(BaseModel):
     event_id: UUID
-    priority_degree: Priority | None = Field(alias="priority", default=None)
+    priority_degree: EventPriorityEnumV1 | None = Field(
+        alias="EventPriorityEnumV1", default=None
+    )
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -22,7 +24,9 @@ class ParticipationRead(ParticipationCreate, UUIDMixin): ...
 
 class ParticipationPatchData(PatchModel):
     event_id: UUID | None = None
-    priority_degree: Priority | None = Field(alias="priority", default=None)
+    priority_degree: EventPriorityEnumV1 | None = Field(
+        alias="EventPriorityEnumV1", default=None
+    )
 
     model_config = ConfigDict(from_attributes=True)
 

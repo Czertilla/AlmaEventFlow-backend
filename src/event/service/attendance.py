@@ -54,6 +54,10 @@ class AttendanceService(BaseService[AttendanceUOW]):
         return attendance
 
     @required_transaction
+    async def _upsert(self, attendance_put: AttendancePut) -> AttendanceORM:
+        return await self.uow.attendances.upsert(attendance_put.model_dump())
+
+    @required_transaction
     async def _delete(self, attendance_id: UUID) -> None:
         await self.uow.attendances.delete_one(attendance_id)
 
@@ -83,9 +87,7 @@ class AttendanceService(BaseService[AttendanceUOW]):
 
     async def put(self, attendance_put: AttendancePut) -> AttendanceRead:
         async with self.uow as uow:
-            attendance = await self.uow.attendances.upsert(
-                attendance_put.model_dump()
-            )
+            attendance = await self._upsert(attendance_put)
             result = AttendanceRead.model_validate(attendance)
             await uow.commit()
         return result

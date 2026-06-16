@@ -2,12 +2,12 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 
 from core.utils.mixin.pydantic import PatchModel, UUIDMixin
-from event.enum.link import EventLinkType
+from event.enum.link import EventLinkTypeEnumV1
 
 
 class LinkCreateData(BaseModel):
     url: str
-    type: EventLinkType
+    type: EventLinkTypeEnumV1
     description: str | None = None
 
     model_config = ConfigDict(from_attributes=True)

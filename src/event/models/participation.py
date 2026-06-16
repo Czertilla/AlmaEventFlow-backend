@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.core import Base
 from core.database.sqlalchemy.mixins.models import UUIDMixin
-from event.enum.priority import Priority
+from event.enum.priority import EventPriorityEnumV1
 from ._base import ModuleBase
 
 if TYPE_CHECKING:
@@ -23,8 +23,8 @@ class ParticipationORM(ModuleBase, Base, UUIDMixin):
     event_id: Mapped[UUID] = mapped_column(
         ForeignKey("event.id", ondelete="CASCADE")
     )
-    priority_degree: Mapped[Priority | None] = mapped_column(
-        Enum(Priority, name="event_priority")
+    priority_degree: Mapped[EventPriorityEnumV1 | None] = mapped_column(
+        Enum(EventPriorityEnumV1, name="event_priority")
     )
 
     collective: Mapped["CollectiveORM"] = relationship(

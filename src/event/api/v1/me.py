@@ -46,6 +46,12 @@ from event.schema.role import (
     RoleRead,
 )
 from event.schema.participation import ParticipationRead
+from event.schema.stage import (
+    StageCreateData,
+    StagePatch,
+    StagePatchData,
+    StageRead,
+)
 from event.schema.me import (
     MeAttendanceCreateData,
     MeEventCreate,
@@ -283,6 +289,53 @@ async def delete_my_collective_event(
     _: tuple[CollectiveORM, UserJWT] = Depends(verify_collective_principal),
 ) -> None:
     await EventService(uow).delete_for_collective(collective_id, event_id)
+
+
+@router.post(
+    "/collectives/{collective_id}/events/{event_id}/stages",
+    responses={**auth_responses()},
+)
+async def create_my_collective_event_stage(
+    collective_id: UUID,
+    event_id: UUID,
+    stage_data: StageCreateData,
+    uow: EventComposeUOWDep,
+    _: tuple[CollectiveORM, UserJWT] = Depends(verify_collective_principal),
+) -> StageRead:
+    return await EventService(uow).create_stage_for_collective(
+        collective_id, event_id, stage_data
+    )
+
+
+@router.patch(
+    "/collectives/{collective_id}/stages/{stage_id}",
+    responses={**auth_responses()},
+)
+async def patch_my_collective_event_stage(
+    collective_id: UUID,
+    stage_id: UUID,
+    stage_data: StagePatchData,
+    uow: EventComposeUOWDep,
+    _: tuple[CollectiveORM, UserJWT] = Depends(verify_collective_principal),
+) -> StageRead:
+    return await EventService(uow).patch_stage_for_collective(
+        collective_id, StagePatch(id=stage_id, **stage_data.model_dump())
+    )
+
+
+@router.delete(
+    "/collectives/{collective_id}/stages/{stage_id}",
+    responses={**auth_responses()},
+)
+async def delete_my_collective_event_stage(
+    collective_id: UUID,
+    stage_id: UUID,
+    uow: EventComposeUOWDep,
+    _: tuple[CollectiveORM, UserJWT] = Depends(verify_collective_principal),
+) -> None:
+    await EventService(uow).delete_stage_for_collective(
+        collective_id, stage_id
+    )
 
 
 @router.post(

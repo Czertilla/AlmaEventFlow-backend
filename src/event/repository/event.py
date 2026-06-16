@@ -15,7 +15,7 @@ class EventRepo(
     model = Model
 
     async def search(self, filter, pagination, *, options=None):
-        _options = (selectinload(Model.status_rel),)
+        _options = (selectinload(Model.status_rel), selectinload(Model.level_rel), selectinload(Model.type_rel))
         if options:
             _options = _options + options
         return await super().search(filter, pagination, options=_options)

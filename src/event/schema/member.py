@@ -23,7 +23,7 @@ class MemberRead(MemberCreate, UUIDMixin):
 
 class MemberPatchData(PatchModel):
     roles: list[UUID] | None = Field(max_length=25, default=None)
-    is_active: bool = None
+    is_active: bool | None = None
 
 
 class MemberPatch(MemberPatchData, UUIDMixin): ...
