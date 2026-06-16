@@ -1,57 +1,56 @@
 [project]
 name = "alma-event-flow"
-version = "0.1.0"
+version = "0.1.2"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "aiobotocore>=2.26.0",
-    "aiogram>=3.22.0",
-    "aiohttp>=3.12.15",
-    "alembic>=1.16.5",
-    "apscheduler>=3.11.1",
+    "aiobotocore>=3.7.0",
+    "aiogram>=3.29.0",
+    "aiohttp>=3.14.1",
+    "alembic>=1.18.4",
+    "apscheduler>=3.11.2",
     "asyncpg>=0.31.0",
-    "bcrypt>=4.3.0",
+    "bcrypt>=5.0.0",
     "beanie>=2.0.0",
     "colorama>=0.4.6",
-    "fastapi>=0.117.1",
-    "fastapi-filter[sqlalchemy]>=2.0.1",
-    "faststream[kafka]>=0.5.48",
+    "fastapi>=0.137.1",
+    "fastapi-filter[sqlalchemy]>=3.0.0",
+    "faststream[kafka]>=0.7.1",
     "passlib>=1.7.4",
-    "pydantic>=2.11.9",
-    "pydantic-settings>=2.10.1",
-    "redis>=7.1.0",
-    "ruff>=0.14.8",
-    "sqlalchemy>=2.0.50",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.1",
+    "redis>=8.0.0",
+    "ruff>=0.15.17",
+    "sqlalchemy>=2.0.51",
 ]
 
 [dependency-groups]
 bot = [
-    "aiogram>=3.22.0",
     "python-i18n[yaml]>=0.3.9",
 ]
 dev = [
-    "pytest>=9.0.1",
+    "pytest>=9.1.0",
     "uvicorn>=0.37.0",
 ]
 geo = [
     "beanie>=2.0.0",
-    "geoalchemy2[shapely]>=0.18.1",
+    "geoalchemy2[shapely]>=0.20.0",
 ]
 mail = [
-    "fastapi-mail>=1.5.0",
+    "fastapi-mail>=1.6.4",
 ]
 prod = [
-    "gunicorn>=23.0.0",
+    "gunicorn>=26.0.0",
 ]
 report = [
     "docxtpl>=0.20.2",
-    "matplotlib>=3.10.7",
+    "matplotlib>=3.11.0",
     "openpyxl>=3.1.5",
-    "pandas>=2.3.3",
+    "pandas>=3.0.3",
     "treport>=0.0.6",
 ]
 user = [
-    "fastapi-users[oauth,sqlalchemy]>=14.0.1",
+    "fastapi-users[oauth,sqlalchemy]>=15.0.5",
     "jinja2>=3.1.6",
 ]

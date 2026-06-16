@@ -23,34 +23,34 @@ services:
       - ./docker/postgres:/docker-entrypoint-initdb.d
     restart: unless-stopped
 
-  mongo:
-    build:
-      context: .
-      dockerfile: docker/mongo/Dockerfile
-    # image: mongo:latest
-    container_name: mongo
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}-init
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
-      - MONGO_REPLICA_SET_NAME=rs0
-    ports:
-      - 27017:27017
-    volumes:
-      - ./docker/mongo/init/:/docker-entrypoint-initdb.d/:ro
-      - ./docker/mongo/config.yml:/etc/mongod.conf:ro
-      - mongo-data:/data/db
-      - mongo-config:/data/configdb
-    command: ["mongod", "--config", "/etc/mongod.conf"]
-    healthcheck:
-      test: >
-        mongosh --quiet --eval 'try {rs.initiate({_id : "rs0",members: [{ _id : 0, host : "mongo:27017" },]}).ok} catch { rs.status().ok }' --username ${MONGO_USER} --password ${MONGO_PASS} --authenticationDatabase admin
-      interval: 10s
-      timeout: 20s
-      start_period: 30s
-      retries: 15
+  # mongo:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/mongo/Dockerfile
+  #   # image: mongo:latest
+  #   container_name: mongo
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}-init
+  #     - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
+  #     - MONGO_REPLICA_SET_NAME=rs0
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - ./docker/mongo/init/:/docker-entrypoint-initdb.d/:ro
+  #     - ./docker/mongo/config.yml:/etc/mongod.conf:ro
+  #     - mongo-data:/data/db
+  #     - mongo-config:/data/configdb
+  #   command: ["mongod", "--config", "/etc/mongod.conf"]
+  #   healthcheck:
+  #     test: >
+  #       mongosh --quiet --eval 'try {rs.initiate({_id : "rs0",members: [{ _id : 0, host : "mongo:27017" },]}).ok} catch { rs.status().ok }' --username ${MONGO_USER} --password ${MONGO_PASS} --authenticationDatabase admin
+  #     interval: 10s
+  #     timeout: 20s
+  #     start_period: 30s
+  #     retries: 15
 
   kafka:
     image: confluentinc/cp-kafka:7.7.3
@@ -284,8 +284,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      mongo:
-        condition: service_healthy
+      # mongo:
+      #   condition: service_healthy
       kafka:
         condition: service_healthy
     labels:
