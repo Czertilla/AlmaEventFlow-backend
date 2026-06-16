@@ -20,7 +20,7 @@ router = APIRouter(prefix="/calendar", tags=["calendar"])
 
 
 def _feed_url(request: Request, token: str) -> str:
-    return str(request.url_for("get_calendar_feed", token=token, secure=True))
+    return str(request.url_for("get_calendar_feed", token=token))
 
 
 def _to_created(
