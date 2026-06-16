@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     APP_HOST: str
     """Host of the application that will be displayed in places such as Swagger."""
 
+    FRONTEND_URL: str = "https://aef.czertilla.ru"
+    """Base URL of the user-facing frontend. Used to build event page links
+    (e.g. in ICS calendar feeds: ``{FRONTEND_URL}/events/{event_id}``)."""
+
     DB_DBMS: DBManagerType = DBManagerType.__default__
     """Type of database management system used (e.g., sqlite, postgres)."""
 

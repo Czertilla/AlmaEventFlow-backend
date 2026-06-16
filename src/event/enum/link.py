@@ -1,9 +1,9 @@
-from enum import StrEnum
+from enum import StrEnum, auto
 
 
 class EventLinkTypeEnumV1(StrEnum):
-    reward = "reward"
-    site = "site"
-    group = "group"
-    publication = "publication"
-    doc = "doc"
+    reward = auto()
+    site = auto()
+    group = auto()
+    publication = auto()
+    doc = auto()

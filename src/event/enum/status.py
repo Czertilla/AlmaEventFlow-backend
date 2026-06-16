@@ -1,8 +1,8 @@
-from enum import StrEnum
+from enum import StrEnum, auto
 
 
 class EventStatusEnumV1(StrEnum):
-    draft = "draft"
-    template = "template"
-    active = "active"
-    archived = "archived"
+    draft = auto()
+    template = auto()
+    active = auto()
+    archived = auto()

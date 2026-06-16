@@ -1,4 +1,9 @@
 from .attendance import AttendanceORM
+from .calendar import (
+    CalendarChangeLogORM,
+    CalendarSubscriptionORM,
+    CalendarSubscriptionTypeORM,
+)
 from .event import EventORM, EventLevelORM, EventStatusORM, EventTypeORM
 from .link import EventLinkORM
 from .location import LocationORM
@@ -13,6 +18,9 @@ from .stage import EventStageORM
 
 __all__ = [
     "AttendanceORM",
+    "CalendarChangeLogORM",
+    "CalendarSubscriptionORM",
+    "CalendarSubscriptionTypeORM",
     "EventORM",
     "EventLinkORM",
     "EventLevelORM",

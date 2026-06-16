@@ -46,6 +46,8 @@ from event.exc.event import (
     StageNotExistsException,
 )
 from event.models.participation import ParticipationORM
+from event.enum.calendar import CalendarChangeTypeEnum
+from event.models.calendar import CalendarChangeLogORM
 
 logger = getLogger(__name__)
 
@@ -419,9 +421,27 @@ class EventService(BaseService[EventUOW]):
         self, collective_id: UUID, event_id: UUID
     ) -> None:
         async with self.uow as uow:
-            await self._require_collective_participation(
+            participation = await self._require_collective_participation(
                 collective_id, event_id
             )
+            event = await self.uow.events.get_by_id(event_id)
+            if event is not None:
+                logger.debug(
+                    "Recording calendar removal log for event %s "
+                    "(collective %s)",
+                    event_id,
+                    collective_id,
+                )
+                self.uow.session.add(
+                    CalendarChangeLogORM(
+                        change_type=CalendarChangeTypeEnum.removed.value,
+                        event_id=event_id,
+                        collective_id=collective_id,
+                        participation_id=participation.id,
+                        event_name=event.name,
+                        event_date=event.date,
+                    )
+                )
             await self._delete(event_id)
             await uow.commit()
 
