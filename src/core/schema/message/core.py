@@ -30,4 +30,4 @@ class MQRequest(BaseModel):
 
 class MQEvent(MQRequest, Generic[T]):
     event_id: UUID = Field(default_factory=uuid4)
-    data: T
+    data: list[T]

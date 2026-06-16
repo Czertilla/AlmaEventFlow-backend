@@ -11,7 +11,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 
-if not settings.MONOLITH:
+if not settings.IN_MEMORY_BROKER:
 
     def kafka_uri(
         host: str = settings.KAFKA_HOST,

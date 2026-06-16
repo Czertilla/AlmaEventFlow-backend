@@ -79,6 +79,17 @@ class SQLAlchemyRepository(Generic[Model], AbstractRepository):
             .options(*options)
         )
         return (await self.execute(stmt, flush=True)).unique().scalar_one()
+    
+    async def add_many(
+        self, data: list[dict[str, Any]], options: tuple = ()
+    ) -> Model:
+        stmt = (
+            insert(self.model)
+            .values(data)
+            .returning(self.model)
+            .options(*options)
+        )
+        return (await self.execute(stmt, flush=True)).unique().scalars()
 
     async def get_many(
         self,

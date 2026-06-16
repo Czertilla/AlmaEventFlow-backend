@@ -57,6 +57,14 @@ class UniversityService(BaseService[UniversityUOW]):
         university = UniversityORM(**university_data, id=university_id)
         return await self.uow.session.merge(university)
 
+    @required_transaction
+    async def _upsert(self, university_put: UniversityPut) -> UniversityORM:
+        return await self.uow.universities.upsert(university_put.model_dump())
+
+    @required_transaction
+    async def _delete(self, university_id: UUID) -> None:
+        await self.uow.universities.delete_one(university_id)
+
     async def create(
         self, university_create: UniversityCreate
     ) -> UniversityRead:
@@ -66,7 +74,7 @@ class UniversityService(BaseService[UniversityUOW]):
             )
             await uow.commit()
         await on_organization_created(
-            OrganizationData(**result.model_dump(exclude={"type"}), type="university")
+            [OrganizationData(**result.model_dump(exclude={"type"}), type="university")]
         )
         return result
 
@@ -84,18 +92,18 @@ class UniversityService(BaseService[UniversityUOW]):
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(**result.model_dump(exclude={"type"}), type="university")
+            [OrganizationData(**result.model_dump(exclude={"type"}), type="university")]
         )
         return result
 
     async def put(self, university_put: UniversityPut) -> UniversityRead:
         async with self.uow as uow:
             result = UniversityRead.model_validate(
-                await self.uow.universities.upsert(university_put.model_dump())
+                await self._upsert(university_put)
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(**result.model_dump())
+            [OrganizationData(**result.model_dump())]
         )
         return result
 
@@ -117,6 +125,6 @@ class UniversityService(BaseService[UniversityUOW]):
 
     async def delete(self, university_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.universities.delete_one(university_id)
+            await self._delete(university_id)
             await uow.commit()
-        await on_organization_deleted(university_id)
+        await on_organization_deleted([university_id])

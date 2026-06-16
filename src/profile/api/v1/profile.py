@@ -12,7 +12,9 @@ from profile.filter.profile import ProfileFilter
 from profile.schema.profile import (
     ProfileCreate,
     ProfilePatch,
+    ProfilePatchData,
     ProfilePut,
+    ProfilePutData,
     ProfileRead,
 )
 from profile.service.profile import ProfileService
@@ -75,18 +77,26 @@ async def get_profile(
 
 @router.put("/{profile_id}", responses={**auth_responses(), **entity_not_found_responses("profile")})
 async def put_profile(
-    profile: ProfilePut,
+    profile_id: UUID,
+    profile: ProfilePutData,
     user: SuperUserJWTDep,
     uow: ProfileUOWDep,
 ) -> ProfileRead:
-    return await ProfileService(uow).put(profile)
+    return await ProfileService(uow).put(
+        ProfilePut(id=profile_id, **profile.model_dump())
+    )
 
 
 @router.patch("/{profile_id}", responses={**auth_responses(), **entity_not_found_responses("profile")})
 async def patch_profile(
-    profile: ProfilePatch, user: SuperUserJWTDep, uow: ProfileUOWDep
+    profile_id: UUID,
+    profile: ProfilePatchData,
+    user: SuperUserJWTDep,
+    uow: ProfileUOWDep,
 ) -> ProfileRead:
-    return await ProfileService(uow).patch(profile)
+    return await ProfileService(uow).patch(
+        ProfilePatch(id=profile_id, **profile.model_dump())
+    )
 
 
 @router.delete("/{profile_id}", responses={**auth_responses(), **entity_not_found_responses("profile")})

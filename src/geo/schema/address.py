@@ -21,7 +21,7 @@ class AddressCreate(BaseModel):
     city_id: int
     name: str | None = None
     spot: Point | None = None
-    parsed: AddressFields | None
+    parsed: AddressFields | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -31,7 +31,7 @@ class AddressRead(AddressCreate, UUIDMixin):
 
 
 class AddressPatchData(PatchModel):
-    parsed: AddressFieldsPatchData | None
+    parsed: AddressFieldsPatchData | None = None
 
 
 class AddressPatch(AddressPatchData, UUIDMixin): ...

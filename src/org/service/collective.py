@@ -58,6 +58,14 @@ class CollectiveService(BaseService[CollectiveUOW]):
 
         return await self.uow.session.merge(collective)
 
+    @required_transaction
+    async def _upsert(self, collective_put: CollectivePut) -> CollectiveORM:
+        return await self.uow.collectives.upsert(collective_put.model_dump())
+
+    @required_transaction
+    async def _delete(self, collective_id: UUID) -> None:
+        await self.uow.collectives.delete_one(collective_id)
+
     async def create(
         self, collective_create: CollectiveCreate
     ) -> CollectiveRead:
@@ -67,7 +75,7 @@ class CollectiveService(BaseService[CollectiveUOW]):
             )
             await uow.commit()
         await on_organization_created(
-            OrganizationData(**result.model_dump(exclude={"type"}), type="collective")
+            [OrganizationData(**result.model_dump(exclude={"type"}), type="collective")]
         )
         return result
 
@@ -85,18 +93,18 @@ class CollectiveService(BaseService[CollectiveUOW]):
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(**result.model_dump(exclude={"type"}), type="collective")
+            [OrganizationData(**result.model_dump(exclude={"type"}), type="collective")]
         )
         return result
 
     async def put(self, collective_put: CollectivePut) -> CollectiveRead:
         async with self.uow as uow:
             result = CollectiveRead.model_validate(
-                await self.uow.collectives.upsert(collective_put.model_dump())
+                await self._upsert(collective_put)
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(**result.model_dump())
+            [OrganizationData(**result.model_dump())]
         )
         return result
 
@@ -118,6 +126,6 @@ class CollectiveService(BaseService[CollectiveUOW]):
 
     async def delete(self, collective_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.collectives.delete_one(collective_id)
+            await self._delete(collective_id)
             await uow.commit()
-        await on_organization_deleted(collective_id)
+        await on_organization_deleted([collective_id])

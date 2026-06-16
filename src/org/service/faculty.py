@@ -54,6 +54,14 @@ class FacultyService(BaseService[FacultyUOW]):
 
         return await self.uow.session.merge(faculty)
 
+    @required_transaction
+    async def _upsert(self, faculty_put: FacultyPut) -> FacultyORM:
+        return await self.uow.faculties.upsert(faculty_put.model_dump())
+
+    @required_transaction
+    async def _delete(self, faculty_id: UUID) -> None:
+        await self.uow.faculties.delete_one(faculty_id)
+
     async def create(self, faculty_create: FacultyCreate) -> FacultyRead:
         async with self.uow as uow:
             result = FacultyRead.model_validate(
@@ -61,7 +69,7 @@ class FacultyService(BaseService[FacultyUOW]):
             )
             await uow.commit()
         await on_organization_created(
-            OrganizationData(**result.model_dump(exclude={"type"}), type="faculty")
+            [OrganizationData(**result.model_dump(exclude={"type"}), type="faculty")]
         )
         return result
 
@@ -77,18 +85,18 @@ class FacultyService(BaseService[FacultyUOW]):
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(**result.model_dump(exclude={"type"}), type="faculty")
+            [OrganizationData(**result.model_dump(exclude={"type"}), type="faculty")]
         )
         return result
 
     async def put(self, faculty_put: FacultyPut) -> FacultyRead:
         async with self.uow as uow:
             result = FacultyRead.model_validate(
-                await self.uow.faculties.upsert(faculty_put.model_dump())
+                await self._upsert(faculty_put)
             )
             await uow.commit()
         await on_organization_updated(
-            OrganizationData(**result.model_dump())
+            [OrganizationData(**result.model_dump())]
         )
         return result
 
@@ -110,6 +118,6 @@ class FacultyService(BaseService[FacultyUOW]):
 
     async def delete(self, faculty_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.faculties.delete_one(faculty_id)
+            await self._delete(faculty_id)
             await uow.commit()
-        await on_organization_deleted(faculty_id)
+        await on_organization_deleted([faculty_id])

@@ -50,6 +50,10 @@ class ProfileService(BaseService[ProfileExtendedUOW]):
             raise ProfileNotExistsException()
         return profile
 
+    @required_transaction
+    async def _delete(self, profile_id: UUID) -> None:
+        await self.uow.profiles.delete_one(profile_id)
+
     async def create(self, profile_create: ProfileCreate) -> ProfileRead:
         async with self.uow as uow:
             result = ProfileRead.model_validate(
@@ -94,7 +98,7 @@ class ProfileService(BaseService[ProfileExtendedUOW]):
 
     async def delete(self, profile_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.profiles.delete_one(profile_id)
+            await self._delete(profile_id)
             await uow.commit()
 
     async def ensure_existance(self, profile_id: UUID) -> None:

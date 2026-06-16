@@ -54,6 +54,16 @@ class OrganizationService(BaseService[OrganizationUOW]):
             raise OrganizationNotExistsException()
         return organization
 
+    @required_transaction
+    async def _upsert(self, organization_put: OrganizationPut) -> OrganizationORM:
+        return await self.uow.organizations.upsert(
+            organization_put.model_dump()
+        )
+
+    @required_transaction
+    async def _delete(self, organization_id: UUID) -> None:
+        await self.uow.organizations.delete_one(organization_id)
+
     async def create(
         self, organization_create: OrganizationCreate
     ) -> OrganizationRead:
@@ -62,7 +72,7 @@ class OrganizationService(BaseService[OrganizationUOW]):
                 await self._create(organization_create)
             )
             await uow.commit()
-        await on_organization_created(result)
+        await on_organization_created([result])
         return result
 
     async def read(self, organization_id: UUID) -> OrganizationRead:
@@ -82,18 +92,16 @@ class OrganizationService(BaseService[OrganizationUOW]):
                 )
             )
             await uow.commit()
-        await on_organization_updated(result)
+        await on_organization_updated([result])
         return result
 
     async def put(self, organization_put: OrganizationPut) -> OrganizationRead:
         async with self.uow as uow:
             result = OrganizationRead.model_validate(
-                await self.uow.organizations.upsert(
-                    organization_put.model_dump()
-                )
+                await self._upsert(organization_put)
             )
             await uow.commit()
-        await on_organization_updated(result)
+        await on_organization_updated([result])
         return result
 
     async def search(
@@ -114,6 +122,6 @@ class OrganizationService(BaseService[OrganizationUOW]):
 
     async def delete(self, organization_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.organizations.delete_one(organization_id)
+            await self._delete(organization_id)
             await uow.commit()
-        await on_organization_deleted(organization_id)
+        await on_organization_deleted([organization_id])

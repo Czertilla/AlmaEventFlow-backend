@@ -39,6 +39,14 @@ class DietService(BaseService[DietUOW]):
             raise DietNotExistsException()
         return diet
 
+    @required_transaction
+    async def _upsert(self, diet_put: DietPut) -> DietORM:
+        return await self.uow.diets.upsert(diet_put.model_dump())
+
+    @required_transaction
+    async def _delete(self, diet_id: int) -> None:
+        await self.uow.diets.delete_one(diet_id)
+
     async def search(
         self, filter: DietFilter, page_params: SPageParam = SPageParam()
     ) -> SPage[DietRead]:
@@ -72,13 +80,11 @@ class DietService(BaseService[DietUOW]):
 
     async def put(self, diet_put: DietPut) -> DietRead:
         async with self.uow as uow:
-            result = DietRead.model_validate(
-                await uow.diets.upsert(diet_put.model_dump())
-            )
+            result = DietRead.model_validate(await self._upsert(diet_put))
             await uow.commit()
         return result
 
     async def delete(self, diet_id: int) -> None:
         async with self.uow as uow:
-            await self.uow.diets.delete_one(diet_id)
+            await self._delete(diet_id)
             await uow.commit()

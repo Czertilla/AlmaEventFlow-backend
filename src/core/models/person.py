@@ -13,6 +13,6 @@ class PersonAORM(Base, UUIDMixin):
 class PersonBaseORM(PersonAORM):
     __abstract__ = True
 
-    name: Mapped[str] = mapped_column(String(128))
     surname: Mapped[str] = mapped_column(String(128))
+    name: Mapped[str] = mapped_column(String(128))
     patronymic: Mapped[str | None] = mapped_column(String(128))

@@ -5,10 +5,10 @@ from core.utils.mixin.pydantic import PatchModel, UUIDMixin
 
 class CollectiveCreate(BaseModel):
     name: str = Field(max_length=128)
-    acronym: str = Field(max_length=16)
+    acronym: str | None = Field(max_length=16, default=None)
     principal_id: UUID | None = None
     address_id: UUID | None = None
-    university_id: UUID | None
+    university_id: UUID | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -32,7 +32,7 @@ class StudentDegreePut(StudentDegreePutData, IDMixin): ...
 class StudentGroupCreate(BaseModel):
     name: str = Field(max_length=32)
     degree_id: int
-    faculty_id: int
+    faculty_id: UUID
     grade: int
 
     model_config = ConfigDict(from_attributes=True)
@@ -44,7 +44,7 @@ class StudentGroupRead(StudentGroupCreate, IDMixin): ...
 class StudentGroupPatchData(PatchModel):
     name: str | None = Field(max_length=32, default=None)
     degree_id: int | None = None
-    faculty_id: int | None = None
+    faculty_id: UUID | None = None
     grade: int | None = None
 
 

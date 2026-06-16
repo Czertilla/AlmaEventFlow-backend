@@ -6,7 +6,7 @@ from geo.schema.point import Point
 
 class LocationCreate(BaseModel):
     name: str = Field(max_length=512)
-    address_id: UUID | None
+    address_id: UUID | None = None
     spot: Point
 
     model_config = ConfigDict(from_attributes=True)

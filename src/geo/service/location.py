@@ -42,6 +42,14 @@ class LocationService(BaseService[LocationUOW]):
             raise LocationNotExistsException()
         return location
 
+    @required_transaction
+    async def _upsert(self, location_put: LocationPut) -> LocationORM:
+        return await self.uow.locations.upsert(location_put.model_dump())
+
+    @required_transaction
+    async def _delete(self, location_id: int) -> None:
+        await self.uow.locations.delete_one(location_id)
+
     async def create(self, location_create: LocationCreate) -> LocationRead:
         async with self.uow as uow:
             result = LocationRead.model_validate(
@@ -66,14 +74,14 @@ class LocationService(BaseService[LocationUOW]):
     async def put(self, location_put: LocationPut) -> LocationRead:
         async with self.uow as uow:
             result = LocationRead.model_validate(
-                await self.uow.locations.upsert(location_put.model_dump())
+                await self._upsert(location_put)
             )
             await uow.commit()
         return result
 
     async def delete(self, location_id: int) -> None:
         async with self.uow as uow:
-            await self.uow.locations.delete_one(location_id)
+            await self._delete(location_id)
             await uow.commit()
 
     async def search(self, filter: LocationFilter, page_params: SPageParam = SPageParam()) -> SPage[LocationRead]:

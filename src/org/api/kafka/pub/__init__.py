@@ -6,5 +6,5 @@ router = KafkaRouter()
 
 routers = load_common(__name__, "router", (KafkaRouter))
 
-for router in routers:
-    router.include_router(router)
+for sub_router in routers:
+    router.include_router(sub_router)

@@ -20,8 +20,8 @@ class NameVariantORM(ModuleBase, Base):
     id: Mapped[UUID] = mapped_column(
         ForeignKey("passport.id", ondelete="CASCADE"), primary_key=True
     )
-    name: Mapped[str] = mapped_column(String(128))
     surname: Mapped[str] = mapped_column(String(128))
+    name: Mapped[str] = mapped_column(String(128))
     patronymic: Mapped[Optional[str]] = mapped_column(String(128))
     passport: Mapped["PassportORM"] = relationship(
         back_populates="name_variant"

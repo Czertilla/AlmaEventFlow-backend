@@ -42,6 +42,14 @@ class AddressService(BaseService[AddressUOW]):
             raise AddressNotExistsException()
         return address
 
+    @required_transaction
+    async def _upsert(self, address_put: AddressPut) -> AddressORM:
+        return await self.uow.addresses.upsert(address_put.model_dump())
+
+    @required_transaction
+    async def _delete(self, address_id: int) -> None:
+        await self.uow.addresses.delete_one(address_id)
+
     async def create(self, address_create: AddressCreate) -> AddressRead:
         async with self.uow as uow:
             result = AddressRead.model_validate(
@@ -66,7 +74,7 @@ class AddressService(BaseService[AddressUOW]):
     async def put(self, address_put: AddressPut) -> AddressRead:
         async with self.uow as uow:
             result = AddressRead.model_validate(
-                await self.uow.addresses.upsert(address_put.model_dump())
+                await self._upsert(address_put)
             )
             await uow.commit()
         return (
@@ -75,7 +83,7 @@ class AddressService(BaseService[AddressUOW]):
 
     async def delete(self, address_id: int) -> None:
         async with self.uow as uow:
-            await self.uow.addresses.delete_one(address_id)
+            await self._delete(address_id)
             await uow.commit()
 
     async def search(self, filter: AddressFilter, page_params: SPageParam = SPageParam()) -> SPage[AddressRead]:

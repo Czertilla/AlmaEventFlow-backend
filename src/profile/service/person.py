@@ -64,12 +64,16 @@ class PersonService(BaseService[PersonUOW]):
         person = await self.uow.persons.upsert(person_put.model_dump())
         return person
 
+    @required_transaction
+    async def _delete(self, person_id: UUID) -> None:
+        await self.uow.persons.delete_one(person_id)
+
     async def create(self, person_create: PersonCreate) -> PersonRead:
         async with self.uow as uow:
             person = await self._create(person_create)
             result = PersonRead.model_validate(person)
             await uow.commit()
-        await on_person_created(person)
+        await on_person_created([person])
         return result
 
     async def read(self, person_id: UUID) -> PersonRead:
@@ -96,7 +100,7 @@ class PersonService(BaseService[PersonUOW]):
             person = await self._update(person_data.pop("id"), person_data)
             result = PersonRead.model_validate(person)
             await uow.commit()
-        await on_person_updated(person)
+        await on_person_updated([person])
         return result
 
     async def put(self, person_put: PersonPut) -> PersonRead:
@@ -104,11 +108,11 @@ class PersonService(BaseService[PersonUOW]):
             person = await self._upsert(person_put)
             result = PersonRead.model_validate(person)
             await uow.commit()
-        await on_person_updated(person)
+        await on_person_updated([person])
         return result
 
     async def delete(self, person_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.persons.delete_one(person_id)
+            await self._delete(person_id)
             await uow.commit()
-        await on_person_deleted(person_id)
+        await on_person_deleted([person_id])

@@ -20,17 +20,20 @@ class PersonEventService(BaseService[UOW], Generic[UOW]):
     async def _delete(self, person_id: UUID):
         await self.uow.persons.delete_one(person_id)
 
-    async def create(self, person: PersonData) -> None:
+    async def create(self, persons: list[PersonData]) -> None:
         async with self.uow as uow:
-            await self._create(person)
+            for person in persons:
+                await self._create(person)
             await uow.commit()
 
-    async def update(self, person: PersonData) -> None:
+    async def update(self, persons: list[PersonData]) -> None:
         async with self.uow as uow:
-            await self._upsert(person)
+            for person in persons:
+                await self._upsert(person)
             await uow.commit()
 
-    async def delete(self, person: PersonDelete) -> None:
+    async def delete(self, persons: list[PersonDelete]) -> None:
         async with self.uow as uow:
-            await self._delete(person.id)
+            for person in persons:
+                await self._delete(person.id)
             await uow.commit()

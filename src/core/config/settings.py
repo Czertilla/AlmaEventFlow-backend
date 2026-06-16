@@ -30,6 +30,8 @@ class Settings(BaseSettings):
 
     MONOLITH: bool = False
 
+    IN_MEMORY_BROKER: bool = False
+
     ADMIN_EMAIL: EmailStr | None = None
 
     APP_NAME: str = "Simple App"

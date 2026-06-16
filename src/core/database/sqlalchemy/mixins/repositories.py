@@ -90,6 +90,21 @@ class UpsertRepositoryMixin(
             .returning(self.model)
         )
         return (await self.execute(stmt)).scalar_one_or_none()
+    
+    async def upsert_many(
+        self, data: list[dict[str, Any]], options: tuple[ExecutableOption] = ()
+    ) -> Model | None:
+        stmt = (
+            insert(self.model)
+            .values(data)
+            .on_conflict_do_update(
+                index_elements=self.conflict_index_elements,
+                set_=self._get_set_data(data),
+            )
+            .options(*options)
+            .returning(self.model)
+        )
+        return (await self.execute(stmt)).scalars()
 
 
 class SearchRepositoryMixin(Generic[Model], AbstractRepository):

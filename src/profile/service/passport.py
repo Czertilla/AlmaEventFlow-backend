@@ -71,6 +71,15 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
             raise PassportNotExistsException()
         return passport
 
+    @required_transaction
+    async def _upsert(self, passport_put: PassportPut) -> PassportORM:
+        await self._check_ownership(passport_put.id, passport_put.profile_id)
+        return await self.uow.passports.upsert(passport_put.model_dump())
+
+    @required_transaction
+    async def _delete(self, passport_id: UUID) -> None:
+        await self.uow.passports.delete_one(passport_id)
+
     async def create(self, passport_create: PassportCreate) -> PassportRead:
         async with self.uow as uow:
             result = PassportRead.model_validate(
@@ -116,18 +125,15 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
 
     async def put(self, passport_put: PassportPut) -> PassportRead:
         async with self.uow as uow:
-            await self._check_ownership(
-                passport_put.id, passport_put.profile_id
-            )
             result = PassportRead.model_validate(
-                await uow.passports.upsert(passport_put.model_dump())
+                await self._upsert(passport_put)
             )
             await uow.commit()
         return result
 
     async def delete(self, passport_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.passports.delete_one(passport_id)
+            await self._delete(passport_id)
             await uow.commit()
 
     async def check_ownership(
@@ -170,6 +176,16 @@ class NameVariantService(BaseService[PassportUOW]):
             raise PassportNotExistsException()
         return name_variant
 
+    @required_transaction
+    async def _upsert(self, name_variant_put: NameVariantPut) -> NameVariantORM:
+        return await self.uow.name_variants.upsert(
+            name_variant_put.model_dump()
+        )
+
+    @required_transaction
+    async def _delete(self, name_variant_id: UUID) -> None:
+        await self.uow.name_variants.delete_one(name_variant_id)
+
     async def create(
         self, name_variant_create: NameVariantCreate, passport_id: UUID
     ) -> NameVariantRead:
@@ -202,12 +218,12 @@ class NameVariantService(BaseService[PassportUOW]):
     async def put(self, name_variant_put: NameVariantPut) -> NameVariantRead:
         async with self.uow as uow:
             result = NameVariantRead.model_validate(
-                await uow.name_variants.upsert(name_variant_put.model_dump())
+                await self._upsert(name_variant_put)
             )
             await uow.commit()
         return result
 
     async def delete(self, name_variant_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.name_variants.delete_one(name_variant_id)
+            await self._delete(name_variant_id)
             await uow.commit()

@@ -105,11 +105,11 @@ async def get_contact(
     return await ContactService(uow).read(id)
 
 
-@router.post("/{id}", responses={**auth_responses(), **entity_not_found_responses("contact")})
+@router.post("", responses={**auth_responses(), **entity_not_found_responses("contact")})
 async def create_contact(
     uow: ContactUOWDep,
     user: UserJWTDep,
-    contact_data=Depends(ContactCreate),
+    contact_data: ContactCreate,
 ) -> ContactRead:
     return await ContactService(uow).create(contact_data)
 

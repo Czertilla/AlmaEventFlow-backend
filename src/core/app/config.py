@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, ConfigDict
 from core.app.contextmanager import AppContextManager
 from core.config.settings import settings
+from core.utils.get_version import get_version
 
 
 class AppConfig(BaseModel):
@@ -19,6 +20,7 @@ class AppConfig(BaseModel):
     """
 
     title: str = settings.APP_NAME
+    version: str = Field(default_factory=get_version)
     lifespan: AppContextManager = Field(default_factory=AppContextManager)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)

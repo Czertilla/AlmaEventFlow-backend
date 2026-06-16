@@ -1,16 +1,14 @@
-from typing import Iterable
-from fastapi import FastAPI
+from typing import Any, Iterable
+from fastapi import APIRouter, FastAPI
 from core.config.settings import settings
-from faststream.broker.fastapi import StreamRouter
-from faststream.broker.router import BrokerRouter
 
 
 def include_mq_routers(
     app: FastAPI,
-    stream_router: StreamRouter,
-    routers: Iterable[BrokerRouter],
+    stream_router: APIRouter,
+    routers: Iterable[Any],
 ) -> None:
-    if settings.MONOLITH:
+    if settings.IN_MEMORY_BROKER:
         return
     for router in routers:
         stream_router.include_router(router)

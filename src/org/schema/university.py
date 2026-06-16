@@ -5,7 +5,7 @@ from core.utils.mixin.pydantic import PatchModel, UUIDMixin
 
 class UniversityCreate(BaseModel):
     name: str = Field(max_length=128)
-    acronym: str = Field(max_length=16)
+    acronym: str | None = Field(max_length=16, default=None)
     principal_id: UUID | None = None
     address_id: UUID | None = None
 

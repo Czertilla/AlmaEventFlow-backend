@@ -5,8 +5,8 @@ from core.schema.message.core import MQEvent, MQRequest
 
 class PersonData(MQRequest):
     id: UUID
-    name: str = Field(max_length=128)
     surname: str = Field(max_length=128)
+    name: str = Field(max_length=128)
     patronymic: str | None = Field(max_length=128)
 
 

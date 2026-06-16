@@ -93,16 +93,26 @@ async def create_person(
 
 @router.put("/{person_id}", responses={**auth_responses(), **entity_not_found_responses("person")})
 async def put_person(
-    person: PersonPut, user: SuperUserJWTDep, uow: PersonUOWDep
+    person_id: UUID,
+    person: PersonPutData,
+    user: SuperUserJWTDep,
+    uow: PersonUOWDep,
 ) -> PersonRead:
-    return await PersonService(uow).put(person)
+    return await PersonService(uow).put(
+        PersonPut(id=person_id, **person.model_dump())
+    )
 
 
 @router.patch("/{person_id}", responses={**auth_responses(), **entity_not_found_responses("person")})
 async def patch_person(
-    person: PersonPatch, user: SuperUserJWTDep, uow: PersonUOWDep
+    person_id: UUID,
+    person: PersonPatchData,
+    user: SuperUserJWTDep,
+    uow: PersonUOWDep,
 ) -> PersonRead:
-    return await PersonService(uow).patch(person)
+    return await PersonService(uow).patch(
+        PersonPatch(id=person_id, **person.model_dump())
+    )
 
 
 @router.delete("/{person_id}", responses={**auth_responses(), **entity_not_found_responses("person")})

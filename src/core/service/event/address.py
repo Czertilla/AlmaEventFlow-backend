@@ -19,17 +19,20 @@ class AddressEventService(BaseService[UOW], Generic[UOW]):
     async def _delete(self, address_id: UUID):
         await self.uow.addresses.delete_one(address_id)
 
-    async def create(self, address: AddressData) -> None:
+    async def create(self, addresses: list[AddressData]) -> None:
         async with self.uow as uow:
-            await self._create(address)
+            for address in addresses:
+                await self._create(address)
             await uow.commit()
 
-    async def update(self, address: AddressData) -> None:
+    async def update(self, addresses: list[AddressData]) -> None:
         async with self.uow as uow:
-            await self._upsert(address)
+            for address in addresses:
+                await self._upsert(address)
             await uow.commit()
 
-    async def delete(self, address: AddressDelete) -> None:
+    async def delete(self, addresses: list[AddressDelete]) -> None:
         async with self.uow as uow:
-            await self._delete(address.id)
+            for address in addresses:
+                await self._delete(address.id)
             await uow.commit()

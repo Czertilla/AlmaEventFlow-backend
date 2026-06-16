@@ -50,6 +50,14 @@ class StudentService(BaseService[StudentUOW]):
             raise StudentNotExistsException()
         return student
 
+    @required_transaction
+    async def _upsert(self, student_put: StudentPut) -> StudentORM:
+        return await self.uow.students.upsert(student_put.model_dump())
+
+    @required_transaction
+    async def _delete(self, student_id: UUID) -> None:
+        await self.uow.students.delete_one(student_id)
+
     async def create(self, student_create: StudentCreate) -> StudentRead:
         async with self.uow as uow:
             result = StudentRead.model_validate(
@@ -74,14 +82,14 @@ class StudentService(BaseService[StudentUOW]):
     async def put(self, student_put: StudentPut) -> StudentRead:
         async with self.uow as uow:
             result = StudentRead.model_validate(
-                await uow.students.upsert(student_put.model_dump())
+                await self._upsert(student_put)
             )
             await uow.commit()
         return result
 
     async def delete(self, student_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.students.delete_one(student_id)
+            await self._delete(student_id)
             await uow.commit()
 
 
@@ -110,6 +118,14 @@ class StudentDegreeService(BaseService[StudentUOW]):
             raise StudentNotExistsException()
         return degree
 
+    @required_transaction
+    async def _upsert(self, degree_put: StudentDegreePut) -> StudentORM:
+        return await self.uow.student_degrees.upsert(degree_put.model_dump())
+
+    @required_transaction
+    async def _delete(self, degree_id: UUID) -> None:
+        await self.uow.student_degrees.delete_one(degree_id)
+
     async def create(self, degree_create: StudentDegreeCreate) -> StudentDegreeRead:
         async with self.uow as uow:
             result = StudentDegreeRead.model_validate(
@@ -134,14 +150,14 @@ class StudentDegreeService(BaseService[StudentUOW]):
     async def put(self, degree_put: StudentDegreePut) -> StudentDegreeRead:
         async with self.uow as uow:
             result = StudentDegreeRead.model_validate(
-                await uow.student_degrees.upsert(degree_put.model_dump())
+                await self._upsert(degree_put)
             )
             await uow.commit()
         return result
 
     async def delete(self, degree_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.student_degrees.delete_one(degree_id)
+            await self._delete(degree_id)
             await uow.commit()
 
 
@@ -170,6 +186,14 @@ class StudentGroupService(BaseService[StudentUOW]):
             raise StudentNotExistsException()
         return group
 
+    @required_transaction
+    async def _upsert(self, group_put: StudentGroupPut) -> StudentORM:
+        return await self.uow.student_groups.upsert(group_put.model_dump())
+
+    @required_transaction
+    async def _delete(self, group_id: UUID) -> None:
+        await self.uow.student_groups.delete_one(group_id)
+
     async def create(self, group_create: StudentGroupCreate) -> StudentGroupRead:
         async with self.uow as uow:
             result = StudentGroupRead.model_validate(
@@ -194,12 +218,12 @@ class StudentGroupService(BaseService[StudentUOW]):
     async def put(self, group_put: StudentGroupPut) -> StudentGroupRead:
         async with self.uow as uow:
             result = StudentGroupRead.model_validate(
-                await uow.student_groups.upsert(group_put.model_dump())
+                await self._upsert(group_put)
             )
             await uow.commit()
         return result
 
     async def delete(self, group_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.student_groups.delete_one(group_id)
+            await self._delete(group_id)
             await uow.commit()

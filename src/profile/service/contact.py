@@ -61,6 +61,10 @@ class ContactService(BaseService[ContactUOW | PersonContactUOW]):
         await self._check_ownership(contact_put.id, contact_put.person_id)
         return await self.uow.contacts.upsert(contact_put.model_dump())
 
+    @required_transaction
+    async def _delete(self, contact_id: UUID) -> None:
+        await self.uow.contacts.delete_one(contact_id)
+
     async def create(self, contact_create: ContactCreate) -> ContactRead:
         async with self.uow as uow:
             result = ContactRead.model_validate(
@@ -112,7 +116,7 @@ class ContactService(BaseService[ContactUOW | PersonContactUOW]):
 
     async def delete(self, contact_id: UUID) -> None:
         async with self.uow as uow:
-            await self.uow.contacts.delete_one(contact_id)
+            await self._delete(contact_id)
             await uow.commit()
 
     async def check_ownership(self, contact_id: UUID, profile_id: UUID) -> None:

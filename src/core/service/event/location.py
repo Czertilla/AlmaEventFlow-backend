@@ -20,17 +20,20 @@ class LocationEventService(BaseService[UOW], Generic[UOW]):
     async def _delete(self, location_id: UUID):
         await self.uow.locations.delete_one(location_id)
 
-    async def create(self, location: LocationData) -> None:
+    async def create(self, locations: list[LocationData]) -> None:
         async with self.uow as uow:
-            await self._create(location)
+            for location in locations:
+                await self._create(location)
             await uow.commit()
 
-    async def update(self, location: LocationData) -> None:
+    async def update(self, locations: list[LocationData]) -> None:
         async with self.uow as uow:
-            await self._upsert(location)
+            for location in locations:
+                await self._upsert(location)
             await uow.commit()
 
-    async def delete(self, location: LocationDelete) -> None:
+    async def delete(self, locations: list[LocationDelete]) -> None:
         async with self.uow as uow:
-            await self._delete(location.id)
+            for location in locations:
+                await self._delete(location.id)
             await uow.commit()

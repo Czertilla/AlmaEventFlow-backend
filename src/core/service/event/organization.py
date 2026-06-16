@@ -22,17 +22,20 @@ class OrganizationEventService(BaseService[UOW], Generic[UOW]):
     async def _delete(self, organization_id: UUID):
         await self.uow.organizations.delete_one(organization_id)
 
-    async def create(self, organization: OrganizationData) -> None:
+    async def create(self, organizations: list[OrganizationData]) -> None:
         async with self.uow as uow:
-            await self._create(organization)
+            for organization in organizations:
+                await self._create(organization)
             await uow.commit()
 
-    async def update(self, organization: OrganizationData) -> None:
+    async def update(self, organizations: list[OrganizationData]) -> None:
         async with self.uow as uow:
-            await self._upsert(organization)
+            for organization in organizations:
+                await self._upsert(organization)
             await uow.commit()
 
-    async def delete(self, organization: OrganizationDelete) -> None:
+    async def delete(self, organizations: list[OrganizationDelete]) -> None:
         async with self.uow as uow:
-            await self._delete(organization.id)
+            for organization in organizations:
+                await self._delete(organization.id)
             await uow.commit()
