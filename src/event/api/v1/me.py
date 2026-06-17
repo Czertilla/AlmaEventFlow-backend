@@ -76,12 +76,18 @@ async def get_my_collectives(
 ) -> list[dict]:
     async with collective_uow as uow:
         return [
-            {"id": c.id, "principal_id": c.principal_id, "is_verified": c.is_verified}
+            {
+                "id": c.id,
+                "principal_id": c.principal_id,
+                "is_verified": c.is_verified,
+            }
             for c in await uow.collectives.get_by_principal_id(user.person_id)
         ]
 
 
-@router.get("/collectives/{collective_id}/members", responses={**auth_responses()})
+@router.get(
+    "/collectives/{collective_id}/members", responses={**auth_responses()}
+)
 async def get_my_collective_members(
     collective_id: UUID,
     uow: MemberUOWDep,
@@ -93,7 +99,9 @@ async def get_my_collective_members(
     return await MemberService(uow).search(filter, page_param)
 
 
-@router.post("/collectives/{collective_id}/members", responses={**auth_responses()})
+@router.post(
+    "/collectives/{collective_id}/members", responses={**auth_responses()}
+)
 async def create_my_collective_member(
     collective_id: UUID,
     member_data: MemberCreateData,
@@ -108,7 +116,10 @@ async def create_my_collective_member(
     return await MemberService(uow).create(member_create)
 
 
-@router.patch("/collectives/{collective_id}/members/{member_id}", responses={**auth_responses()})
+@router.patch(
+    "/collectives/{collective_id}/members/{member_id}",
+    responses={**auth_responses()},
+)
 async def patch_my_collective_member(
     collective_id: UUID,
     member_id: UUID,
@@ -119,7 +130,10 @@ async def patch_my_collective_member(
     return await MemberService(uow).patch_roles(member_id, member_data)
 
 
-@router.delete("/collectives/{collective_id}/members/{member_id}", responses={**auth_responses()})
+@router.delete(
+    "/collectives/{collective_id}/members/{member_id}",
+    responses={**auth_responses()},
+)
 async def delete_my_collective_member(
     collective_id: UUID,
     member_id: UUID,
@@ -129,7 +143,9 @@ async def delete_my_collective_member(
     await MemberService(uow).delete(member_id)
 
 
-@router.get("/collectives/{collective_id}/roles", responses={**auth_responses()})
+@router.get(
+    "/collectives/{collective_id}/roles", responses={**auth_responses()}
+)
 async def get_my_collective_roles(
     collective_id: UUID,
     uow: RoleUOWDep,
@@ -141,7 +157,9 @@ async def get_my_collective_roles(
     return await RoleService(uow).search(filter, page_param)
 
 
-@router.post("/collectives/{collective_id}/roles", responses={**auth_responses()})
+@router.post(
+    "/collectives/{collective_id}/roles", responses={**auth_responses()}
+)
 async def create_my_collective_role(
     collective_id: UUID,
     role_data: RoleCreate,
@@ -155,7 +173,10 @@ async def create_my_collective_role(
     return await RoleService(uow).create(role_create)
 
 
-@router.patch("/collectives/{collective_id}/roles/{role_id}", responses={**auth_responses()})
+@router.patch(
+    "/collectives/{collective_id}/roles/{role_id}",
+    responses={**auth_responses()},
+)
 async def patch_my_collective_role(
     collective_id: UUID,
     role_id: UUID,
@@ -168,7 +189,10 @@ async def patch_my_collective_role(
     )
 
 
-@router.delete("/collectives/{collective_id}/roles/{role_id}", responses={**auth_responses()})
+@router.delete(
+    "/collectives/{collective_id}/roles/{role_id}",
+    responses={**auth_responses()},
+)
 async def delete_my_collective_role(
     collective_id: UUID,
     role_id: UUID,
@@ -178,7 +202,10 @@ async def delete_my_collective_role(
     await RoleService(uow).delete(role_id)
 
 
-@router.post("/collectives/{collective_id}/participations", responses={**auth_responses()})
+@router.post(
+    "/collectives/{collective_id}/participations",
+    responses={**auth_responses()},
+)
 async def create_my_collective_participation(
     collective_id: UUID,
     participation_data: MeParticipationCreate,
@@ -190,7 +217,25 @@ async def create_my_collective_participation(
     )
 
 
-@router.patch("/members/{member_id}/attendance/{attendance_id}", responses={**auth_responses()})
+@router.delete(
+    "/collectives/{collective_id}/participations/{event_id}",
+    responses={**auth_responses()},
+)
+async def cancel_my_collective_participation(
+    collective_id: UUID,
+    event_id: UUID,
+    uow: EventComposeUOWDep,
+    _: tuple[CollectiveORM, UserJWT] = Depends(verify_collective_principal),
+) -> None:
+    await EventService(uow).cancel_participation_for_collective(
+        collective_id, event_id
+    )
+
+
+@router.patch(
+    "/members/{member_id}/attendance/{attendance_id}",
+    responses={**auth_responses()},
+)
 async def patch_my_attendance(
     member_id: UUID,
     attendance_id: UUID,
@@ -203,7 +248,10 @@ async def patch_my_attendance(
     )
 
 
-@router.get("/collectives/{collective_id}/attendance/{attendance_id}", responses={**auth_responses()})
+@router.get(
+    "/collectives/{collective_id}/attendance/{attendance_id}",
+    responses={**auth_responses()},
+)
 async def get_my_collective_attendance(
     collective_id: UUID,
     attendance_id: UUID,
@@ -213,7 +261,10 @@ async def get_my_collective_attendance(
     return await AttendanceService(uow).read(attendance_id)
 
 
-@router.patch("/collectives/{collective_id}/attendance/{attendance_id}", responses={**auth_responses()})
+@router.patch(
+    "/collectives/{collective_id}/attendance/{attendance_id}",
+    responses={**auth_responses()},
+)
 async def patch_my_collective_attendance(
     collective_id: UUID,
     attendance_id: UUID,
@@ -226,7 +277,10 @@ async def patch_my_collective_attendance(
     )
 
 
-@router.delete("/collectives/{collective_id}/attendance/{attendance_id}", responses={**auth_responses()})
+@router.delete(
+    "/collectives/{collective_id}/attendance/{attendance_id}",
+    responses={**auth_responses()},
+)
 async def delete_my_collective_attendance(
     collective_id: UUID,
     attendance_id: UUID,
@@ -236,14 +290,19 @@ async def delete_my_collective_attendance(
     await AttendanceService(uow).delete(attendance_id)
 
 
-@router.post("/collectives/{collective_id}/participation/{participation_id}/attendance/verify", responses={**auth_responses()})
+@router.post(
+    "/collectives/{collective_id}/participation/{participation_id}/attendance/verify",
+    responses={**auth_responses()},
+)
 async def verify_my_collective_attendance(
     collective_id: UUID,
     participation_id: UUID,
     uow: AttendanceUOWDep,
     _: tuple[CollectiveORM, UserJWT] = Depends(verify_collective_principal),
 ) -> list[AttendanceRead]:
-    return await AttendanceService(uow).verify_by_participation(participation_id)
+    return await AttendanceService(uow).verify_by_participation(
+        participation_id
+    )
 
 
 @router.post("/events", responses={**auth_responses()})
@@ -255,7 +314,10 @@ async def create_my_event(
     return await EventService(uow).create_with_collective(event_data, user)
 
 
-@router.put("/collectives/{collective_id}/events/{event_id}", responses={**auth_responses()})
+@router.put(
+    "/collectives/{collective_id}/events/{event_id}",
+    responses={**auth_responses()},
+)
 async def put_my_collective_event(
     collective_id: UUID,
     event_id: UUID,
@@ -268,7 +330,10 @@ async def put_my_collective_event(
     )
 
 
-@router.patch("/collectives/{collective_id}/events/{event_id}", responses={**auth_responses()})
+@router.patch(
+    "/collectives/{collective_id}/events/{event_id}",
+    responses={**auth_responses()},
+)
 async def patch_my_collective_event(
     collective_id: UUID,
     event_id: UUID,
@@ -281,7 +346,10 @@ async def patch_my_collective_event(
     )
 
 
-@router.delete("/collectives/{collective_id}/events/{event_id}", responses={**auth_responses()})
+@router.delete(
+    "/collectives/{collective_id}/events/{event_id}",
+    responses={**auth_responses()},
+)
 async def delete_my_collective_event(
     collective_id: UUID,
     event_id: UUID,
@@ -333,9 +401,7 @@ async def delete_my_collective_event_stage(
     uow: EventComposeUOWDep,
     _: tuple[CollectiveORM, UserJWT] = Depends(verify_collective_principal),
 ) -> None:
-    await EventService(uow).delete_stage_for_collective(
-        collective_id, stage_id
-    )
+    await EventService(uow).delete_stage_for_collective(collective_id, stage_id)
 
 
 @router.post(

@@ -1,7 +1,7 @@
 from logging import getLogger
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from core.service.base import BaseService, required_transaction
@@ -443,6 +443,52 @@ class EventService(BaseService[EventUOW]):
                     )
                 )
             await self._delete(event_id)
+            await uow.commit()
+
+    async def cancel_participation_for_collective(
+        self, collective_id: UUID, event_id: UUID
+    ) -> None:
+        """Руководитель отменяет участие своего коллектива в мероприятии.
+
+        Удаляется только участие этого коллектива (отметки посещаемости
+        каскадно удаляются по FK). Если коллектив был последним участником —
+        удаляется само мероприятие и пишется лог отмены, как при
+        :meth:`delete_for_collective`.
+        """
+        async with self.uow as uow:
+            participation = await self._require_collective_participation(
+                collective_id, event_id
+            )
+            await uow.participations.delete_one(participation.id)
+            await uow.session.flush()
+
+            remaining = (
+                await uow.session.execute(
+                    select(func.count())
+                    .select_from(ParticipationORM)
+                    .where(ParticipationORM.event_id == event_id)
+                )
+            ).scalar_one()
+
+            if remaining == 0:
+                event = await uow.events.get_by_id(event_id)
+                if event is not None:
+                    logger.debug(
+                        "Last collective %s left event %s; deleting event",
+                        collective_id,
+                        event_id,
+                    )
+                    uow.session.add(
+                        CalendarChangeLogORM(
+                            change_type=CalendarChangeTypeEnum.removed.value,
+                            event_id=event_id,
+                            collective_id=collective_id,
+                            participation_id=participation.id,
+                            event_name=event.name,
+                            event_date=event.date,
+                        )
+                    )
+                    await self._delete(event_id)
             await uow.commit()
 
     # --- Этапы мероприятия от лица руководителя коллектива-участника ---

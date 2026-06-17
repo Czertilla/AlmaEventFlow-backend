@@ -92,6 +92,23 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         async with self.uow:
             return PassportRead.model_validate(await self._read(passport_id))
 
+    async def search(
+        self,
+        filter: PassportFilter,
+        page_params: SPageParam = SPageParam(),
+    ) -> SPage[PassportItemRead]:
+        async with self.uow as uow:
+            passports, total = await uow.passports.search(filter, page_params)
+            return SPage(
+                items=[
+                    PassportItemRead.model_validate(passport)
+                    for passport in passports
+                ],
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
+            )
+
     async def search_by_profile(
         self,
         profile_id: UUID,

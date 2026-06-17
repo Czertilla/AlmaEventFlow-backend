@@ -1,4 +1,5 @@
 from uuid import UUID
+from sqlalchemy.orm import selectinload
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin, UpsertRepositoryMixin, SearchRepositoryMixin
 
@@ -15,4 +16,7 @@ class ParticipationRepo(
     conflict_index_elements = ["collective_id", "event_id"]
 
     async def search(self, filter, pagination, *, options=None):
-        return await super().search(filter, pagination)
+        # Eager-load the collective so responses can expose its name.
+        if options is None:
+            options = (selectinload(Model.collective),)
+        return await super().search(filter, pagination, options=options)

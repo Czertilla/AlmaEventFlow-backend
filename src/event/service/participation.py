@@ -2,6 +2,7 @@ from logging import getLogger
 from uuid import UUID
 
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from core.service.base import BaseService, required_transaction
 from core.schema.pagination import SPage, SPageParam, SPagination
@@ -22,6 +23,14 @@ logger = getLogger(__name__)
 
 
 class ParticipationService(BaseService[ParticipationUOW]):
+    @staticmethod
+    def _to_read(participation: ParticipationORM) -> ParticipationRead:
+        result = ParticipationRead.model_validate(participation)
+        collective = getattr(participation, "collective", None)
+        if collective is not None:
+            result.collective_name = collective.name
+        return result
+
     @required_transaction
     async def _create(
         self, participation_create: ParticipationCreate
@@ -36,7 +45,8 @@ class ParticipationService(BaseService[ParticipationUOW]):
     @required_transaction
     async def _read(self, participation_id: UUID) -> ParticipationORM | None:
         participation = await self.uow.participations.get_by_id(
-            participation_id
+            participation_id,
+            options=(selectinload(ParticipationORM.collective),),
         )
         return participation
 
@@ -69,7 +79,7 @@ class ParticipationService(BaseService[ParticipationUOW]):
     async def read(self, participation_id: UUID) -> ParticipationRead:
         async with self.uow:
             participation = await self._read(participation_id)
-            return ParticipationRead.model_validate(participation)
+            return self._to_read(participation)
 
     async def patch(
         self, participation_patch: ParticipationPatch
@@ -143,9 +153,7 @@ class ParticipationService(BaseService[ParticipationUOW]):
         async with self.uow as uow:
             items, total = await uow.participations.search(filter, page_params)
             return SPage(
-                items=[
-                    ParticipationRead.model_validate(item) for item in items
-                ],
+                items=[self._to_read(item) for item in items],
                 pagination=SPagination(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),

@@ -77,6 +77,23 @@ class ContactService(BaseService[ContactUOW | PersonContactUOW]):
         async with self.uow:
             return ContactRead.model_validate(await self._read(contact_id))
 
+    async def search(
+        self,
+        filter: ContactFilter,
+        page_params: SPageParam = SPageParam(),
+    ) -> SPage[ContactItemRead]:
+        async with self.uow as uow:
+            contacts, total = await uow.contacts.search(filter, page_params)
+            return SPage(
+                items=[
+                    ContactItemRead.model_validate(contact)
+                    for contact in contacts
+                ],
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
+            )
+
     async def search_by_person(
         self,
         person_id: UUID,

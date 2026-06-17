@@ -1,10 +1,17 @@
 from uuid import UUID
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 from logging import getLogger
 
 from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
+from core.schema.pagination import SPage, SPageParam
 from profile.dependency.student import StudentUOWDep
+from profile.filter.student import (
+    StudentDegreeFilter,
+    StudentFilter,
+    StudentGroupFilter,
+)
 from profile.schema.student import (
     StudentCreate,
     StudentDegreeCreate,
@@ -34,6 +41,16 @@ from profile.service.student import (
 router = APIRouter(prefix="/students", tags=["student"])
 
 logger = getLogger(__name__)
+
+
+@router.get("", responses={**auth_responses()})
+async def get_students(
+    user: SuperUserJWTDep,
+    uow: StudentUOWDep,
+    filter: StudentFilter = FilterDepends(StudentFilter),
+    page_param: SPageParam = Depends(SPageParam),
+) -> SPage[StudentRead]:
+    return await StudentService(uow).search(filter, page_param)
 
 
 @router.get("/{student_id}", responses={**auth_responses(), **entity_not_found_responses("student")})
@@ -85,6 +102,16 @@ async def delete_student(
 degree_router = APIRouter(prefix="/degrees", tags=["student", "degree"])
 
 
+@degree_router.get("", responses={**auth_responses()})
+async def get_student_degrees(
+    user: ActiveUserJWTDep,
+    uow: StudentUOWDep,
+    filter: StudentDegreeFilter = FilterDepends(StudentDegreeFilter),
+    page_param: SPageParam = Depends(SPageParam),
+) -> SPage[StudentDegreeRead]:
+    return await StudentDegreeService(uow).search(filter, page_param)
+
+
 @degree_router.get("/{degree_id}", responses={**auth_responses(), **entity_not_found_responses("student_degree")})
 async def get_student_degree(
     degree_id: UUID, user: UserJWTDep, uow: StudentUOWDep
@@ -132,6 +159,16 @@ async def delete_student_degree(
 
 # Student Groups Router
 group_router = APIRouter(prefix="/groups", tags=["student", "group"])
+
+
+@group_router.get("", responses={**auth_responses()})
+async def get_student_groups(
+    user: ActiveUserJWTDep,
+    uow: StudentUOWDep,
+    filter: StudentGroupFilter = FilterDepends(StudentGroupFilter),
+    page_param: SPageParam = Depends(SPageParam),
+) -> SPage[StudentGroupRead]:
+    return await StudentGroupService(uow).search(filter, page_param)
 
 
 @group_router.get("/{group_id}", responses={**auth_responses(), **entity_not_found_responses("student_group")})

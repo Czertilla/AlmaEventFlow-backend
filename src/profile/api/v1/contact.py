@@ -96,6 +96,16 @@ async def delete_my_contact(
     await service.delete(contact_id)
 
 
+@router.get("", responses={**auth_responses()})
+async def get_contacts(
+    user: SuperUserJWTDep,
+    uow: ContactUOWDep,
+    filter: ContactFilter = FilterDepends(ContactFilter),
+    page_params=Depends(SPageParam),
+) -> SPage[ContactItemRead]:
+    return await ContactService(uow).search(filter, page_params)
+
+
 @router.get("/{id}", responses={**auth_responses(), **entity_not_found_responses("contact")})
 async def get_contact(
     uow: ContactUOWDep,

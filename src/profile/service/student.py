@@ -1,9 +1,17 @@
 from logging import getLogger
 from uuid import UUID
 
+from sqlalchemy.orm import selectinload
+
+from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
 
 from profile.exc.student import StudentNotExistsException
+from profile.filter.student import (
+    StudentDegreeFilter,
+    StudentFilter,
+    StudentGroupFilter,
+)
 from profile.models.student import StudentORM
 from profile.schema.student import (
     StudentCreate,
@@ -69,6 +77,28 @@ class StudentService(BaseService[StudentUOW]):
     async def read(self, student_id: UUID) -> StudentRead:
         async with self.uow:
             return StudentRead.model_validate(await self._read(student_id))
+
+    async def search(
+        self, filter: StudentFilter, page_params: SPageParam = SPageParam()
+    ) -> SPage[StudentRead]:
+        async with self.uow as uow:
+            students, total = await uow.students.search(
+                filter,
+                page_params,
+                options=(
+                    selectinload(StudentORM.person),
+                    selectinload(StudentORM.profile),
+                    selectinload(StudentORM.group),
+                ),
+            )
+            return SPage(
+                items=[
+                    StudentRead.model_validate(student) for student in students
+                ],
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
+            )
 
     async def patch(self, student_patch: StudentPatch) -> StudentRead:
         async with self.uow as uow:
@@ -138,6 +168,25 @@ class StudentDegreeService(BaseService[StudentUOW]):
         async with self.uow:
             return StudentDegreeRead.model_validate(await self._read(degree_id))
 
+    async def search(
+        self,
+        filter: StudentDegreeFilter,
+        page_params: SPageParam = SPageParam(),
+    ) -> SPage[StudentDegreeRead]:
+        async with self.uow as uow:
+            degrees, total = await uow.student_degrees.search(
+                filter, page_params
+            )
+            return SPage(
+                items=[
+                    StudentDegreeRead.model_validate(degree)
+                    for degree in degrees
+                ],
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
+            )
+
     async def patch(self, degree_patch: StudentDegreePatch) -> StudentDegreeRead:
         async with self.uow as uow:
             degree_data = degree_patch.model_dump()
@@ -205,6 +254,24 @@ class StudentGroupService(BaseService[StudentUOW]):
     async def read(self, group_id: UUID) -> StudentGroupRead:
         async with self.uow:
             return StudentGroupRead.model_validate(await self._read(group_id))
+
+    async def search(
+        self,
+        filter: StudentGroupFilter,
+        page_params: SPageParam = SPageParam(),
+    ) -> SPage[StudentGroupRead]:
+        async with self.uow as uow:
+            groups, total = await uow.student_groups.search(
+                filter, page_params
+            )
+            return SPage(
+                items=[
+                    StudentGroupRead.model_validate(group) for group in groups
+                ],
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
+            )
 
     async def patch(self, group_patch: StudentGroupPatch) -> StudentGroupRead:
         async with self.uow as uow:

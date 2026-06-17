@@ -113,6 +113,16 @@ async def delete_my_passport(
     )
 
 
+@router.get("", responses={**auth_responses()})
+async def get_passports(
+    user: SuperUserJWTDep,
+    uow: PassportUOWDep,
+    filter: PassportFilter = FilterDepends(PassportFilter),
+    page_params=Depends(SPageParam),
+) -> SPage[PassportItemRead]:
+    return await PassportService(uow).search(filter, page_params)
+
+
 @router.post("/{passport_id}", responses={**auth_responses(), **entity_not_found_responses("passport")})
 async def get_passport(
     passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep

@@ -19,7 +19,8 @@ class ParticipationCreate(ParticipationCreateData):
     collective_id: UUID
 
 
-class ParticipationRead(ParticipationCreate, UUIDMixin): ...
+class ParticipationRead(ParticipationCreate, UUIDMixin):
+    collective_name: str | None = None
 
 
 class ParticipationPatchData(PatchModel):
