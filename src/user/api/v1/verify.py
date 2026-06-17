@@ -31,18 +31,18 @@ def get_verify_router(
         try:
             await user_manager.verify(token, request)
             return templates.TemplateResponse(
+                request,
                 "verification_result.html",
                 {
-                    "request": request,
                     "success": True,
                     "login_url": "https://aef.czertilla.ru/auth/login",
                 },
             )
         except exceptions.UserAlreadyVerified:
             return templates.TemplateResponse(
+                request,
                 "verification_result.html",
                 {
-                    "request": request,
                     "success": False,
                     "title": "Уже подтверждён",
                     "message": "Ваш аккаунт уже был подтверждён ранее.",
@@ -50,9 +50,9 @@ def get_verify_router(
             )
         except (exceptions.InvalidVerifyToken, exceptions.UserNotExists):
             return templates.TemplateResponse(
+                request,
                 "verification_result.html",
                 {
-                    "request": request,
                     "success": False,
                 },
             )
