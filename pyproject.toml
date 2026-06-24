@@ -31,6 +31,8 @@ bot = [
 ]
 dev = [
     "pytest>=9.1.0",
+    "pytest-asyncio>=0.24.0",
+    "aiosqlite>=0.20.0",
     "uvicorn>=0.37.0",
 ]
 event = [
@@ -42,6 +44,10 @@ geo = [
 ]
 mail = [
     "fastapi-mail>=1.6.4",
+    "jinja2>=3.1.6",
+]
+notify = [
+    "pywebpush>=2.0.0",
 ]
 prod = [
     "gunicorn>=26.0.0",
@@ -57,3 +63,7 @@ user = [
     "fastapi-users[oauth,sqlalchemy]>=15.0.5",
     "jinja2>=3.1.6",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

@@ -295,6 +295,37 @@ services:
       - "traefik.http.routers.geo.tls.certresolver=myresolver"
       - "traefik.http.services.geo.loadbalancer.server.port=8000"
 
+  notify:
+    build:
+      context: .
+      dockerfile: src/notify/Dockerfile
+    env_file:
+      - .env
+    container_name: notify
+    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && alembic -n notify upgrade head && uvicorn notify.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - 8007:8000
+    volumes:
+      - type: bind
+        source: ./logs/notify/
+        target: /app/logs
+      # Mount VAPID key files and set WEB_PUSH_VAPID_*_PATH to use file locators:
+      # - type: bind
+      #   source: ./secrets/vapid_private.key
+      #   target: /app/vapid_private.key
+      #   read_only: true
+    depends_on:
+      pg:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.notify.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/notify`)"
+      - "traefik.http.routers.notify.entrypoints=websecure"
+      - "traefik.http.routers.notify.tls.certresolver=myresolver"
+      - "traefik.http.services.notify.loadbalancer.server.port=8000"
+
   frontend:
     build:
       context: frontend
