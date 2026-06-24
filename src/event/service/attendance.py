@@ -23,11 +23,26 @@ from event.exc.event import (
 )
 from event.uow.attendance import AttendanceUOW
 from core.utils.exc.http import VancedHTTPException
+from event.uow.me import ParticipationComposeUOW
 
 logger = getLogger(__name__)
 
 
-class AttendanceService(BaseService[AttendanceUOW]):
+class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
+    def __init__(self, uow):
+        super().__init__(uow)
+        self.active_event_id: UUID | None = None
+
+    async def on_creation(self, attendance_read: AttendanceRead):
+        if self.active_event_id:
+            ...
+
+    @required_transaction
+    async def _check_event_active(self, attendance_id: UUID):
+        self.active_event_id = await self.uow.attendances.active_event_id(
+            attendance_id
+        )
+
     @required_transaction
     async def _create(
         self, attendance_create: AttendanceCreate
@@ -67,6 +82,7 @@ class AttendanceService(BaseService[AttendanceUOW]):
         async with self.uow as uow:
             attendance = await self._create(attendance_create)
             result = AttendanceRead.model_validate(attendance)
+            await self._check_event_active(attendance.id)
             await uow.commit()
         return result
 
@@ -141,6 +157,7 @@ class AttendanceService(BaseService[AttendanceUOW]):
             )
             attendance = await self._create(attendance_create)
             result = AttendanceRead.model_validate(attendance)
+            await self._check_event_active(attendance.id)
             await uow.commit()
         return result
 
@@ -166,5 +183,6 @@ class AttendanceService(BaseService[AttendanceUOW]):
             items, total = await uow.attendances.search(filter, page_params)
             return SPage(
                 items=[AttendanceRead.model_validate(item) for item in items],
-                pagination=SPagination(page=page_params.page, limit=page_params.limit, total=total),
+                pagination=SPagination(
+                    page=page_params.page, limit=page_params.limit, total=total),
             )

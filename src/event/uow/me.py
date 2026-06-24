@@ -8,8 +8,8 @@ from event.uow.attendance import AttendanceMixin
 
 
 class EventComposeUOW(UnitOfWork, CollectiveMixin, EventMixin, StageMixin, ParticipationMixin, MemberMixin, AttendanceMixin):
-    pass
+    ...
 
 
 class ParticipationComposeUOW(UnitOfWork, ParticipationMixin, MemberMixin, AttendanceMixin):
-    pass
+    ...
