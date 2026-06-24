@@ -20,6 +20,12 @@ if not settings.IN_MEMORY_BROKER:
         logger.info(f"Kafka URI configuration: host={host}, port={port}")
         return f"{host}:{port}"
 
+    def _connection_kwargs() -> dict:
+        kwargs: dict = {}
+        if settings.KAFKA_SECURITY_PROTOCOL:
+            kwargs["security_protocol"] = settings.KAFKA_SECURITY_PROTOCOL
+        return kwargs
+
     class KafkaBroker(BaseKafkaBroker):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -43,12 +49,19 @@ if not settings.IN_MEMORY_BROKER:
     class KafkaStreamRouter(BaseKafkaStreamRouter):
         def __init__(self, url: str = kafka_uri(), *args, **kwargs):
             logger.info(f"KafkaStreamRouter initializing with URL: {url}")
-            super().__init__(url, *args, **kwargs)
+            super().__init__(url, *args, **{**_connection_kwargs(), **kwargs})
 
     class KafkaRouter(BaseKafkaRouter):
         def __init__(self, *args, **kwargs):
             logger.info("KafkaRouter initializing")
             super().__init__(*args, **kwargs)
+
+        def subscriber(self, *args, **kwargs):
+            """Injects the configured consumer group when the caller did not set
+            one and ``KAFKA_CONSUMER_GROUP`` is configured."""
+            if settings.KAFKA_CONSUMER_GROUP and "group_id" not in kwargs:
+                kwargs["group_id"] = settings.KAFKA_CONSUMER_GROUP
+            return super().subscriber(*args, **kwargs)
 
     @lru_cache
     def geStreamRouter() -> KafkaStreamRouter:

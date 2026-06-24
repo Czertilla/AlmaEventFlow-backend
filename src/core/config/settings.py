@@ -82,6 +82,13 @@ class Settings(BaseSettings):
     KAFKA_PORT: str = "9092"
     """Port number on which the Kafka server is running."""
 
+    KAFKA_CONSUMER_GROUP: str | None = None
+    """Default consumer group injected into ``KafkaRouter`` subscribers when set.
+    Unset preserves faststream's per-subscriber default (no shared group)."""
+
+    KAFKA_SECURITY_PROTOCOL: str | None = None
+    """aiokafka security protocol (e.g. ``SASL_SSL``). Unset → ``PLAINTEXT``."""
+
     PASS_SECRET: Secret[str] = "SECRET"
     USER_SECRET: Secret[str] = "SECRET"
 

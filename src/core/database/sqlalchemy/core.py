@@ -1,11 +1,17 @@
 from logging import getLogger, Logger
 from typing import Any, Generic, TypeVar
-from sqlalchemy.types import JSON, DateTime
+from sqlalchemy.types import DateTime
 from datetime import datetime
 from sqlalchemy.orm import DeclarativeBase, Session
 from sqlalchemy import Result, SQLColumnExpression, exists, func, insert, select
 
 from ...utils.abstract.repository import AbstractRepository
+from .session import settings
+
+if settings.DB_DBMS == "postgres":
+    from sqlalchemy.dialects.postgresql import JSONB as JSON
+else:
+    from sqlalchemy import JSON
 
 class BasePreference:
     
@@ -16,10 +22,7 @@ class BasePreference:
 
 class Base(BasePreference, DeclarativeBase):
     __abstract__ = True
-
-    # SQLAlchemy reads type_annotation_map only from the declarative base's own
-    # __dict__ (not via MRO), so it must be redeclared here, not just inherited
-    # from BasePreference.
+    
     type_annotation_map = BasePreference.type_annotation_map
 
 

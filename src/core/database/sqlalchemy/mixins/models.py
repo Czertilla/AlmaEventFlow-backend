@@ -16,12 +16,16 @@ class TimestampMixin:
     def edited_at(cls) -> Mapped[datetime | None]:
         return mapped_column(onupdate=func.now())
 
+
 ID = TypeVar('ID', int, UUID, str)
+
 
 class IdMixinProtocol(Protocol):
     id: Mapped[ID]
 
+
 IDMixin = TypeVar('IDMixin', bound=IdMixinProtocol)
+
 
 class UUIDMixin:
     """
@@ -43,13 +47,23 @@ class SerialMixin:
     @declared_attr
     def id(cls) -> Mapped[int]:
         return mapped_column(Integer, primary_key=True, autoincrement=True)
-    
+
+
 class BigSerialMixin:
     @declared_attr
     def id(cls) -> Mapped[int]:
-        return mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    
+        return mapped_column(
+            BigInteger().with_variant(Integer, "sqlite"),
+            primary_key=True,
+            autoincrement=True,
+        )
+
+
 class SmallSerialMixin:
     @declared_attr
     def id(cls) -> Mapped[int]:
-        return mapped_column(SmallInteger, primary_key=True, autoincrement=True)
+        return mapped_column(
+            SmallInteger().with_variant(Integer, "sqlite"),
+            primary_key=True, 
+            autoincrement=True
+        )
