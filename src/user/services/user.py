@@ -19,6 +19,7 @@ from fastapi_users.password import PasswordHelperProtocol, PasswordHelper
 from fastapi_users.jwt import generate_jwt, decode_jwt
 from pydantic import BaseModel
 
+from core.schema.message.notify import NotificationRequest
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, T, required_transaction
 from core.config.settings import settings
@@ -41,9 +42,16 @@ from user.schemas.user import (
     InviteTokenData,
 )
 from user.uow.user import UserUOW
+from user.utils.account import (
+    publish_account_created,
+    publish_account_deleted,
+    publish_account_email_verified,
+    publish_account_updated,
+)
 from user.utils.mail import send_verify_message
 from user.utils.token import generate_refresh_token
 from user.utils.cookie import set_refresh_cookie
+from core.utils.notify import send_notification
 
 SECRET = settings.PASS_SECRET
 
@@ -454,6 +462,7 @@ class UserService(
         self, user: UserORM, request: Optional[Request] = None
     ):
         logger.info(f"User {user.id} has registered.")
+        await publish_account_created(user.id, user.email, user.is_verified)
 
     async def on_after_update(
         self,
@@ -461,7 +470,10 @@ class UserService(
         update_dict: dict[str, Any],
         request: Optional[Request] = None,
     ) -> None:
-        return  # pragma: no cover
+        if update_dict.keys() & {"email", "is_verified"}:
+            await publish_account_updated(
+                user.id, user.email, user.is_verified
+            )
 
     async def on_after_request_verify(
         self, user: UserORM, token: str, request: Optional[Request] = None
@@ -474,7 +486,7 @@ class UserService(
     async def on_after_verify(
         self, user: models.UP, request: Optional[Request] = None
     ) -> None:
-        return  # pragma: no cover
+        await publish_account_email_verified(user.id)
 
     async def on_after_forgot_password(
         self, user: UserORM, token: str, request: Optional[Request] = None
@@ -500,6 +512,7 @@ class UserService(
         if not refresh_already:
             raw_refresh, _, _, _ = await self._create_session(user.id)
             set_refresh_cookie(response, raw_refresh)
+        await send_notification(NotificationRequest(user_ids=[user.id], title="Вход в систему"))
 
     async def on_before_delete(
         self, user: models.UP, request: Optional[Request] = None
@@ -509,7 +522,7 @@ class UserService(
     async def on_after_delete(
         self, user: models.UP, request: Optional[Request] = None
     ) -> None:
-        return  # pragma: no cover
+        await publish_account_deleted(user.id)
 
     async def authenticate(
         self, credentials: OAuth2PasswordRequestForm

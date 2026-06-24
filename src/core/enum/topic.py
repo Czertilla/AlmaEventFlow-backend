@@ -29,3 +29,13 @@ class CollectiveTopic(StrEnum):
     CREATED = "collective-created"
     UPDATED = "collective-updated"
     DELETED = "collective-deleted"
+
+
+class AccountTopic(StrEnum):
+    """User account events published by the ``user`` service and projected by
+    ``notify`` into its local ``account`` read model."""
+
+    CREATED = "account-created"
+    UPDATED = "account-updated"
+    EMAIL_VERIFIED = "account-email-verified"
+    DELETED = "account-deleted"
