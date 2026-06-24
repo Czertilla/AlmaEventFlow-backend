@@ -1,6 +1,6 @@
 
 
-from fastapi import Depends
+from faststream import Depends
 
 from core.broker.kafka import KafkaRouter
 from core.dependencies.sqlalchemy import UOWDep

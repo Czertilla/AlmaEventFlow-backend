@@ -1,4 +1,4 @@
-from fastapi import Depends
+from faststream import Depends
 from core.broker.kafka import KafkaRouter
 from core.dependencies.sqlalchemy import UOWDep
 from core.enum.topic import AddressTopic
@@ -16,7 +16,7 @@ def get_address_event_router(
 ) -> KafkaRouter:
     router = KafkaRouter()
 
-    AddressUOWDep: AddressAUOW = Depends(UOWDep(uow_dep))
+    AddressUOWDep: AddressAUOW = Depends(uow_dep)
     AddressService = service_cls
 
     @router.subscriber(AddressTopic.CREATED)
