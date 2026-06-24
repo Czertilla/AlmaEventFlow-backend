@@ -38,7 +38,8 @@ if __name__ == "__main__":
         ("profile", 8002),
         ("event", 8003),
         ("org", 8004),
-        ("geo", 8005)
+        ("geo", 8005),
+        ("notify", 8006),
     )
     microservices = [
         Process(target=run_microservice, args=args, name=args[0])

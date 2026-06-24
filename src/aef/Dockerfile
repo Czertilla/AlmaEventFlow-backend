@@ -12,7 +12,7 @@ COPY pyproject.toml uv.lock ./
 
 # 3. Установка зависимостей через uv в виртуальное окружение
 RUN . /app/.venv/bin/activate && \
-    uv sync --group user --group bot --group geo --group mail --group report --group prod --frozen --group event
+    uv sync --group user --group bot --group geo --group mail --group report --group prod --frozen --group event --group notify
 
 # ===== RUNTIME STAGE =====
 FROM python:3.13-slim
