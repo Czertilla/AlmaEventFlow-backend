@@ -45,6 +45,9 @@ class WebPushTransport(DirectTransport):
     def is_available(self) -> bool:
         return webpush is not None and settings.vapid_configured
 
+    def batch_size(self) -> int:
+        return settings.WEBPUSH_DELIVERY_BATCH_SIZE
+
     def validate_client_payload(self, payload: dict[str, str]) -> dict[str, str]:
         p256dh = payload.get("p256dh")
         auth = payload.get("auth")

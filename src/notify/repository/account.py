@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from uuid import UUID
 
-from sqlalchemy import update
+from sqlalchemy import select, update
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -28,3 +28,14 @@ class AccountRepo(
             .where(self.model.id.in_(ids))
             .values(is_verified=True)
         )
+
+    async def user_ids_by_persons(
+        self, person_ids: Iterable[UUID]
+    ) -> list[UUID]:
+        person_ids = list(person_ids)
+        if not person_ids:
+            return []
+        stmt = select(self.model.id).where(
+            self.model.person_id.in_(person_ids)
+        )
+        return (await self.execute(stmt)).scalars().all()

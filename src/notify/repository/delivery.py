@@ -8,6 +8,7 @@ from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin
 from core.enum.notify import DeliveryStatus
 
+from notify.models.client import ClientORM
 from notify.models.delivery import NotificationDeliveryORM as Model
 
 
@@ -16,6 +17,53 @@ class NotificationDeliveryRepo(
     IDRepositoryMixin[Model, UUID],
 ):
     model = Model
+
+    async def load_sendable(
+        self, delivery_ids: Iterable[UUID]
+    ) -> list[tuple[Model, ClientORM | None]]:
+        """One query: non-terminal deliveries in the given set joined to their
+        endpoint. Terminal rows are excluded here (not per-row), so a redelivered
+        batch is idempotent without extra round-trips."""
+        ids = list(delivery_ids)
+        if not ids:
+            return []
+        stmt = (
+            select(self.model, ClientORM)
+            .outerjoin(ClientORM, ClientORM.id == self.model.client_id)
+            .where(
+                self.model.id.in_(ids),
+                self.model.status.notin_(list(DeliveryStatus.terminal())),
+            )
+        )
+        return [tuple(row) for row in (await self.execute(stmt)).all()]
+
+    async def bulk_set_status(
+        self,
+        ids: Iterable[UUID],
+        status: DeliveryStatus,
+        *,
+        next_attempt_at: datetime | None = None,
+        last_error: str | None = None,
+        increment_attempts: bool = True,
+    ) -> None:
+        ids = list(ids)
+        if not ids:
+            return
+        values: dict = {
+            "status": status,
+            "next_attempt_at": next_attempt_at,
+            "last_error": last_error,
+        }
+        if increment_attempts:
+            values["attempts"] = self.model.attempts + 1
+        await self.execute(
+            update(self.model)
+            .where(
+                self.model.id.in_(ids),
+                self.model.status.notin_(list(DeliveryStatus.terminal())),
+            )
+            .values(**values)
+        )
 
     async def get_due_retries(self, limit: int) -> list[Model]:
         """Locks deliveries whose backoff has elapsed, skipping rows already

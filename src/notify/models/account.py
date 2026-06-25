@@ -16,3 +16,4 @@ class AccountORM(ModuleBase, Base, TimestampMixin, UUIDMixin):
     email: Mapped[str] = mapped_column(String(256))
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     locale: Mapped[str | None] = mapped_column(String(16), default=None)
+    person_id: Mapped[UUID | None] = mapped_column(default=None, index=True)

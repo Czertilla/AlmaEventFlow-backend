@@ -59,12 +59,33 @@ class NotificationService(BaseService[NotifyUOW]):
         content = NotificationContent.from_request(request)
         forced = set(request.transports) if request.transports else None
         drafts: DraftsByTransport = defaultdict(list)
-        for user_id in request.user_ids:
+        for user_id in await self._resolve_user_ids(request):
             await self._plan_recipient(
                 notification, user_id, content, forced, drafts
             )
         await self._enqueue_batches(notification.id, drafts)
         return True
+
+    async def _resolve_user_ids(
+        self, request: NotificationRequest
+    ) -> list[UUID]:
+        """Merges explicit ``user_ids`` with users resolved from ``person_ids``
+        via the account projection. Persons without a projected account are
+        dropped (logged), since their address is unknown."""
+        user_ids = set(request.user_ids)
+        if request.person_ids:
+            resolved = await self.uow.accounts.user_ids_by_persons(
+                request.person_ids
+            )
+            user_ids.update(resolved)
+            if len(resolved) < len(set(request.person_ids)):
+                logger.info(
+                    "Resolved %d/%d persons to accounts for event %s",
+                    len(resolved),
+                    len(set(request.person_ids)),
+                    request.event_id,
+                )
+        return list(user_ids)
 
     @required_transaction
     async def _plan_recipient(

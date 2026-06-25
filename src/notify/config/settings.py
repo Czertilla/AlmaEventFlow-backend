@@ -31,6 +31,17 @@ class NotifySettings(Settings):
     """Maximum number of email deliveries grouped into one transport batch
     message. Larger recipient sets are split across several batch messages."""
 
+    WEBPUSH_DELIVERY_BATCH_SIZE: int = 100
+    """Maximum number of web push deliveries grouped into one transport batch
+    message handled together by the in-notify worker."""
+
+    WEBPUSH_LOAD_PAGE_SIZE: int = 200
+    """Page size for loading deliveries inside the web push worker, so a large
+    batch is processed in bounded chunks rather than all at once."""
+
+    WEBPUSH_SEND_CONCURRENCY: int = 50
+    """Maximum simultaneous web push sends per page."""
+
     OUTBOX_BATCH_SIZE: int = 100
     """Maximum number of outbox rows drained per publisher tick."""
 
