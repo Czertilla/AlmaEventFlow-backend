@@ -92,14 +92,23 @@ def test_email_batch_delivery_ids_match_items(monkeypatch):
     assert payload["delivery_ids"] == item_ids
 
 
-def test_web_push_emits_one_delivery_per_batch():
+def test_web_push_batches_carry_ids_without_items(monkeypatch):
+    monkeypatch.setattr(settings, "WEBPUSH_DELIVERY_BATCH_SIZE", 100)
     drafts = {TransportTypeEnum.webpush: [_webpush_draft() for _ in range(3)]}
     rows = _rows(drafts)
-    assert len(rows) == 3
-    for row in rows:
-        assert row.payload["transport"] == TransportTypeEnum.webpush.value
-        assert len(row.payload["delivery_ids"]) == 1
-        assert "items" not in row.payload
+    assert len(rows) == 1
+    payload = rows[0].payload
+    assert payload["transport"] == TransportTypeEnum.webpush.value
+    assert len(payload["delivery_ids"]) == 3
+    assert "items" not in payload
+
+
+def test_web_push_splits_by_batch_size(monkeypatch):
+    monkeypatch.setattr(settings, "WEBPUSH_DELIVERY_BATCH_SIZE", 2)
+    drafts = {TransportTypeEnum.webpush: [_webpush_draft() for _ in range(3)]}
+    rows = _rows(drafts)
+    assert len(rows) == 2
+    assert sorted(len(row.payload["delivery_ids"]) for row in rows) == [1, 2]
 
 
 def test_message_envelope_shape(monkeypatch):
