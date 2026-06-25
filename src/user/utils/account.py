@@ -19,24 +19,44 @@ logger = getLogger(__name__)
 
 
 async def publish_account_created(
-    user_id: UUID, email: EmailStr, is_verified: bool = False
+    user_id: UUID,
+    email: EmailStr,
+    is_verified: bool = False,
+    person_id: UUID | None = None,
 ) -> None:
     logger.debug("Publishing account.created for %s", user_id)
     await broker.publish(
         AccountCreatedEvent(
-            data=[AccountData(id=user_id, email=email, is_verified=is_verified)]
+            data=[
+                AccountData(
+                    id=user_id,
+                    email=email,
+                    is_verified=is_verified,
+                    person_id=person_id,
+                )
+            ]
         ),
         AccountTopic.CREATED,
     )
 
 
 async def publish_account_updated(
-    user_id: UUID, email: EmailStr, is_verified: bool
+    user_id: UUID,
+    email: EmailStr,
+    is_verified: bool,
+    person_id: UUID | None = None,
 ) -> None:
     logger.debug("Publishing account.updated for %s", user_id)
     await broker.publish(
         AccountUpdatedEvent(
-            data=[AccountData(id=user_id, email=email, is_verified=is_verified)]
+            data=[
+                AccountData(
+                    id=user_id,
+                    email=email,
+                    is_verified=is_verified,
+                    person_id=person_id,
+                )
+            ]
         ),
         AccountTopic.UPDATED,
     )

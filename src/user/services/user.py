@@ -462,7 +462,9 @@ class UserService(
         self, user: UserORM, request: Optional[Request] = None
     ):
         logger.info(f"User {user.id} has registered.")
-        await publish_account_created(user.id, user.email, user.is_verified)
+        await publish_account_created(
+            user.id, user.email, user.is_verified, user.person_id
+        )
 
     async def on_after_update(
         self,
@@ -470,9 +472,9 @@ class UserService(
         update_dict: dict[str, Any],
         request: Optional[Request] = None,
     ) -> None:
-        if update_dict.keys() & {"email", "is_verified"}:
+        if update_dict.keys() & {"email", "is_verified", "person_id"}:
             await publish_account_updated(
-                user.id, user.email, user.is_verified
+                user.id, user.email, user.is_verified, user.person_id
             )
 
     async def on_after_request_verify(
