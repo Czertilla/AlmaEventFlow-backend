@@ -53,6 +53,25 @@ class _Seeder:
             await session.commit()
         return ids
 
+    async def accounts_with_persons(
+        self, count: int
+    ) -> list[tuple[UUID, UUID]]:
+        from notify.models.account import AccountORM
+
+        pairs = [(uuid4(), uuid4()) for _ in range(count)]
+        async with self._sessionmaker() as session:
+            session.add_all(
+                AccountORM(
+                    id=user_id,
+                    email=f"person{i}@example.com",
+                    is_verified=True,
+                    person_id=person_id,
+                )
+                for i, (user_id, person_id) in enumerate(pairs)
+            )
+            await session.commit()
+        return pairs
+
     async def count(self, model) -> int:
         async with self._sessionmaker() as session:
             return (

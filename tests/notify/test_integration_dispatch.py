@@ -70,6 +70,35 @@ async def test_duplicate_request_is_idempotent(sessionmaker_, seed):
     assert await seed.count(OutboxEventORM) == 1
 
 
+async def test_person_ids_resolved_to_users(sessionmaker_, seed):
+    pairs = await seed.accounts_with_persons(3)
+    request = NotificationRequest(
+        person_ids=[person_id for _, person_id in pairs],
+        title="Subject",
+        transports=[TransportTypeEnum.email],
+    )
+    await NotificationService(NotifyUOW(sessionmaker_)).dispatch(request)
+
+    recipients = await seed.all(NotificationRecipientORM)
+    assert {r.user_id for r in recipients} == {
+        user_id for user_id, _ in pairs
+    }
+    assert await seed.count(NotificationDeliveryORM) == 3
+
+
+async def test_unresolvable_person_is_dropped(sessionmaker_, seed):
+    known = await seed.accounts_with_persons(1)
+    request = NotificationRequest(
+        person_ids=[known[0][1], uuid4()],
+        title="Subject",
+        transports=[TransportTypeEnum.email],
+    )
+    await NotificationService(NotifyUOW(sessionmaker_)).dispatch(request)
+
+    recipients = await seed.all(NotificationRecipientORM)
+    assert {r.user_id for r in recipients} == {known[0][0]}
+
+
 async def test_retry_due_delivery_is_reenqueued(sessionmaker_, seed):
     (user_id,) = await seed.accounts(1)
     async with sessionmaker_() as session:
