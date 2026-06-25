@@ -10,17 +10,18 @@ logger = getLogger(__name__)
 
 class NotifySettings(Settings):
     WEB_PUSH_VAPID_PUBLIC_KEY: str | None = None
-    """Inline VAPID public key (base64url). Ignored if ``*_PATH`` is set."""
+    """Inline VAPID public key (PEM). Ignored if ``*_PATH`` is set. The browser
+    ``applicationServerKey`` is derived from this key, not configured."""
 
     WEB_PUSH_VAPID_PRIVATE_KEY: Secret[str] | None = None
-    """Inline VAPID private key (PEM or base64url). Ignored if ``*_PATH`` is
-    set. Secret — never logged."""
+    """Inline VAPID private key (PEM). Ignored if ``*_PATH`` is set. Secret —
+    never logged."""
 
     WEB_PUSH_VAPID_PUBLIC_KEY_PATH: str | None = None
-    """File locator for the public key (preferred over inline, like RSA keys)."""
+    """File locator for the public key PEM (preferred over inline, like RSA)."""
 
     WEB_PUSH_VAPID_PRIVATE_KEY_PATH: str | None = None
-    """File locator for the private key (preferred over inline, like RSA keys)."""
+    """File locator for the private key PEM (preferred over inline, like RSA)."""
 
     WEB_PUSH_VAPID_SUBJECT: str = "mailto:admin@aef.czertilla.ru"
 

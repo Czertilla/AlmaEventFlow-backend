@@ -4,6 +4,8 @@ from datetime import datetime, timedelta, timezone
 from logging import getLogger
 from uuid import UUID
 
+import aiohttp
+
 from core.enum.notify import DeliveryStatus, TransportTypeEnum
 from core.schema.message.notify import WebPushDeliveryBatch
 from core.service.base import BaseService, required_transaction
@@ -74,14 +76,20 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
             )
             return
         content = NotificationContent.from_model(notification)
-        for page in chunked(list(delivery_ids), settings.WEBPUSH_LOAD_PAGE_SIZE):
-            await self._process_page(transport, list(page), content)
-            await self.uow.commit()
+        async with aiohttp.ClientSession() as session:
+            for page in chunked(
+                list(delivery_ids), settings.WEBPUSH_LOAD_PAGE_SIZE
+            ):
+                await self._process_page(
+                    transport, session, list(page), content
+                )
+                await self.uow.commit()
 
     @required_transaction
     async def _process_page(
         self,
         transport: WebPushTransport,
+        session: aiohttp.ClientSession,
         page_ids: list[UUID],
         content: NotificationContent,
     ) -> None:
@@ -90,7 +98,7 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
             return
         sendable, skipped = self._split(rows)
         results = (
-            await self._send_all(transport, sendable, content)
+            await self._send_all(transport, session, sendable, content)
             if sendable
             else []
         )
@@ -112,6 +120,7 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
     async def _send_all(
         self,
         transport: WebPushTransport,
+        session: aiohttp.ClientSession,
         sendable: list[Sendable],
         content: NotificationContent,
     ) -> list[WebPushDeliveryError | None]:
@@ -120,8 +129,8 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
         async def _send(client: ClientORM) -> WebPushDeliveryError | None:
             async with semaphore:
                 try:
-                    await transport.push(
-                        ClientTarget.model_validate(client), content
+                    await transport.send(
+                        session, ClientTarget.model_validate(client), content
                     )
                     return None
                 except WebPushDeliveryError as exc:
