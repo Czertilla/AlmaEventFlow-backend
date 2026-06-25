@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
-from pydantic import EmailStr, Field
+from pydantic import EmailStr, Field, model_validator
 
 from core.enum.notify import (
     DeliveryStatus,
@@ -17,11 +17,14 @@ def _utcnow() -> datetime:
 
 class NotificationRequest(MQRequest):
     """Inbound notification contract (``NotifyQueue.SEND``). ``event_id`` is the
-    idempotency key: re-publishing the same id is a no-op. ``transports``
+    idempotency key: re-publishing the same id is a no-op. Recipients are given
+    as ``user_ids`` and/or ``person_ids`` (the latter resolved to users via the
+    account projection); at least one must be non-empty. ``transports``
     optionally restricts the set of transports for this notification."""
 
     event_id: UUID = Field(default_factory=uuid4)
-    user_ids: list[UUID] = Field(min_length=1)
+    user_ids: list[UUID] = Field(default_factory=list)
+    person_ids: list[UUID] = Field(default_factory=list)
     category: NotificationCategory = NotificationCategory.general
     title: str
     body: str = ""
@@ -29,6 +32,12 @@ class NotificationRequest(MQRequest):
     data: dict[str, str] = Field(default_factory=dict)
     transports: list[TransportTypeEnum] | None = None
     expires_at: datetime | None = None
+
+    @model_validator(mode="after")
+    def _require_recipients(self) -> "NotificationRequest":
+        if not self.user_ids and not self.person_ids:
+            raise ValueError("user_ids or person_ids must be provided")
+        return self
 
 
 class TransportBatch(MQRequest):

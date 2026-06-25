@@ -6,12 +6,15 @@ from core.schema.message.core import MQEvent, MQRequest
 
 
 class AccountData(MQRequest):
-    """User account snapshot for projection in other services."""
+    """User account snapshot for projection in other services. ``person_id``
+    links the account to its profile person, letting consumers address
+    notifications by person."""
 
     id: UUID
     email: EmailStr
     is_verified: bool = False
     locale: str | None = None
+    person_id: UUID | None = None
 
 
 class AccountCreatedEvent(MQEvent[AccountData]): ...

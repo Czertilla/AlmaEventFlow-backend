@@ -70,9 +70,13 @@ def upgrade() -> None:
         sa.Column("email", sa.String(length=256), nullable=False),
         sa.Column("is_verified", sa.Boolean(), nullable=False),
         sa.Column("locale", sa.String(length=16), nullable=True),
+        sa.Column("person_id", sa.Uuid(), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("edited_at", sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_index(
+        op.f("ix_account_person_id"), "account", ["person_id"], unique=False
     )
 
     op.create_table(
@@ -304,6 +308,7 @@ def downgrade() -> None:
     op.drop_table("client")
     op.drop_index(op.f("ix_preference_user_id"), table_name="preference")
     op.drop_table("preference")
+    op.drop_index(op.f("ix_account_person_id"), table_name="account")
     op.drop_table("account")
     bind = op.get_bind()
     outbox_status.drop(bind, checkfirst=True)

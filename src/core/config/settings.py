@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     """Base URL of the user-facing frontend. Used to build event page links
     (e.g. in ICS calendar feeds: ``{FRONTEND_URL}/events/{event_id}``)."""
 
+    EVENT_NOTIFY_TRIGGER_STATUSES: list[str] = ["active"]
+    """Event status names that trigger 'mark your attendance' notifications when
+    an attendance becomes tied to such an event."""
+
     DB_DBMS: DBManagerType = DBManagerType.__default__
     """Type of database management system used (e.g., sqlite, postgres)."""
 
