@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timezone
 from fastapi_mail import MessageSchema, MessageType
 from logging import getLogger
@@ -22,6 +23,10 @@ router = KafkaRouter()
 
 
 logger = getLogger(__name__)
+
+EMAIL_SEND_CONCURRENCY = 10
+"""Upper bound on simultaneous provider sends per batch, so a large batch does
+not open one SMTP connection per recipient at once."""
 
 
 async def _report(
@@ -107,14 +112,19 @@ async def _deliver_item(item: EmailDeliveryItem) -> None:
 
 @router.subscriber(NotifyDeliveryQueue.EMAIL)
 async def deliver_notification_email(batch: EmailDeliveryBatch) -> None:
-    """Handles an email transport batch: sends each delivery and persists the
-    result per ``notification_delivery`` (never per batch)."""
+    """Handles an email transport batch: sends deliveries concurrently (bounded)
+    and persists the result per ``notification_delivery`` (never per batch)."""
     logger.info(
         "Email batch %s: %d deliveries", batch.message_id, len(batch.items)
     )
-    try:
-        for item in batch.items:
+    semaphore = asyncio.Semaphore(EMAIL_SEND_CONCURRENCY)
+
+    async def _bounded(item: EmailDeliveryItem) -> None:
+        async with semaphore:
             await _deliver_item(item)
+
+    try:
+        await asyncio.gather(*(_bounded(item) for item in batch.items))
     except Exception:
         logger.exception("Email batch %s failed", batch.message_id)
         await broker.publish(batch, NotifyDeliveryQueue.EMAIL_DLQ)
