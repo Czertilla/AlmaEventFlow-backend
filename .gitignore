@@ -27,3 +27,7 @@ letsencrypt/
 rsa_private.pem
 rsa_public.pem
 
+# VAPID keys for web push
+vapid_private.pem
+vapid_public.pem
+
