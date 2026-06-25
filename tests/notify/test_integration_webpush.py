@@ -71,12 +71,12 @@ async def test_batch_sends_once_and_writes_outcomes(
     transport = registry.get(TransportTypeEnum.webpush)
     sent_endpoints: list[str] = []
 
-    async def fake_push(client, content):
+    async def fake_send(session, client, content):
         sent_endpoints.append(client.endpoint)
         if client.endpoint.startswith("dead"):
             raise WebPushDeliveryError("gone", dead=True)
 
-    monkeypatch.setattr(transport, "push", fake_push)
+    monkeypatch.setattr(transport, "send", fake_send)
     monkeypatch.setattr(transport, "is_available", lambda: True)
 
     batch = WebPushDeliveryBatch(
@@ -108,10 +108,10 @@ async def test_terminal_deliveries_are_not_resent(sessionmaker_, seed, monkeypat
     transport = registry.get(TransportTypeEnum.webpush)
     calls: list[str] = []
 
-    async def fake_push(client, content):
+    async def fake_send(session, client, content):
         calls.append(client.endpoint)
 
-    monkeypatch.setattr(transport, "push", fake_push)
+    monkeypatch.setattr(transport, "send", fake_send)
     monkeypatch.setattr(transport, "is_available", lambda: True)
 
     batch = WebPushDeliveryBatch(

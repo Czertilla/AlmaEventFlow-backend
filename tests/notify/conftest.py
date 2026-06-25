@@ -1,31 +1,52 @@
+import os
 from collections.abc import Sequence
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import StaticPool
+
+_NOTIFY_TABLES = (
+    "notification_delivery",
+    "notification_recipient",
+    "outbox_event",
+    "notification",
+    "client",
+    "preference",
+    "account",
+)
+
+
+def _notify_url() -> str:
+    return (
+        f"postgresql+asyncpg://{os.environ['DB_USER']}:{os.environ['DB_PASS']}"
+        f"@{os.environ['DB_HOST']}:{os.environ['DB_PORT']}/notify"
+    )
 
 
 @pytest.fixture
-async def sessionmaker_():
-    """In-memory SQLite session factory with the notify schema created. A
-    StaticPool keeps a single shared connection so the schema persists across
-    sessions opened by the unit-of-work."""
-    from core.database.sqlalchemy.core import Base
-    import notify.models  # noqa: F401
-
-    engine = create_async_engine(
-        "sqlite+aiosqlite:///:memory:",
-        poolclass=StaticPool,
-        connect_args={"check_same_thread": False},
-    )
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+async def notify_engine(test_database):
+    """Function-scoped engine on the migrated notify database. Created and
+    disposed inside the test's event loop (asyncpg dislikes cross-loop reuse);
+    every notify table is truncated on teardown for per-test isolation."""
+    engine = create_async_engine(_notify_url())
     try:
-        yield async_sessionmaker(engine, expire_on_commit=False)
+        yield engine
     finally:
+        async with engine.begin() as conn:
+            await conn.execute(
+                text(
+                    "TRUNCATE "
+                    + ", ".join(_NOTIFY_TABLES)
+                    + " RESTART IDENTITY CASCADE"
+                )
+            )
         await engine.dispose()
+
+
+@pytest.fixture
+def sessionmaker_(notify_engine):
+    return async_sessionmaker(notify_engine, expire_on_commit=False)
 
 
 @pytest.fixture
