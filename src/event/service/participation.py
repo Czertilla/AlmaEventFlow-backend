@@ -17,6 +17,7 @@ from event.schema.participation import (
     ParticipationRead,
 )
 from event.service.attendance import AttendanceService
+from event.service.notification import notify_event_targets
 from event.uow.participation import ParticipationUOW
 
 logger = getLogger(__name__)
@@ -143,6 +144,9 @@ class ParticipationService(BaseService[ParticipationUOW]):
                     )
 
             await uow.commit()
+            await notify_event_targets(
+                uow, participation_ids=[participation_orm.id]
+            )
             return ParticipationRead.model_validate(participation_orm)
 
     async def search(

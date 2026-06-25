@@ -35,6 +35,7 @@ from event.schema.stage import (
     StageRead,
 )
 from event.service.attendance import AttendanceService
+from event.service.notification import is_trigger_status, notify_event_targets
 from event.service.participation import ParticipationService
 from event.service.stage import StageService
 from event.uow.event import EventUOW
@@ -166,6 +167,15 @@ class EventService(BaseService[EventUOW]):
     async def _delete(self, event_id: UUID) -> None:
         await self.uow.events.delete_one(event_id)
 
+    async def _publish_activation(
+        self, old_status: str | None, event: EventORM
+    ) -> None:
+        """Notifies attendees only on a transition into a trigger status, so
+        editing an already-active event never re-notifies."""
+        if is_trigger_status(old_status) or not is_trigger_status(event.status):
+            return
+        await notify_event_targets(self.uow, event_ids=[event.id])
+
     async def create(self, event_create: EventCreate) -> EventRead:
         async with self.uow as uow:
             event = await self._create(event_create)
@@ -193,6 +203,8 @@ class EventService(BaseService[EventUOW]):
     async def patch(self, event_patch: EventPatch) -> EventRead:
         async with self.uow as uow:
             await self._validate_patch_active_date(event_patch)
+            old = await self._read(event_patch.id)
+            old_status = old.status if old else None
             # PatchModel.model_dump already forces exclude_unset=True
             event_data = event_patch.model_dump(
                 exclude={"status", "level", "type"}
@@ -218,11 +230,14 @@ class EventService(BaseService[EventUOW]):
             event = await self._update(event_patch.id, event_data)
             result = self._orm_to_read(event)
             await uow.commit()
+            await self._publish_activation(old_status, event)
         return result
 
     async def put(self, event_put: EventPut) -> EventRead:
         async with self.uow as uow:
             self._ensure_active_has_date(event_put.status, event_put.date)
+            old = await self._read(event_put.id)
+            old_status = old.status if old else None
             event_data = event_put.model_dump(
                 exclude={"id", "status", "level", "type"}
             )
@@ -244,6 +259,7 @@ class EventService(BaseService[EventUOW]):
             event = await self._update(event_put.id, event_data)
             result = self._orm_to_read(event)
             await uow.commit()
+            await self._publish_activation(old_status, event)
         return result
 
     async def delete(self, event_id: UUID) -> None:
@@ -325,6 +341,7 @@ class EventService(BaseService[EventUOW]):
                     )
 
             await uow.commit()
+            await notify_event_targets(uow, event_ids=[event_orm.id])
 
             return MeEventRead(
                 **self._orm_to_read(event_orm).model_dump(),
@@ -357,6 +374,8 @@ class EventService(BaseService[EventUOW]):
                 collective_id, event_put.id
             )
             self._ensure_active_has_date(event_put.status, event_put.date)
+            old = await self._read(event_put.id)
+            old_status = old.status if old else None
 
             event_data = event_put.model_dump(
                 exclude={"id", "status", "level", "type"}
@@ -379,6 +398,7 @@ class EventService(BaseService[EventUOW]):
             event = await self._update(event_put.id, event_data)
             result = self._orm_to_read(event)
             await uow.commit()
+            await self._publish_activation(old_status, event)
         return result
 
     async def patch_for_collective(
@@ -389,6 +409,8 @@ class EventService(BaseService[EventUOW]):
                 collective_id, event_patch.id
             )
             await self._validate_patch_active_date(event_patch)
+            old = await self._read(event_patch.id)
+            old_status = old.status if old else None
 
             # PatchModel.model_dump already forces exclude_unset=True
             event_data = event_patch.model_dump(
@@ -415,6 +437,7 @@ class EventService(BaseService[EventUOW]):
             event = await self._update(event_patch.id, event_data)
             result = self._orm_to_read(event)
             await uow.commit()
+            await self._publish_activation(old_status, event)
         return result
 
     async def delete_for_collective(
