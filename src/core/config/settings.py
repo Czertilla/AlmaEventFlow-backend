@@ -103,6 +103,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_SECONDS: int = 604800
 
     REFRESH_COOKIE_NAME: str = "refresh"
+    SESSION_COOKIE_NAME: str = "session"
     AUTH_COOKIE_DOMAIN: str | None = None
     AUTH_COOKIE_SAMESITE: str = "strict"
     AUTH_COOKIE_SECURE: bool = True

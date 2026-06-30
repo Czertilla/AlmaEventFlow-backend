@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, TypedDict
 import uuid
 from pydantic import BaseModel, ConfigDict, Field
@@ -70,5 +71,20 @@ class OAuthAccountDict(TypedDict):
 class CheckResponse(BaseModel):
     username: Annotated[str, Field(max_length=50)]
     exists: bool
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class SessionRead(BaseModel):
+    """A single authenticated session of the current user, as surfaced by the
+    self-service session manager. ``is_current`` marks the session bound to the
+    refresh token presented in the request."""
+
+    id: uuid.UUID
+    device_info: str | None
+    ip_address: str | None
+    created_at: datetime
+    last_used_at: datetime
+    is_current: bool = False
 
     model_config = ConfigDict(from_attributes=True)

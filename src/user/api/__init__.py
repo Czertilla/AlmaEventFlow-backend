@@ -6,6 +6,7 @@ from user.services.oauth2 import google_oauth_client
 from user.api.v1.auth import router as auth_router
 from user.api.v1.verify import get_verify_router
 from user.api.v1.check import router as check_router
+from user.api.v1.sessions import router as sessions_router
 from user.api.kafka.sub.person import router as person_router
 from user.schemas.user import UserCreate, UserRead, UserUpdate
 from user.config.settings import settings
@@ -76,5 +77,7 @@ def include_routers(app: APIRouter):
         tags=["auth"],
     )
 
+
+    app.include_router(sessions_router, prefix=PREFIX, tags=["sessions"])
 
     app.include_router(check_router, prefix=PREFIX)

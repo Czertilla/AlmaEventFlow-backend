@@ -11,22 +11,17 @@ from user.config.settings import settings
 from user.dependencies.user import get_user_service
 from user.services.user import UserService
 from user.services.auth import get_jwt_strategy
-from user.utils.cookie import set_refresh_cookie, unset_refresh_cookie
+from user.utils.cookie import (
+    set_refresh_cookie,
+    set_session_cookie,
+    unset_refresh_cookie,
+    unset_session_cookie,
+)
+from user.utils.request import extract_device_info, extract_ip
 
 logger = getLogger(__name__)
 
 router = APIRouter()
-
-
-def _extract_device_info(request: Request) -> str | None:
-    return request.headers.get("user-agent")
-
-
-def _extract_ip(request: Request) -> str | None:
-    forwarded = request.headers.get("x-forwarded-for")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
-    return request.client.host if request.client else None
 
 
 @router.post(
@@ -62,11 +57,11 @@ async def login(
     strategy = get_jwt_strategy()
     access_token = await strategy.write_token(user)
 
-    device_info = _extract_device_info(request)
-    ip_address = _extract_ip(request)
+    device_info = extract_device_info(request)
+    ip_address = extract_ip(request)
 
     async with user_service.uow:
-        raw_refresh, _, _, _ = await user_service._create_session(
+        raw_refresh, _, _, session_id = await user_service._create_session(
             user.id, device_info=device_info, ip_address=ip_address
         )
         response = JSONResponse(
@@ -76,6 +71,7 @@ async def login(
             }
         )
         set_refresh_cookie(response, raw_refresh)
+        set_session_cookie(response, session_id)
         response._refresh_token_created = True
         await user_service.on_after_login(user, request, response)
         await user_service.uow.commit()
@@ -116,13 +112,17 @@ async def refresh(
         )
 
     async with user_service.uow:
-        result = await user_service._refresh_session(raw_refresh)
+        result = await user_service._refresh_session(
+            raw_refresh,
+            device_info=extract_device_info(request),
+            ip_address=extract_ip(request),
+        )
         await user_service.uow.commit()
     if result is None:
         raise VancedHTTPException(
             status_code=401, detail=ErrorCode.INVALID_REFRESH_TOKEN
         )
-    new_raw_refresh, _, user_id = result
+    new_raw_refresh, _, user_id, session_id = result
 
     user = await user_service.get(user_id)
 
@@ -137,6 +137,7 @@ async def refresh(
     )
 
     set_refresh_cookie(response, new_raw_refresh)
+    set_session_cookie(response, session_id)
     return response
 
 
@@ -156,6 +157,7 @@ async def logout(
             await user_service.uow.commit()
 
     unset_refresh_cookie(response)
+    unset_session_cookie(response)
 
     response.status_code = status.HTTP_204_NO_CONTENT
     return response

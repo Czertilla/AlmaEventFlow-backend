@@ -19,6 +19,7 @@ from fastapi_users.password import PasswordHelperProtocol, PasswordHelper
 from fastapi_users.jwt import generate_jwt, decode_jwt
 from pydantic import BaseModel
 
+from core.enum.notify import NotificationCategory
 from core.schema.message.notify import NotificationRequest
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, T, required_transaction
@@ -35,6 +36,7 @@ from user.filter.user import UserFilter
 from user.models.user import UserORM
 from user.schemas.user import (
     OAuthAccountDict,
+    SessionRead,
     UserOauthAccount,
     UserRead,
     InviteTokenCreate,
@@ -48,9 +50,10 @@ from user.utils.account import (
     publish_account_email_verified,
     publish_account_updated,
 )
-from user.utils.mail import send_verify_message
+from user.utils.mail import send_reset_message, send_verify_message
 from user.utils.token import generate_refresh_token
-from user.utils.cookie import set_refresh_cookie
+from user.utils.cookie import set_refresh_cookie, set_session_cookie
+from user.utils.request import extract_device_info, extract_ip
 from core.utils.notify import send_notification
 
 SECRET = settings.PASS_SECRET
@@ -378,12 +381,16 @@ class UserService(
     async def forgot_password(
         self, user: models.UP, request: Optional[Request] = None
     ) -> None:
-        if not user.is_active:
-            raise exceptions.UserInactive()
-
+        async with self.uow:
+            db_user = await self._get(user.id)
+            if not db_user.is_active:
+                raise exceptions.UserInactive()
+            fingerprint = self.password_helper.hash(
+                db_user.hashed_password
+            ).decode()
         token_data = {
-            "sub": str(user.id),
-            "password_fgpt": self.password_helper.hash(user.hashed_password),
+            "sub": str(db_user.id),
+            "password_fgpt": fingerprint,
             "aud": self.reset_password_token_audience,
         }
         token = generate_jwt(
@@ -391,7 +398,7 @@ class UserService(
             self.reset_password_token_secret,
             self.reset_password_token_lifetime_seconds,
         )
-        await self.on_after_forgot_password(user, token, request)
+        await self.on_after_forgot_password(db_user, token, request)
 
     @user_transaction(UserRead)
     async def reset_password(
@@ -493,9 +500,8 @@ class UserService(
     async def on_after_forgot_password(
         self, user: UserORM, token: str, request: Optional[Request] = None
     ):
-        logger.warning(
-            f"User {user.id} has forgot their password. Reset token: {token}"
-        )
+        logger.debug(f"User {user.id} requested a password reset")
+        await send_reset_message(email=user.email, token=token)
 
     async def on_after_reset_password(
         self, user: models.UP, request: Optional[Request] = None
@@ -510,11 +516,28 @@ class UserService(
     ) -> None:
         if response is None:
             return
+        device_info = extract_device_info(request)
         refresh_already = getattr(response, "_refresh_token_created", False)
         if not refresh_already:
-            raw_refresh, _, _, _ = await self._create_session(user.id)
+            raw_refresh, _, _, session_id = await self._create_session(
+                user.id,
+                device_info=device_info,
+                ip_address=extract_ip(request),
+            )
             set_refresh_cookie(response, raw_refresh)
-        await send_notification(NotificationRequest(user_ids=[user.id], title="Вход в систему"))
+            set_session_cookie(response, session_id)
+        body = (
+            f"Р’С‹РїРѕР»РЅРµРЅ РІС…РѕРґ СЃ СѓСЃС‚СЂРѕР№СЃС‚РІР°: {device_info}" if device_info else ""
+        )
+        logger.debug(f"Dispatching login notification for user {user.id}")
+        await send_notification(
+            NotificationRequest(
+                user_ids=[user.id],
+                category=NotificationCategory.system,
+                title="Р’С…РѕРґ РІ СЃРёСЃС‚РµРјСѓ",
+                body=body,
+            )
+        )
 
     async def on_before_delete(
         self, user: models.UP, request: Optional[Request] = None
@@ -661,8 +684,11 @@ class UserService(
 
     @required_transaction
     async def _refresh_session(
-        self, raw_token: str
-    ) -> tuple[str, str, uuid.UUID] | None:
+        self,
+        raw_token: str,
+        device_info: str | None = None,
+        ip_address: str | None = None,
+    ) -> tuple[str, str, uuid.UUID, uuid.UUID] | None:
         token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
         stored = await self.uow.refresh_tokens.get_by_token_hash(token_hash)
         if stored is None:
@@ -678,7 +704,11 @@ class UserService(
             return None
         stored.is_used = True
         await self.uow.session.flush()
-        await self.uow.sessions.update_last_used(stored.session_id)
+        await self.uow.sessions.update_last_used(
+            stored.session_id,
+            ip_address=ip_address,
+            device_info=device_info,
+        )
         new_raw, new_hashed = generate_refresh_token()
         await self.uow.refresh_tokens.add_one(
             {
@@ -689,7 +719,7 @@ class UserService(
                 + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRE_SECONDS),
             }
         )
-        return new_raw, new_hashed, stored.user_id
+        return new_raw, new_hashed, stored.user_id, stored.session_id
 
     @required_transaction
     async def _revoke_session(self, raw_token: str) -> None:
@@ -701,6 +731,66 @@ class UserService(
     @required_transaction
     async def _revoke_all_user_sessions(self, user_id: uuid.UUID) -> None:
         await self.uow.refresh_tokens.revoke_all_for_user(user_id)
+
+    async def list_sessions(
+        self, user_id: uuid.UUID, current_session_id: uuid.UUID | None = None
+    ) -> list[SessionRead]:
+        """Active sessions of the user. ``current_session_id`` (the caller's own
+        session, read from the session cookie) is flagged and sorted first."""
+        async with self.uow as uow:
+            sessions = await uow.sessions.list_active_for_user(user_id)
+            logger.debug(
+                f"Listing {len(sessions)} active sessions for user {user_id}"
+            )
+            items = [
+                SessionRead(
+                    id=session.id,
+                    device_info=session.device_info,
+                    ip_address=session.ip_address,
+                    created_at=session.created_at,
+                    last_used_at=session.last_used_at,
+                    is_current=session.id == current_session_id,
+                )
+                for session in sessions
+            ]
+        items.sort(key=lambda item: not item.is_current)
+        return items
+
+    async def revoke_session(
+        self, user_id: uuid.UUID, session_id: uuid.UUID
+    ) -> bool:
+        """Revokes a single session owned by the user. Returns ``False`` when the
+        session does not exist or belongs to another user."""
+        async with self.uow as uow:
+            session = await uow.sessions.get_for_user(user_id, session_id)
+            if session is None:
+                logger.debug(
+                    f"Session {session_id} not found for user {user_id}"
+                )
+                return False
+            await uow.refresh_tokens.revoke_all_by_session(session_id)
+            await uow.commit()
+        logger.debug(f"Revoked session {session_id} of user {user_id}")
+        return True
+
+    async def revoke_other_sessions(
+        self, user_id: uuid.UUID, current_session_id: uuid.UUID | None = None
+    ) -> int:
+        """Revokes every session of the user except ``current_session_id``.
+        Returns the number of revoked sessions."""
+        async with self.uow as uow:
+            sessions = await uow.sessions.list_active_for_user(user_id)
+            revoked = 0
+            for session in sessions:
+                if session.id == current_session_id:
+                    continue
+                await uow.refresh_tokens.revoke_all_by_session(session.id)
+                revoked += 1
+            await uow.commit()
+        logger.debug(
+            f"Revoked {revoked} other sessions for user {user_id}"
+        )
+        return revoked
 
     async def get_session_from_request(self, request: Request) -> str | None:
         return request.cookies.get(settings.REFRESH_COOKIE_NAME)
@@ -718,3 +808,4 @@ class UserService(
         ip_address: str | None,
     ) -> None:
         pass
+
