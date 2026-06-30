@@ -32,5 +32,6 @@ class MeEventRead(EventCreate, BaseModel):
 class MeAttendanceCreateData(BaseModel):
     member_id: UUID
     is_attended: bool | None = True
-    is_verified: bool | None = True
+    # Новая отметка не заверена: руководитель заверяет осознанно отдельным действием
+    is_verified: bool | None = False
     comment: str | None = Field(max_length=512, default=None)
