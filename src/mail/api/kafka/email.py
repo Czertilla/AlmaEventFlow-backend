@@ -10,6 +10,7 @@ from core.broker.kafka import KafkaRouter, broker
 from core.enum.mq import EmailQueue, NotifyDeliveryQueue
 from core.enum.notify import DeliveryStatus
 from core.schema.message.mail import (
+    SendResetPasswordMessageRequest,
     SendTemplatedEmailRequest,
     SendVerifyMessageRequest,
 )
@@ -54,6 +55,26 @@ async def send_verify_message(request: SendVerifyMessageRequest) -> None:
         await get_fastmail().send_message(message)
     except Exception as e:
         logger.error(f"Error sending verify message: {e}")
+
+
+@router.subscriber(EmailQueue.RESET)
+async def send_reset_password_message(
+    request: SendResetPasswordMessageRequest,
+) -> None:
+    with open(
+        "templates/email/reset_message.html", "r", encoding="utf-8"
+    ) as f:
+        html = f.read().replace("{{token}}", request.token)
+    message = MessageSchema(
+        subject="Alma Event Flow password reset",
+        recipients=[request.email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    try:
+        await get_fastmail().send_message(message)
+    except Exception as e:
+        logger.error(f"Error sending password reset message: {e}")
 
 
 @router.subscriber(EmailQueue.SEND)

@@ -7,6 +7,9 @@ from core.utils.enum.prefix import prefix
 @prefix("mail/")
 class EmailQueue(StrEnum):
     VERIFY = "verify"
+    RESET = "reset"
+    """Password reset email. Payload: ``SendResetPasswordMessageRequest``.
+    Published by the ``user`` service on a forgot-password request."""
     SEND = "send"
     """Generic templated email send. Payload: ``SendTemplatedEmailRequest``.
     Used by ``notify`` to delegate arbitrary email delivery to the ``mail``

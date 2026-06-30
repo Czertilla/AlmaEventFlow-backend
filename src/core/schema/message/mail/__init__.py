@@ -7,6 +7,11 @@ class SendVerifyMessageRequest(MQRequest):
     email: EmailStr
 
 
+class SendResetPasswordMessageRequest(MQRequest):
+    token: str
+    email: EmailStr
+
+
 class SendTemplatedEmailRequest(MQRequest):
     """Generic templated email send. The ``mail`` service owns the templates,
     renders ``template`` with ``context`` and sends it."""
