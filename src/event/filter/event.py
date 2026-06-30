@@ -30,6 +30,7 @@ class EventFilter(Filter):
     format__in: None | list[EventFormatEnumV1] = None
 
     participant_id: None | UUID = None
+    participant_id__in: None | list[UUID] = None
 
     class Constants(Filter.Constants):
         model = EventORM
@@ -41,6 +42,7 @@ class EventFilter(Filter):
         orig_type = self.type
         orig_format = self.format
         orig_participant = self.participant_id
+        orig_participant_in = self.participant_id__in
 
         if orig_status is not None:
             query = query.join(EventORM.status_rel).filter(
@@ -64,11 +66,19 @@ class EventFilter(Filter):
                 )
             )
 
+        if orig_participant_in:
+            query = query.where(
+                EventORM.participations.any(
+                    ParticipationORM.collective_id.in_(orig_participant_in)
+                )
+            )
+
         self.status = None
         self.level = None
         self.type = None
         self.format = None
         self.participant_id = None
+        self.participant_id__in = None
 
         try:
             return super().filter(query)
@@ -78,3 +88,4 @@ class EventFilter(Filter):
             self.type = orig_type
             self.format = orig_format
             self.participant_id = orig_participant
+            self.participant_id__in = orig_participant_in
