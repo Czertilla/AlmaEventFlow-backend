@@ -85,6 +85,17 @@ async def get_my_collectives(
         ]
 
 
+@router.get("/members", responses={**auth_responses()})
+async def get_my_members(
+    user: UserJWTDep,
+    uow: MemberUOWDep,
+) -> list[MemberRead]:
+    """Членства текущего пользователя во всех коллективах (для роли участника)."""
+    async with uow as scope:
+        members = await scope.members.get_by_person_id(user.person_id)
+        return [MemberRead.model_validate(m) for m in members]
+
+
 @router.get(
     "/collectives/{collective_id}/members", responses={**auth_responses()}
 )

@@ -24,6 +24,14 @@ class MemberRepo(
     async def search(self, filter, pagination, *, options=None):
         return await super().search(filter, pagination, options=options)
 
+    async def get_by_person_id(self, person_id: UUID) -> list[Model]:
+        stmt = (
+            select(self.model)
+            .options(selectinload(self.model.roles))
+            .where(self.model.person_id == person_id)
+        )
+        return (await self.execute(stmt)).unique().scalars().all()
+
     async def create_member_with_roles(
         self, member_data: dict, role_ids: list[UUID]
     ) -> Model:
