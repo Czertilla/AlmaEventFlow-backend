@@ -30,6 +30,7 @@ from user.exceptions.user import (
     InviteTokenInvalid,
     InviteTokenExpired,
     PersonAlreadyHasAccount,
+    InvalidCurrentPassword,
 )
 from user.exceptions.profile import InvitePersonNotExistsException
 from user.filter.user import UserFilter
@@ -445,9 +446,31 @@ class UserService(
             updated_user_data = user_update.create_update_dict()
         else:
             updated_user_data = user_update.create_update_dict_superuser()
+        current_password = updated_user_data.pop("current_password", None)
+        if safe and updated_user_data.get("password"):
+            await self._verify_current_password(user.id, current_password)
         updated_user = await self._update(user, updated_user_data)
         await self.on_after_update(updated_user, updated_user_data, request)
         return updated_user
+
+    @required_transaction
+    async def _verify_current_password(
+        self, user_id: uuid.UUID, current_password: str | None
+    ) -> None:
+        """Guards self-service password changes: the new password is only
+        accepted when the supplied current password matches the stored hash."""
+        if not current_password:
+            raise InvalidCurrentPassword()
+        db_user = await self._get(user_id)
+        verified, _ = self.password_helper.verify_and_update(
+            current_password, db_user.hashed_password
+        )
+        if not verified:
+            logger.debug(
+                f"Rejected password change for user {user_id}: "
+                "current password mismatch"
+            )
+            raise InvalidCurrentPassword()
 
     async def delete(
         self,

@@ -26,3 +26,8 @@ class PersonAlreadyHasAccount(VancedHTTPException):
 class SessionNotFound(VancedHTTPException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = ErrorCode.SESSION_NOT_FOUND
+
+
+class InvalidCurrentPassword(VancedHTTPException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = ErrorCode.INVALID_CURRENT_PASSWORD

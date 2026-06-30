@@ -41,6 +41,7 @@ class UserCreate(CreateUpdateUserModel, schemas.BaseUserCreate):
 
 class UserUpdate(CreateUpdateUserModel, schemas.BaseUserUpdate):
     username: str
+    current_password: str | None = None
 
 
 class UserOauthAccount(UserRead, schemas.BaseOAuthAccountMixin): ...
