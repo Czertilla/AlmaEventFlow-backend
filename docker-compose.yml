@@ -353,8 +353,8 @@ services:
     depends_on:
       pg:
         condition: service_healthy
-      kafka:
-        condition: service_healthy
+      # kafka:
+      #   condition: service_healthy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bot.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/bot`)"
