@@ -16,6 +16,8 @@ WORKDIR /app
 
 COPY --from=builder /app/.venv /app/.venv
 COPY --from=builder /app/pyproject.toml /app/pyproject.toml
+COPY vapid_private.pem .
+COPY vapid_public.pem .
 COPY src/core ./core
 COPY src/notify ./notify
 COPY alembic.ini ./alembic.ini

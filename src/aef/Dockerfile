@@ -21,6 +21,8 @@ WORKDIR /app
 
 COPY rsa_private.pem .
 COPY rsa_public.pem .
+COPY vapid_private.pem .
+COPY vapid_public.pem .
 
 # 1. Перенос виртуальное окружение и код
 COPY --from=builder /app/.venv /app/.venv
