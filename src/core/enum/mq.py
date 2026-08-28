@@ -3,7 +3,7 @@ from enum import StrEnum
 from core.utils.enum.prefix import prefix
 
 
-@prefix("mail/")
+@prefix("mail.")
 class EmailQueue(StrEnum):
     VERIFY = "verify"
     RESET = "reset"
@@ -15,7 +15,7 @@ class EmailQueue(StrEnum):
     service, which owns the templates."""
 
 
-@prefix("notify/")
+@prefix("notify.")
 class NotifyQueue(StrEnum):
     """Single inbound async API of the notify service. Producers publish a
     ``NotificationRequest`` to ``NotifyQueue.SEND``."""
@@ -26,7 +26,7 @@ class NotifyQueue(StrEnum):
     """Dead-letter for notification requests that could not be ingested."""
 
 
-@prefix("notify/")
+@prefix("notify.")
 class NotifyDeliveryQueue(StrEnum):
     """Internal delivery topics filled by the notify outbox publisher. Each
     transport drains its own topic; specialized workers consume it and report
@@ -55,7 +55,7 @@ class NotifyDeliveryQueue(StrEnum):
     TELEGRAM_DLQ = "delivery.telegram.dlq"
 
 
-@prefix("announcements/")
+@prefix("announcements.")
 class AnnouncementQueue(StrEnum):
     """Group/collective chat announcements — deliberately separate from
     notify's personal-notification pipeline (see ``src/notify/TECH_TASK.md``
