@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
+
 from geo.models.location import LocationORM
 
 

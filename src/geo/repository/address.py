@@ -1,13 +1,13 @@
 from uuid import UUID
 
 from geoalchemy2 import WKTElement
+
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
-
 from geo.models.address import AddressORM as Model
 
 

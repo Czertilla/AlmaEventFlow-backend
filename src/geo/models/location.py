@@ -1,12 +1,13 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
+
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, relationship, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.mixins.models import TimestampMixin
 from core.models.location import LocationAORM as Base
-from ._base import ModuleBase
 
+from ._base import ModuleBase
 from .spot import SpotMixin
 
 if TYPE_CHECKING:

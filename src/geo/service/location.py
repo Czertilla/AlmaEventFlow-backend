@@ -2,7 +2,6 @@ from logging import getLogger
 
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
-
 from geo.exc.location import LocationNotExistsException
 from geo.filter.location import LocationFilter
 from geo.models.location import LocationORM

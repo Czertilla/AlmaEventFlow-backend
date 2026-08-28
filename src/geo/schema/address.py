@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict
+
 from core.utils.mixin.pydantic import PatchModel, UUIDMixin
 from geo.schema.city import CityCascadeCreate
 from geo.schema.point import Point

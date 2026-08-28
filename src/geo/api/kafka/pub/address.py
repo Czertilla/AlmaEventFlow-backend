@@ -1,12 +1,12 @@
 from uuid import UUID
 
-from core.broker.kafka import broker, KafkaRouter
+from core.broker.kafka import KafkaRouter, broker
 from core.enum.topic import AddressTopic
 from core.schema.message.geo import (
     AddressCreatedEvent,
     AddressData,
-    AddressUpdatedEvent,
     AddressDeletedEvent,
+    AddressUpdatedEvent,
 )
 
 router = KafkaRouter()

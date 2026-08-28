@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
-from sqlalchemy.orm import Mapped, mapped_column, declared_attr
+
 from geoalchemy2 import Geometry, WKBElement
+from sqlalchemy.orm import Mapped, declared_attr, mapped_column
 
 if TYPE_CHECKING:
     from core.database.sqlalchemy.core import Base

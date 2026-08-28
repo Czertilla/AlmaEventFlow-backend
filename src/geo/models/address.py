@@ -1,18 +1,21 @@
 from typing import TYPE_CHECKING
+
 from sqlalchemy import Computed, ForeignKey, Index
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.mixins.models import (
     TimestampMixin,
+)
+from core.database.sqlalchemy.mixins.models import (
     UUIDMixin as AlchemyUUIMixin,
 )
 from core.database.sqlalchemy.types.pydantic import PydanticJSONB
 from core.models.address import AddressAORM
 from geo.models.spot import OptionalSpotMixin
-from sqlalchemy.dialects.postgresql import TSVECTOR
-from ._base import ModuleBase
-
 from geo.schema.address import AddressFields
+
+from ._base import ModuleBase
 
 if TYPE_CHECKING:
     from .city import CityORM

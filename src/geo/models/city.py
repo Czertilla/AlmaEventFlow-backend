@@ -1,10 +1,12 @@
 from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.core import Base
 from core.database.sqlalchemy.mixins.models import BigSerialMixin
 from geo.models.spot import OptionalSpotMixin
+
 from ._base import ModuleBase
 
 if TYPE_CHECKING:

@@ -1,8 +1,8 @@
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
-from geoalchemy2.elements import WKTElement, WKBElement
+from geoalchemy2.elements import WKBElement, WKTElement
 from geoalchemy2.shape import to_shape
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class Point(BaseModel):
