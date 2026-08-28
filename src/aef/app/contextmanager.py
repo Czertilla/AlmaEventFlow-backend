@@ -2,9 +2,9 @@ from logging import getLogger
 
 from fastapi import FastAPI
 
-from bot.tg.app.contextmanager import TGBotContextManager
-from bot.tg.dependency.bot import bot as _bot
-from bot.tg.dependency.dp import dp as _dp
+# from bot.tg.app.contextmanager import TGBotContextManager
+# from bot.tg.dependency.bot import bot as _bot
+# from bot.tg.dependency.dp import dp as _dp
 from core.app.contextmanager import AppContextManager
 from notify.app.contextmanager import NotifyContextManager
 
@@ -17,7 +17,8 @@ class AEFContextManager(AppContextManager):
     worker never start in the combined process."""
 
     def __init__(self) -> None:
-        super().__init__(bot=_bot, dp=_dp)
+        # super().__init__(bot=_bot, dp=_dp)
+        super().__init__()
         self.notify = NotifyContextManager()
 
     async def startup(self, app: FastAPI) -> None:
