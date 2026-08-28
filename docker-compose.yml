@@ -58,7 +58,15 @@ services:
     hostname: kafka
     ports:
       - "9092:9092"
-      - "${KAFKA_EXTERNAL_PORT:-9093}:${KAFKA_EXTERNAL_PORT:-9093}"   
+    labels:
+      # EXTERNAL traffic goes host:9093 -> traefik (TLS termination with the
+      # same Let's Encrypt cert as the HTTP services) -> plaintext to kafka:9093
+      # inside the docker network, exactly like the HTTPS->HTTP routing below.
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.kafka.rule=HostSNI(`${KAFKA_EXTERNAL_HOST:-aef.czertilla.ru}`)"
+      - "traefik.tcp.routers.kafka.entrypoints=kafka"
+      - "traefik.tcp.routers.kafka.tls.certresolver=myresolver"
+      - "traefik.tcp.services.kafka.loadbalancer.server.port=${KAFKA_EXTERNAL_PORT:-9093}"
     environment:
       KAFKA_HEAP_OPTS: ${KAFKA_HEAP_OPTS:--Xmx256m -Xms256m}
 
@@ -66,18 +74,14 @@ services:
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
 
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,EXTERNAL:${KAFKA_EXTERNAL_PROTOCOL:-PLAINTEXT}"
+      # EXTERNAL is plain SASL_PLAINTEXT -- traefik does the TLS, kafka never
+      # sees a certificate. Auth is a SCRAM credential only the bot service holds.
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,EXTERNAL:SASL_PLAINTEXT"
       KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092,EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT:-9093}"
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://${KAFKA_HOST:-localhost}:9092,EXTERNAL://${KAFKA_EXTERNAL_HOST:-localhost}:${KAFKA_EXTERNAL_PORT:-9093}"
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
 
-      # EXTERNAL = SASL_SSL: TLS uses the real cert Traefik already got from
-      # Let's Encrypt (extracted into broker.keystore.jks), auth is a SCRAM
-      # credential only the bot service holds -- no custom CA/client certs.
-      KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEYSTORE_FILENAME: broker.keystore.jks
-      KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEYSTORE_CREDENTIALS: keystore_creds
-      KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEY_CREDENTIALS: key_creds
       KAFKA_LISTENER_NAME_EXTERNAL_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
       KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
       KAFKA_LISTENER_NAME_EXTERNAL_SCRAM_SHA_256_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.scram.ScramLoginModule required;"
@@ -92,8 +96,6 @@ services:
       KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
       # любой валидный base64 UUID; пример из документации Confluent
       CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
-    volumes:
-      - ./secrets/kafka:/etc/kafka/secrets:ro
     healthcheck:
         test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server kafka:29092 >/dev/null 2>&1 || exit 1"]
         interval: 10s
@@ -411,12 +413,14 @@ services:
     - "--providers.docker=true"
     - "--providers.docker.exposedbydefault=false"
     - "--entryPoints.websecure.address=:443"
+    - "--entryPoints.kafka.address=:${KAFKA_EXTERNAL_PORT:-9093}"
     - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
     - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
     - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "443:443"
       - "8080:8080"
+      - "${KAFKA_EXTERNAL_PORT:-9093}:${KAFKA_EXTERNAL_PORT:-9093}"
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
