@@ -26,7 +26,7 @@ if str(SRC) not in sys.path:
 import pytest
 
 COMPOSE_FILE = ROOT / "docker-compose.test.yml"
-SERVICE_DATABASES = ("user", "profile", "org", "event", "geo", "notify")
+SERVICE_DATABASES = ("user", "profile", "org", "event", "geo", "notify", "bot")
 GEO_EXTENSIONS = ("postgis", "postgis_topology", "pg_trgm")
 MIGRATE_MODULES = os.environ.get(
     "TEST_MIGRATE_MODULES", ",".join(SERVICE_DATABASES)
