@@ -1,4 +1,4 @@
-from faststream import Depends
+from fastapi import Depends
 
 from core.broker.kafka import KafkaRouter
 from core.broker.rpc import rpc_respond

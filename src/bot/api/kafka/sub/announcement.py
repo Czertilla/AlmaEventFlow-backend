@@ -2,7 +2,7 @@ from html import escape
 from logging import getLogger
 from uuid import uuid4
 
-from faststream import Depends
+from fastapi import Depends
 
 from bot.tg.dependency.bot import bot as tg_bot
 from bot.tg.service.delivery import TelegramDeliveryService
