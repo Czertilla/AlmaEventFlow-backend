@@ -55,3 +55,17 @@ class LinkTelegramOAuthRequest(MQRequest):
 
 class UnlinkTelegramOAuthRequest(MQRequest):
     person_id: UUID
+
+
+class TelegramLinkCodeIssued(MQRequest):
+    """A one-time deep-link code minted by ``user`` for the caller's own bot
+    ``/start`` flow. ``bot`` is the sole reader (Telegram's ``start`` param is
+    too short for a signed token, so the code->person_id mapping travels over
+    the broker instead of a Redis instance shared across hosts)."""
+
+    code: str
+    person_id: UUID
+    ttl: int
+
+
+class TelegramLinkCodeIssuedEvent(MQEvent[TelegramLinkCodeIssued]): ...

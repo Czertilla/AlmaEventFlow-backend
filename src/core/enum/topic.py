@@ -39,3 +39,6 @@ class AccountTopic(StrEnum):
     UPDATED = "account-updated"
     EMAIL_VERIFIED = "account-email-verified"
     DELETED = "account-deleted"
+    TELEGRAM_LINK_CODE_ISSUED = "account-telegram-link-code-issued"
+    """Payload: ``TelegramLinkCodeIssued``. Consumed solely by ``bot``, which
+    stashes it in its own local Redis for the deep-link ``/start`` flow."""

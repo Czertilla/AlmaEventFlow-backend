@@ -13,6 +13,8 @@ from core.schema.message.user import (
     AccountEmailVerifiedEvent,
     AccountUpdatedEvent,
     AccountVerified,
+    TelegramLinkCodeIssued,
+    TelegramLinkCodeIssuedEvent,
 )
 
 logger = getLogger(__name__)
@@ -75,4 +77,16 @@ async def publish_account_deleted(user_id: UUID) -> None:
     await broker.publish(
         AccountDeletedEvent(data=[AccountDelete(id=user_id)]),
         AccountTopic.DELETED,
+    )
+
+
+async def publish_telegram_link_code_issued(
+    code: str, person_id: UUID, ttl: int
+) -> None:
+    logger.debug("Publishing account.telegram_link_code_issued for %s", person_id)
+    await broker.publish(
+        TelegramLinkCodeIssuedEvent(
+            data=[TelegramLinkCodeIssued(code=code, person_id=person_id, ttl=ttl)]
+        ),
+        AccountTopic.TELEGRAM_LINK_CODE_ISSUED,
     )

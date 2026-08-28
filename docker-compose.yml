@@ -385,8 +385,11 @@ services:
     depends_on:
       pg:
         condition: service_healthy
-      # kafka:
-      #   condition: service_healthy
+      redis:
+        condition: service_healthy
+      # kafka runs on a different host for this deployment -- reachable only
+      # over the network (see EXTERNAL/SASL_SSL client config above), so a
+      # local depends_on wouldn't apply.
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bot.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/bot`)"

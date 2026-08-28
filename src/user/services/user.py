@@ -22,13 +22,11 @@ from fastapi_users.password import PasswordHelper, PasswordHelperProtocol
 from pydantic import BaseModel
 
 from core.config.settings import settings
-from core.dependencies.redis import redis
 from core.enum.notify import NotificationCategory
 from core.schema.message.notify import NotificationRequest
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, T, required_transaction
 from core.utils.notify import send_notification
-from core.utils.telegram_link import TELEGRAM_LINK_REDIS_PREFIX
 from user.exceptions.profile import InvitePersonNotExistsException
 from user.exceptions.user import (
     AccountAlreadyLinked,
@@ -59,6 +57,7 @@ from user.utils.account import (
     publish_account_deleted,
     publish_account_email_verified,
     publish_account_updated,
+    publish_telegram_link_code_issued,
 )
 from user.utils.cookie import set_refresh_cookie, set_session_cookie
 from user.utils.mail import send_reset_message, send_verify_message
@@ -674,18 +673,18 @@ class UserService(
         """Mints a one-time code for the caller's own bot ``/start`` flow.
         Telegram's deep-link ``start`` parameter allows only up to 64
         ``[A-Za-z0-9_-]`` characters -- far too short for a signed JWT -- so
-        the actual state (which person this code is for) is kept server-side
-        in Redis, shared with the ``bot`` service, keyed by this short opaque
-        code; the URL itself never carries more than the code."""
+        the actual state (which person this code is for) travels to ``bot``
+        over the broker instead, which stashes it in its own local Redis
+        (this and ``bot`` are not guaranteed to share a Redis instance --
+        e.g. they can run on different hosts); the URL itself never carries
+        more than the code."""
         if person_id is None:
             raise TelegramLinkPersonRequired()
         if not settings.BOT_TG_USERNAME:
             raise TelegramBotNotConfigured()
         lifetime = TELEGRAM_LINK_TOKEN_LIFETIME
         code = secrets.token_urlsafe(16)
-        await redis.set(
-            f"{TELEGRAM_LINK_REDIS_PREFIX}{code}", str(person_id), ex=lifetime
-        )
+        await publish_telegram_link_code_issued(code, person_id, lifetime)
         expires_at = int(datetime.now(timezone.utc).timestamp()) + lifetime
         deep_link = f"https://t.me/{settings.BOT_TG_USERNAME}?start={code}"
         return TelegramLinkTokenRead(
