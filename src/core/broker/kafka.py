@@ -38,7 +38,13 @@ if not settings.IN_MEMORY_BROKER:
     }
 
     def _wants_tls(protocol: str) -> bool:
-        return protocol in {"", "SSL", "SASL_SSL"}
+        if protocol in {"SSL", "SASL_SSL"}:
+            return True
+        if protocol in {"PLAINTEXT", "SASL_PLAINTEXT"}:
+            return False
+        # Unset protocol: preserve plaintext-by-default, only opting into TLS
+        # when a CA was actually configured (legacy KAFKA_SSL_CA behavior).
+        return settings.KAFKA_SSL_CA is not None
 
     def _ssl_context(protocol: str) -> ssl.SSLContext | None:
         if not _wants_tls(protocol):
