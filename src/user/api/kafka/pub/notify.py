@@ -1,8 +1,6 @@
 from core.broker.kafka import KafkaRouter
 from core.enum.mq import NotifyQueue
-
 from core.utils.notify import send_notification
-
 
 router = KafkaRouter()
 

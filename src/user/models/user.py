@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING
+
 from sqlalchemy import UUID, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.core import Base
 from core.database.sqlalchemy.mixins.models import TimestampMixin, UUIDMixin
-
-
 from user.models.oauth_account import OAuthAccountORM
+
 from ._base import ModuleBase
 
 if TYPE_CHECKING:

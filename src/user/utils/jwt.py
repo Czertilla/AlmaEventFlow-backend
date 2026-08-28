@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from fastapi_users.authentication import JWTStrategy as Base
 from fastapi_users.jwt import generate_jwt
 from fastapi_users.models import UP

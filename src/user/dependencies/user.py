@@ -1,6 +1,8 @@
 from typing import AsyncGenerator
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from core.config.settings import settings
 from core.database.sqlalchemy.session import get_engine, get_url
 from core.dependencies.session import get_session_maker

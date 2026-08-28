@@ -1,8 +1,8 @@
 from core.uow.sqlalchemy import UnitOfWork
 from user.repositories.user import UserRepo
 from user.repository.person import PersonRepo
-from user.repository.session import SessionRepo
 from user.repository.refresh_token import RefreshTokenRepo
+from user.repository.session import SessionRepo
 
 
 class UserMixin:

@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 
-from core.config.settings import Settings
 from core.app.contextmanager import AppContextManager
-
+from core.config.settings import Settings
 
 settings = Settings()
 

@@ -1,6 +1,8 @@
+from sqlalchemy.dialects.postgresql import insert
+
 from core.repository.person import PersonBaseRepo
 from user.models.person import PersonORM
-from sqlalchemy.dialects.postgresql import insert
+
 
 class PersonRepo(PersonBaseRepo[PersonORM]):
     model = PersonORM

@@ -1,4 +1,5 @@
 from typing import Any, cast
+
 from httpx_oauth.clients.google import GoogleOAuth2 as Base
 from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 

@@ -3,13 +3,12 @@ from logging import getLogger
 from fastapi.responses import JSONResponse
 from pydantic import EmailStr
 
-from core.broker.kafka import broker, KafkaBroker
+from core.broker.kafka import KafkaBroker, broker
+from core.enum.mq import EmailQueue
 from core.schema.message.mail import (
     SendResetPasswordMessageRequest,
     SendVerifyMessageRequest,
 )
-from core.enum.mq import EmailQueue
-
 
 logger = getLogger(__name__)
 

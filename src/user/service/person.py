@@ -3,6 +3,7 @@ from core.service.base import required_transaction
 from core.service.event.person import PersonEventService
 from user.uow.person import UserPersonUOW
 
+
 class UserPersonEventService(PersonEventService[UserPersonUOW]):
 
     @required_transaction

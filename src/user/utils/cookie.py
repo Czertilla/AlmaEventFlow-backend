@@ -4,7 +4,6 @@ from fastapi import Response
 
 from user.config.settings import settings
 
-
 REFRESH_COOKIE_PATH = "/user/v1/auth/jwt/refresh"
 SESSION_COOKIE_PATH = "/"
 """The refresh token is confined to the refresh endpoint, so it never reaches

@@ -1,15 +1,15 @@
 from uuid import UUID
+
 from fastapi_users import FastAPIUsers
 from fastapi_users.authentication import (
-    BearerTransport,
     AuthenticationBackend,
+    BearerTransport,
 )
 
 from user.config.settings import settings
 from user.dependencies.user import get_user_service
 from user.models.user import UserORM
 from user.utils.jwt import AccessStrategy
-
 
 bearer_transport = BearerTransport(tokenUrl="/user/v1/auth/jwt/login")
 

@@ -1,10 +1,10 @@
-from uuid import UUID
 from datetime import datetime, timezone
+from uuid import UUID
+
 from sqlalchemy import select, update
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin
-
 from user.models.refresh_token import RefreshTokenORM
 from user.models.session import SessionORM as Model
 

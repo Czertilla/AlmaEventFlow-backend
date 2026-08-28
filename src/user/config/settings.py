@@ -1,6 +1,6 @@
 from pydantic import Secret
 
-from core.config.settings import getSettings, Settings
+from core.config.settings import Settings, getSettings
 
 
 class UserSettings(Settings):

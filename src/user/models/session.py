@@ -1,17 +1,18 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
-from sqlalchemy import DateTime, ForeignKey, String, Text
+
+from sqlalchemy import DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import func
 
 from core.database.sqlalchemy.core import Base
 from core.database.sqlalchemy.mixins.models import UUIDMixin
+
 from ._base import ModuleBase
 
 if TYPE_CHECKING:
-    from .user import UserORM
     from .refresh_token import RefreshTokenORM
+    from .user import UserORM
 
 
 class SessionORM(ModuleBase, Base, UUIDMixin):
