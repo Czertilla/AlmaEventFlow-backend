@@ -665,7 +665,7 @@ class UserService(
             settings.USER_SECRET.get_secret_value(),
             lifetime,
         )
-        expires_at = int(datetime.utcnow().timestamp()) + lifetime
+        expires_at = int(datetime.now(timezone.utc).timestamp()) + lifetime
         return InviteTokenRead(token=token, expires_at=expires_at)
 
     async def create_telegram_link_token(
@@ -686,7 +686,7 @@ class UserService(
         await redis.set(
             f"{TELEGRAM_LINK_REDIS_PREFIX}{code}", str(person_id), ex=lifetime
         )
-        expires_at = int(datetime.utcnow().timestamp()) + lifetime
+        expires_at = int(datetime.now(timezone.utc).timestamp()) + lifetime
         deep_link = f"https://t.me/{settings.BOT_TG_USERNAME}?start={code}"
         return TelegramLinkTokenRead(
             token=code, deep_link=deep_link, expires_at=expires_at
