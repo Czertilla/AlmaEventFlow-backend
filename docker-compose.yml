@@ -58,19 +58,26 @@ services:
     hostname: kafka
     ports:
       - "9092:9092"
-      - "9093:9093"   
+      - "${KAFKA_EXTERNAL_PORT:-9093}:${KAFKA_EXTERNAL_PORT:-9093}"   
     environment:
       # обязательные параметры KRaft
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
 
-      # листенеры: отдельный для контроллера и два для клиентов
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
-      KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092"
+      # листенеры: отдельный для контроллера, PLAINTEXT для внутренних сервисов, EXTERNAL наружу
+      # EXTERNAL-протокол задаётся в .env (SSL + keystore для TLS, по умолчанию PLAINTEXT)
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,EXTERNAL:${KAFKA_EXTERNAL_PROTOCOL:-PLAINTEXT}"
+      KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092,EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT:-9093}"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://${KAFKA_HOST:-localhost}:9092,EXTERNAL://${KAFKA_EXTERNAL_HOST:-localhost}:${KAFKA_EXTERNAL_PORT:-9093}"
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+
+      # TLS для EXTERNAL-листенера: keystore кладётся в ./secrets/kafka, имя — в KAFKA_SSL_KEYSTORE_FILENAME
+      # при KAFKA_EXTERNAL_PROTOCOL=PLAINTEXT эти переменные не используются (пустое значение)
+      KAFKA_SSL_KEYSTORE_FILENAME: ${KAFKA_SSL_KEYSTORE_FILENAME:-}
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: ${KAFKA_SSL_KEYSTORE_CREDENTIALS:-}
+      KAFKA_SSL_KEY_CREDENTIALS: ${KAFKA_SSL_KEY_CREDENTIALS:-}
 
       # минимальные настройки для одиночного брокера
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -82,6 +89,8 @@ services:
       KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
       # любой валидный base64 UUID; пример из документации Confluent
       CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+    volumes:
+      - ./secrets/kafka:/etc/kafka/secrets:ro
     healthcheck:
         test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server kafka:29092 >/dev/null 2>&1 || exit 1"]
         interval: 10s
