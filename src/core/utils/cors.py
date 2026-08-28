@@ -7,7 +7,8 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://aef.czertilla.ru",
-    "https://aef.czertilla.ru"
+    "https://aef.czertilla.ru",
+    "https://sleekly-improving-hippo.cloudpub.ru"
 ]
 
 def include_corse(app: FastAPI) -> None:
