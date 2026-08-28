@@ -60,6 +60,10 @@ services:
       - "9092:9092"
       - "${KAFKA_EXTERNAL_PORT:-9093}:${KAFKA_EXTERNAL_PORT:-9093}"   
     environment:
+      # TEMP DIAGNOSTIC: JSSE handshake tracing for the EXTERNAL TLS listener issue.
+      # Remove once resolved -- very verbose.
+      KAFKA_OPTS: "-Djavax.net.debug=ssl:handshake"
+
       # обязательные параметры KRaft
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: "broker,controller"
