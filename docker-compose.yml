@@ -367,7 +367,7 @@ services:
         source: ./logs/bot/
         target: /app/logs
       - type: bind
-        source: ./secrets/kafka
+        source: ./secrets/kafka/
         target: /etc/aef/kafka
         read_only: true
     depends_on:
