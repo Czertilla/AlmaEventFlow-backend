@@ -67,8 +67,13 @@ services:
       - "traefik.tcp.routers.kafka.entrypoints=kafka"
       - "traefik.tcp.routers.kafka.tls.certresolver=myresolver"
       - "traefik.tcp.services.kafka.loadbalancer.server.port=${KAFKA_EXTERNAL_PORT:-9093}"
+    volumes:
+      - ./secrets/kafka:/etc/kafka/secrets:ro
     environment:
       KAFKA_HEAP_OPTS: ${KAFKA_HEAP_OPTS:--Xmx256m -Xms256m}
+      # points straight at a real JAAS file instead of relying on Confluent's
+      # per-listener-mechanism env var name guessing, which didn't match here.
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf"
 
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: "broker,controller"
@@ -84,7 +89,6 @@ services:
 
       KAFKA_LISTENER_NAME_EXTERNAL_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
       KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
-      KAFKA_LISTENER_NAME_EXTERNAL_SCRAM_SHA_256_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.scram.ScramLoginModule required;"
 
       # минимальные настройки для одиночного брокера
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
