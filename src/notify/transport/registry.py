@@ -1,7 +1,7 @@
 from core.enum.notify import TransportTypeEnum
-
 from notify.transport.base import BaseTransport
 from notify.transport.email import EmailTransport
+from notify.transport.telegram import TelegramTransport
 from notify.transport.webpush import WebPushTransport
 
 _TRANSPORTS: dict[TransportTypeEnum, BaseTransport] = {
@@ -9,6 +9,7 @@ _TRANSPORTS: dict[TransportTypeEnum, BaseTransport] = {
     for transport in (
         EmailTransport(),
         WebPushTransport(),
+        TelegramTransport(),
     )
 }
 
