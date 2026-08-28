@@ -130,6 +130,14 @@ services:
       - type: bind
         source: ./logs/aef/
         target: /app/logs
+      - type: bind
+        source: ./vapid_private.pem
+        target: /app/vapid_private.pem
+        read_only: true
+      - type: bind
+        source: ./vapid_public.pem
+        target: /app/vapid_public.pem
+        read_only: true
     depends_on:
       pg:
         condition: service_healthy
