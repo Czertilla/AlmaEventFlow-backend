@@ -31,12 +31,6 @@ if not settings.IN_MEMORY_BROKER:
         if ca is None:
             return None
         context = ssl.create_default_context(cafile=ca)
-        # Pin to a single TLS version: the broker's JSSE stack sends a
-        # handshake_failure alert against the version *range* an unpinned
-        # default context offers, but accepts a ClientHello for exactly one
-        # version (confirmed with both 1.2 and 1.3 individually).
-        context.minimum_version = ssl.TLSVersion.TLSv1_2
-        context.maximum_version = ssl.TLSVersion.TLSv1_2
         if not settings.KAFKA_SSL_CHECK_HOSTNAME:
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
