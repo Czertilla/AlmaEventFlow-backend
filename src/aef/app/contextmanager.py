@@ -11,7 +11,7 @@ from notify.app.contextmanager import NotifyContextManager
 logger = getLogger()
 
 
-class AEFContextManager(TGBotContextManager, AppContextManager):
+class AEFContextManager(AppContextManager):
     """Modular-monolith lifespan. Aggregates the per-service lifecycles that
     own background work; without this the notify outbox publisher and retry
     worker never start in the combined process."""

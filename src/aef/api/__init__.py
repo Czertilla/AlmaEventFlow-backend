@@ -20,5 +20,5 @@ def include_routers(app: FastAPI):
     include_notify(app)
     include_org(app)
     include_profile(app)
-    include_bot(app)
+    # include_bot(app)
     include_user(app)
