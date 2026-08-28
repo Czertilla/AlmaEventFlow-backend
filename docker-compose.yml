@@ -58,6 +58,7 @@ services:
     hostname: kafka
     ports:
       - "9092:9092"
+      - "9093:9093"   
     environment:
       # обязательные параметры KRaft
       KAFKA_NODE_ID: 1
@@ -325,6 +326,32 @@ services:
       - "traefik.http.routers.notify.entrypoints=websecure"
       - "traefik.http.routers.notify.tls.certresolver=myresolver"
       - "traefik.http.services.notify.loadbalancer.server.port=8000"
+
+  bot:
+    build:
+      context: .
+      dockerfile: src/bot/Dockerfile
+    env_file:
+      - .env
+    container_name: bot
+    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && alembic -n bot upgrade head && uvicorn bot.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - 8008:8000
+    volumes:
+      - type: bind
+        source: ./logs/bot/
+        target: /app/logs
+    depends_on:
+      pg:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bot.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/bot`)"
+      - "traefik.http.routers.bot.entrypoints=websecure"
+      - "traefik.http.routers.bot.tls.certresolver=myresolver"
+      - "traefik.http.services.bot.loadbalancer.server.port=8000"
 
   frontend:
     build:
