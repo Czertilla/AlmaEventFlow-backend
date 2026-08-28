@@ -1,0 +1,11 @@
+[
+  {
+    "label": "Python: Run Monolith",
+    "command": ".venv/Scripts/python",
+    "args": ["src/monolith.py"],
+    "env": {
+      "DEBUG": "False",
+      "PYTHONPATH": "src"
+    }
+  }
+]
