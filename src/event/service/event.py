@@ -4,21 +4,31 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
-from core.service.base import BaseService, required_transaction
+from core.schema.error import ErrorCode
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.schema.user import UserJWT
+from core.service.base import BaseService, required_transaction
+from core.utils.exc.http import VancedHTTPException
+from event.enum.calendar import CalendarChangeTypeEnum
 from event.enum.format import EventFormatEnumV1
 from event.enum.level import EventLevelEnumV1
 from event.enum.status import EventStatusEnumV1
 from event.enum.type import EventTypeEnumV1
+from event.exc.event import (
+    CollectiveNotExistsException,
+    EventNotExistsException,
+    StageNotExistsException,
+)
 from event.filter.event import EventFilter
+from event.models.calendar import CalendarChangeLogORM
 from event.models.event import (
-    EventORM,
     EventLevelORM,
+    EventORM,
     EventStatusORM,
     EventTypeORM,
 )
 from event.models.member import MemberORM
+from event.models.participation import ParticipationORM
 from event.schema.attendance import AttendanceCreate
 from event.schema.event import (
     EventCreate,
@@ -35,20 +45,14 @@ from event.schema.stage import (
     StageRead,
 )
 from event.service.attendance import AttendanceService
-from event.service.notification import is_trigger_status, notify_event_targets
+from event.service.notification import (
+    is_trigger_status,
+    notify_collective_chats,
+    notify_event_targets,
+)
 from event.service.participation import ParticipationService
 from event.service.stage import StageService
 from event.uow.event import EventUOW
-from core.schema.error import ErrorCode
-from core.utils.exc.http import VancedHTTPException
-from event.exc.event import (
-    CollectiveNotExistsException,
-    EventNotExistsException,
-    StageNotExistsException,
-)
-from event.models.participation import ParticipationORM
-from event.enum.calendar import CalendarChangeTypeEnum
-from event.models.calendar import CalendarChangeLogORM
 
 logger = getLogger(__name__)
 
@@ -167,14 +171,35 @@ class EventService(BaseService[EventUOW]):
     async def _delete(self, event_id: UUID) -> None:
         await self.uow.events.delete_one(event_id)
 
+    async def _publish_event_notice(self, event_id: UUID) -> None:
+        """Publishes both the personal attendance ping and the collective
+        chat announcement for the same event — two independent pipelines
+        (see ``event/service/notification.py``), triggered together."""
+        await notify_event_targets(self.uow, event_ids=[event_id])
+        await notify_collective_chats(self.uow, event_ids=[event_id])
+
     async def _publish_activation(
-        self, old_status: str | None, event: EventORM
+        self, old: EventORM | None, event: EventORM
     ) -> None:
-        """Notifies attendees only on a transition into a trigger status, so
-        editing an already-active event never re-notifies."""
-        if is_trigger_status(old_status) or not is_trigger_status(event.status):
+        """Notifies attendees on a transition into a trigger status (the
+        original 'mark your attendance' ping), and again on a later material
+        edit (name/date) to an already-active event — so the Telegram bot
+        (which decides edit-vs-send itself, keyed by event_id) can refresh a
+        message it already sent instead of it going stale. A no-op edit, or
+        one where nothing attendee-visible changed, publishes nothing."""
+        old_status = old.status if old else None
+        if not is_trigger_status(old_status) and is_trigger_status(
+            event.status
+        ):
+            await self._publish_event_notice(event.id)
             return
-        await notify_event_targets(self.uow, event_ids=[event.id])
+        if (
+            old is not None
+            and is_trigger_status(old_status)
+            and is_trigger_status(event.status)
+            and (old.name != event.name or old.date != event.date)
+        ):
+            await self._publish_event_notice(event.id)
 
     async def create(self, event_create: EventCreate) -> EventRead:
         async with self.uow as uow:
@@ -204,7 +229,6 @@ class EventService(BaseService[EventUOW]):
         async with self.uow as uow:
             await self._validate_patch_active_date(event_patch)
             old = await self._read(event_patch.id)
-            old_status = old.status if old else None
             # PatchModel.model_dump already forces exclude_unset=True
             event_data = event_patch.model_dump(
                 exclude={"status", "level", "type"}
@@ -230,14 +254,13 @@ class EventService(BaseService[EventUOW]):
             event = await self._update(event_patch.id, event_data)
             result = self._orm_to_read(event)
             await uow.commit()
-            await self._publish_activation(old_status, event)
+            await self._publish_activation(old, event)
         return result
 
     async def put(self, event_put: EventPut) -> EventRead:
         async with self.uow as uow:
             self._ensure_active_has_date(event_put.status, event_put.date)
             old = await self._read(event_put.id)
-            old_status = old.status if old else None
             event_data = event_put.model_dump(
                 exclude={"id", "status", "level", "type"}
             )
@@ -259,7 +282,7 @@ class EventService(BaseService[EventUOW]):
             event = await self._update(event_put.id, event_data)
             result = self._orm_to_read(event)
             await uow.commit()
-            await self._publish_activation(old_status, event)
+            await self._publish_activation(old, event)
         return result
 
     async def delete(self, event_id: UUID) -> None:
@@ -341,7 +364,7 @@ class EventService(BaseService[EventUOW]):
                     )
 
             await uow.commit()
-            await notify_event_targets(uow, event_ids=[event_orm.id])
+            await self._publish_event_notice(event_orm.id)
 
             return MeEventRead(
                 **self._orm_to_read(event_orm).model_dump(),
@@ -375,7 +398,6 @@ class EventService(BaseService[EventUOW]):
             )
             self._ensure_active_has_date(event_put.status, event_put.date)
             old = await self._read(event_put.id)
-            old_status = old.status if old else None
 
             event_data = event_put.model_dump(
                 exclude={"id", "status", "level", "type"}
@@ -398,7 +420,7 @@ class EventService(BaseService[EventUOW]):
             event = await self._update(event_put.id, event_data)
             result = self._orm_to_read(event)
             await uow.commit()
-            await self._publish_activation(old_status, event)
+            await self._publish_activation(old, event)
         return result
 
     async def patch_for_collective(
@@ -410,7 +432,6 @@ class EventService(BaseService[EventUOW]):
             )
             await self._validate_patch_active_date(event_patch)
             old = await self._read(event_patch.id)
-            old_status = old.status if old else None
 
             # PatchModel.model_dump already forces exclude_unset=True
             event_data = event_patch.model_dump(
@@ -437,7 +458,7 @@ class EventService(BaseService[EventUOW]):
             event = await self._update(event_patch.id, event_data)
             result = self._orm_to_read(event)
             await uow.commit()
-            await self._publish_activation(old_status, event)
+            await self._publish_activation(old, event)
         return result
 
     async def delete_for_collective(
@@ -528,6 +549,7 @@ class EventService(BaseService[EventUOW]):
             )
             result = StageRead.model_validate(stage)
             await uow.commit()
+            await notify_collective_chats(uow, event_ids=[event_id])
         return result
 
     async def patch_stage_for_collective(
@@ -540,12 +562,14 @@ class EventService(BaseService[EventUOW]):
             await self._require_collective_participation(
                 collective_id, stage.event_id
             )
+            event_id = stage.event_id
             stage_data = stage_patch.model_dump(exclude={"id"})
             stage = await StageService(self.uow)._update(
                 stage_patch.id, stage_data
             )
             result = StageRead.model_validate(stage)
             await uow.commit()
+            await notify_collective_chats(uow, event_ids=[event_id])
         return result
 
     async def delete_stage_for_collective(
@@ -558,8 +582,10 @@ class EventService(BaseService[EventUOW]):
             await self._require_collective_participation(
                 collective_id, stage.event_id
             )
+            event_id = stage.event_id
             await StageService(self.uow)._delete(stage_id)
             await uow.commit()
+            await notify_collective_chats(uow, event_ids=[event_id])
 
     async def search(
         self, filter: EventFilter, page_params: SPageParam = SPageParam()
