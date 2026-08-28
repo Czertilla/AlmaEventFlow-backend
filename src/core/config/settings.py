@@ -1,18 +1,19 @@
 from functools import lru_cache
 from logging import getLogger
+from os import environ
+
+from aiogram.enums import ParseMode
+from dotenv import load_dotenv
 from pydantic import (
+    EmailStr,
+    Field,
     Secret,
     ValidationInfo,
     field_validator,
-    Field,
-    EmailStr,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from os import environ
 
-from dotenv import load_dotenv
-
-from core.enum.config import DBManagerType
+from core.enum.config import DBManagerType, TgBotFeedType
 from core.utils.get_version import get_version
 
 load_dotenv()
@@ -117,6 +118,21 @@ class Settings(BaseSettings):
     """Maximum number of items to be displayed on a single page. Default is 100."""
 
     BOT_TG_TOKEN: str | None = None
+    BOT_TG_USERNAME: str | None = None
+    """Bot's ``@username`` (no ``@``), used to build ``t.me/<username>?start=...``
+    deep links (e.g. account-linking)."""
+
+    BOT_TG_PROXY: str | None = None
+    BOT_PARSE_MODE: ParseMode = ParseMode.HTML
+    BOT_TG_WEBHOOK: str = "/bot/v1/webhook/tg"
+    BOT_TG_FEED_TYPE: TgBotFeedType = TgBotFeedType.__default__  # pyright: ignore[reportAssignmentType]
+    BOT_TG_WEBHOOK_SECRET: Secret[str] | None = None
+    """Checked against Telegram's ``X-Telegram-Bot-Api-Secret-Token`` header on
+    incoming webhook requests when set. Unset disables the check (dev only)."""
+
+    LOCALIZATION_CACHE_TTL: int = 3600
+    LOCALIZATION_DEFAULT_LANG: str = "ru"
+    LOCALIZATION_AVAILABLE: bool = True
 
     DEV_ID_LIST: list[int] = [715648962]
 
