@@ -6,7 +6,6 @@ from core.broker.kafka import KafkaRouter, broker
 from core.dependencies.uow import ModuleUOWDep
 from core.enum.mq import NotifyDeliveryQueue
 from core.schema.message.notify import WebPushDeliveryBatch
-
 from notify.service.webpush import WebPushWorkerService
 from notify.uow.delivery import WebPushDeliveryUOW
 

@@ -4,7 +4,6 @@ from core.dependencies.auth import ActiveUserJWTDep
 from core.enum.notify import NotificationCategory
 from core.schema.error import auth_responses
 from core.schema.message.notify import NotificationRequest
-
 from notify.dependency.notify import NotifyUOWDep
 from notify.service.dispatch import NotificationService
 

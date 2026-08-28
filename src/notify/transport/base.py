@@ -6,7 +6,6 @@ from uuid import UUID
 
 from core.enum.notify import TransportTypeEnum
 from core.schema.message.core import MQRequest
-
 from notify.schema.account import AccountRead
 from notify.schema.client import ClientTarget
 from notify.schema.notification import NotificationContent

@@ -4,7 +4,6 @@ from sqlalchemy import select, update
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.enum.notify import OutboxStatus
-
 from notify.models.outbox import OutboxEventORM as Model
 
 

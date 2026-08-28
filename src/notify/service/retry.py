@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from core.enum.notify import DeliveryStatus
-
 from notify.config.settings import settings
 
 

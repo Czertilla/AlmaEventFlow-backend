@@ -9,7 +9,6 @@ from core.schema.error import (
     detail_400,
     entity_not_found_responses,
 )
-
 from notify.dependency.client import ClientUOWDep
 from notify.schema.client import ClientCreate, ClientRead
 from notify.service.client import ClientService

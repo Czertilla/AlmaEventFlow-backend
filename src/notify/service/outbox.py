@@ -3,7 +3,6 @@ from logging import getLogger
 from core.broker.kafka import KafkaBroker
 from core.enum.mq import dlq_for
 from core.service.base import BaseService, required_transaction
-
 from notify.config.settings import settings
 from notify.models.outbox import OutboxEventORM
 from notify.uow.outbox import OutboxUOW

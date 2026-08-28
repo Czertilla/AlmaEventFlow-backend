@@ -4,7 +4,6 @@ from typing import TypeVar
 from uuid import UUID
 
 from core.enum.notify import TransportTypeEnum
-
 from notify.transport import registry
 from notify.transport.base import DeliveryDraft
 

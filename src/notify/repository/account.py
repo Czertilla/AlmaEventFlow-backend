@@ -8,7 +8,6 @@ from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
     UpsertRepositoryMixin,
 )
-
 from notify.models.account import AccountORM as Model
 
 

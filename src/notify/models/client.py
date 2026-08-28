@@ -1,11 +1,13 @@
 from typing import Any
 from uuid import UUID
+
 from sqlalchemy import Boolean, Enum, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from core.database.sqlalchemy.core import Base
 from core.database.sqlalchemy.mixins.models import TimestampMixin, UUIDMixin
 from core.enum.notify import TransportTypeEnum
+
 from ._base import ModuleBase
 
 

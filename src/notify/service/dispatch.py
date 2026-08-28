@@ -5,7 +5,6 @@ from uuid import UUID
 from core.enum.notify import DeliveryStatus, TransportTypeEnum
 from core.schema.message.notify import NotificationRequest
 from core.service.base import BaseService, required_transaction
-
 from notify.config.settings import settings
 from notify.models.notification import NotificationORM
 from notify.models.recipient import NotificationRecipientORM

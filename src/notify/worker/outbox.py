@@ -1,5 +1,4 @@
 from core.broker.kafka import KafkaBroker
-
 from notify.config.settings import settings
 from notify.service.outbox import OutboxPublishService
 from notify.uow.outbox import OutboxUOW

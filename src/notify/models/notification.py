@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from core.database.sqlalchemy.core import Base
 from core.database.sqlalchemy.mixins.models import TimestampMixin, UUIDMixin
 from core.enum.notify import NotificationCategory
+
 from ._base import ModuleBase, enum_column
 
 

@@ -2,7 +2,6 @@ from fastapi import APIRouter
 
 from core.dependencies.auth import ActiveUserJWTDep
 from core.schema.error import auth_responses
-
 from notify.schema.transport import TransportInfo
 from notify.transport import registry
 

@@ -3,7 +3,6 @@ from logging import getLogger
 from uuid import UUID
 
 from core.service.base import BaseService, required_transaction
-
 from notify.config.settings import settings
 from notify.models.delivery import NotificationDeliveryORM
 from notify.models.notification import NotificationORM

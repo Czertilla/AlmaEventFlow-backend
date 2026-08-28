@@ -3,7 +3,6 @@ from logging import getLogger
 from core.enum.notify import DeliveryStatus
 from core.schema.message.notify import DeliveryResult
 from core.service.base import BaseService, required_transaction
-
 from notify.service.retry import policy
 from notify.uow.delivery import DeliveryResultUOW
 

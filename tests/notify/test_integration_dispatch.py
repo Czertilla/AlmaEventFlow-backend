@@ -7,7 +7,6 @@ from core.enum.notify import (
     TransportTypeEnum,
 )
 from core.schema.message.notify import NotificationRequest
-
 from notify.config.settings import settings
 from notify.models.delivery import NotificationDeliveryORM
 from notify.models.notification import NotificationORM

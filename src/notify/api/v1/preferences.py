@@ -2,7 +2,6 @@ from fastapi import APIRouter
 
 from core.dependencies.auth import ActiveUserJWTDep
 from core.schema.error import auth_responses
-
 from notify.dependency.preference import PreferenceUOWDep
 from notify.schema.preference import PreferencesRead, PreferencesUpdate
 from notify.service.preference import PreferenceService

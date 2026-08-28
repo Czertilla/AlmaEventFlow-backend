@@ -9,7 +9,6 @@ import aiohttp
 from core.enum.notify import DeliveryStatus, TransportTypeEnum
 from core.schema.message.notify import WebPushDeliveryBatch
 from core.service.base import BaseService, required_transaction
-
 from notify.config.settings import settings
 from notify.models.client import ClientORM
 from notify.models.delivery import NotificationDeliveryORM

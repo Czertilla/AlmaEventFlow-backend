@@ -9,6 +9,7 @@ from core.database.sqlalchemy.mixins.models import (
     TimestampMixin,
 )
 from core.enum.notify import OutboxStatus
+
 from ._base import ModuleBase, enum_column
 
 

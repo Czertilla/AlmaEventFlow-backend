@@ -1,5 +1,4 @@
 from core.uow.sqlalchemy import UnitOfWork
-
 from notify.repository.outbox import OutboxRepo
 from notify.uow.account import AccountMixin
 from notify.uow.client import ClientMixin

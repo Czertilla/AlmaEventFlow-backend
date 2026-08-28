@@ -2,7 +2,6 @@ from logging import getLogger
 from uuid import UUID
 
 from core.service.base import BaseService
-
 from notify.exc import ClientNotExistsException, TransportNotSupportedException
 from notify.schema.client import ClientCreate, ClientRead
 from notify.transport import registry

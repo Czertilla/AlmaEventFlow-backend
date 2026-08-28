@@ -6,7 +6,6 @@ from core.broker.kafka import KafkaRouter, broker
 from core.dependencies.uow import ModuleUOWDep
 from core.enum.mq import NotifyQueue
 from core.schema.message.notify import NotificationRequest
-
 from notify.service.dispatch import NotificationService
 from notify.uow.notify import NotifyUOW
 

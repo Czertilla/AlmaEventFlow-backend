@@ -9,7 +9,6 @@ from core.schema.message.user import (
     AccountEmailVerifiedEvent,
     AccountUpdatedEvent,
 )
-
 from notify.service.account import AccountEventService
 from notify.uow.account import AccountUOW
 

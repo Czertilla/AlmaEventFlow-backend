@@ -1,7 +1,5 @@
 from uuid import uuid4
 
-import pytest
-
 from core.enum.notify import NotificationCategory, TransportTypeEnum
 from notify.config.settings import settings
 from notify.schema.account import AccountRead

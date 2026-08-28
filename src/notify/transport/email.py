@@ -3,7 +3,6 @@ from uuid import UUID
 from core.enum.mq import NotifyDeliveryQueue
 from core.enum.notify import TransportTypeEnum
 from core.schema.message.notify import EmailDeliveryBatch, EmailDeliveryItem
-
 from notify.config.settings import settings
 from notify.transport.base import DelegatedTransport, DeliveryDraft
 

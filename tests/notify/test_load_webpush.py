@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 from core.enum.notify import DeliveryStatus, TransportTypeEnum
 from core.schema.message.notify import WebPushDeliveryBatch
-
 from notify.models.client import ClientORM
 from notify.models.delivery import NotificationDeliveryORM
 from notify.models.notification import NotificationORM
@@ -85,37 +84,37 @@ class LoadTestStats:
             sep,
             f"  LoadTestStats ── {self.name}",
             sep,
-            f"  Configuration:",
+            "  Configuration:",
             f"    deliveries          : {self.count}",
             f"    page_size           : {self.page_size}",
             f"    concurrency_limit   : {self.concurrency_limit}",
-            f"    simulated_delay     : {self.simulated_delay*1000:.1f}ms" if self.simulated_delay else f"    simulated_delay     : none",
-            f"  Timing:",
+            f"    simulated_delay     : {self.simulated_delay*1000:.1f}ms" if self.simulated_delay else "    simulated_delay     : none",
+            "  Timing:",
             f"    total elapsed       : {self.elapsed:.4f}s",
             f"    db seed             : {self.db_seed_elapsed:.4f}s",
             f"    db read             : {self.db_read_elapsed:.4f}s",
-            f"  Throughput:",
+            "  Throughput:",
             f"    deliveries/sec      : {self.throughput:.1f}",
         ]
         if self.send_calls:
             lines.append(f"    sends/sec           : {self.send_calls / self.elapsed:.1f}" if self.elapsed else "")
         lines += [
-            f"  Send Latency:",
+            "  Send Latency:",
             f"    avg                 : {self.avg_send*1000:.3f}ms",
             f"    p50                 : {self.p50*1000:.3f}ms",
             f"    p90                 : {self.p90*1000:.3f}ms",
             f"    p99                 : {self.p99*1000:.3f}ms",
-            f"  Concurrency:",
+            "  Concurrency:",
             f"    peak concurrent     : {self.concurrency_peak}",
         ]
         if self.concurrency_limit:
             lines.append(f"    efficiency          : {self.concurrency_peak / self.concurrency_limit * 100:.1f}%")
-        lines.append(f"  Outcomes:")
+        lines.append("  Outcomes:")
         if self.transport_unavailable:
-            lines.append(f"    transport_unavailable: true")
+            lines.append("    transport_unavailable: true")
             lines.append(f"    retry_scheduled     : {self.outcomes.get(DeliveryStatus.retry_scheduled, 0)}")
         elif self.notification_expired:
-            lines.append(f"    notification_expired : true")
+            lines.append("    notification_expired : true")
             lines.append(f"    expired             : {self.outcomes.get(DeliveryStatus.expired, 0)}")
         else:
             for status in (DeliveryStatus.sent, DeliveryStatus.failed,
@@ -125,7 +124,7 @@ class LoadTestStats:
                     pct = val / self.count * 100
                     lines.append(f"    {status.value:<20}: {val:>5} ({pct:5.1f}%)")
         lines += [
-            f"  Pages:",
+            "  Pages:",
             f"    pages_processed     : {self.pages_processed}",
         ]
         if self.pages_processed:
@@ -185,7 +184,7 @@ async def _seed_webpush(sessionmaker_, endpoints: list[str]):
 async def _read_outcomes(sessionmaker_, delivery_ids: list[UUID]) -> dict[DeliveryStatus, int]:
     outcomes: dict[DeliveryStatus, int] = {}
     async with sessionmaker_() as session:
-        from sqlalchemy import select, func
+        from sqlalchemy import func, select
 
         rows = await session.execute(
             select(NotificationDeliveryORM.status, func.count())
@@ -584,7 +583,7 @@ async def test_expired_notification_terminates_all(
     endpoints = [f"https://push.example.com/{i}" for i in range(count)]
     notification_id, delivery_ids = await _seed_webpush(sessionmaker_, endpoints)
 
-    from datetime import datetime, timezone, timedelta
+    from datetime import datetime, timedelta, timezone
 
     async with sessionmaker_() as session:
         notification = await session.get(NotificationORM, notification_id)

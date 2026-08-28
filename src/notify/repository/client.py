@@ -6,7 +6,6 @@ from sqlalchemy import select, update
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin
 from core.enum.notify import TransportTypeEnum
-
 from notify.models.client import ClientORM as Model
 
 

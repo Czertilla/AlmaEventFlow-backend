@@ -4,7 +4,6 @@ from sqlalchemy import delete, select
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin
-
 from notify.models.preference import PreferenceORM as Model
 
 

@@ -2,6 +2,7 @@ from enum import StrEnum
 
 from sqlalchemy import Enum
 from sqlalchemy.orm import DeclarativeBase
+
 from core.config.settings import settings
 from core.database.sqlalchemy.core import BasePreference
 

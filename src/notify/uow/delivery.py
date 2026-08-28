@@ -1,5 +1,4 @@
 from core.uow.sqlalchemy import UnitOfWork
-
 from notify.repository.delivery import NotificationDeliveryRepo
 from notify.uow.client import ClientMixin
 from notify.uow.notification import NotificationMixin

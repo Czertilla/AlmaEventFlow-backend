@@ -2,8 +2,8 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from ._uow import UOWDep
 from notify.uow.client import ClientUOW
 
+from ._uow import UOWDep
 
 ClientUOWDep = Annotated[ClientUOW, Depends(UOWDep(ClientUOW))]

@@ -1,8 +1,9 @@
 from logging import getLogger
+
 from fastapi import FastAPI
+
 from core.app.contextmanager import AppContextManager
 from core.broker.kafka import broker
-
 from notify.dependency._uow import notify_sessionmaker
 from notify.uow.outbox import OutboxUOW, RetryUOW
 from notify.worker.outbox import OutboxPublisher

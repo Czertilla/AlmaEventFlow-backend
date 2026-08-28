@@ -3,7 +3,6 @@ from uuid import UUID
 
 from core.enum.notify import TransportTypeEnum
 from core.service.base import BaseService
-
 from notify.schema.preference import (
     PreferenceItem,
     PreferencesRead,

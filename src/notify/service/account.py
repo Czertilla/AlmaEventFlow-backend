@@ -7,7 +7,6 @@ from core.schema.message.user import (
     AccountVerified,
 )
 from core.service.base import BaseService, required_transaction
-
 from notify.uow.account import AccountUOW
 
 logger = getLogger(__name__)

@@ -12,12 +12,11 @@ from cryptography.hazmat.primitives.serialization import (
 from core.enum.mq import NotifyDeliveryQueue
 from core.enum.notify import TransportTypeEnum
 from core.schema.message.notify import WebPushDeliveryBatch
-
 from notify.config.settings import settings
 from notify.exc import WebPushClientInvalidException
 from notify.schema.client import ClientTarget
 from notify.schema.notification import NotificationContent
-from notify.transport.base import DirectTransport, DeliveryDraft
+from notify.transport.base import DeliveryDraft, DirectTransport
 
 logger = getLogger(__name__)
 

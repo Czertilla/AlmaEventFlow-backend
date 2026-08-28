@@ -7,7 +7,6 @@ from sqlalchemy import select, update
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin
 from core.enum.notify import DeliveryStatus
-
 from notify.models.client import ClientORM
 from notify.models.delivery import NotificationDeliveryORM as Model
 

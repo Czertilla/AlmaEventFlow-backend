@@ -2,7 +2,6 @@ from uuid import uuid4
 
 from core.enum.notify import DeliveryStatus, TransportTypeEnum
 from core.schema.message.notify import WebPushDeliveryBatch
-
 from notify.models.client import ClientORM
 from notify.models.delivery import NotificationDeliveryORM
 from notify.models.notification import NotificationORM

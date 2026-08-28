@@ -1,11 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 from pydantic import BaseModel
 
 from core.dependencies.auth import ActiveUserJWTDep
 from core.enum.notify import TransportTypeEnum
 from core.schema.error import ErrorCode, auth_responses, detail_response
-from fastapi import status
-
 from notify.exc import WebPushNotConfiguredException
 from notify.transport import registry
 from notify.transport.webpush import WebPushTransport
