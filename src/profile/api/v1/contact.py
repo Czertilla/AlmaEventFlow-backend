@@ -1,11 +1,4 @@
-from uuid import UUID
-from fastapi import APIRouter, Depends
-from fastapi_filter import FilterDepends
 from logging import getLogger
-
-from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
-from core.schema.error import ErrorCode, auth_responses, detail_400, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
 from profile.dependency.contact import ContactUOWDep, PersonContactUOWDep
 from profile.exc.user import NonPersonalUserException
 from profile.filter.contact import ContactFilter
@@ -20,6 +13,19 @@ from profile.schema.contact import (
     ContactRead,
 )
 from profile.service.contact import ContactService
+from uuid import UUID
+
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
+
+from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
+from core.schema.error import (
+    ErrorCode,
+    auth_responses,
+    detail_400,
+    entity_not_found_responses,
+)
+from core.schema.pagination import SPage, SPageParam
 
 router = APIRouter(prefix="/contacts", tags=["contact"])
 

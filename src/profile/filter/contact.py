@@ -1,8 +1,7 @@
+from profile.models.contact import ContactORM
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-
-from profile.models.contact import ContactORM
 
 
 class ContactFilter(Filter):

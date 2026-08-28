@@ -1,11 +1,4 @@
-from uuid import UUID
-from fastapi import APIRouter, Depends
-from fastapi_filter import FilterDepends
 from logging import getLogger
-
-from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
-from core.schema.error import auth_responses, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
 from profile.dependency.diet import DietUOWDep
 from profile.filter.diet import DietFilter
 from profile.schema.diet import (
@@ -15,6 +8,14 @@ from profile.schema.diet import (
     DietRead,
 )
 from profile.service.diet import DietService
+from uuid import UUID
+
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
+
+from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import auth_responses, entity_not_found_responses
+from core.schema.pagination import SPage, SPageParam
 
 router = APIRouter(prefix="/diets", tags=["diet"])
 

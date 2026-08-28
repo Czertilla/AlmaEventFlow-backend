@@ -1,8 +1,7 @@
+from profile.models.student import StudentDegree, StudentGroupORM, StudentORM
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-
-from profile.models.student import StudentDegree, StudentGroupORM, StudentORM
 
 
 class StudentFilter(Filter):

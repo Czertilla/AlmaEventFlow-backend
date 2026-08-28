@@ -1,4 +1,6 @@
+from profile.models.profile import ProfileORM
 from typing import TYPE_CHECKING
+
 from sqlalchemy import UUID, ForeignKey, SmallInteger, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -8,7 +10,6 @@ from core.database.sqlalchemy.mixins.models import (
     SmallSerialMixin,
 )
 
-from profile.models.profile import ProfileORM
 from ._base import ModuleBase
 
 if TYPE_CHECKING:

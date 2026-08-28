@@ -1,6 +1,7 @@
+from profile.repository.organization import OrganizationRepo
+
 from core.uow.event.organization import OrganizationAUOW
 from core.uow.sqlalchemy import UnitOfWork
-from profile.repository.organization import OrganizationRepo
 
 
 class OrganizationMixin:

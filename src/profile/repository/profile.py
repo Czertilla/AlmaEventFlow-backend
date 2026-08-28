@@ -1,19 +1,19 @@
+from profile.models.contact import ContactORM
+from profile.models.passport import PassportORM
+from profile.models.person import PersonORM
+from profile.models.profile import ProfileORM as Model
 from typing import Any
 from uuid import UUID
 
 from sqlalchemy import update
-from sqlalchemy.orm import selectinload, joinedload, with_loader_criteria
+from sqlalchemy.orm import joinedload, selectinload, with_loader_criteria
+
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
-
-from profile.models.contact import ContactORM
-from profile.models.passport import PassportORM
-from profile.models.person import PersonORM
-from profile.models.profile import ProfileORM as Model
 
 
 class ProfileRepo(

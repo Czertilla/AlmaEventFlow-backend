@@ -1,12 +1,12 @@
-from uuid import UUID
-from pydantic import BaseModel, ConfigDict
 from datetime import date
-
-from core.utils.mixin.pydantic import PatchModel, TimestampMixin, UUIDMixin
-
-from profile.schema.person import PersonRead
 from profile.schema.diet import DietRead
 from profile.schema.organization import OrganizationRead
+from profile.schema.person import PersonRead
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict
+
+from core.utils.mixin.pydantic import PatchModel, TimestampMixin, UUIDMixin
 
 
 class ProfileCreate(BaseModel, UUIDMixin):

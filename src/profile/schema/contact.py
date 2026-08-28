@@ -1,8 +1,9 @@
+from profile.enum.contact import ContactType
 from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from core.utils.mixin.pydantic import PatchModel, PutUUIDMixin, UUIDMixin
-from profile.enum.contact import ContactType
 
 
 class ContactItemCreate(BaseModel):

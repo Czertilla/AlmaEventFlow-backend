@@ -1,12 +1,12 @@
 from uuid import UUID
 
-from core.broker.kafka import broker, KafkaRouter
+from core.broker.kafka import KafkaRouter, broker
 from core.enum.topic import PersonTopic
 from core.schema.message.profile import (
     PersonCreatedEvent,
     PersonData,
-    PersonUpdatedEvent,
     PersonDeletedEvent,
+    PersonUpdatedEvent,
 )
 
 router = KafkaRouter()

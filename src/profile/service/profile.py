@@ -1,8 +1,4 @@
 from logging import getLogger
-from uuid import UUID
-
-from core.schema.pagination import SPage, SPageParam, SPagination
-from core.service.base import BaseService, required_transaction
 from profile.exc.profile import ProfileNotExistsException
 from profile.filter.profile import ProfileFilter
 from profile.models.profile import ProfileORM
@@ -13,7 +9,10 @@ from profile.schema.profile import (
     ProfileRead,
 )
 from profile.uow.profile import ProfileExtendedUOW
+from uuid import UUID
 
+from core.schema.pagination import SPage, SPageParam, SPagination
+from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
 

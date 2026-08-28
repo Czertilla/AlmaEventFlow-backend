@@ -1,9 +1,10 @@
-from core.uow.sqlalchemy import UnitOfWork
 from profile.repository.student import (
-    StudentRepo,
-    StudentGroupRepo,
     StudentDegreeRepo,
+    StudentGroupRepo,
+    StudentRepo,
 )
+
+from core.uow.sqlalchemy import UnitOfWork
 
 
 class StudentMixin:

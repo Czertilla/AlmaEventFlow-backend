@@ -1,11 +1,4 @@
-from uuid import UUID
-from fastapi import APIRouter, Depends
-from fastapi_filter import FilterDepends
 from logging import getLogger
-
-from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
-from core.schema.error import auth_responses, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
 from profile.dependency.student import StudentUOWDep
 from profile.filter.student import (
     StudentDegreeFilter,
@@ -37,6 +30,14 @@ from profile.service.student import (
     StudentGroupService,
     StudentService,
 )
+from uuid import UUID
+
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
+
+from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
+from core.schema.error import auth_responses, entity_not_found_responses
+from core.schema.pagination import SPage, SPageParam
 
 router = APIRouter(prefix="/students", tags=["student"])
 

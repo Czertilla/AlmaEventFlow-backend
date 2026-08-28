@@ -1,6 +1,6 @@
-from fastapi_filter.contrib.sqlalchemy import Filter
-
 from profile.models.diet import DietORM
+
+from fastapi_filter.contrib.sqlalchemy import Filter
 
 
 class DietFilter(Filter):

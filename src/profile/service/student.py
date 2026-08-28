@@ -1,11 +1,4 @@
 from logging import getLogger
-from uuid import UUID
-
-from sqlalchemy.orm import selectinload
-
-from core.schema.pagination import SPage, SPageParam, SPagination
-from core.service.base import BaseService, required_transaction
-
 from profile.exc.student import StudentNotExistsException
 from profile.filter.student import (
     StudentDegreeFilter,
@@ -15,6 +8,10 @@ from profile.filter.student import (
 from profile.models.student import StudentORM
 from profile.schema.student import (
     StudentCreate,
+    StudentDegreeCreate,
+    StudentDegreePatch,
+    StudentDegreePut,
+    StudentDegreeRead,
     StudentGroupCreate,
     StudentGroupPatch,
     StudentGroupPut,
@@ -22,13 +19,14 @@ from profile.schema.student import (
     StudentPatch,
     StudentPut,
     StudentRead,
-    StudentDegreeCreate,
-    StudentDegreePatch,
-    StudentDegreePut,
-    StudentDegreeRead,
 )
 from profile.uow.student import StudentUOW
+from uuid import UUID
 
+from sqlalchemy.orm import selectinload
+
+from core.schema.pagination import SPage, SPageParam, SPagination
+from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
 

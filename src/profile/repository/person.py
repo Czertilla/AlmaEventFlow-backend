@@ -1,4 +1,7 @@
+from profile.models.contact import ContactORM
+from profile.models.person import PersonORM as Model
 from uuid import UUID
+
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload, with_loader_criteria
 
@@ -8,9 +11,6 @@ from core.database.sqlalchemy.mixins.repositories import (
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
-
-from profile.models.contact import ContactORM
-from profile.models.person import PersonORM as Model
 
 
 class PersonRepo(

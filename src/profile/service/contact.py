@@ -1,9 +1,4 @@
 from logging import getLogger
-from uuid import UUID
-
-from core.schema.pagination import SPage, SPageParam, SPagination
-from core.service.base import BaseService, required_transaction
-
 from profile.exc.contact import (
     ContactNotExistsException,
     ContactOwnershipException,
@@ -20,7 +15,10 @@ from profile.schema.contact import (
 )
 from profile.uow.contact import ContactUOW
 from profile.uow.person import PersonContactUOW
+from uuid import UUID
 
+from core.schema.pagination import SPage, SPageParam, SPagination
+from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
 

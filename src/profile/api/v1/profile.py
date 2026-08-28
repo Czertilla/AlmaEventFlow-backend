@@ -1,13 +1,6 @@
-from uuid import UUID
-from fastapi import APIRouter, Depends
-from fastapi_filter import FilterDepends
 from logging import getLogger
-
-from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
-from core.schema.error import ErrorCode, auth_responses, detail_400, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
-from profile.exc.user import NonPersonalUserException
 from profile.dependency.profile import ProfileUOWDep
+from profile.exc.user import NonPersonalUserException
 from profile.filter.profile import ProfileFilter
 from profile.schema.profile import (
     ProfileCreate,
@@ -18,6 +11,19 @@ from profile.schema.profile import (
     ProfileRead,
 )
 from profile.service.profile import ProfileService
+from uuid import UUID
+
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
+
+from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import (
+    ErrorCode,
+    auth_responses,
+    detail_400,
+    entity_not_found_responses,
+)
+from core.schema.pagination import SPage, SPageParam
 
 router = APIRouter(prefix="/profiles", tags=["profile"])
 

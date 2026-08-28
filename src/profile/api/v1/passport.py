@@ -1,16 +1,14 @@
-from uuid import UUID
-from fastapi import APIRouter, Depends
-from fastapi_filter import FilterDepends
 from logging import getLogger
-
-from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
-from core.schema.error import ErrorCode, auth_responses, detail_400, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
+from profile.dependency.passport import PassportUOWDep
 from profile.dependency.profile import ProfilePassportUOWDep
 from profile.exc.user import NonPersonalUserException
-from profile.dependency.passport import PassportUOWDep
 from profile.filter.passport import PassportFilter
 from profile.schema.passport import (
+    NameVariantPatch,
+    NameVariantPatchData,
+    NameVariantPut,
+    NameVariantPutData,
+    NameVariantRead,
     PassportCreate,
     PassportItemCreate,
     PassportItemRead,
@@ -19,14 +17,22 @@ from profile.schema.passport import (
     PassportPut,
     PassportPutData,
     PassportRead,
-    NameVariantPatch,
-    NameVariantPatchData,
-    NameVariantPut,
-    NameVariantPutData,
-    NameVariantRead,
 )
-from profile.service.passport import PassportService, NameVariantService
+from profile.service.passport import NameVariantService, PassportService
 from profile.service.profile import ProfileService
+from uuid import UUID
+
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
+
+from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import (
+    ErrorCode,
+    auth_responses,
+    detail_400,
+    entity_not_found_responses,
+)
+from core.schema.pagination import SPage, SPageParam
 
 router = APIRouter(prefix="/passports", tags=["passport"])
 

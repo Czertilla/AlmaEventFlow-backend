@@ -1,29 +1,27 @@
 from logging import getLogger
-from uuid import UUID
-
-from core.schema.pagination import SPage, SPageParam, SPagination
-from core.service.base import BaseService, required_transaction
-
 from profile.exc.passport import (
     PassportNotExistsException,
     PassportOwnershipException,
 )
 from profile.filter.passport import PassportFilter
-from profile.models.passport import PassportORM, NameVariantORM
+from profile.models.passport import NameVariantORM, PassportORM
 from profile.schema.passport import (
+    NameVariantCreate,
+    NameVariantPatch,
+    NameVariantPut,
+    NameVariantRead,
     PassportCreate,
     PassportItemRead,
     PassportPatch,
     PassportPut,
     PassportRead,
-    NameVariantCreate,
-    NameVariantPatch,
-    NameVariantPut,
-    NameVariantRead,
 )
 from profile.uow.passport import PassportUOW
 from profile.uow.profile import ProfilePassportUOW
+from uuid import UUID
 
+from core.schema.pagination import SPage, SPageParam, SPagination
+from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
 

@@ -1,8 +1,7 @@
+from profile.models.passport import PassportORM
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-
-from profile.models.passport import PassportORM
 
 
 class PassportFilter(Filter):

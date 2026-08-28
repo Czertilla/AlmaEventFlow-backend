@@ -1,12 +1,11 @@
 from logging import getLogger
+from profile.uow.organization import OrganizationUOW
 
 from core.schema.message.org import OrganizationData
 from core.service.base import required_transaction
 from core.service.event.organization import (
     OrganizationEventService as BaseService,
 )
-
-from profile.uow.organization import OrganizationUOW
 
 logger = getLogger(__name__)
 

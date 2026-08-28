@@ -1,6 +1,6 @@
-from fastapi_filter.contrib.sqlalchemy import Filter
-
 from profile.models.profile import ProfileORM
+
+from fastapi_filter.contrib.sqlalchemy import Filter
 
 
 class ProfileFilter(Filter):

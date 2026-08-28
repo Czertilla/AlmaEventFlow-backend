@@ -1,6 +1,5 @@
-from typing import TYPE_CHECKING
 from datetime import date
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from sqlalchemy import ForeignKey, String
@@ -8,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.core import Base
 from core.database.sqlalchemy.mixins.models import TimestampMixin, UUIDMixin
+
 from ._base import ModuleBase
 
 if TYPE_CHECKING:

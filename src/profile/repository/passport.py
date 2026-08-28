@@ -1,14 +1,16 @@
+from profile.models.passport import NameVariantORM
+from profile.models.passport import PassportORM as Model
 from uuid import UUID
+
 from sqlalchemy import delete
 from sqlalchemy.orm import joinedload
+
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
-
-from profile.models.passport import PassportORM as Model, NameVariantORM
 
 
 class PassportRepo(

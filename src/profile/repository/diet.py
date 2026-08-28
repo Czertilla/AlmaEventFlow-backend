@@ -1,11 +1,11 @@
+from profile.models.diet import DietORM as Model
+
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
-
-from profile.models.diet import DietORM as Model
 
 
 class DietRepo(

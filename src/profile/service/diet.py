@@ -1,8 +1,4 @@
 from logging import getLogger
-
-from core.schema.pagination import SPage, SPageParam, SPagination
-from core.service.base import BaseService, required_transaction
-
 from profile.exc.diet import DietNotExistsException
 from profile.filter.diet import DietFilter
 from profile.models.diet import DietORM
@@ -14,6 +10,8 @@ from profile.schema.diet import (
 )
 from profile.uow.diet import DietUOW
 
+from core.schema.pagination import SPage, SPageParam, SPagination
+from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
 

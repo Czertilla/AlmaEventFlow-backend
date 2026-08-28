@@ -1,6 +1,7 @@
-from core.uow.sqlalchemy import UnitOfWork
 from profile.repository.person import PersonRepo
 from profile.uow.contact import ContactMixin
+
+from core.uow.sqlalchemy import UnitOfWork
 
 
 class PersonMixin:

@@ -1,9 +1,4 @@
 from logging import getLogger
-from uuid import UUID
-
-from core.schema.pagination import SPage, SPageParam, SPagination
-from core.service.base import BaseService, required_transaction
-
 from profile.api.kafka.pub.person import (
     on_person_created,
     on_person_deleted,
@@ -20,7 +15,10 @@ from profile.schema.person import (
     PersonRead,
 )
 from profile.uow.person import PersonUOW
+from uuid import UUID
 
+from core.schema.pagination import SPage, SPageParam, SPagination
+from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
 

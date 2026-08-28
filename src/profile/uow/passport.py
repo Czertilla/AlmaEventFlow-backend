@@ -1,5 +1,6 @@
-from core.uow.sqlalchemy import UnitOfWork
 from profile.repository.passport import NameVariantRepo, PassportRepo
+
+from core.uow.sqlalchemy import UnitOfWork
 
 
 class PassportMixin:
