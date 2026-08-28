@@ -343,6 +343,15 @@ services:
     env_file:
       - .env
     container_name: bot
+    environment:
+      # bot — внешний клиент Kafka: ходит на EXTERNAL-листенер по TLS
+      # имя хоста должно совпадать с SAN сертификата брокера
+      KAFKA_HOST: ${KAFKA_EXTERNAL_HOST:-localhost}
+      KAFKA_PORT: "${KAFKA_EXTERNAL_PORT:-9093}"
+      KAFKA_SECURITY_PROTOCOL: SSL
+      KAFKA_SSL_CA: /etc/aef/kafka/ca.crt
+      # mTLS (по желанию): KAFKA_SSL_CERT / KAFKA_SSL_KEY / KAFKA_SSL_KEY_PASSWORD
+      # если SAN не покрывает KAFKA_HOST: KAFKA_SSL_CHECK_HOSTNAME: "false"
     command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && alembic -n bot upgrade head && uvicorn bot.main:app --host 0.0.0.0 --port 8000"]
     ports:
       - 8008:8000
@@ -350,6 +359,10 @@ services:
       - type: bind
         source: ./logs/bot/
         target: /app/logs
+      - type: bind
+        source: ./secrets/kafka
+        target: /etc/aef/kafka
+        read_only: true
     depends_on:
       pg:
         condition: service_healthy
