@@ -1,6 +1,7 @@
-from uuid import UUID
-from pydantic import BaseModel, ConfigDict
 import datetime
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from core.utils.mixin.pydantic import PatchModel, TimestampMixin, UUIDMixin
 from event.enum.format import EventFormatEnumV1
@@ -10,9 +11,9 @@ from event.enum.type import EventTypeEnumV1
 
 
 class EventCreate(BaseModel):
-    name: str
+    name: str = Field(max_length=128)
     date: datetime.date | None = None
-    description: str | None = None
+    description: str | None = Field(max_length=1024, default=None)
     location_id: UUID | None = None
     organizer_id: UUID | None = None
     status: EventStatusEnumV1 = EventStatusEnumV1.draft
@@ -27,9 +28,9 @@ class EventRead(EventCreate, UUIDMixin, TimestampMixin): ...
 
 
 class EventPatchData(PatchModel):
-    name: str | None = None
+    name: str | None = Field(max_length=128, default=None)
     date: datetime.date | None = None
-    description: str | None = None
+    description: str | None = Field(max_length=1024, default=None)
     location_id: UUID | None = None
     organizer_id: UUID | None = None
     status: EventStatusEnumV1 = EventStatusEnumV1.draft
