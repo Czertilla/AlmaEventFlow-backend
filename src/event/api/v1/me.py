@@ -1,21 +1,22 @@
+from logging import getLogger
 from uuid import UUID
+
 from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
-from logging import getLogger
 
 from core.dependencies.auth import UserJWTDep
 from core.schema.error import auth_responses
 from core.schema.pagination import SPage, SPageParam
 from core.schema.user import UserJWT
+from event.dependency.attendance import AttendanceUOWDep
 from event.dependency.collective import CollectiveUOWDep
+from event.dependency.me import EventComposeUOWDep, ParticipationComposeUOWDep
 from event.dependency.member import MemberUOWDep
 from event.dependency.principal import (
     verify_collective_principal,
     verify_member_person,
 )
 from event.dependency.role import RoleUOWDep
-from event.dependency.attendance import AttendanceUOWDep
-from event.dependency.me import EventComposeUOWDep, ParticipationComposeUOWDep
 from event.filter.member import MemberFilter
 from event.filter.role import RoleFilter
 from event.models.collective import CollectiveORM
@@ -26,6 +27,7 @@ from event.schema.attendance import (
     AttendancePrincipalPatchData,
     AttendanceRead,
 )
+from event.schema.collective import MyCollectiveRead
 from event.schema.event import (
     EventPatch,
     EventPatchData,
@@ -33,56 +35,49 @@ from event.schema.event import (
     EventPutData,
     EventRead,
 )
-from event.schema.member import (
-    MemberCreate,
-    MemberCreateData,
-    MemberPatchData,
-    MemberRead,
-)
-from event.schema.role import (
-    RoleCreate,
-    RolePatch,
-    RolePatchData,
-    RoleRead,
-)
-from event.schema.participation import ParticipationRead
-from event.schema.stage import (
-    StageCreateData,
-    StagePatch,
-    StagePatchData,
-    StageRead,
-)
 from event.schema.me import (
     MeAttendanceCreateData,
     MeEventCreate,
     MeEventRead,
     MeParticipationCreate,
 )
-from event.service.member import MemberService
-from event.service.role import RoleService
-from event.service.participation import ParticipationService
+from event.schema.member import (
+    MemberCreate,
+    MemberCreateData,
+    MemberPatchData,
+    MemberRead,
+)
+from event.schema.participation import ParticipationRead
+from event.schema.role import (
+    RoleCreate,
+    RolePatch,
+    RolePatchData,
+    RoleRead,
+)
+from event.schema.stage import (
+    StageCreateData,
+    StagePatch,
+    StagePatchData,
+    StageRead,
+)
 from event.service.attendance import AttendanceService
+from event.service.collective import CollectiveService
 from event.service.event import EventService
+from event.service.member import MemberService
+from event.service.participation import ParticipationService
+from event.service.role import RoleService
 
 router = APIRouter(prefix="/me", tags=["me"])
 
 logger = getLogger(__name__)
 
 
-@router.get("/collectives", response_model=None, responses={**auth_responses()})
+@router.get("/collectives", responses={**auth_responses()})
 async def get_my_collectives(
     user: UserJWTDep,
-    collective_uow: CollectiveUOWDep,
-) -> list[dict]:
-    async with collective_uow as uow:
-        return [
-            {
-                "id": c.id,
-                "principal_id": c.principal_id,
-                "is_verified": c.is_verified,
-            }
-            for c in await uow.collectives.get_by_principal_id(user.person_id)
-        ]
+    uow: CollectiveUOWDep,
+) -> list[MyCollectiveRead]:
+    return await CollectiveService(uow).get_my_collectives(user.person_id)
 
 
 @router.get("/members", responses={**auth_responses()})
@@ -91,9 +86,7 @@ async def get_my_members(
     uow: MemberUOWDep,
 ) -> list[MemberRead]:
     """Членства текущего пользователя во всех коллективах (для роли участника)."""
-    async with uow as scope:
-        members = await scope.members.get_by_person_id(user.person_id)
-        return [MemberRead.model_validate(m) for m in members]
+    return await MemberService(uow).get_my_members(user.person_id)
 
 
 @router.get(
@@ -240,6 +233,25 @@ async def cancel_my_collective_participation(
 ) -> None:
     await EventService(uow).cancel_participation_for_collective(
         collective_id, event_id
+    )
+
+
+@router.get(
+    "/events/{event_id}/attendance", responses={**auth_responses()}
+)
+async def get_my_event_attendance(
+    event_id: UUID,
+    user: UserJWTDep,
+    uow: AttendanceUOWDep,
+) -> list[AttendanceRead]:
+    """Resolves the current user's own attendance row(s) for this event,
+    without needing to already know member_id/attendance_id — e.g. for the
+    Telegram bot's "mark my attendance" buttons, which only carry the
+    event_id in their callback data."""
+    if user.person_id is None:
+        return []
+    return await AttendanceService(uow).get_mine_for_event(
+        user.person_id, event_id
     )
 
 

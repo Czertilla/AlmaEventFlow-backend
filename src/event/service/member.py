@@ -4,8 +4,8 @@ from uuid import UUID
 from sqlalchemy import delete, select
 from sqlalchemy.orm import selectinload
 
-from core.service.base import BaseService, required_transaction
 from core.schema.pagination import SPage, SPageParam, SPagination
+from core.service.base import BaseService, required_transaction
 from event.exc.event import MemberNotExistsException
 from event.filter.member import MemberFilter
 from event.models.member import MemberORM, MemberRoleAssociation
@@ -13,8 +13,8 @@ from event.models.role import RoleORM
 from event.schema.member import (
     MemberCreate,
     MemberPatch,
-    MemberPut,
     MemberPatchData,
+    MemberPut,
     MemberRead,
 )
 from event.uow.member import MemberUOW
@@ -53,6 +53,10 @@ class MemberService(BaseService[MemberUOW]):
     @required_transaction
     async def _delete(self, member_id: UUID) -> None:
         await self.uow.members.delete_one(member_id)
+
+    @required_transaction
+    async def _get_by_person_id(self, person_id: UUID) -> list[MemberORM]:
+        return await self.uow.members.get_by_person_id(person_id)
 
     @required_transaction
     async def _patch_roles(
@@ -143,6 +147,11 @@ class MemberService(BaseService[MemberUOW]):
         async with self.uow as uow:
             await self._delete(member_id)
             await uow.commit()
+
+    async def get_my_members(self, person_id: UUID) -> list[MemberRead]:
+        async with self.uow:
+            members = await self._get_by_person_id(person_id)
+            return [MemberRead.model_validate(m) for m in members]
 
     async def search(
         self, filter: MemberFilter, page_params: SPageParam = SPageParam()

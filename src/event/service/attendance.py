@@ -4,10 +4,18 @@ from uuid import UUID
 from sqlalchemy import select
 
 from core.schema.error import ErrorCode
-from core.service.base import BaseService, required_transaction
 from core.schema.pagination import SPage, SPageParam, SPagination
+from core.service.base import BaseService, required_transaction
+from core.utils.exc.http import VancedHTTPException
+from event.exc.event import (
+    AttendanceNotExistsException,
+    MemberNotExistsException,
+    ParticipationNotExistsException,
+)
 from event.filter.attendance import AttendanceFilter
 from event.models.attendance import AttendanceORM
+from event.models.member import MemberORM
+from event.models.participation import ParticipationORM
 from event.schema.attendance import (
     AttendanceCreate,
     AttendancePatch,
@@ -16,15 +24,9 @@ from event.schema.attendance import (
     AttendanceRead,
 )
 from event.schema.me import MeAttendanceCreateData
-from event.exc.event import (
-    AttendanceNotExistsException,
-    MemberNotExistsException,
-    ParticipationNotExistsException,
-)
-from event.uow.attendance import AttendanceUOW
-from core.utils.exc.http import VancedHTTPException
-from event.uow.me import ParticipationComposeUOW
 from event.service.notification import notify_event_targets
+from event.uow.attendance import AttendanceUOW
+from event.uow.me import ParticipationComposeUOW
 
 logger = getLogger(__name__)
 
@@ -164,6 +166,30 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
             result = await uow.session.execute(stmt)
             attendances = result.unique().scalars().all()
             return [AttendanceRead.model_validate(att) for att in attendances]
+
+    async def get_mine_for_event(
+        self, person_id: UUID, event_id: UUID
+    ) -> list[AttendanceRead]:
+        """Resolves the caller's own attendance row(s) for ``event_id`` across
+        every collective they're a member of. Self-service lookup so a caller
+        (e.g. the Telegram bot's attendance buttons) can act without already
+        knowing member_id/attendance_id — a person is usually in one
+        collective participating in a given event, but not guaranteed to be."""
+        async with self.uow as uow:
+            stmt = (
+                select(AttendanceORM)
+                .join(
+                    ParticipationORM,
+                    AttendanceORM.participation_id == ParticipationORM.id,
+                )
+                .join(MemberORM, MemberORM.id == AttendanceORM.member_id)
+                .where(
+                    ParticipationORM.event_id == event_id,
+                    MemberORM.person_id == person_id,
+                )
+            )
+            rows = (await uow.session.execute(stmt)).unique().scalars().all()
+            return [AttendanceRead.model_validate(row) for row in rows]
 
     async def search(self, filter: AttendanceFilter, page_params: SPageParam = SPageParam()) -> SPage[AttendanceRead]:
         async with self.uow as uow:
