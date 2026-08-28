@@ -1,5 +1,7 @@
 from typing import Annotated
+
 from fastapi import Depends
+
 from core.config.settings import settings
 from core.utils.s3_client import S3Client
 

@@ -1,7 +1,8 @@
-from .sqlalchemy import UnitOfWork as SQLAlchemy
-from .beanie import UnitOfWork as Beanie
 from core.database.beanie.core import BeanieRepository
 from core.database.sqlalchemy.core import SQLAlchemyRepository
+
+from .beanie import UnitOfWork as Beanie
+from .sqlalchemy import UnitOfWork as SQLAlchemy
 
 
 class UnitOfWork(SQLAlchemy, Beanie):

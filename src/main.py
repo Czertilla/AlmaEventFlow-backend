@@ -1,7 +1,8 @@
 import json
-from multiprocessing import Process
-from uvicorn import run
 import os
+from multiprocessing import Process
+
+from uvicorn import run
 
 
 def set_db_name(db_name: str):

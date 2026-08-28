@@ -1,8 +1,9 @@
 from typing import Generic, TypeVar
 from uuid import UUID
+
+from core.schema.message.profile import PersonData, PersonDelete
 from core.service.base import BaseService, required_transaction
 from core.uow.event.person import PersonAUOW
-from core.schema.message.profile import PersonData, PersonDelete
 
 UOW = TypeVar("UOW", bound=PersonAUOW)
 

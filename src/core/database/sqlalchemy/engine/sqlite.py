@@ -1,6 +1,6 @@
+from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.util.concurrency import await_only
-from sqlalchemy import event
 
 from core.config.settings import settings
 

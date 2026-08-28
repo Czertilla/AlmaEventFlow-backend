@@ -1,5 +1,6 @@
-from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
-from colorama import Fore, Style, Back
+from logging import CRITICAL, DEBUG, ERROR, INFO, WARNING
+
+from colorama import Back, Fore, Style
 
 cb = lambda x: Fore.BLUE + x + Fore.RESET  # noqa: E731
 cg = lambda x: Fore.GREEN + x + Fore.RESET  # noqa: E731

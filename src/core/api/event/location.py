@@ -1,11 +1,12 @@
 from faststream import Depends
+
 from core.broker.kafka import KafkaRouter
 from core.dependencies.sqlalchemy import UOWDep
 from core.enum.topic import LocationTopic
 from core.schema.message.geo import (
     LocationCreatedEvent,
-    LocationUpdatedEvent,
     LocationDeletedEvent,
+    LocationUpdatedEvent,
 )
 from core.service.event.location import LocationEventService
 from core.uow.event.location import LocationAUOW

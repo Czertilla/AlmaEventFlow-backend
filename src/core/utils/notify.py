@@ -1,12 +1,8 @@
 from logging import getLogger
 
-from fastapi.responses import JSONResponse
-from pydantic import EmailStr
-
-from core.broker.kafka import broker, KafkaBroker
-from core.schema.message.notify import NotificationRequest
+from core.broker.kafka import KafkaBroker, broker
 from core.enum.mq import NotifyQueue
-
+from core.schema.message.notify import NotificationRequest
 
 logger = getLogger(__name__)
 

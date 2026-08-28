@@ -1,16 +1,16 @@
+import asyncio
+import glob
 import gzip
 import os
 import shutil
-import glob
-from logging.handlers import TimedRotatingFileHandler
-import asyncio
 import traceback
+from logging import Handler, LogRecord, getLogger
+from logging.handlers import TimedRotatingFileHandler
+
 from aiogram import Bot
-from aiogram.types import InputMediaDocument, BufferedInputFile
-from logging import LogRecord, Handler
+from aiogram.types import BufferedInputFile, InputMediaDocument
 
 from core.config.settings import settings
-from logging import getLogger
 
 
 class GzipTimedRotatingFileHandler(TimedRotatingFileHandler):

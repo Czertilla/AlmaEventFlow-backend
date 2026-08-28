@@ -1,12 +1,13 @@
 from logging import getLogger
+
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.client_session import (
     AsyncClientSession,
     AsyncContextManager,
 )
-from core.uow.base import BaseUOW
-from core.database.beanie.client import get_client
 
+from core.database.beanie.client import get_client
+from core.uow.base import BaseUOW
 
 logger = getLogger(__name__)
 

@@ -1,8 +1,9 @@
 from typing import Generic, TypeVar
 from uuid import UUID
+
+from core.schema.message.geo import AddressData, AddressDelete
 from core.service.base import BaseService, required_transaction
 from core.uow.event.address import AddressAUOW
-from core.schema.message.geo import AddressData, AddressDelete
 
 UOW = TypeVar("UOW", bound=AddressAUOW)
 

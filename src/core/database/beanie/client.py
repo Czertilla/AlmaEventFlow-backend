@@ -1,6 +1,6 @@
+from beanie import Document, init_beanie
 from pymongo import AsyncMongoClient
 
-from beanie import init_beanie, Document
 from core.config.settings import settings
 
 _client: AsyncMongoClient | None = None

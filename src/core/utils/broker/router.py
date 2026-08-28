@@ -1,5 +1,7 @@
 from typing import Any, Iterable
+
 from fastapi import APIRouter, FastAPI
+
 from core.config.settings import settings
 
 

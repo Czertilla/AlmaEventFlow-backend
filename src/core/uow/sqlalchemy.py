@@ -1,9 +1,10 @@
-from core.database.sqlalchemy import new_session
-from sqlalchemy.ext.asyncio import async_sessionmaker
-from core.uow.base import BaseUOW
 from logging import getLogger
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Self
+
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from core.database.sqlalchemy import new_session
+from core.uow.base import BaseUOW
 
 logger = getLogger(__name__)
 

@@ -2,9 +2,9 @@ import html
 import json
 import logging
 import logging.config
-from pathlib import Path
 import sys
 import traceback
+from pathlib import Path
 
 from .format import FORMATS
 

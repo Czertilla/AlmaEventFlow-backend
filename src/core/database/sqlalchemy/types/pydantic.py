@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.types import TypeDecorator
 
+
 class PydanticJSONB(TypeDecorator):
     impl = JSONB
     cache_ok = True

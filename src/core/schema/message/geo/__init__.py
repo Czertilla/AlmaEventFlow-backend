@@ -1,6 +1,9 @@
 from uuid import UUID
+
 from pydantic import BaseModel, Field
+
 from core.schema.message.core import MQEvent, MQRequest
+
 
 class AddressData(MQRequest):
     id: UUID

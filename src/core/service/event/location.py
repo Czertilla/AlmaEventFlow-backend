@@ -1,8 +1,9 @@
 from typing import Generic, TypeVar
 from uuid import UUID
+
+from core.schema.message.geo import LocationData, LocationDelete
 from core.service.base import BaseService, required_transaction
 from core.uow.event.location import LocationAUOW
-from core.schema.message.geo import LocationData, LocationDelete
 
 UOW = TypeVar("UOW", bound=LocationAUOW)
 

@@ -1,15 +1,12 @@
 import asyncio
-from logging.config import fileConfig
 import os
+import sys
+from logging.config import fileConfig
 
+from alembic import context
+from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from sqlalchemy import pool
-
-from alembic import context, op
-import sqlalchemy as sa
-
-import sys
 
 if os.getenv("APP_ARCHITECTURE") in ("monolith", None):
     sys.path.insert(
@@ -17,9 +14,10 @@ if os.getenv("APP_ARCHITECTURE") in ("monolith", None):
         os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")),
     )
 
+from logging import getLogger
+
 from core.config.settings import Settings
 from core.database.sqlalchemy.core import Base
-from logging import getLogger
 
 logger = getLogger(__name__)
 

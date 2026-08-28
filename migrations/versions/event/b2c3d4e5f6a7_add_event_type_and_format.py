@@ -8,12 +8,11 @@ Create Date: 2026-06-14 12:30:00.000000
 
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
-from event.enum.type_v1 import EventTypeEnumV1
 from event.enum.format import EventFormatEnumV1
-
+from event.enum.type_v1 import EventTypeEnumV1
 
 # revision identifiers, used by Alembic.
 revision: str = "b2c3d4e5f6a7"

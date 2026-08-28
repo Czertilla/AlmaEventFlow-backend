@@ -5,8 +5,8 @@ from core.dependencies.sqlalchemy import UOWDep
 from core.enum.topic import OrganizationTopic
 from core.schema.message.org import (
     OrganizationCreatedEvent,
-    OrganizationUpdatedEvent,
     OrganizationDeletedEvent,
+    OrganizationUpdatedEvent,
 )
 from core.service.event.organization import OrganizationEventService
 from core.uow.event.organization import OrganizationAUOW

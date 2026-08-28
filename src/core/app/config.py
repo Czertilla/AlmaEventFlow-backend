@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
 from core.app.contextmanager import AppContextManager
 from core.config.settings import settings
 from core.utils.get_version import get_version

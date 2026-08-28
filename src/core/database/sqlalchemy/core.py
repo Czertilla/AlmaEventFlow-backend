@@ -1,9 +1,10 @@
-from logging import getLogger, Logger
-from typing import Any, Generic, TypeVar
-from sqlalchemy.types import DateTime
 from datetime import datetime
-from sqlalchemy.orm import DeclarativeBase, Session
+from logging import Logger, getLogger
+from typing import Any, Generic, TypeVar
+
 from sqlalchemy import Result, SQLColumnExpression, exists, func, insert, select
+from sqlalchemy.orm import DeclarativeBase, Session
+from sqlalchemy.types import DateTime
 
 from ...utils.abstract.repository import AbstractRepository
 from .session import settings

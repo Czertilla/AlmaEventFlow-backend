@@ -1,8 +1,7 @@
 from functools import wraps
-from typing import Generic, TypeVar
-from core.utils.abstract.unit_of_work import ABCUnitOfWork
-from typing import Awaitable
+from typing import Awaitable, Generic, TypeVar
 
+from core.utils.abstract.unit_of_work import ABCUnitOfWork
 
 T = TypeVar("T", bound=ABCUnitOfWork)
 

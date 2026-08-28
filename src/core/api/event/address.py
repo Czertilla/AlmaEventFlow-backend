@@ -1,11 +1,12 @@
 from faststream import Depends
+
 from core.broker.kafka import KafkaRouter
 from core.dependencies.sqlalchemy import UOWDep
 from core.enum.topic import AddressTopic
 from core.schema.message.geo import (
     AddressCreatedEvent,
-    AddressUpdatedEvent,
     AddressDeletedEvent,
+    AddressUpdatedEvent,
 )
 from core.service.event.address import AddressEventService
 from core.uow.event.address import AddressAUOW

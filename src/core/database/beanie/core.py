@@ -1,5 +1,6 @@
 from typing import Any, Generic, Mapping, TypeVar, Union
 from uuid import UUID
+
 from beanie import BulkWriter, DeleteRules, Document, SortDirection, WriteRules
 from beanie.odm.actions import ActionDirections
 from beanie.odm.queries.find import FindMany
@@ -7,10 +8,10 @@ from pydantic import BaseModel  # noqa: F401
 from pymongo.asynchronous.client_session import AsyncClientSession
 
 from core.utils.abstract.repository import (
-    AbstractRepository,
-    AbstractIdRepository,
-    AbstractSetRepository,
     AbstractCountingRepository,
+    AbstractIdRepository,
+    AbstractRepository,
+    AbstractSetRepository,
 )
 
 Base = Document

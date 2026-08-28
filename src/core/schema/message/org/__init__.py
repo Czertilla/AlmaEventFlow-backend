@@ -1,5 +1,7 @@
 from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
+
 from core.schema.message.core import MQEvent, MQRequest
 
 

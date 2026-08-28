@@ -1,5 +1,6 @@
-from docxtpl import DocxTemplate
 from dataclasses import dataclass
+
+from docxtpl import DocxTemplate
 
 
 @dataclass

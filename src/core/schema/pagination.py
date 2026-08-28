@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field
 from typing import Generic, Self, TypeVar
 
-from core.utils.pagination import get_offset, get_total_pages
+from pydantic import BaseModel, Field
+
 from core.config.settings import settings
+from core.utils.pagination import get_offset, get_total_pages
 
 T = TypeVar("T")
 

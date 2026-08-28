@@ -7,8 +7,8 @@ from core.dependencies.sqlalchemy import UOWDep
 from core.enum.topic import PersonTopic
 from core.schema.message.profile import (
     PersonCreatedEvent,
-    PersonUpdatedEvent,
     PersonDeletedEvent,
+    PersonUpdatedEvent,
 )
 from core.service.event.person import PersonEventService
 from core.uow.event.person import PersonAUOW

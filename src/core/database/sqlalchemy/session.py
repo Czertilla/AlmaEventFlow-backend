@@ -1,5 +1,6 @@
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from core.config.settings import settings
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 match settings.DB_DBMS:
     case "sqlite":

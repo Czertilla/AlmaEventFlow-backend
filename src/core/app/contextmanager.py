@@ -1,10 +1,11 @@
 import asyncio
-from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from logging import getLogger
 from typing import Coroutine
-from faststream import FastStream
+
 from fastapi import FastAPI
+from faststream import FastStream
 
 logger = getLogger()
 

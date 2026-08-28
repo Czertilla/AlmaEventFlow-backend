@@ -1,8 +1,6 @@
-from .sqlalchemy import new_session, engine
-from .sqlalchemy.core import (
-    Base, 
-    SQLAlchemyRepository as BaseRepo
-)
+from .sqlalchemy import engine, new_session
+from .sqlalchemy.core import Base
+from .sqlalchemy.core import SQLAlchemyRepository as BaseRepo
 
 __all__ = [
     "new_session",

@@ -1,7 +1,9 @@
 from typing import Any, Generic
+
+from fastapi_filter.contrib.sqlalchemy import Filter
 from sqlalchemy import Select, delete, exists, func, select, update
 from sqlalchemy.sql.base import ExecutableOption
-from fastapi_filter.contrib.sqlalchemy import Filter
+
 from core.config.settings import settings
 from core.schema.pagination import SPageParam
 
@@ -14,7 +16,8 @@ from ....utils.abstract.repository import (
     AbstractIdRepository,
     AbstractRepository,
 )
-from ..mixins.models import IDMixin as Model, ID
+from ..mixins.models import ID
+from ..mixins.models import IDMixin as Model
 
 
 class IDRepositoryMixin(

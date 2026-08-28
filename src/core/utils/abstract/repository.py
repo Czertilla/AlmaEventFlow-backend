@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from sqlalchemy import Result
 from typing import Any
+
+from sqlalchemy import Result
 
 
 class AbstractRepository(ABC):

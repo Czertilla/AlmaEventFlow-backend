@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from core.config.settings import settings
-from core.database.sqlalchemy.engine.pgsql import get_url, get_engine
+from core.database.sqlalchemy.engine.pgsql import get_engine, get_url
 from core.dependencies.sqlalchemy import UOWDep as Base
 
 

@@ -2,19 +2,18 @@ from logging import getLogger
 from pathlib import Path
 from typing import Annotated, Optional
 from uuid import UUID
-import jwt
 
+import jwt
 from fastapi import Depends, Request, status
 from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBearer,
 )
 
+from core.config.settings import settings
 from core.schema.error import ErrorCode
 from core.schema.user import UserJWT
-from core.config.settings import settings
 from core.utils.exc.http import VancedHTTPException
-
 
 logger = getLogger(__name__)
 

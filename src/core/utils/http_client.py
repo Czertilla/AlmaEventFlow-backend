@@ -1,7 +1,7 @@
-from aiohttp import ClientSession
 from types import TracebackType
 from typing import Self
 
+from aiohttp import ClientSession
 
 
 class HTTPClient:

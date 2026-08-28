@@ -1,4 +1,5 @@
 from pydantic import EmailStr, Field
+
 from core.schema.message.core import MQRequest
 
 

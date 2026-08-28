@@ -1,5 +1,6 @@
-from core.config.settings import Settings
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+
+from core.config.settings import Settings
 
 settings = Settings()
 
