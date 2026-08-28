@@ -1,0 +1,87 @@
+---
+ru:
+  title: "%{ch} Русский"
+  description: |-
+    Бот AlmaEventFlow — привяжите Telegram к своему аккаунту AEF и получайте
+    уведомления о мероприятиях. Отправьте /start, чтобы открыть меню.
+  help: |-
+    <b>Помощь</b>
+
+    /start — открыть главное меню
+    /account — управление привязанным аккаунтом AlmaEventFlow
+    /language — сменить язык интерфейса
+    /help — показать это сообщение
+    /setup_chat — назначить этот групповой чат официальным для коллектива
+    (только в группах, руководителям коллектива)
+  start:
+    greeting: |-
+      <b>Добро пожаловать в AlmaEventFlow!</b>
+      Выберите действие ниже.
+  menu:
+    info: |-
+      <b>О боте</b>
+      Это бот AlmaEventFlow. Привяжите Telegram к своему аккаунту AEF, чтобы
+      получать здесь уведомления о мероприятиях.
+    main:
+      title: <b>Главное меню</b>
+      items:
+        account: "%{ch} Мой аккаунт"
+        lang: "%{ch} Язык"
+        info: "%{ch} О боте"
+    language:
+      title: |-
+        <b>Выберите язык</b>
+        <blockquote>Текущий: %{current_lang}</blockquote>
+      items:
+        sys: "%{ch} Системный"
+  account:
+    linked: |-
+      %{ch} Ваш Telegram привязан к аккаунту AlmaEventFlow.
+    not_linked: |-
+      %{ch} Telegram ещё не привязан.
+      Откройте свой профиль на сайте AlmaEventFlow и подключите Telegram
+      там — оттуда придёт ссылка, которую нужно открыть здесь.
+    confirm_unlink: "%{ch} Отвязать Telegram от аккаунта AlmaEventFlow?"
+    unlinked: "%{ch} Telegram отвязан."
+    linked_success: "%{ch} Telegram привязан к вашему аккаунту AlmaEventFlow!"
+    link_invalid: "%{ch} Эта ссылка недействительна. Запросите новую на сайте."
+    link_expired: "%{ch} Эта ссылка устарела. Запросите новую на сайте."
+    notifications_on: "%{ch} Уведомления в Telegram включены."
+    notifications_off: "%{ch} Уведомления в Telegram отключены."
+    notifications_error: "%{ch} Не удалось изменить настройку. Попробуйте позже."
+  setup_chat:
+    not_linked: |-
+      %{ch} Сначала привяжите Telegram к аккаунту AlmaEventFlow в личных
+      сообщениях с ботом: /account
+    not_admin: |-
+      %{ch} Сначала выдайте боту права администратора в этом чате и
+      повторите команду.
+    no_collective: "%{ch} Вы не руководите ни одним коллективом."
+    ambiguous: "%{ch} Вы руководите несколькими коллективами. Выберите нужный ниже:"
+    error: "%{ch} Не удалось проверить ваши коллективы. Попробуйте позже."
+    invalid_id: "%{ch} Некорректный collective_id."
+    success: "%{ch} Готово! Этот чат назначен официальным для коллектива."
+    disabled: "%{ch} Этот чат больше не привязан ни к одному коллективу."
+    not_bound: |-
+      %{ch} Этот чат не был привязан к коллективу, которым вы руководите.
+  error:
+    username: "%{ch} Для корректной работы бота укажите @username в настройках Telegram."
+    user_not_found: "Пользователь не найден."
+    wip: "%{ch} В разработке."
+  button:
+    back: "%{ch} Назад"
+    cancel: "%{ch} Отмена"
+    confirm: "%{ch} Подтвердить"
+    add: "%{ch} Добавить"
+    delete: "%{ch} Удалить"
+    unlink: "%{ch} Отвязать"
+    notifications: "%{ch} Уведомления в Telegram"
+  _commands:
+    default:
+      start: Открыть главное меню
+      help: Показать помощь
+      language: Сменить язык
+      account: Управление привязанным аккаунтом
+      setup_chat: Назначить чат официальным для коллектива
+    superuser:
+      admin: Панель администратора
