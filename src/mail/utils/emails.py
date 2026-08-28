@@ -2,7 +2,6 @@ from fastapi_mail import ConnectionConfig, FastMail
 
 from mail.config.settings import settings
 
-
 defaconf = ConnectionConfig(
     MAIL_USERNAME=settings.MAIL_ADMIN_USERNAME,
     MAIL_PASSWORD=settings.MAIL_ADMIN_PASSWORD.get_secret_value(),

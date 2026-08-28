@@ -1,5 +1,7 @@
 from logging import getLogger
+
 from fastapi import FastAPI
+
 from core.app.contextmanager import AppContextManager
 
 logger = getLogger()

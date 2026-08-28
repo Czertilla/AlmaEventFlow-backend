@@ -1,6 +1,6 @@
-from pydantic import Field, Secret, EmailStr, HttpUrl
+from pydantic import EmailStr, Field, Secret
 
-from core.config.settings import getSettings, Settings
+from core.config.settings import Settings, getSettings
 
 
 class MailSettings(Settings):

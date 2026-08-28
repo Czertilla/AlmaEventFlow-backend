@@ -1,10 +1,8 @@
 import asyncio
 from datetime import datetime, timezone
-from fastapi_mail import MessageSchema, MessageType
 from logging import getLogger
 
-from mail.utils.emails import get_fastmail
-from mail.utils.templates import render_template
+from fastapi_mail import MessageSchema, MessageType
 
 from core.broker.kafka import KafkaRouter, broker
 from core.enum.mq import EmailQueue, NotifyDeliveryQueue
@@ -19,6 +17,8 @@ from core.schema.message.notify import (
     EmailDeliveryBatch,
     EmailDeliveryItem,
 )
+from mail.utils.emails import get_fastmail
+from mail.utils.templates import render_template
 
 router = KafkaRouter()
 
