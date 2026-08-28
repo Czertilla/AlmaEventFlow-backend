@@ -1,6 +1,7 @@
 from typing import Generic, TypeVar
-from pydantic import BaseModel, ConfigDict, Field
 from uuid import UUID, uuid4
+
+from pydantic import BaseModel, ConfigDict, Field
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -31,3 +32,9 @@ class MQRequest(BaseModel):
 class MQEvent(MQRequest, Generic[T]):
     event_id: UUID = Field(default_factory=uuid4)
     data: list[T]
+
+
+class Ack(BaseModel):
+    """No-payload success marker for RPC responses that have nothing to return."""
+
+    ok: bool = True

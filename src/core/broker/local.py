@@ -2,6 +2,7 @@ from asyncio import create_task
 from collections import defaultdict
 from logging import getLogger
 from typing import Any, Awaitable, Callable
+
 from faststream import apply_types
 
 from core.utils.mixin.singleton import SingletonMixin
@@ -42,6 +43,17 @@ class MonolithBroker(SingletonMixin):
         logger.info("Monolith publish: topic=%s message=%r", topic, message)
         for handler in self._handlers.get(topic, []):
             create_task(handler(message))
+
+    async def request(
+        self, message: Any, topic: str, *args, timeout: float = 5.0, **kwargs
+    ) -> Any:
+        handlers = self._handlers.get(topic, [])
+        if len(handlers) != 1:
+            raise RuntimeError(
+                f"RPC topic {topic!r} has {len(handlers)} responders, "
+                "expected exactly 1"
+            )
+        return await handlers[0](message)
 
 
 class MonolithRouter:

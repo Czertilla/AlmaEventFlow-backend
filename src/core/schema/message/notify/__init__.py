@@ -78,6 +78,39 @@ class WebPushDeliveryBatch(TransportBatch):
     shared database."""
 
 
+class TelegramButton(MQRequest):
+    """One inline keyboard button. ``callback_data`` is opaque to notify — the
+    ``bot`` service defines and interprets its own callback formats."""
+
+    text: str
+    callback_data: str
+
+
+class TelegramDeliveryItem(MQRequest):
+    """Inline per-delivery content for a Telegram batch. Self-contained (like
+    ``EmailDeliveryItem``) since ``bot`` doesn't share notify's database.
+    ``correlation_key`` (the domain id the notification is about, e.g. an
+    event id) lets ``bot`` decide whether to edit a previously-sent message
+    instead of sending a new one."""
+
+    delivery_id: UUID
+    chat_id: str
+    text: str
+    buttons: list[list[TelegramButton]] = Field(default_factory=list)
+    correlation_key: str | None = None
+    message_thread_id: int | None = None
+    """Forum-topic id, for chats organized into topics. Only meaningful when
+    sending a new message — an edit targets an existing message_id, whose
+    topic is already fixed."""
+    expires_at: datetime | None = None
+
+
+class TelegramDeliveryBatch(TransportBatch):
+    """Telegram transport batch (``NotifyDeliveryQueue.TELEGRAM``)."""
+
+    items: list[TelegramDeliveryItem] = Field(min_length=1)
+
+
 class DeliveryResult(MQRequest):
     """Delivery outcome reported by an external worker (``RESULT`` topic). One
     result updates exactly one ``notification_delivery``."""
@@ -86,3 +119,43 @@ class DeliveryResult(MQRequest):
     status: DeliveryStatus
     error: str | None = None
     provider_message_id: str | None = None
+
+
+class RegisterClientRequest(MQRequest):
+    user_id: UUID
+    transport: TransportTypeEnum = TransportTypeEnum.webpush
+    endpoint: str
+    label: str | None = None
+    payload: dict[str, str] = Field(default_factory=dict)
+
+
+class ClientData(MQRequest):
+    id: UUID
+    transport: TransportTypeEnum
+    endpoint: str
+    label: str | None = None
+    is_active: bool
+    created_at: datetime
+
+
+class DeregisterClientRequest(MQRequest):
+    user_id: UUID
+    client_id: UUID
+
+
+class GetPreferencesRequest(MQRequest):
+    user_id: UUID
+
+
+class PreferenceItemData(MQRequest):
+    transport: TransportTypeEnum
+    is_enabled: bool
+
+
+class PreferencesData(MQRequest):
+    preferences: list[PreferenceItemData]
+
+
+class SetPreferencesRequest(MQRequest):
+    user_id: UUID
+    preferences: list[PreferenceItemData] = Field(min_length=1)

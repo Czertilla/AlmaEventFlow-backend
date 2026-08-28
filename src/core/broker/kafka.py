@@ -1,12 +1,16 @@
 import asyncio
 from functools import lru_cache
+from logging import getLogger
+
 from faststream.kafka import (
     KafkaBroker as BaseKafkaBroker,
+)
+from faststream.kafka import (
     KafkaRouter as BaseKafkaRouter,
 )
 from faststream.kafka.fastapi import KafkaRouter as BaseKafkaStreamRouter
+
 from core.config.settings import settings
-from logging import getLogger
 
 logger = getLogger(__name__)
 
@@ -72,7 +76,11 @@ if not settings.IN_MEMORY_BROKER:
 else:
     from core.broker.local import (
         MonolithBroker as KafkaBroker,  # noqa: F401
+    )
+    from core.broker.local import (
         MonolithRouter as KafkaRouter,  # noqa: F401
+    )
+    from core.broker.local import (
         MonolithStreamRouter as KafkaStreamRouter,
     )
 
