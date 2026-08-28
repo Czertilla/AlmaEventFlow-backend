@@ -9,8 +9,9 @@ from core.schema.error import ErrorCode, ErrorModel
 from core.utils.exc.http import VancedHTTPException
 from user.config.settings import settings
 from user.dependencies.user import get_user_service
-from user.services.user import UserService
 from user.services.auth import get_jwt_strategy
+from user.services.user import UserService
+from user.utils.auth_response import finish_login
 from user.utils.cookie import (
     set_refresh_cookie,
     set_session_cookie,
@@ -53,29 +54,7 @@ async def login(
         raise VancedHTTPException(
             status_code=400, detail=ErrorCode.LOGIN_BAD_CREDENTIALS
         )
-
-    strategy = get_jwt_strategy()
-    access_token = await strategy.write_token(user)
-
-    device_info = extract_device_info(request)
-    ip_address = extract_ip(request)
-
-    async with user_service.uow:
-        raw_refresh, _, _, session_id = await user_service._create_session(
-            user.id, device_info=device_info, ip_address=ip_address
-        )
-        response = JSONResponse(
-            content={
-                "access_token": access_token,
-                "token_type": "bearer",
-            }
-        )
-        set_refresh_cookie(response, raw_refresh)
-        set_session_cookie(response, session_id)
-        response._refresh_token_created = True
-        await user_service.on_after_login(user, request, response)
-        await user_service.uow.commit()
-    return response
+    return await finish_login(request, user, user_service)
 
 
 @router.post(
@@ -111,13 +90,11 @@ async def refresh(
             status_code=401, detail=ErrorCode.REFRESH_TOKEN_MISSING
         )
 
-    async with user_service.uow:
-        result = await user_service._refresh_session(
-            raw_refresh,
-            device_info=extract_device_info(request),
-            ip_address=extract_ip(request),
-        )
-        await user_service.uow.commit()
+    result = await user_service.refresh_session(
+        raw_refresh,
+        device_info=extract_device_info(request),
+        ip_address=extract_ip(request),
+    )
     if result is None:
         raise VancedHTTPException(
             status_code=401, detail=ErrorCode.INVALID_REFRESH_TOKEN
@@ -152,9 +129,7 @@ async def logout(
 ) -> Response:
     raw_refresh = request.cookies.get(settings.REFRESH_COOKIE_NAME)
     if raw_refresh:
-        async with user_service.uow:
-            await user_service._revoke_session(raw_refresh)
-            await user_service.uow.commit()
+        await user_service.revoke_session_by_token(raw_refresh)
 
     unset_refresh_cookie(response)
     unset_session_cookie(response)

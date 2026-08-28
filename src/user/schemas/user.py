@@ -1,8 +1,9 @@
+import uuid
 from datetime import datetime
 from typing import Annotated, TypedDict
-import uuid
-from pydantic import BaseModel, ConfigDict, Field
+
 from fastapi_users import schemas
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CreateUpdateUserModel(schemas.CreateUpdateDictModel):
@@ -50,6 +51,10 @@ class UserOauthAccount(UserRead, schemas.BaseOAuthAccountMixin): ...
 class SUser(UserOauthAccount): ...
 
 
+class PersonLinkRequest(BaseModel):
+    person_id: uuid.UUID
+
+
 class InviteTokenCreate(BaseModel):
     person_id: uuid.UUID
     expires_in: int | None = None
@@ -58,6 +63,29 @@ class InviteTokenCreate(BaseModel):
 class InviteTokenRead(BaseModel):
     token: str
     expires_at: int
+
+
+class LinkInviteData(BaseModel):
+    token: str
+
+
+class TelegramLinkTokenRead(BaseModel):
+    token: str
+    deep_link: str
+    expires_at: int
+
+
+class TelegramWidgetAuth(BaseModel):
+    """The signed payload handed back by Telegram's Login Widget JS, verified
+    via ``verify_telegram_widget_payload`` before it's trusted."""
+
+    id: int
+    first_name: str
+    last_name: str | None = None
+    username: str | None = None
+    photo_url: str | None = None
+    auth_date: int
+    hash: str
 
 
 class OAuthAccountDict(TypedDict):

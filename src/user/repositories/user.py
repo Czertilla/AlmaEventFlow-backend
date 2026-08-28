@@ -1,8 +1,9 @@
 from typing import Any
 from uuid import UUID
-from pydantic import EmailStr
+
+from fastapi_users.models import UOAP, UP
 from fastapi_users_db_sqlalchemy import BaseUserDatabase
-from fastapi_users.models import UP, UOAP
+from pydantic import EmailStr
 from sqlalchemy import select
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
@@ -10,8 +11,8 @@ from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
     SearchRepositoryMixin,
 )
-
-from user.models.user import UserORM as Model, OAuthAccountORM as OauthModel
+from user.models.user import OAuthAccountORM as OauthModel
+from user.models.user import UserORM as Model
 
 
 class UserRepo(
@@ -40,6 +41,9 @@ class UserRepo(
 
     async def exists_person(self, person_id: UUID) -> bool:
         return await self.exists(Model.person_id == person_id)
+
+    async def get_by_person_id(self, person_id: UUID) -> Model | None:
+        return await self.get_one(Model.person_id == person_id)
 
     async def get_by_oauth_account(
         self, oauth: str, account_id: str
@@ -85,6 +89,13 @@ class UserRepo(
         for key, value in update_dict.items():
             setattr(oauth_account, key, value)
         self.session.add(oauth_account)
+        return user
+
+    async def remove_oauth_account(
+        self, user: UP, oauth_account: OauthModel
+    ) -> Model:
+        user.oauth_accounts.remove(oauth_account)
+        await self.session.delete(oauth_account)
         return user
 
     async def search(self, filter, pagination, *, options=None):

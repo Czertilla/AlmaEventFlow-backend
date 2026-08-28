@@ -1,17 +1,18 @@
-from core.utils.broker.router import include_mq_routers
-from core.broker.kafka import stream_router
+from fastapi import APIRouter
 
-from user.services.auth import fastapi_users, auth_backend, oauth_backend
-from user.services.oauth2 import google_oauth_client
+from core.broker.kafka import stream_router
+from core.utils.broker.router import include_mq_routers
+from user.api.kafka.sub.person import router as person_router
 from user.api.v1.auth import router as auth_router
-from user.api.v1.verify import get_verify_router
 from user.api.v1.check import router as check_router
 from user.api.v1.sessions import router as sessions_router
-from user.api.kafka.sub.person import router as person_router
-from user.schemas.user import UserCreate, UserRead, UserUpdate
+from user.api.v1.telegram import router as telegram_router
+from user.api.v1.telegram_auth import router as telegram_auth_router
+from user.api.v1.verify import get_verify_router
 from user.config.settings import settings
-
-from fastapi import APIRouter
+from user.schemas.user import UserCreate, UserRead, UserUpdate
+from user.services.auth import auth_backend, fastapi_users, oauth_backend
+from user.services.oauth2 import google_oauth_client
 
 PREFIX = "/user"
 
@@ -79,5 +80,9 @@ def include_routers(app: APIRouter):
 
 
     app.include_router(sessions_router, prefix=PREFIX, tags=["sessions"])
+
+    app.include_router(telegram_router, prefix=PREFIX, tags=["telegram"])
+
+    app.include_router(telegram_auth_router, prefix=PREFIX, tags=["auth"])
 
     app.include_router(check_router, prefix=PREFIX)

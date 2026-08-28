@@ -1,48 +1,57 @@
-from typing import Any, Callable, Optional, TypeVar, Union
+import hashlib
+import secrets
+import uuid
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from logging import getLogger
-from datetime import datetime, timedelta, timezone
-import hashlib
-import uuid
+from typing import Any, Callable, Optional, TypeVar, Union
+
 import jwt
-from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_users import (
     BaseUserManager,
     UUIDIDMixin,
-    models,
     exceptions,
+    models,
     schemas,
 )
-from fastapi_users.password import PasswordHelperProtocol, PasswordHelper
-from fastapi_users.jwt import generate_jwt, decode_jwt
+from fastapi_users.jwt import decode_jwt, generate_jwt
+from fastapi_users.password import PasswordHelper, PasswordHelperProtocol
 from pydantic import BaseModel
 
+from core.config.settings import settings
+from core.dependencies.redis import redis
 from core.enum.notify import NotificationCategory
 from core.schema.message.notify import NotificationRequest
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, T, required_transaction
-from core.config.settings import settings
-
-from user.exceptions.user import (
-    UsernameAlreadyExists,
-    InviteTokenInvalid,
-    InviteTokenExpired,
-    PersonAlreadyHasAccount,
-    InvalidCurrentPassword,
-)
+from core.utils.notify import send_notification
+from core.utils.telegram_link import TELEGRAM_LINK_REDIS_PREFIX
 from user.exceptions.profile import InvitePersonNotExistsException
+from user.exceptions.user import (
+    AccountAlreadyLinked,
+    InvalidCurrentPassword,
+    InviteTokenExpired,
+    InviteTokenInvalid,
+    PersonAlreadyHasAccount,
+    TelegramBotNotConfigured,
+    TelegramLinkPersonRequired,
+    UsernameAlreadyExists,
+    UserNotFound,
+)
 from user.filter.user import UserFilter
 from user.models.user import UserORM
 from user.schemas.user import (
+    InviteTokenCreate,
+    InviteTokenData,
+    InviteTokenRead,
     OAuthAccountDict,
     SessionRead,
+    TelegramLinkTokenRead,
     UserOauthAccount,
     UserRead,
-    InviteTokenCreate,
-    InviteTokenRead,
-    InviteTokenData,
 )
 from user.uow.user import UserUOW
 from user.utils.account import (
@@ -51,13 +60,16 @@ from user.utils.account import (
     publish_account_email_verified,
     publish_account_updated,
 )
-from user.utils.mail import send_reset_message, send_verify_message
-from user.utils.token import generate_refresh_token
 from user.utils.cookie import set_refresh_cookie, set_session_cookie
+from user.utils.mail import send_reset_message, send_verify_message
 from user.utils.request import extract_device_info, extract_ip
-from core.utils.notify import send_notification
+from user.utils.token import generate_refresh_token
 
 SECRET = settings.PASS_SECRET
+
+TELEGRAM_LINK_TOKEN_LIFETIME = 600
+"""Lifetime (seconds) of a bot deep-link account-link token — short-lived
+since it only bridges an immediate "open Telegram" click."""
 
 logger = getLogger(__name__)
 
@@ -550,14 +562,14 @@ class UserService(
             set_refresh_cookie(response, raw_refresh)
             set_session_cookie(response, session_id)
         body = (
-            f"Р’С‹РїРѕР»РЅРµРЅ РІС…РѕРґ СЃ СѓСЃС‚СЂРѕР№СЃС‚РІР°: {device_info}" if device_info else ""
+            f"Выполнен вход с устройства: {device_info}" if device_info else ""
         )
         logger.debug(f"Dispatching login notification for user {user.id}")
         await send_notification(
             NotificationRequest(
                 user_ids=[user.id],
                 category=NotificationCategory.system,
-                title="Р’С…РѕРґ РІ СЃРёСЃС‚РµРјСѓ",
+                title="Вход в систему",
                 body=body,
             )
         )
@@ -656,6 +668,140 @@ class UserService(
         expires_at = int(datetime.utcnow().timestamp()) + lifetime
         return InviteTokenRead(token=token, expires_at=expires_at)
 
+    async def create_telegram_link_token(
+        self, person_id: uuid.UUID | None
+    ) -> TelegramLinkTokenRead:
+        """Mints a one-time code for the caller's own bot ``/start`` flow.
+        Telegram's deep-link ``start`` parameter allows only up to 64
+        ``[A-Za-z0-9_-]`` characters -- far too short for a signed JWT -- so
+        the actual state (which person this code is for) is kept server-side
+        in Redis, shared with the ``bot`` service, keyed by this short opaque
+        code; the URL itself never carries more than the code."""
+        if person_id is None:
+            raise TelegramLinkPersonRequired()
+        if not settings.BOT_TG_USERNAME:
+            raise TelegramBotNotConfigured()
+        lifetime = TELEGRAM_LINK_TOKEN_LIFETIME
+        code = secrets.token_urlsafe(16)
+        await redis.set(
+            f"{TELEGRAM_LINK_REDIS_PREFIX}{code}", str(person_id), ex=lifetime
+        )
+        expires_at = int(datetime.utcnow().timestamp()) + lifetime
+        deep_link = f"https://t.me/{settings.BOT_TG_USERNAME}?start={code}"
+        return TelegramLinkTokenRead(
+            token=code, deep_link=deep_link, expires_at=expires_at
+        )
+
+    async def admin_link_person(
+        self, user_id: uuid.UUID, person_id: uuid.UUID
+    ) -> UserRead:
+        """Admin-only: attaches an existing profile person to an existing
+        account directly, bypassing the invite-token flow (for accounts that
+        predate the person record, or that need re-linking). Reuses
+        ``on_after_update``'s ``account.updated`` publish, so any service
+        projecting accounts by ``person_id`` (e.g. the bot's local user cache)
+        picks up the change the same way it would from a self-service edit."""
+        async with self.uow as uow:
+            user = await uow.users.get_by_id(user_id)
+            if user is None:
+                raise UserNotFound()
+            person = await uow.persons.get_by_id(person_id)
+            if person is None:
+                raise InvitePersonNotExistsException()
+            if await uow.users.exists_person(person_id):
+                raise PersonAlreadyHasAccount()
+            updated_user = await uow.users.update(user, {"person_id": person_id})
+            result = UserRead.model_validate(updated_user)
+            await self.on_after_update(result, {"person_id": person_id})
+            await uow.commit()
+            return result
+
+    async def link_invite(self, user_id: uuid.UUID, token: str) -> UserRead:
+        async with self.uow as uow:
+            user = await uow.users.get_by_id(user_id)
+            if user is None:
+                raise UserNotFound()
+            if user.person_id is not None:
+                raise AccountAlreadyLinked()
+            invite_data = await self._validate_invite_token(token)
+            updated_user = await uow.users.update(
+                user, {"person_id": invite_data.person_id}
+            )
+            result = UserRead.model_validate(updated_user)
+            await self.on_after_update(result, {"person_id": invite_data.person_id})
+            await uow.commit()
+            return result
+
+    async def get_by_person_id(self, person_id: uuid.UUID) -> UserORM | None:
+        """Looks up the AEF user linked to ``person_id``. Used by the internal
+        bot-service token mint endpoint — never exposed as a public read."""
+        async with self.uow:
+            return await self.uow.users.get_by_person_id(person_id)
+
+    async def get_by_telegram_id(self, telegram_id: str) -> UserRead | None:
+        """Login-time lookup only, keyed on the ``telegram`` OAuthAccount the
+        bot's deep-link flow maintains — never creates a user, unlike the
+        Google oauth callback."""
+        try:
+            return await self.get_by_oauth_account("telegram", telegram_id)
+        except exceptions.UserNotExists:
+            return None
+
+    async def link_telegram_oauth(
+        self, person_id: uuid.UUID, telegram_id: str, username: str | None
+    ) -> None:
+        """Internal-only: called by the bot service right after a successful
+        ``/start`` deep-link. Syncs the Telegram identity into the same
+        ``OAuthAccountORM`` table Google already uses, so the Telegram Login
+        Widget can later look the user up by it — this never creates a user,
+        only tags the one already linked via ``person_id``."""
+        async with self.uow as uow:
+            user = await uow.users.get_by_person_id(person_id)
+            if user is None:
+                return
+            oauth_account_dict: OAuthAccountDict = {
+                "oauth_name": "telegram",
+                "access_token": "",
+                "account_id": telegram_id,
+                "account_email": f"{username or telegram_id}@telegram.local",
+                "expires_at": None,
+                "refresh_token": None,
+            }
+            existing = next(
+                (
+                    account
+                    for account in user.oauth_accounts
+                    if account.oauth_name == "telegram"
+                ),
+                None,
+            )
+            if existing is not None:
+                await uow.users.update_oauth_account(
+                    user, existing, oauth_account_dict
+                )
+            else:
+                await uow.users.add_oauth_account(user, oauth_account_dict)
+            await uow.commit()
+
+    async def unlink_telegram_oauth(self, person_id: uuid.UUID) -> None:
+        """Internal-only: called by the bot service when a Telegram profile is
+        unlinked. No-op if the user never had a Telegram OAuth account."""
+        async with self.uow as uow:
+            user = await uow.users.get_by_person_id(person_id)
+            if user is None:
+                return
+            existing = next(
+                (
+                    account
+                    for account in user.oauth_accounts
+                    if account.oauth_name == "telegram"
+                ),
+                None,
+            )
+            if existing is not None:
+                await uow.users.remove_oauth_account(user, existing)
+                await uow.commit()
+
     async def _validate_invite_token(self, token: str) -> InviteTokenData:
         try:
             data = decode_jwt(
@@ -744,12 +890,30 @@ class UserService(
         )
         return new_raw, new_hashed, stored.user_id, stored.session_id
 
+    async def refresh_session(
+        self,
+        raw_token: str,
+        device_info: str | None = None,
+        ip_address: str | None = None,
+    ) -> tuple[str, str, uuid.UUID, uuid.UUID] | None:
+        async with self.uow as uow:
+            result = await self._refresh_session(
+                raw_token, device_info=device_info, ip_address=ip_address
+            )
+            await uow.commit()
+        return result
+
     @required_transaction
     async def _revoke_session(self, raw_token: str) -> None:
         token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
         stored = await self.uow.refresh_tokens.get_by_token_hash(token_hash)
         if stored is not None:
             await self.uow.refresh_tokens.revoke(stored.id)
+
+    async def revoke_session_by_token(self, raw_token: str) -> None:
+        async with self.uow as uow:
+            await self._revoke_session(raw_token)
+            await uow.commit()
 
     @required_transaction
     async def _revoke_all_user_sessions(self, user_id: uuid.UUID) -> None:
