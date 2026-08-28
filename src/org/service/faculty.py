@@ -4,20 +4,19 @@ from uuid import UUID
 from core.schema.message.org import OrganizationData
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
+from org.api.kafka.pub.organization import (
+    on_organization_created,
+    on_organization_deleted,
+    on_organization_updated,
+)
 from org.exc.faculty import FacultyNotExistsException
 from org.filter.faculty import FacultyFilter
 from org.models.faculty import FacultyORM
-from org.models.organization import OrganizationORM
 from org.schema.faculty import (
     FacultyCreate,
     FacultyPatch,
     FacultyPut,
     FacultyRead,
-)
-from org.api.kafka.pub.organization import (
-    on_organization_created,
-    on_organization_deleted,
-    on_organization_updated,
 )
 from org.uow.faculty import FacultyUOW
 
@@ -47,12 +46,15 @@ class FacultyService(BaseService[FacultyUOW]):
         *,
         flush: bool = False,
     ) -> FacultyORM:
-        organization = await self.uow.session.get(OrganizationORM, faculty_id)
-        if organization is None:
+        # merge() on a transient partial instance would null out unpatched columns
+        faculty = await self.uow.faculties.get_by_id(faculty_id)
+        if faculty is None:
             raise FacultyNotExistsException()
-        faculty = FacultyORM(**faculty_data, id=faculty_id)
-
-        return await self.uow.session.merge(faculty)
+        for key, value in faculty_data.items():
+            setattr(faculty, key, value)
+        if flush:
+            await self.uow.session.flush()
+        return faculty
 
     @required_transaction
     async def _upsert(self, faculty_put: FacultyPut) -> FacultyORM:

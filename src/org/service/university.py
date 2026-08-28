@@ -4,20 +4,19 @@ from uuid import UUID
 from core.schema.message.org import OrganizationData
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
+from org.api.kafka.pub.organization import (
+    on_organization_created,
+    on_organization_deleted,
+    on_organization_updated,
+)
 from org.exc.university import UniversityNotExistsException
 from org.filter.university import UniversityFilter
 from org.models.university import UniversityORM
-from org.models.organization import OrganizationORM
 from org.schema.university import (
     UniversityCreate,
     UniversityPatch,
     UniversityPut,
     UniversityRead,
-)
-from org.api.kafka.pub.organization import (
-    on_organization_created,
-    on_organization_deleted,
-    on_organization_updated,
 )
 from org.uow.university import UniversityUOW
 
@@ -49,13 +48,15 @@ class UniversityService(BaseService[UniversityUOW]):
         *,
         flush: bool = False,
     ) -> UniversityORM:
-        organization = await self.uow.session.get(
-            OrganizationORM, university_id
-        )
-        if organization is None:
+        # merge() on a transient partial instance would null out unpatched columns
+        university = await self.uow.universities.get_by_id(university_id)
+        if university is None:
             raise UniversityNotExistsException()
-        university = UniversityORM(**university_data, id=university_id)
-        return await self.uow.session.merge(university)
+        for key, value in university_data.items():
+            setattr(university, key, value)
+        if flush:
+            await self.uow.session.flush()
+        return university
 
     @required_transaction
     async def _upsert(self, university_put: UniversityPut) -> UniversityORM:

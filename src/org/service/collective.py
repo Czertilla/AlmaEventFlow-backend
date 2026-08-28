@@ -4,20 +4,19 @@ from uuid import UUID
 from core.schema.message.org import OrganizationData
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
+from org.api.kafka.pub.organization import (
+    on_organization_created,
+    on_organization_deleted,
+    on_organization_updated,
+)
 from org.exc.collective import CollectiveNotExistsException
 from org.filter.collective import CollectiveFilter
 from org.models.collective import CollectiveORM
-from org.models.organization import OrganizationORM
 from org.schema.collective import (
     CollectiveCreate,
     CollectivePatch,
     CollectivePut,
     CollectiveRead,
-)
-from org.api.kafka.pub.organization import (
-    on_organization_created,
-    on_organization_deleted,
-    on_organization_updated,
 )
 from org.uow.collective import CollectiveUOW
 
@@ -49,14 +48,15 @@ class CollectiveService(BaseService[CollectiveUOW]):
         *,
         flush: bool = False,
     ) -> CollectiveORM:
-        organization = await self.uow.session.get(
-            OrganizationORM, collective_id
-        )
-        if organization is None:
+        # merge() on a transient partial instance would null out unpatched columns
+        collective = await self.uow.collectives.get_by_id(collective_id)
+        if collective is None:
             raise CollectiveNotExistsException()
-        collective = CollectiveORM(**collective_data, id=collective_id)
-
-        return await self.uow.session.merge(collective)
+        for key, value in collective_data.items():
+            setattr(collective, key, value)
+        if flush:
+            await self.uow.session.flush()
+        return collective
 
     @required_transaction
     async def _upsert(self, collective_put: CollectivePut) -> CollectiveORM:
