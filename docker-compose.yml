@@ -71,13 +71,15 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
 
+      # EXTERNAL = SASL_SSL: TLS uses the real cert Traefik already got from
+      # Let's Encrypt (extracted into broker.keystore.jks), auth is a SCRAM
+      # credential only the bot service holds -- no custom CA/client certs.
       KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEYSTORE_FILENAME: broker.keystore.jks
       KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEYSTORE_CREDENTIALS: keystore_creds
       KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEY_CREDENTIALS: key_creds
-      KAFKA_LISTENER_NAME_EXTERNAL_SSL_TRUSTSTORE_FILENAME: broker.truststore.jks
-      KAFKA_LISTENER_NAME_EXTERNAL_SSL_TRUSTSTORE_CREDENTIALS: keystore_creds
-      KAFKA_LISTENER_NAME_EXTERNAL_SSL_CLIENT_AUTH: required
-      
+      KAFKA_LISTENER_NAME_EXTERNAL_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
+      KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
+
       # минимальные настройки для одиночного брокера
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1

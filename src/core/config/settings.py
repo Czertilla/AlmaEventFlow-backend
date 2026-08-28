@@ -110,6 +110,17 @@ class Settings(BaseSettings):
     KAFKA_SSL_CHECK_HOSTNAME: bool = True
     """Verify the broker's hostname against its TLS certificate."""
 
+    KAFKA_SASL_MECHANISM: str | None = None
+    """SASL mechanism (``PLAIN``, ``SCRAM-SHA-256``, ``SCRAM-SHA-512``). Set together
+    with KAFKA_SASL_USERNAME/PASSWORD to authenticate instead of/on top of TLS."""
+
+    KAFKA_SASL_USERNAME: str | None = None
+    """SASL username. When set, enables SASL auth (over TLS unless
+    KAFKA_SECURITY_PROTOCOL is explicitly SASL_PLAINTEXT)."""
+
+    KAFKA_SASL_PASSWORD: Secret[str] | None = None
+    """SASL password."""
+
     PASS_SECRET: Secret[str] = "SECRET"
     USER_SECRET: Secret[str] = "SECRET"
 

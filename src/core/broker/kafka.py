@@ -10,7 +10,12 @@ from faststream.kafka import (
     KafkaRouter as BaseKafkaRouter,
 )
 from faststream.kafka.fastapi import KafkaRouter as BaseKafkaStreamRouter
-from faststream.security import BaseSecurity
+from faststream.security import (
+    BaseSecurity,
+    SASLPlaintext,
+    SASLScram256,
+    SASLScram512,
+)
 
 from core.config.settings import settings
 
@@ -26,11 +31,26 @@ if not settings.IN_MEMORY_BROKER:
         logger.info(f"Kafka URI configuration: host={host}, port={port}")
         return f"{host}:{port}"
 
-    def _ssl_context() -> ssl.SSLContext | None:
-        ca = settings.KAFKA_SSL_CA
-        if ca is None:
+    _SASL_MECHANISMS = {
+        "PLAIN": SASLPlaintext,
+        "SCRAM-SHA-256": SASLScram256,
+        "SCRAM-SHA-512": SASLScram512,
+    }
+
+    def _wants_tls(protocol: str) -> bool:
+        return protocol in {"", "SSL", "SASL_SSL"}
+
+    def _ssl_context(protocol: str) -> ssl.SSLContext | None:
+        if not _wants_tls(protocol):
             return None
-        context = ssl.create_default_context(cafile=ca)
+        ca = settings.KAFKA_SSL_CA
+        # No custom CA configured: fall back to the system trust store, which is
+        # what a publicly-trusted (e.g. Let's Encrypt) broker certificate needs.
+        context = (
+            ssl.create_default_context(cafile=ca)
+            if ca
+            else ssl.create_default_context()
+        )
         if not settings.KAFKA_SSL_CHECK_HOSTNAME:
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
@@ -44,12 +64,29 @@ if not settings.IN_MEMORY_BROKER:
 
     def _kafka_security() -> BaseSecurity | None:
         protocol = (settings.KAFKA_SECURITY_PROTOCOL or "").upper()
-        context = _ssl_context()
+
+        if settings.KAFKA_SASL_USERNAME and settings.KAFKA_SASL_PASSWORD:
+            mechanism = (settings.KAFKA_SASL_MECHANISM or "SCRAM-SHA-256").upper()
+            security_cls = _SASL_MECHANISMS.get(mechanism)
+            if security_cls is None:
+                raise ValueError(
+                    "KAFKA_SASL_MECHANISM=%r is not supported; choose one of %s"
+                    % (settings.KAFKA_SASL_MECHANISM, ", ".join(_SASL_MECHANISMS))
+                )
+            use_ssl = protocol != "SASL_PLAINTEXT"
+            return security_cls(
+                settings.KAFKA_SASL_USERNAME,
+                settings.KAFKA_SASL_PASSWORD.get_secret_value(),
+                ssl_context=_ssl_context(protocol) if use_ssl else None,
+                use_ssl=use_ssl,
+            )
+
+        context = _ssl_context(protocol)
         if not context and protocol not in {"", "SSL"}:
             raise ValueError(
                 "KAFKA_SECURITY_PROTOCOL=%r is not supported; configure "
-                "KAFKA_SSL_CA for TLS or leave it unset for PLAINTEXT"
-                % settings.KAFKA_SECURITY_PROTOCOL
+                "KAFKA_SSL_CA for TLS, KAFKA_SASL_USERNAME/PASSWORD for SASL, "
+                "or leave it unset for PLAINTEXT" % settings.KAFKA_SECURITY_PROTOCOL
             )
         if context is None and protocol == "":
             return None
