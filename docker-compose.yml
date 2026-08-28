@@ -73,12 +73,16 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
 
-      # TLS для EXTERNAL-листенера: keystore кладётся в ./secrets/kafka, имя — в KAFKA_SSL_KEYSTORE_FILENAME
-      # при KAFKA_EXTERNAL_PROTOCOL=PLAINTEXT эти переменные не используются (пустое значение)
-      KAFKA_SSL_KEYSTORE_FILENAME: ${KAFKA_SSL_KEYSTORE_FILENAME:-}
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: ${KAFKA_SSL_KEYSTORE_CREDENTIALS:-}
-      KAFKA_SSL_KEY_CREDENTIALS: ${KAFKA_SSL_KEY_CREDENTIALS:-}
-      KAFKA_SSL_CLIENT_AUTH: ${KAFKA_SSL_CLIENT_AUTH:-none}
+      # TLS для EXTERNAL-листенера: keystore кладётся в ./secrets/kafka, имя — в
+      # KAFKA_SSL_KEYSTORE_FILENAME. EXTERNAL — именованный листенер (не единственный
+      # SSL-листенер брокера), поэтому свойства обязаны идти через listener-prefixed
+      # форму (listener.name.external.ssl.*) - иначе брокер молча оставляет
+      # ssl.keystore.location=null и рвёт любой TLS-хендшейк на этом порту.
+      # При KAFKA_EXTERNAL_PROTOCOL=PLAINTEXT эти переменные не используются (пустое значение).
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEYSTORE_FILENAME: ${KAFKA_SSL_KEYSTORE_FILENAME:-}
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEYSTORE_CREDENTIALS: ${KAFKA_SSL_KEYSTORE_CREDENTIALS:-}
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEY_CREDENTIALS: ${KAFKA_SSL_KEY_CREDENTIALS:-}
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_CLIENT_AUTH: ${KAFKA_SSL_CLIENT_AUTH:-none}
 
       # минимальные настройки для одиночного брокера
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
