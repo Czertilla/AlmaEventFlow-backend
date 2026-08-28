@@ -5,6 +5,7 @@ from event.enum.status import EventStatusEnumV1
 from event.models.calendar import CalendarChangeLogORM
 from event.models.event import EventORM
 from event.models.stage import EventStageORM
+
 from .model import FeedItem, VEvent
 
 UID_DOMAIN = "almaeventflow.ru"
@@ -54,7 +55,6 @@ class CalendarEventMapper:
 
     def _all_day(self, item: FeedItem, *, with_stages: bool) -> VEvent:
         event = item.event
-        suffix = "-summary" if with_stages else ""
         uid = self._uid(item, event, stage_id=None, summary=with_stages)
         if with_stages:
             body = "Мероприятие содержит несколько этапов."

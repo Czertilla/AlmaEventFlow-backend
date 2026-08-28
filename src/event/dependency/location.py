@@ -2,8 +2,8 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from ._uow import UOWDep
 from event.uow.location import LocationUOW
 
+from ._uow import UOWDep
 
 LocationUOWDep = Annotated[LocationUOW, Depends(UOWDep(LocationUOW))]

@@ -1,13 +1,13 @@
 from logging import getLogger
 from urllib.parse import quote
 from uuid import UUID, uuid4
-from fastapi import UploadFile
-from redis import Redis
 
-from core.utils.requirer import required_field
+from fastapi import UploadFile
+
 from core.dependencies.redis import redis
-from core.service.base import BaseService, required_transaction
 from core.schema.pagination import SPage, SPageParam, SPagination
+from core.service.base import BaseService, required_transaction
+from core.utils.requirer import required_field
 from core.utils.s3_client import S3Client
 from event.filter.reward import RewardFilter
 from event.models.reward import RewardORM
@@ -18,6 +18,7 @@ from event.schema.reward import (
     RewardRead,
 )
 from event.uow.reward import RewardUOW
+from redis import Redis
 
 logger = getLogger(__name__)
 

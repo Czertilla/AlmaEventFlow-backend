@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from event.enum.priority import EventPriorityEnumV1

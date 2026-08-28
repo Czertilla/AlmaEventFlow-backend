@@ -1,15 +1,15 @@
-from .event import EventUOWDep
-from .participation import ParticipationUOWDep
-from .location import LocationUOWDep
-from .collective import CollectiveUOWDep
-from .stage import StageUOWDep
-from .reward import RewardUOWDep
-from .link import LinkUOWDep
-from .organization import OrganizationUOWDep
-from .role import RoleUOWDep
-from .member import MemberUOWDep
-from .person import PersonUOWDep
 from .attendance import AttendanceUOWDep
+from .collective import CollectiveUOWDep
+from .event import EventUOWDep
+from .link import LinkUOWDep
+from .location import LocationUOWDep
+from .member import MemberUOWDep
+from .organization import OrganizationUOWDep
+from .participation import ParticipationUOWDep
+from .person import PersonUOWDep
+from .reward import RewardUOWDep
+from .role import RoleUOWDep
+from .stage import StageUOWDep
 
 __all__ = [
     "EventUOWDep",

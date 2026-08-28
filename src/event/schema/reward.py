@@ -1,6 +1,7 @@
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict, HttpUrl
+
 from fastapi import UploadFile
+from pydantic import BaseModel, ConfigDict, HttpUrl
 
 from core.utils.mixin.pydantic import PatchModel, UUIDMixin
 

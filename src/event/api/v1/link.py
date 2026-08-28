@@ -1,13 +1,16 @@
+from logging import getLogger
 from uuid import UUID
+
 from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
-from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from event.dependency.link import LinkUOWDep
 from event.filter.link import LinkFilter
+from event.service.link import LinkService
+
 from ...schema.link import (
     LinkCreate,
     LinkPatch,
@@ -16,7 +19,6 @@ from ...schema.link import (
     LinkPutData,
     LinkRead,
 )
-from event.service.link import LinkService
 
 router = APIRouter(prefix="/links", tags=["link"])
 

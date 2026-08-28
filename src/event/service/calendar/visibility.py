@@ -6,6 +6,7 @@ from event.models.calendar import (
     CalendarSubscriptionORM,
 )
 from event.uow.calendar import CalendarUOW
+
 from .mapper import OWNER_ATTENDANCE, OWNER_PARTICIPATION
 from .model import FeedItem
 

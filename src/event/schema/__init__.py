@@ -1,20 +1,8 @@
-from .event import (
-    EventCreate,
-    EventPatch,
-    EventPut,
-    EventRead,
-)
-from .location import (
-    LocationCreate,
-    LocationPatch,
-    LocationPut,
-    LocationRead,
-)
-from .participation import (
-    ParticipationCreate,
-    ParticipationPatch,
-    ParticipationPut,
-    ParticipationRead,
+from .attendance import (
+    AttendanceCreate,
+    AttendancePatch,
+    AttendancePut,
+    AttendanceRead,
 )
 from .collective import (
     CollectiveCreate,
@@ -22,17 +10,11 @@ from .collective import (
     CollectivePut,
     CollectiveRead,
 )
-from .stage import (
-    StageCreate,
-    StagePatch,
-    StagePut,
-    StageRead,
-)
-from .reward import (
-    RewardCreate,
-    RewardPatch,
-    RewardPut,
-    RewardRead,
+from .event import (
+    EventCreate,
+    EventPatch,
+    EventPut,
+    EventRead,
 )
 from .link import (
     LinkCreate,
@@ -40,11 +22,11 @@ from .link import (
     LinkPut,
     LinkRead,
 )
-from .role import (
-    RoleCreate,
-    RolePatch,
-    RolePut,
-    RoleRead,
+from .location import (
+    LocationCreate,
+    LocationPatch,
+    LocationPut,
+    LocationRead,
 )
 from .member import (
     MemberCreate,
@@ -52,11 +34,29 @@ from .member import (
     MemberPut,
     MemberRead,
 )
-from .attendance import (
-    AttendanceCreate,
-    AttendancePatch,
-    AttendancePut,
-    AttendanceRead,
+from .participation import (
+    ParticipationCreate,
+    ParticipationPatch,
+    ParticipationPut,
+    ParticipationRead,
+)
+from .reward import (
+    RewardCreate,
+    RewardPatch,
+    RewardPut,
+    RewardRead,
+)
+from .role import (
+    RoleCreate,
+    RolePatch,
+    RolePut,
+    RoleRead,
+)
+from .stage import (
+    StageCreate,
+    StagePatch,
+    StagePut,
+    StageRead,
 )
 
 __all__ = [

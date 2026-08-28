@@ -1,8 +1,12 @@
 from uuid import UUID
-from sqlalchemy import select
-from core.database.sqlalchemy.core import SQLAlchemyRepository
-from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin, UpsertRepositoryMixin
 
+from sqlalchemy import select
+
+from core.database.sqlalchemy.core import SQLAlchemyRepository
+from core.database.sqlalchemy.mixins.repositories import (
+    IDRepositoryMixin,
+    UpsertRepositoryMixin,
+)
 from event.models.collective import CollectiveORM as Model
 
 

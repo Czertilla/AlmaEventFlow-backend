@@ -2,9 +2,9 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from ._uow import UOWDep
 from event.uow.participation import ParticipationUOW
 
+from ._uow import UOWDep
 
 ParticipationUOWDep = Annotated[
     ParticipationUOW, Depends(UOWDep(ParticipationUOW))

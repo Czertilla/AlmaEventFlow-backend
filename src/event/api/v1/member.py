@@ -1,13 +1,16 @@
+from logging import getLogger
 from uuid import UUID
+
 from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
-from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from event.dependency.member import MemberUOWDep
 from event.filter.member import MemberFilter
+from event.service.member import MemberService
+
 from ...schema.member import (
     MemberCreate,
     MemberPatch,
@@ -16,7 +19,6 @@ from ...schema.member import (
     MemberPutData,
     MemberRead,
 )
-from event.service.member import MemberService
 
 router = APIRouter(prefix="/members", tags=["member"])
 

@@ -8,6 +8,7 @@ from core.schema.error import ErrorCode
 from core.service.base import BaseService
 from core.utils.exc.http import VancedHTTPException
 from event.uow.calendar import CalendarUOW
+
 from .ics import CalendarIcsRenderer
 from .mapper import CalendarEventMapper
 from .token import CalendarTokenService

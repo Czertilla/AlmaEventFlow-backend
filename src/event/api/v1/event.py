@@ -1,15 +1,19 @@
+from logging import getLogger
 from uuid import UUID
+
 from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
-from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
-from core.schema.error import entity_not_found_responses, auth_responses
+from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from event.dependency.event import EventUOWDep
 from event.dependency.stage import StageUOWDep
 from event.filter.event import EventFilter
 from event.filter.stage import StageFilter
+from event.service.event import EventService
+from event.service.stage import StageService
+
 from ...schema.event import (
     EventCreate,
     EventPatch,
@@ -21,8 +25,6 @@ from ...schema.event import (
 from ...schema.stage import (
     StageRead,
 )
-from event.service.event import EventService
-from event.service.stage import StageService
 
 router = APIRouter(prefix="/events", tags=["event"])
 

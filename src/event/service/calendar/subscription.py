@@ -16,6 +16,7 @@ from event.schema.calendar import (
     SubscriptionCreate,
 )
 from event.uow.calendar import CalendarUOW
+
 from .token import CalendarTokenService
 
 PERSONAL_FALLBACK = "Мои мероприятия"

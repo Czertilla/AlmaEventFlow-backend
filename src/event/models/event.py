@@ -1,25 +1,26 @@
-from typing import TYPE_CHECKING
 import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID
+
 from sqlalchemy import Enum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.core import Base
 from core.database.sqlalchemy.mixins.models import (
     SmallSerialMixin,
-    UUIDMixin,
     TimestampMixin,
+    UUIDMixin,
 )
 from event.enum.format import EventFormatEnumV1
+
 from ._base import ModuleBase
 
 if TYPE_CHECKING:
+    from .link import EventLinkORM
     from .location import LocationORM
-    from .stage import EventStageORM
     from .organization import OrganizationORM
     from .participation import ParticipationORM
-    from .link import EventLinkORM
+    from .stage import EventStageORM
 
 
 class EventStatusORM(ModuleBase, Base, SmallSerialMixin):

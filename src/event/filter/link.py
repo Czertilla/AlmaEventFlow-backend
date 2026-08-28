@@ -1,4 +1,5 @@
 from fastapi_filter.contrib.sqlalchemy import Filter
+
 from event.models.link import EventLinkORM
 
 

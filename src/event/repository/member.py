@@ -2,14 +2,15 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
+
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
-    UpsertRepositoryMixin,
     SearchRepositoryMixin,
+    UpsertRepositoryMixin,
 )
-
-from event.models.member import MemberORM as Model, MemberRoleAssociation
+from event.models.member import MemberORM as Model
+from event.models.member import MemberRoleAssociation
 from event.models.role import RoleORM
 
 

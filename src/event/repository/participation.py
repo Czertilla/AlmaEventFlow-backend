@@ -1,8 +1,13 @@
 from uuid import UUID
-from sqlalchemy.orm import selectinload
-from core.database.sqlalchemy.core import SQLAlchemyRepository
-from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin, UpsertRepositoryMixin, SearchRepositoryMixin
 
+from sqlalchemy.orm import selectinload
+
+from core.database.sqlalchemy.core import SQLAlchemyRepository
+from core.database.sqlalchemy.mixins.repositories import (
+    IDRepositoryMixin,
+    SearchRepositoryMixin,
+    UpsertRepositoryMixin,
+)
 from event.models.participation import ParticipationORM as Model
 
 

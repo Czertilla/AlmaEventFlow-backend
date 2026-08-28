@@ -1,13 +1,16 @@
+from logging import getLogger
 from uuid import UUID
+
 from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
-from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
 from event.dependency.role import RoleUOWDep
 from event.filter.role import RoleFilter
+from event.service.role import RoleService
+
 from ...schema.role import (
     RoleCreate,
     RolePatch,
@@ -16,7 +19,6 @@ from ...schema.role import (
     RolePutData,
     RoleRead,
 )
-from event.service.role import RoleService
 
 router = APIRouter(prefix="/roles", tags=["role"])
 

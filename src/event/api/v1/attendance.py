@@ -1,12 +1,12 @@
+from logging import getLogger
 from uuid import UUID
+
 from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
-from logging import getLogger
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.pagination import SPage, SPageParam
-
 from event.dependency.attendance import AttendanceUOWDep
 from event.filter.attendance import AttendanceFilter
 from event.service.attendance import AttendanceService
@@ -19,7 +19,6 @@ from ...schema.attendance import (
     AttendancePutData,
     AttendanceRead,
 )
-
 
 logger = getLogger(__name__)
 

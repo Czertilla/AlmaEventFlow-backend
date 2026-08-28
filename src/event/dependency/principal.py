@@ -1,8 +1,8 @@
 from uuid import UUID
 
 from core.dependencies.auth import UserJWTDep
-from core.schema.user import UserJWT
 from core.schema.error import ErrorCode
+from core.schema.user import UserJWT
 from core.utils.exc.http import VancedHTTPException
 from event.dependency.collective import CollectiveUOWDep
 from event.dependency.member import MemberUOWDep

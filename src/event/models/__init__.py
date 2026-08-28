@@ -4,12 +4,12 @@ from .calendar import (
     CalendarSubscriptionORM,
     CalendarSubscriptionTypeORM,
 )
-from .event import EventORM, EventLevelORM, EventStatusORM, EventTypeORM
+from .collective import CollectiveORM
+from .event import EventLevelORM, EventORM, EventStatusORM, EventTypeORM
 from .link import EventLinkORM
 from .location import LocationORM
 from .member import MemberORM
 from .organization import OrganizationORM
-from .collective import CollectiveORM
 from .participation import ParticipationORM
 from .person import PersonORM
 from .reward import RewardORM

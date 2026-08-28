@@ -1,8 +1,8 @@
 from logging import getLogger
 from uuid import UUID
 
-from core.service.base import BaseService, required_transaction
 from core.schema.pagination import SPage, SPageParam, SPagination
+from core.service.base import BaseService, required_transaction
 from event.filter.role import RoleFilter
 from event.models.role import RoleORM
 from event.schema.role import (

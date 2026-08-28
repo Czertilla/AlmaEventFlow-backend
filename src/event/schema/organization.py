@@ -1,6 +1,7 @@
-from uuid import UUID
-from pydantic import BaseModel, ConfigDict
 from typing import TYPE_CHECKING
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict
 
 from core.utils.mixin.pydantic import PatchModel
 

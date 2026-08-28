@@ -2,13 +2,14 @@ from datetime import date
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
+
 from event.enum.format import EventFormatEnumV1
 from event.enum.level import EventLevelEnumV1
 from event.enum.status import EventStatusEnumV1
 from event.enum.type import EventTypeEnumV1
 from event.models.event import (
-    EventORM,
     EventLevelORM,
+    EventORM,
     EventStatusORM,
     EventTypeORM,
 )

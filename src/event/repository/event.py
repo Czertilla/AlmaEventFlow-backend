@@ -1,9 +1,15 @@
 from uuid import UUID
-from sqlalchemy.orm import selectinload
-from core.database.sqlalchemy.core import SQLAlchemyRepository
-from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin, UpsertRepositoryMixin, SearchRepositoryMixin
 
-from event.models.event import EventORM as Model, EventStatusORM
+from sqlalchemy.orm import selectinload
+
+from core.database.sqlalchemy.core import SQLAlchemyRepository
+from core.database.sqlalchemy.mixins.repositories import (
+    IDRepositoryMixin,
+    SearchRepositoryMixin,
+    UpsertRepositoryMixin,
+)
+from event.models.event import EventORM as Model
+from event.models.event import EventStatusORM
 
 
 class EventRepo(
