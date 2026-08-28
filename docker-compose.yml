@@ -69,6 +69,7 @@ services:
       - "traefik.tcp.services.kafka.loadbalancer.server.port=${KAFKA_EXTERNAL_PORT:-9093}"
     volumes:
       - ./secrets/kafka:/etc/kafka/secrets:ro
+      - kafka-data:/var/lib/kafka/data
     environment:
       KAFKA_HEAP_OPTS: ${KAFKA_HEAP_OPTS:--Xmx256m -Xms256m}
       # points straight at a real JAAS file instead of relying on Confluent's
@@ -96,8 +97,10 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
-      # лог-директория KRaft (эпhemeral, без volume)
-      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
+      # лог-директория KRaft -- persisted (topics, offsets, and the SCRAM
+      # credential for bot all live here; without this volume, every
+      # --force-recreate wiped them and had to be recreated by hand)
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
       # любой валидный base64 UUID; пример из документации Confluent
       CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
     healthcheck:
@@ -440,3 +443,4 @@ volumes:
   data-volume:
   mongo-data:
   mongo-config:
+  kafka-data:
