@@ -92,7 +92,23 @@ class Settings(BaseSettings):
     Unset preserves faststream's per-subscriber default (no shared group)."""
 
     KAFKA_SECURITY_PROTOCOL: str | None = None
-    """aiokafka security protocol (e.g. ``SASL_SSL``). Unset → ``PLAINTEXT``."""
+    """aiokafka security protocol (``SSL``). Unset → ``PLAINTEXT``."""
+
+    KAFKA_SSL_CA: str | None = None
+    """Path to the CA certificate (PEM) that signed the Kafka broker's TLS
+    certificate. Enables TLS when set."""
+
+    KAFKA_SSL_CERT: str | None = None
+    """Path to the client certificate (PEM) for mutual TLS (Kafka mTLS)."""
+
+    KAFKA_SSL_KEY: str | None = None
+    """Path to the client private key (PEM) for mutual TLS."""
+
+    KAFKA_SSL_KEY_PASSWORD: str | None = None
+    """Password of the client private key, when encrypted."""
+
+    KAFKA_SSL_CHECK_HOSTNAME: bool = True
+    """Verify the broker's hostname against its TLS certificate."""
 
     PASS_SECRET: Secret[str] = "SECRET"
     USER_SECRET: Secret[str] = "SECRET"
