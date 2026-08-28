@@ -1,15 +1,17 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
+
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.mixins.models import TimestampMixin
 from core.models.organization import OrganizationPrincipalORM as Base
+
 from ._base import ModuleBase
 
 if TYPE_CHECKING:
-    from .person import PersonORM
     from .address import AddressORM
+    from .person import PersonORM
 
 
 class OrganizationORM(ModuleBase, Base, TimestampMixin):

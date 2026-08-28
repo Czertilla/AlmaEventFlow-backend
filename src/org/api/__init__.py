@@ -1,8 +1,9 @@
 from fastapi import APIRouter, FastAPI
 
-from core.utils.imports import load_common
-from core.broker.kafka import KafkaRouter, stream_router as kafka_root
+from core.broker.kafka import KafkaRouter
+from core.broker.kafka import stream_router as kafka_root
 from core.utils.broker.router import include_mq_routers
+from core.utils.imports import load_common
 
 api_routers = load_common(__name__, "router", (APIRouter))
 kafka_routers = load_common(__name__, "router", (KafkaRouter))

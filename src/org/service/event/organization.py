@@ -1,8 +1,9 @@
 from typing import Generic, TypeVar
 from uuid import UUID
+
+from core.schema.message.org import OrganizationData, OrganizationDelete
 from core.service.base import BaseService, required_transaction
 from core.uow.event.organization import OrganizationAUOW
-from core.schema.message.org import OrganizationData, OrganizationDelete
 
 UOW = TypeVar("UOW", bound=OrganizationAUOW)
 

@@ -1,12 +1,12 @@
 from uuid import UUID
 
-from core.broker.kafka import broker, KafkaRouter
+from core.broker.kafka import KafkaRouter, broker
 from core.enum.topic import OrganizationTopic
 from core.schema.message.org import (
     OrganizationCreatedEvent,
     OrganizationData,
-    OrganizationUpdatedEvent,
     OrganizationDeletedEvent,
+    OrganizationUpdatedEvent,
 )
 
 router = KafkaRouter()

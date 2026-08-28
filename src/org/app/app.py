@@ -1,8 +1,9 @@
 from fastapi import FastAPI
+
 from core.app import AppConfig
 from core.utils.cors import include_corse
-from org.app.contextmanager import OrgContextManager
 from org.api import include_routers
+from org.app.contextmanager import OrgContextManager
 
 app = FastAPI(
     **AppConfig(lifespan=OrgContextManager()).model_dump(),

@@ -1,6 +1,9 @@
 from typing import Annotated
+
 from fastapi import Depends
-from ._uow import UOWDep
+
 from org.uow.university import UniversityUOW
+
+from ._uow import UOWDep
 
 UniversityUOWDep = Annotated[UniversityUOW, Depends(UOWDep(UniversityUOW))]

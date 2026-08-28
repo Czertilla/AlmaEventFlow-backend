@@ -1,5 +1,7 @@
 from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
+
 from core.utils.mixin.pydantic import PatchModel, UUIDMixin
 
 

@@ -3,7 +3,11 @@ from uuid import UUID
 
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
-
+from org.api.kafka.pub.organization import (
+    on_organization_created,
+    on_organization_deleted,
+    on_organization_updated,
+)
 from org.exc.organization import OrganizationNotExistsException
 from org.filter.organization import OrganizationFilter
 from org.models.organization import OrganizationORM
@@ -12,11 +16,6 @@ from org.schema.organization import (
     OrganizationPatch,
     OrganizationPut,
     OrganizationRead,
-)
-from org.api.kafka.pub.organization import (
-    on_organization_created,
-    on_organization_deleted,
-    on_organization_updated,
 )
 from org.uow.organization import OrganizationUOW
 

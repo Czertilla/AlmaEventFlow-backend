@@ -3,7 +3,6 @@ from logging import getLogger
 from core.schema.message.profile import PersonData
 from core.service.base import required_transaction
 from core.service.event.person import PersonEventService as BaseService
-
 from org.uow.person import PersonUOW
 
 logger = getLogger(__name__)

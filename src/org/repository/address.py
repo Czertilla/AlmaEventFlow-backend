@@ -1,5 +1,4 @@
 from core.repository.address import AddressBaseRepo
-
 from org.models.address import AddressORM as Model
 
 
