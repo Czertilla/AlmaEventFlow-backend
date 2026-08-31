@@ -9,6 +9,16 @@ class EventNotExistsException(VancedHTTPException):
     detail = ErrorCode.EVENT_NOT_FOUND
 
 
+class EventTemplateNotExistsException(VancedHTTPException):
+    """No ``status=template`` event with this id in the given collective --
+    covers "doesn't exist", "isn't a template", and "belongs to a different
+    collective" alike, so a principal can't probe another collective's
+    event ids via this endpoint."""
+
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = ErrorCode.EVENT_TEMPLATE_NOT_FOUND
+
+
 class ParticipationNotExistsException(VancedHTTPException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = ErrorCode.PARTICIPATION_NOT_FOUND

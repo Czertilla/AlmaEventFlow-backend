@@ -337,6 +337,23 @@ async def create_my_event(
     return await EventService(uow).create_with_collective(event_data, user)
 
 
+@router.get(
+    "/collectives/{collective_id}/templates",
+    responses={**auth_responses()},
+)
+async def get_my_collective_templates(
+    collective_id: UUID,
+    uow: EventComposeUOWDep,
+    _: tuple[CollectiveORM, UserJWT] = Depends(verify_collective_principal),
+) -> list[EventRead]:
+    """The collective's ``status=template`` events -- what a principal
+    picks from via ``MeEventCreate.template_id`` when creating a new
+    event, instead of filling every field out by hand."""
+    return await EventService(uow).get_templates_for_collective(
+        collective_id
+    )
+
+
 @router.put(
     "/collectives/{collective_id}/events/{event_id}",
     responses={**auth_responses()},

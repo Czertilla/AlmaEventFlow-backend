@@ -21,6 +21,10 @@ class MeEventCreate(EventCreate):
     collective_id: UUID
     member_ids: list[UUID] | None = None
     stages: list[StageCreateData] | None = None
+    template_id: UUID | None = None
+    """Start from one of the collective's ``status=template`` events --
+    its fields (location included) become defaults for whichever fields
+    this request didn't itself set explicitly."""
 
 
 class MeEventRead(EventCreate, BaseModel):

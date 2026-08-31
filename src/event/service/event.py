@@ -17,6 +17,7 @@ from event.enum.type import EventTypeEnumV1
 from event.exc.event import (
     CollectiveNotExistsException,
     EventNotExistsException,
+    EventTemplateNotExistsException,
     StageNotExistsException,
 )
 from event.filter.event import EventFilter
@@ -109,6 +110,65 @@ class EventService(BaseService[EventUOW]):
         stmt = select(EventTypeORM.id).where(EventTypeORM.name == type.value)
         result = await self.uow.session.execute(stmt)
         return result.scalar_one()
+
+    async def _resolve_template(
+        self, template_id: UUID, collective_id: UUID
+    ) -> EventORM:
+        """Scoped to the caller's own collective (via the same
+        ``ParticipationORM`` join every collective-owned query uses) so a
+        principal can't probe another collective's event ids through this
+        endpoint -- not found, wrong collective, and "isn't a template" all
+        collapse to the same 404."""
+        stmt = (
+            select(EventORM)
+            .join(
+                ParticipationORM, ParticipationORM.event_id == EventORM.id
+            )
+            .join(EventStatusORM, EventStatusORM.id == EventORM.status_id)
+            .where(
+                EventORM.id == template_id,
+                ParticipationORM.collective_id == collective_id,
+                EventStatusORM.name == EventStatusEnumV1.template.value,
+            )
+        )
+        template = (
+            (await self.uow.session.execute(stmt)).unique().scalar_one_or_none()
+        )
+        if template is None:
+            raise EventTemplateNotExistsException()
+        return template
+
+    def _apply_template_defaults(
+        self, event_data: MeEventCreate, template: EventORM
+    ) -> MeEventCreate:
+        """Only fills in fields the caller didn't explicitly set on this
+        request -- a principal can start from a template and still
+        override just the date, for instance. Never touches
+        status/stages/member_ids; those are never copied from a template.
+        ``model_copy(update=...)`` skips validation, so enum fields are
+        constructed the same way ``_orm_to_read`` already does for the
+        matching ORM attributes."""
+        set_fields = event_data.model_fields_set
+        candidates = {
+            "name": template.name,
+            "date": template.date,
+            "description": template.description,
+            "location_id": template.location_id,
+            "organizer_id": template.organizer_id,
+            "level": EventLevelEnumV1(template.level)
+            if template.level
+            else None,
+            "type": EventTypeEnumV1(template.type) if template.type else None,
+            "format": EventFormatEnumV1(template.format)
+            if template.format
+            else EventFormatEnumV1.offline,
+        }
+        overrides = {
+            field: value
+            for field, value in candidates.items()
+            if field not in set_fields
+        }
+        return event_data.model_copy(update=overrides)
 
     @required_transaction
     async def _create(self, event_create: EventCreate) -> EventORM:
@@ -213,6 +273,33 @@ class EventService(BaseService[EventUOW]):
             event = await self._read(event_id)
             return self._orm_to_read(event)
 
+    async def get_templates_for_collective(
+        self, collective_id: UUID
+    ) -> list[EventRead]:
+        """The list a principal picks from when starting a new event
+        ``from`` a template -- same collective-scoping join as everywhere
+        else, filtered to ``status=template`` instead of the active/trigger
+        statuses."""
+        async with self.uow:
+            stmt = (
+                select(EventORM)
+                .join(
+                    ParticipationORM,
+                    ParticipationORM.event_id == EventORM.id,
+                )
+                .join(
+                    EventStatusORM, EventStatusORM.id == EventORM.status_id
+                )
+                .where(
+                    ParticipationORM.collective_id == collective_id,
+                    EventStatusORM.name == EventStatusEnumV1.template.value,
+                )
+            )
+            events = (
+                (await self.uow.session.execute(stmt)).unique().scalars()
+            )
+            return [self._orm_to_read(event) for event in events]
+
     async def _validate_patch_active_date(self, event_patch: EventPatch) -> None:
         """Сверяем итоговое состояние (текущее + патч) с правилом active+date."""
         current = await self._read(event_patch.id)
@@ -311,8 +398,21 @@ class EventService(BaseService[EventUOW]):
                         detail=ErrorCode.COLLECTIVE_NOT_VERIFIED,
                     )
 
+            if event_data.template_id is not None:
+                template = await self._resolve_template(
+                    event_data.template_id, event_data.collective_id
+                )
+                event_data = self._apply_template_defaults(
+                    event_data, template
+                )
+
             event_create_data = event_data.model_dump(
-                exclude={"collective_id", "member_ids", "stages"}
+                exclude={
+                    "collective_id",
+                    "member_ids",
+                    "stages",
+                    "template_id",
+                }
             )
             event_orm = await self._create(EventCreate(**event_create_data))
 
