@@ -304,7 +304,7 @@ services:
     env_file:
       - .env
     container_name: geo
-    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && uvicorn geo.main:app --host 0.0.0.0 --port 8000"]
+    command: ["/bin/bash", "-c", "source /app/.venv/bin/activate && cd /app && alembic -n geo upgrade head && uvicorn geo.main:app --host 0.0.0.0 --port 8000"]
     ports:
       - 8006:8000
     volumes:

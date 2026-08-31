@@ -1,9 +1,14 @@
 """init
 
-Revision ID: 30b5fd503738
+Revision ID: 5abb14baa932
 Revises:
-Create Date: 2025-12-11 15:42:54.026272
+Create Date: 2026-09-01 00:00:00.000000
 
+Squashed from the service's original two migrations (init + add parsed) --
+geo had no production data yet, so this folds the schema straight to its
+current shape (nullable location.name for address-proxy locations,
+nullable+optional location.spot with the address-xor-spot CHECK
+constraint) instead of layering more revisions on top.
 """
 
 from typing import Sequence, Union
@@ -14,7 +19,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = "30b5fd503738"
+revision: str = "5abb14baa932"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -123,6 +128,9 @@ def upgrade() -> None:
         ),
         sa.Column("name", sa.String(length=512), nullable=False),
         sa.Column(
+            "parsed", postgresql.JSONB(astext_type=sa.Text()), nullable=True
+        ),
+        sa.Column(
             "spot",
             Geometry(
                 geometry_type="POINT",
@@ -166,7 +174,7 @@ def upgrade() -> None:
         "location",
         sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column("address_id", sa.Uuid(), nullable=True),
-        sa.Column("name", sa.String(length=512), nullable=False),
+        sa.Column("name", sa.String(length=512), nullable=True),
         sa.Column(
             "spot",
             Geometry(
@@ -176,9 +184,8 @@ def upgrade() -> None:
                 spatial_index=False,
                 from_text="ST_GeomFromEWKT",
                 name="geometry",
-                nullable=False,
             ),
-            nullable=False,
+            nullable=True,
         ),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("edited_at", sa.DateTime(timezone=True), nullable=True),
@@ -186,6 +193,10 @@ def upgrade() -> None:
             ["address_id"], ["address.id"], ondelete="SET NULL"
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.CheckConstraint(
+            "(address_id IS NOT NULL) != (spot IS NOT NULL)",
+            name="ck_location_address_xor_spot",
+        ),
     )
     op.create_geospatial_index(
         "idx_location_spot",

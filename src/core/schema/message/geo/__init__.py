@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from core.schema.message.core import MQEvent, MQRequest
 
@@ -20,7 +20,7 @@ class AddressDeletedEvent(MQEvent[AddressDelete]): ...
 
 class LocationData(MQRequest):
     id: UUID
-    name: str = Field(max_length=512)
+    name: str | None = Field(max_length=512, default=None)
 
 class LocationCreatedEvent(MQEvent[LocationData]): ...
 

@@ -11,6 +11,7 @@ from geo.dependency.location import LocationUOWDep
 from geo.filter.location import LocationFilter
 from geo.schema.location import (
     LocationCreate,
+    LocationFromAddressCreate,
     LocationPatch,
     LocationPatchData,
     LocationPut,
@@ -41,10 +42,29 @@ async def get_location(
 @router.post("", responses={**auth_responses()})
 async def create_location(
     location: LocationCreate,
-    user: SuperUserJWTDep,
+    user: UserJWTDep,
     uow: LocationUOWDep,
 ) -> LocationRead:
+    """Any authenticated user may add a location -- e.g. a collective
+    principal picking/pinning a venue for an event. Editing/removing an
+    existing location stays superuser-only (no ownership model exists yet
+    to gate that safely per-collective)."""
     return await LocationService(uow).create(location)
+
+@router.post("/from-address", responses={**auth_responses()})
+async def create_location_from_address(
+    data: LocationFromAddressCreate,
+    user: UserJWTDep,
+    uow: LocationUOWDep,
+) -> LocationRead:
+    """Backend half of the "pick an address, optionally name it" flow: an
+    address is already selected (via address search), this turns it into a
+    location id usable for ``EventCreate.location_id``. Omitting ``name``
+    reuses the existing address-proxy location instead of creating a
+    duplicate."""
+    return await LocationService(uow).create_from_address(
+        data.address_id, data.name
+    )
 
 @router.put("/{location_id}", responses={**auth_responses(), **entity_not_found_responses("location")})
 async def put_location(

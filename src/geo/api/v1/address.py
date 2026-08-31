@@ -1,4 +1,5 @@
 from logging import getLogger
+from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
@@ -33,7 +34,7 @@ async def get_addresses(
 
 @router.get("/{address_id}", responses={**auth_responses(), **entity_not_found_responses("address")})
 async def get_address(
-    address_id: int, user: UserJWTDep, uow: AddressUOWDep
+    address_id: UUID, user: UserJWTDep, uow: AddressUOWDep
 ) -> AddressRead:
     return await AddressService(uow).read(address_id)
 
@@ -47,7 +48,7 @@ async def create_address(
 
 @router.put("/{address_id}", responses={**auth_responses(), **entity_not_found_responses("address")})
 async def put_address(
-    address_id: int,
+    address_id: UUID,
     address: AddressPutData,
     user: SuperUserJWTDep,
     uow: AddressUOWDep,
@@ -58,7 +59,7 @@ async def put_address(
 
 @router.patch("/{address_id}", responses={**auth_responses(), **entity_not_found_responses("address")})
 async def patch_address(
-    address_id: int,
+    address_id: UUID,
     address: AddressPatchData,
     user: SuperUserJWTDep,
     uow: AddressUOWDep,
@@ -69,6 +70,6 @@ async def patch_address(
 
 @router.delete("/{address_id}", responses={**auth_responses(), **entity_not_found_responses("address")})
 async def delete_address(
-    address_id: int, user: SuperUserJWTDep, uow: AddressUOWDep
+    address_id: UUID, user: SuperUserJWTDep, uow: AddressUOWDep
 ) -> None:
     await AddressService(uow).delete(address_id)

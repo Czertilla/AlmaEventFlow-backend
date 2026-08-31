@@ -9,4 +9,6 @@ class LocationAORM(Base, UUIDMixin):
     __tablename__ = "location"
     __abstract__ = True
 
-    name: Mapped[str] = mapped_column(String(512))
+    name: Mapped[str | None] = mapped_column(String(512), default=None)
+    """Nullable: a location that's just an address with nothing more
+    specific to say (an "address-proxy" location) has no name of its own."""

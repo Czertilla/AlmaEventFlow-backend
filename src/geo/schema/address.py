@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, computed_field
 
 from core.utils.mixin.pydantic import PatchModel, UUIDMixin
 from geo.schema.city import CityCascadeCreate
@@ -29,6 +29,17 @@ class AddressCreate(BaseModel):
 
 class AddressRead(AddressCreate, UUIDMixin):
     name: str
+
+    @computed_field
+    @property
+    def map_uri(self) -> str | None:
+        """RFC 5870 ``geo:`` URI -- the one scheme both Android and iOS
+        resolve to whatever maps app the viewer actually has installed,
+        without picking a specific provider (Google/Apple/Yandex/OsmAnd
+        all register as handlers)."""
+        if self.spot is None:
+            return None
+        return f"geo:{self.spot.lat},{self.spot.lon}"
 
 
 class AddressPatchData(PatchModel):
