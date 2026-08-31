@@ -10,13 +10,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config.settings import settings
 from core.enum.notify import NotificationCategory
-from core.schema.message.announcement import AnnouncementRequest
+from core.schema.message.announcement import AnnouncementRequest, AnnouncementStage
 from core.schema.message.notify import NotificationRequest
 from core.utils.announcement import send_announcement
 from core.utils.notify import send_notification
 from event.models.attendance import AttendanceORM
 from event.models.event import EventORM, EventStatusORM
+from event.models.location import LocationORM
 from event.models.member import MemberORM
+from event.models.organization import OrganizationORM
 from event.models.participation import ParticipationORM
 from event.models.stage import EventStageORM
 
@@ -80,17 +82,6 @@ def _format_date_time(
     if stage_start is not None:
         text += f", {_format_time(stage_start, stage_tz)}"
     return text
-
-
-def _format_stage_line(stage: StageInfo) -> str:
-    name, start_at, end_at, tz_name, description = stage
-    time_part = _format_time(start_at, tz_name)
-    if end_at is not None:
-        time_part += f"–{_format_time(end_at, tz_name)}"
-    line = f"• {name} — {time_part}"
-    if description:
-        line += f"\n   {description}"
-    return line
 
 
 async def notify_event_targets(
@@ -270,11 +261,15 @@ async def _resolve_collective_targets(
             EventORM.name,
             EventORM.date,
             EventORM.description,
+            LocationORM.name,
+            OrganizationORM.name,
             ParticipationORM.collective_id,
         )
         .select_from(ParticipationORM)
         .join(EventORM, EventORM.id == ParticipationORM.event_id)
         .join(EventStatusORM, EventStatusORM.id == EventORM.status_id)
+        .outerjoin(LocationORM, LocationORM.id == EventORM.location_id)
+        .outerjoin(OrganizationORM, OrganizationORM.id == EventORM.organizer_id)
         .where(
             EventStatusORM.name.in_(settings.EVENT_NOTIFY_TRIGGER_STATUSES),
             ParticipationORM.event_id.in_(list(event_ids)),
@@ -286,17 +281,30 @@ async def _resolve_collective_targets(
 def _build_announcements(
     rows: Sequence, stages: dict[UUID, list[StageInfo]]
 ) -> list[AnnouncementRequest]:
-    return [
-        _build_announcement(
+    result = []
+    for row in rows:
+        (
             event_id,
             name,
             event_date,
             description,
+            location,
+            organizer,
             collective_id,
-            stages.get(event_id, []),
+        ) = row
+        result.append(
+            _build_announcement(
+                event_id,
+                name,
+                event_date,
+                description,
+                location,
+                organizer,
+                collective_id,
+                stages.get(event_id, []),
+            )
         )
-        for event_id, name, event_date, description, collective_id in rows
-    ]
+    return result
 
 
 def _build_announcement(
@@ -304,36 +312,30 @@ def _build_announcement(
     name: str,
     event_date: date | None,
     description: str | None,
+    location: str | None,
+    organizer: str | None,
     collective_id: UUID,
     stages: list[StageInfo],
 ) -> AnnouncementRequest:
-    action_url = f"{settings.FRONTEND_URL}/event/{event_id}"
-    stage_start = stages[0][1] if stages else None
-    stage_tz = stages[0][3] if stages else None
-    lines = [f"Мероприятие «{name}». Отметьтесь ниже."]
-    date_time = _format_date_time(event_date, stage_start, stage_tz)
-    if date_time:
-        lines.append(f"📅 {date_time}")
-    if description:
-        lines.append(description)
-    if stages:
-        stage_lines = "\n".join(_format_stage_line(stage) for stage in stages)
-        lines.append(f"Этапы:\n{stage_lines}")
-    body = "\n\n".join(lines)
-    data = {"event_id": str(event_id), "event_name": name}
-    if event_date is not None:
-        data["event_date"] = event_date.isoformat()
-    if stage_start is not None:
-        data["stage_start_at"] = stage_start.isoformat()
-        if stage_tz:
-            data["stage_timezone"] = stage_tz
     return AnnouncementRequest(
         collective_id=collective_id,
         event_id=event_id,
-        title=name,
-        body=body,
-        action_url=action_url,
-        data=data,
+        event_name=name,
+        event_date=event_date,
+        event_description=description,
+        location=location,
+        organizer=organizer,
+        stages=[
+            AnnouncementStage(
+                name=stage_name,
+                start_at=start_at,
+                end_at=end_at,
+                description=stage_description,
+                timezone=tz_name,
+            )
+            for stage_name, start_at, end_at, tz_name, stage_description in stages
+        ],
+        action_url=f"{settings.FRONTEND_URL}/event/{event_id}",
     )
 
 

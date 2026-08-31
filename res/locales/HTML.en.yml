@@ -64,6 +64,16 @@ en:
     disabled: "%{ch} This chat is no longer bound to any collective."
     not_bound: |-
       %{ch} This chat wasn't bound to a collective you lead.
+  announcement:
+    title: "📢 <b>%{event_name}</b>"
+    title_linked: "📢 <b><a href=\"%{action_url}\">%{event_name}</a></b>"
+    date: "🗓 %{date}"
+    location: "📍 %{location}"
+    organizer: "🏢 %{organizer}"
+    stages_header: "<b>Schedule:</b>"
+    stage_line: "▫️ <b>%{name}</b> %{time}"
+    stage_description: "   <i>%{description}</i>"
+    cta: "Mark your attendance below 👇"
   error:
     username: "%{ch} For the bot to work best, set a @username in your Telegram settings."
     user_not_found: "User not found."

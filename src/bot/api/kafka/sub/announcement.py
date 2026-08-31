@@ -1,10 +1,10 @@
-from html import escape
 from logging import getLogger
 from uuid import uuid4
 
 from fastapi import Depends
 
 from bot.tg.dependency.bot import bot as tg_bot
+from bot.tg.service.announcement import build_announcement_text
 from bot.tg.service.delivery import TelegramDeliveryService
 from bot.tg.uow.collective_chat import CollectiveChatUOW
 from bot.tg.uow.message import TelegramMessageUOW
@@ -57,7 +57,7 @@ async def deliver_announcement(
     item = TelegramDeliveryItem(
         delivery_id=uuid4(),
         chat_id=str(chat.chat_id),
-        text=f"<b>{escape(request.title)}</b>\n\n{escape(request.body)}",
+        text=await build_announcement_text(request),
         buttons=_buttons(request.event_id),
         correlation_key=str(request.event_id),
         message_thread_id=chat.thread_id,

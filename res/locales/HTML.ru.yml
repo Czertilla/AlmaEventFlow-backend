@@ -64,6 +64,16 @@ ru:
     disabled: "%{ch} Этот чат больше не привязан ни к одному коллективу."
     not_bound: |-
       %{ch} Этот чат не был привязан к коллективу, которым вы руководите.
+  announcement:
+    title: "📢 <b>%{event_name}</b>"
+    title_linked: "📢 <b><a href=\"%{action_url}\">%{event_name}</a></b>"
+    date: "🗓 %{date}"
+    location: "📍 %{location}"
+    organizer: "🏢 %{organizer}"
+    stages_header: "<b>Программа:</b>"
+    stage_line: "▫️ <b>%{name}</b> %{time}"
+    stage_description: "   <i>%{description}</i>"
+    cta: "Отметьтесь ниже 👇"
   error:
     username: "%{ch} Для корректной работы бота укажите @username в настройках Telegram."
     user_not_found: "Пользователь не найден."

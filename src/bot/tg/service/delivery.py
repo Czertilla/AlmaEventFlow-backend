@@ -96,6 +96,7 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
                 message_id=existing.message_id,
                 text=item.text,
                 reply_markup=markup,
+                parse_mode="HTML",
             )
             await self.bot.send_message(
                 chat_id=chat_id,
@@ -112,6 +113,7 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
             text=item.text,
             reply_markup=markup,
             message_thread_id=item.message_thread_id,
+            parse_mode="HTML",
         )
         if item.correlation_key:
             async with self.uow as uow:
