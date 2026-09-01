@@ -84,6 +84,7 @@ class ErrorCode(str, Enum):
 
     # Geo domain
     LOCATION_NOT_FOUND = "LOCATION_NOT_FOUND"
+    CITY_NOT_FOUND = "CITY_NOT_FOUND"
 
     # Notify domain
     NOTIFY_CLIENT_NOT_FOUND = "NOTIFY_CLIENT_NOT_FOUND"
@@ -151,6 +152,7 @@ _ENTITY_MAP: dict[str, ErrorCode] = {
     "faculty": ErrorCode.FACULTY_NOT_FOUND,
     "location": ErrorCode.LOCATION_NOT_FOUND,
     "address": ErrorCode.ADDRESS_NOT_FOUND,
+    "city": ErrorCode.CITY_NOT_FOUND,
 }
 
 
