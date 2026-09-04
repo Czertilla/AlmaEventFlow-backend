@@ -133,6 +133,13 @@ if not settings.IN_MEMORY_BROKER:
             await super().stop(*args, **kwargs)
 
     class KafkaStreamRouter(BaseKafkaStreamRouter):
+        # StreamRouter builds its internal broker from this class attribute
+        # (see faststream._internal.fastapi.router.StreamRouter.__init__) --
+        # without it, the FastAPI-mounted router silently constructs a plain
+        # unpatched faststream KafkaBroker instead of the one above, and the
+        # request/reply patch in KafkaBroker.__init__ never runs.
+        broker_class = KafkaBroker
+
         def __init__(
             self,
             url: str = kafka_uri(),
