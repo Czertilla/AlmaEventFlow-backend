@@ -116,7 +116,7 @@ if not settings.IN_MEMORY_BROKER:
         async def start(self) -> None:
             try:
                 logger.info(
-                    f"Attempting to connect to Kafka with servers: {self.settings.servers}"
+                    f"Attempting to connect to Kafka with servers: {kafka_uri()}"
                 )
                 await super().start()
             except Exception as e:
