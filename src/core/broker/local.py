@@ -14,7 +14,12 @@ Handler = Callable[[Any], Awaitable[Any]]
 
 class MonolithBroker(SingletonMixin):
     def __init__(self) -> None:
-        self._handlers: dict[str, list[Handler]] = defaultdict(list)
+        # SingletonMixin.__new__ returns the same instance on every call, but
+        # __init__ still runs again each time -- guard it, or a second
+        # construction anywhere would silently wipe every already-registered
+        # subscriber.
+        if not hasattr(self, "_handlers"):
+            self._handlers: dict[str, list[Handler]] = defaultdict(list)
 
     async def start(self) -> None:
         logger.info("Monolith broker started")
