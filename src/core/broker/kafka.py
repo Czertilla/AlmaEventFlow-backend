@@ -10,6 +10,7 @@ from faststream.kafka import (
     KafkaRouter as BaseKafkaRouter,
 )
 from faststream.kafka.fastapi import KafkaRouter as BaseKafkaStreamRouter
+from faststream.kafka.security import parse_security
 from faststream.security import (
     BaseSecurity,
     SASLPlaintext,
@@ -17,6 +18,7 @@ from faststream.security import (
     SASLScram512,
 )
 
+from core.broker.kafka_rpc import KafkaRpcReplyConsumer
 from core.config.settings import settings
 
 logger = getLogger(__name__)
@@ -102,6 +104,14 @@ if not settings.IN_MEMORY_BROKER:
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.reconnect_interval = 0.8
+            # Real Kafka has no request/reply support in faststream out of the
+            # box -- see core.broker.kafka_rpc for why and how this patches it in.
+            self._rpc_reply = KafkaRpcReplyConsumer(
+                bootstrap_servers=kafka_uri(),
+                client_id=self.config.client_id or "aef",
+                connect_kwargs=parse_security(_kafka_security()),
+            )
+            self._rpc_reply.attach(self.config.producer)
 
         async def start(self) -> None:
             try:
@@ -117,6 +127,10 @@ if not settings.IN_MEMORY_BROKER:
                 await asyncio.sleep(self.reconnect_interval)
                 self.reconnect_interval *= 2
                 await self.start()
+
+        async def stop(self, *args, **kwargs) -> None:
+            await self._rpc_reply.stop()
+            await super().stop(*args, **kwargs)
 
     class KafkaStreamRouter(BaseKafkaStreamRouter):
         def __init__(
