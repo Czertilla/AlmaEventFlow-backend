@@ -1,4 +1,4 @@
-from fastapi import Depends
+from faststream import Depends
 
 from bot.service.account import AccountEventService
 from bot.uow.user import UserUOW

@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from fastapi import Depends
+from faststream import Depends
 
 from core.broker.kafka import KafkaRouter, broker
 from core.dependencies.uow import ModuleUOWDep
