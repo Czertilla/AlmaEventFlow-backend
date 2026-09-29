@@ -18,6 +18,7 @@ from geo.schema.location import (
     LocationPutData,
     LocationRead,
 )
+from geo.schema.point import Point
 from geo.service.location import LocationService
 
 router = APIRouter(prefix="/locations", tags=["location"])
@@ -30,8 +31,12 @@ async def get_locations(
     user: UserJWTDep,
     filter: LocationFilter = FilterDepends(LocationFilter),
     page_param=Depends(SPageParam),
+    near_lat: float | None = None,
+    near_lon: float | None = None,
 ) -> SPage[LocationRead]:
-    return await LocationService(uow).search(filter, page_param)
+    # near_lat/near_lon sort by distance instead of name, but only when search is empty (see service)
+    near = Point(lat=near_lat, lon=near_lon) if near_lat is not None and near_lon is not None else None
+    return await LocationService(uow).search(filter, page_param, near=near)
 
 @router.get("/{location_id}", responses={**auth_responses(), **entity_not_found_responses("location")})
 async def get_location(

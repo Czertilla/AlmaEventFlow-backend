@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from geoalchemy2 import WKTElement
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, select
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -12,6 +12,8 @@ from core.database.sqlalchemy.mixins.repositories import (
 )
 from core.schema.pagination import SPageParam
 from geo.models.address import AddressORM as Model
+from geo.schema.point import Point
+from geo.search import search_page, text_match
 
 
 class AddressAlchemyRepo(
@@ -61,51 +63,67 @@ class AddressAlchemyRepo(
         *,
         options=None,
         scope: list | None = None,
+        near: Point | None = None,
     ) -> tuple[list[Model], int]:
-        """Free-text ``filter.search`` bypasses the generic ILIKE-based
-        search fastapi_filter would otherwise build, in favor of the
-        tsvector/trigram columns already provisioned on this table
-        (``name_tsv`` GIN index, ``name`` trigram GIN index) -- prefix-aware
-        via ``websearch_to_tsquery``, with a trigram-similarity fallback for
-        typos/partial input that doesn't tokenize into a real tsquery match.
-        Falls back to the generic filter/sort behavior when there's no
-        search term (plain listing, city_id filtering, etc.)."""
-        if not filter.search:
+        match = (
+            text_match(filter.search, self.model.name_tsv, self.model.name)
+            if filter.search
+            else None
+        )
+        if match is None:
+            if near is not None:
+                return await self._search_near(
+                    filter, near, pagination, options=options, scope=scope
+                )
             return await super().search(
                 filter, pagination, options=options, scope=scope
             )
 
-        query = filter.search
-        tsquery = func.websearch_to_tsquery("simple", query)
-        similarity = func.similarity(self.model.name, query)
-        matches = or_(self.model.name_tsv.op("@@")(tsquery), similarity > 0.3)
+        plain = filter.model_copy(update={"search": None})
 
-        base = select(self.model).where(matches)
-        city_id = getattr(filter, "city_id", None)
-        if city_id is not None:
-            base = base.where(self.model.city_id == city_id)
+        def build(predicate):
+            base = plain.filter(select(self.model).where(predicate))
+            return base.where(*scope) if scope else base
+
+        return await search_page(
+            self,
+            build,
+            match,
+            pagination,
+            tie_break=(self.model.name, self.model.id),
+            options=options,
+        )
+
+    async def _search_near(
+        self,
+        filter: Filter,
+        near: Point,
+        pagination: SPageParam,
+        *,
+        options=None,
+        scope: list | None = None,
+    ) -> tuple[list[Model], int]:
+        """No search text -- order by distance from ``near`` (KNN via the
+        GiST index on ``spot``) instead of ``filter``'s default ordering."""
+        point = WKTElement(f"POINT({near.lon} {near.lat})", srid=4326)
+        base = filter.filter(
+            select(self.model).where(self.model.spot.isnot(None))
+        )
         if scope:
             base = base.where(*scope)
 
         total = (
-            await self.execute(
-                select(func.count()).select_from(base.subquery())
-            )
+            await self.execute(select(func.count()).select_from(base.subquery()))
         ).scalar_one()
         if not total:
             return [], 0
 
-        ranked = (
-            base.order_by(
-                func.ts_rank(self.model.name_tsv, tsquery).desc(),
-                similarity.desc(),
-            )
-            .limit(pagination.limit)
-            .offset(pagination.offset)
-        )
+        stmt = base.order_by(self.model.spot.op("<->")(point)).limit(
+            pagination.limit
+        ).offset(pagination.offset)
         if options:
-            ranked = ranked.options(*options)
-        return (await self.execute(ranked)).unique().scalars(), total
+            stmt = stmt.options(*options)
+        return (await self.execute(stmt)).unique().scalars(), total
 
     async def search_in_bbox(
         self,

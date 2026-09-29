@@ -1,7 +1,7 @@
 from logging import getLogger
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import exists, select
 from sqlalchemy.orm import selectinload
 
 from core.schema.message.geo import LocationData
@@ -12,8 +12,10 @@ from geo.api.kafka.pub.location import (
     on_location_deleted,
     on_location_updated,
 )
+from geo.exc.address import AddressNotExistsException
 from geo.exc.location import LocationNotExistsException
 from geo.filter.location import LocationFilter
+from geo.models.address import AddressORM
 from geo.models.location import LocationORM
 from geo.schema.location import (
     LocationCreate,
@@ -21,6 +23,7 @@ from geo.schema.location import (
     LocationPut,
     LocationRead,
 )
+from geo.schema.point import Point
 from geo.uow.location import LocationUOW
 
 logger = getLogger()
@@ -61,6 +64,22 @@ class LocationService(BaseService[LocationUOW]):
         return (await self.uow.session.execute(stmt)).unique().scalar_one_or_none()
 
     @required_transaction
+    async def _ensure_address_proxy(
+        self, address_id: UUID
+    ) -> tuple[LocationORM, bool]:
+        address_exists = await self.uow.session.scalar(
+            select(exists().where(AddressORM.id == address_id))
+        )
+        if not address_exists:
+            raise AddressNotExistsException()
+        created = (
+            await self.uow.locations.insert_address_proxy(address_id)
+            is not None
+        )
+        proxy = await self._find_address_proxy(address_id)
+        return proxy, created
+
+    @required_transaction
     async def _update(
         self, location_id: UUID, location_data: dict, *, flush: bool = False
     ) -> LocationORM:
@@ -80,10 +99,13 @@ class LocationService(BaseService[LocationUOW]):
         await self.uow.locations.delete_one(location_id)
 
     async def create(self, location_create: LocationCreate) -> LocationRead:
-        async with self.uow as uow:
-            result = LocationRead.model_validate(
-                await self._create(location_create)
+        if location_create.address_id and location_create.name is None:
+            return await self.find_or_create_address_proxy(
+                location_create.address_id
             )
+        async with self.uow as uow:
+            created = await self._create(location_create)
+            result = LocationRead.model_validate(await self._read(created.id))
             await uow.commit()
         await on_location_created(
             [LocationData(id=result.id, name=result.name)]
@@ -97,9 +119,8 @@ class LocationService(BaseService[LocationUOW]):
     async def patch(self, location_patch: LocationPatch) -> LocationRead:
         async with self.uow as uow:
             location_data = location_patch.model_dump()
-            result = LocationRead.model_validate(
-                await self._update(location_data.pop("id"), location_data)
-            )
+            updated = await self._update(location_data.pop("id"), location_data)
+            result = LocationRead.model_validate(await self._read(updated.id))
             await uow.commit()
         await on_location_updated(
             [LocationData(id=result.id, name=result.name)]
@@ -108,9 +129,8 @@ class LocationService(BaseService[LocationUOW]):
 
     async def put(self, location_put: LocationPut) -> LocationRead:
         async with self.uow as uow:
-            result = LocationRead.model_validate(
-                await self._upsert(location_put)
-            )
+            upserted = await self._upsert(location_put)
+            result = LocationRead.model_validate(await self._read(upserted.id))
             await uow.commit()
         await on_location_updated(
             [LocationData(id=result.id, name=result.name)]
@@ -123,10 +143,15 @@ class LocationService(BaseService[LocationUOW]):
             await uow.commit()
         await on_location_deleted([location_id])
 
-    async def search(self, filter: LocationFilter, page_params: SPageParam = SPageParam()) -> SPage[LocationRead]:
+    async def search(
+        self,
+        filter: LocationFilter,
+        page_params: SPageParam = SPageParam(),
+        near: Point | None = None,
+    ) -> SPage[LocationRead]:
         async with self.uow as uow:
             items, total = await uow.locations.search(
-                filter, page_params, options=_WITH_ADDRESS
+                filter, page_params, options=_WITH_ADDRESS, near=near
             )
             return SPage(
                 items=[LocationRead.model_validate(item) for item in items],
@@ -155,20 +180,16 @@ class LocationService(BaseService[LocationUOW]):
     async def find_or_create_address_proxy(self, address_id: UUID) -> LocationRead:
         """The "just this address, nothing more specific" case: a
         location with no name of its own, anchored purely to the address.
-        Idempotent -- re-calling with the same address_id returns the same
-        row instead of creating a duplicate proxy."""
+        Idempotent and race-safe -- concurrent calls for the same address
+        resolve to one row (unique partial index + ON CONFLICT DO NOTHING)."""
         async with self.uow as uow:
-            existing = await self._find_address_proxy(address_id)
-            if existing is not None:
-                return LocationRead.model_validate(existing)
-            created = await self._create(
-                LocationCreate(name=None, address_id=address_id, spot=None)
-            )
-            result = LocationRead.model_validate(created)
+            proxy, created = await self._ensure_address_proxy(address_id)
+            result = LocationRead.model_validate(proxy)
             await uow.commit()
-        await on_location_created(
-            [LocationData(id=result.id, name=result.name)]
-        )
+        if created:
+            await on_location_created(
+                [LocationData(id=result.id, name=result.name)]
+            )
         return result
 
     async def create_from_address(

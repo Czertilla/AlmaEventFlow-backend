@@ -4,6 +4,7 @@ from uuid import UUID
 from core.schema.message.geo import AddressData
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
+from geo.api.kafka.pub.location import on_location_deleted
 from geo.api.kafka.pub.address import (
     on_address_created,
     on_address_deleted,
@@ -18,6 +19,7 @@ from geo.schema.address import (
     AddressPut,
     AddressRead,
 )
+from geo.schema.point import Point
 from geo.uow.address import AddressUOW
 
 logger = getLogger(__name__)
@@ -53,8 +55,10 @@ class AddressService(BaseService[AddressUOW]):
         return await self.uow.addresses.upsert(address_put.model_dump())
 
     @required_transaction
-    async def _delete(self, address_id: UUID) -> None:
+    async def _delete(self, address_id: UUID) -> list[UUID]:
+        location_ids = await self.uow.locations.delete_by_address(address_id)
         await self.uow.addresses.delete_one(address_id)
+        return location_ids
 
     async def create(self, address_create: AddressCreate) -> AddressRead:
         async with self.uow as uow:
@@ -72,6 +76,13 @@ class AddressService(BaseService[AddressUOW]):
     async def patch(self, address_patch: AddressPatch) -> AddressRead:
         async with self.uow as uow:
             address_data = address_patch.model_dump()
+            for required in ("name", "city_id"):
+                if address_data.get(required) is None:
+                    address_data.pop(required, None)
+            if address_patch.parsed and "name" not in address_data:
+                composed = address_patch.parsed.compose_name()
+                if composed:
+                    address_data["name"] = composed
             result = AddressRead.model_validate(
                 await self._update(address_data.pop("id"), address_data)
             )
@@ -92,13 +103,20 @@ class AddressService(BaseService[AddressUOW]):
 
     async def delete(self, address_id: UUID) -> None:
         async with self.uow as uow:
-            await self._delete(address_id)
+            location_ids = await self._delete(address_id)
             await uow.commit()
+        if location_ids:
+            await on_location_deleted(location_ids)
         await on_address_deleted([address_id])
 
-    async def search(self, filter: AddressFilter, page_params: SPageParam = SPageParam()) -> SPage[AddressRead]:
+    async def search(
+        self,
+        filter: AddressFilter,
+        page_params: SPageParam = SPageParam(),
+        near: Point | None = None,
+    ) -> SPage[AddressRead]:
         async with self.uow as uow:
-            items, total = await uow.addresses.search(filter, page_params)
+            items, total = await uow.addresses.search(filter, page_params, near=near)
             return SPage(
                 items=[AddressRead.model_validate(item) for item in items],
                 pagination=SPagination(page=page_params.page, limit=page_params.limit, total=total),
