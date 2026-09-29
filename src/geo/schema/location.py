@@ -1,18 +1,31 @@
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_validator,
+    model_validator,
+)
 
 from core.utils.mixin.pydantic import PatchModel, UUIDMixin
 from geo.schema.address import AddressRead
 from geo.schema.point import Point
 
 
-def _check_address_xor_spot(address_id: UUID | None, spot: object) -> None:
-    if (address_id is not None) == (spot is not None):
+def _check_address_or_spot(address_id: UUID | None, spot: object, name: str | None) -> None:
+    if address_id is None and spot is None:
+        raise ValueError("a location needs at least one of address_id or spot")
+    if address_id is not None and spot is not None and name is None:
         raise ValueError(
-            "a location must have exactly one of address_id or spot, not "
-            "both and not neither"
+            "a location combining an address with its own spot needs a name "
+            "to distinguish it from the plain address-proxy location"
         )
+
+
+def _blank_to_none(value: str | None) -> str | None:
+    return value.strip() or None if value else None
 
 
 class LocationCreate(BaseModel):
@@ -22,9 +35,11 @@ class LocationCreate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+    _normalize_name = field_validator("name")(_blank_to_none)
+
     @model_validator(mode="after")
     def _validate_anchor(self) -> "LocationCreate":
-        _check_address_xor_spot(self.address_id, self.spot)
+        _check_address_or_spot(self.address_id, self.spot, self.name)
         return self
 
 
@@ -48,6 +63,8 @@ class LocationPatchData(PatchModel):
     address_id: UUID | None = None
     spot: Point | None = None
 
+    _normalize_name = field_validator("name")(_blank_to_none)
+
 
 class LocationPatch(LocationPatchData, UUIDMixin): ...
 
@@ -65,3 +82,5 @@ class LocationFromAddressCreate(BaseModel):
 
     address_id: UUID
     name: str | None = Field(max_length=512, default=None)
+
+    _normalize_name = field_validator("name")(_blank_to_none)
