@@ -1,8 +1,11 @@
-from asyncio import create_task
+from asyncio import create_task, iscoroutine
 from collections import defaultdict
+from functools import wraps
+from inspect import signature
 from logging import getLogger
 from typing import Any, Awaitable, Callable
 
+from fastapi.params import Depends as FastAPIDepends
 from faststream import apply_types
 
 from core.utils.mixin.singleton import SingletonMixin
@@ -10,6 +13,51 @@ from core.utils.mixin.singleton import SingletonMixin
 logger = getLogger()
 
 Handler = Callable[[Any], Awaitable[Any]]
+
+
+async def _resolve_fastapi_dependency(
+    dependency: Callable[..., Any] | None, cache: dict[int, Any]
+) -> Any:
+    assert dependency is not None
+    key = id(dependency)
+    if key in cache:
+        return cache[key]
+    kwargs = {}
+    for name, param in signature(dependency).parameters.items():
+        if isinstance(param.default, FastAPIDepends):
+            sub_dependency = param.default.dependency
+            kwargs[name] = await _resolve_fastapi_dependency(sub_dependency, cache)
+    result = dependency(**kwargs)
+    if iscoroutine(result):
+        result = await result
+    cache[key] = result
+    return result
+
+
+def _bind_fastapi_depends(func: Handler) -> Handler:
+    # apply_types() only resolves faststream.Depends, not fastapi.Depends -- which
+    # every subscriber uses for FastAPI-mounted stream_router compatibility in prod.
+    sig = signature(func)
+    depends_names = [
+        name for name, param in sig.parameters.items()
+        if isinstance(param.default, FastAPIDepends)
+    ]
+    if not depends_names:
+        return func
+
+    @wraps(func)
+    async def bound(*args, **kwargs):
+        cache: dict[int, Any] = {}
+        for name in depends_names:
+            kwargs[name] = await _resolve_fastapi_dependency(
+                sig.parameters[name].default.dependency, cache
+            )
+        return await func(*args, **kwargs)
+
+    bound.__signature__ = sig.replace(  # type: ignore[attr-defined]
+        parameters=[p for p in sig.parameters.values() if p.name not in depends_names]
+    )
+    return bound
 
 
 class MonolithBroker(SingletonMixin):
@@ -27,7 +75,7 @@ class MonolithBroker(SingletonMixin):
 
     def subscriber(self, topic: str, *args, **kwargs):
         def decorator(func: Handler):
-            wrapped = apply_types(func)
+            wrapped = apply_types(_bind_fastapi_depends(func))
             self._handlers[topic].append(wrapped)
             logger.info(
                 "Registered monolith subscriber: topic=%s handler=%s",
