@@ -108,7 +108,7 @@ class LocationService(BaseService[LocationUOW]):
             result = LocationRead.model_validate(await self._read(created.id))
             await uow.commit()
         await on_location_created(
-            [LocationData(id=result.id, name=result.name)]
+            [LocationData(id=result.id, name=result.display_name)]
         )
         return result
 
@@ -123,7 +123,7 @@ class LocationService(BaseService[LocationUOW]):
             result = LocationRead.model_validate(await self._read(updated.id))
             await uow.commit()
         await on_location_updated(
-            [LocationData(id=result.id, name=result.name)]
+            [LocationData(id=result.id, name=result.display_name)]
         )
         return result
 
@@ -133,7 +133,7 @@ class LocationService(BaseService[LocationUOW]):
             result = LocationRead.model_validate(await self._read(upserted.id))
             await uow.commit()
         await on_location_updated(
-            [LocationData(id=result.id, name=result.name)]
+            [LocationData(id=result.id, name=result.display_name)]
         )
         return result
 
@@ -188,7 +188,7 @@ class LocationService(BaseService[LocationUOW]):
             await uow.commit()
         if created:
             await on_location_created(
-                [LocationData(id=result.id, name=result.name)]
+                [LocationData(id=result.id, name=result.display_name)]
             )
         return result
 

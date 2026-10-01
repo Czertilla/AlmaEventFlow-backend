@@ -131,6 +131,10 @@ async def test_address_proxy_location_is_idempotent_and_publishes_once(
     assert first.id == second.id == third.id
     assert first.name is None and first.address.name == "Арбат, 10"
     assert [name for name, _ in published].count("on_location_created") == 1
+    [(_, [sent])] = [
+        (name, payload) for name, payload in published if name == "on_location_created"
+    ]
+    assert sent.name == "Арбат, 10"
 
 
 async def test_concurrent_address_picks_resolve_to_one_proxy(

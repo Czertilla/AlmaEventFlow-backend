@@ -21,6 +21,9 @@ class AddressDeletedEvent(MQEvent[AddressDelete]): ...
 class LocationData(MQRequest):
     id: UUID
     name: str | None = Field(max_length=512, default=None)
+    """Resolved display text (``Location.display_name``), not the raw,
+    often-``None`` location name -- an address-proxy location has no name
+    of its own."""
 
 class LocationCreatedEvent(MQEvent[LocationData]): ...
 

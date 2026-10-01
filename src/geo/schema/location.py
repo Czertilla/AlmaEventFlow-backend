@@ -57,6 +57,15 @@ class LocationRead(LocationCreate, UUIDMixin):
             return None
         return f"geo:{point.lat},{point.lon}"
 
+    @computed_field
+    @property
+    def display_name(self) -> str | None:
+        """``name`` is ``None`` for an address-proxy location by design --
+        this is the text other services should actually show/sync (matches
+        the ``name || address?.name`` fallback already used across the
+        frontend, e.g. ``useGeoSearch.ts``)."""
+        return self.name or (self.address.name if self.address else None)
+
 
 class LocationPatchData(PatchModel):
     name: str | None = Field(max_length=512, default=None)

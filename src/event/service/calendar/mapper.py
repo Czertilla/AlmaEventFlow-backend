@@ -70,6 +70,7 @@ class CalendarEventMapper:
             dtend=dtend,
             all_day=True,
             description=self._description([body]),
+            location=self._location(event),
         )
 
     def _timed(
@@ -94,6 +95,7 @@ class CalendarEventMapper:
             dtend=stage.end_at,
             all_day=False,
             description=self._description(parts),
+            location=self._location(event),
         )
 
     def _map_removed_log(self, log: CalendarChangeLogORM) -> VEvent:
@@ -137,6 +139,7 @@ class CalendarEventMapper:
         dtend,
         all_day: bool,
         description: str,
+        location: str | None = None,
     ) -> VEvent:
         status_value = event.status
         ics_status, categories, x_status = self._status_mapping(status_value)
@@ -156,9 +159,14 @@ class CalendarEventMapper:
             last_modified=last_modified,
             sequence=sequence,
             description=self._description_with_url(description, event.id),
+            location=location,
             categories=categories,
             x_status=x_status,
         )
+
+    @staticmethod
+    def _location(event: EventORM) -> str | None:
+        return event.location.name if event.location else None
 
     def _summary(self, event: EventORM, stage_name: str | None = None) -> str:
         base = event.name

@@ -30,7 +30,10 @@ _PRINCIPAL_STATUSES = (
     EventStatusEnumV1.archived.value,
 )
 
-_EVENT_OPTIONS = (selectinload(EventORM.status_rel),)
+_EVENT_OPTIONS = (
+    selectinload(EventORM.status_rel),
+    selectinload(EventORM.location),
+)
 _TYPE_OPTION = (selectinload(CalendarSubscriptionORM.type_rel),)
 
 
