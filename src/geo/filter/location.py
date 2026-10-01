@@ -9,6 +9,8 @@ class LocationFilter(Filter):
     order_by: list[str] | None = ["name"]
     search: None | str = None
     address_id: UUID | None = None
+    name__isnull: bool | None = None
+
     class Constants(Filter.Constants):
         model = LocationORM
         search_model_fields = ["name"]
