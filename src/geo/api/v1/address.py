@@ -10,6 +10,7 @@ from core.schema.pagination import SPage, SPageParam
 from geo.dependency.address import AddressUOWDep
 from geo.filter.address import AddressFilter
 from geo.schema.address import (
+    AddressCascadeCreate,
     AddressCreate,
     AddressPatch,
     AddressPatchData,
@@ -50,6 +51,18 @@ async def create_address(
     uow: AddressUOWDep,
 ) -> AddressRead:
     return await AddressService(uow).create(address)
+
+@router.post("/cascade", responses={**auth_responses()})
+async def create_address_cascade(
+    address: AddressCascadeCreate,
+    user: SuperUserJWTDep,
+    uow: AddressUOWDep,
+) -> AddressRead:
+    """Like ``POST /addresses``, but for a hand-entered address whose city
+    isn't in the database yet -- names the country/region/city instead of
+    requiring an existing ``city_id``, and creates whichever levels are
+    missing."""
+    return await AddressService(uow).create_cascade(address)
 
 @router.put("/{address_id}", responses={**auth_responses(), **entity_not_found_responses("address")})
 async def put_address(

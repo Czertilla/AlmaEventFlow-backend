@@ -97,12 +97,18 @@ class UpsertRepositoryMixin(
     async def upsert_many(
         self, data: list[dict[str, Any]], options: tuple[ExecutableOption] = ()
     ) -> Model | None:
+        if not data:
+            return iter(())
+        statement = insert(self.model).values(data)
+        columns = {key for row in data for key in row}
         stmt = (
-            insert(self.model)
-            .values(data)
-            .on_conflict_do_update(
+            statement.on_conflict_do_update(
                 index_elements=self.conflict_index_elements,
-                set_=self._get_set_data(data),
+                set_={
+                    key: statement.excluded[key]
+                    for key in columns
+                    if key not in self.conflict_index_elements
+                },
             )
             .options(*options)
             .returning(self.model)

@@ -5,7 +5,14 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-_GEO_TABLES = ("location", "address", "city", "region", "country")
+_GEO_TABLES = (
+    "location",
+    "address",
+    "address_coverage_cell",
+    "city",
+    "region",
+    "country",
+)
 
 _PUBLISHERS = {
     "geo.service.address": (

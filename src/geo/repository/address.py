@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -151,3 +152,18 @@ class AddressAlchemyRepo(
 
         stmt = base.limit(pagination.limit).offset(pagination.offset)
         return (await self.execute(stmt)).unique().scalars(), total
+
+    async def stale_deletable_ids(
+        self, city_id: int, source: str, before: datetime
+    ) -> list[UUID]:
+        """Rows from ``source`` in ``city_id`` a sync run hasn't touched
+        since ``before`` -- excluding any address a location still points
+        at, so a re-sync never deletes something a user actually attached
+        to an event just because it dropped out of upstream data."""
+        stmt = select(self.model.id).where(
+            self.model.city_id == city_id,
+            self.model.source == source,
+            self.model.synced_at < before,
+            ~self.model.locations.any(),
+        )
+        return list((await self.execute(stmt)).scalars())

@@ -33,6 +33,18 @@ class Settings(BaseSettings):
 
     IN_MEMORY_BROKER: bool = False
 
+    GEO_LIVE_FETCH: bool = True
+    """Whether geo.service.live_fetch may make live Overpass requests for
+    addresses outside any bulk-imported city. Off in tests (see
+    tests/conftest.py) so a search near an uncovered point never makes a
+    real network call."""
+
+    GEO_OVERPASS_MIRRORS: str | None = None
+    """Comma-separated Overpass mirror names (see geo.bootstrap.sources.
+    MIRRORS) or full URLs, tried in rotation by geo.service.live_fetch and
+    by geo.bootstrap.run's --servers default. Unset uses the built-in
+    DEFAULT_MIRRORS pool. Example: 'z,main,http://my-mirror:8080/api/interpreter'."""
+
     ADMIN_EMAIL: EmailStr | None = None
 
     APP_NAME: str = "Simple App"
@@ -66,6 +78,12 @@ class Settings(BaseSettings):
 
     DB_PORT: str | None = None
     """Port number on which the database server is running (required for PostgreSQL)."""
+
+    DB_SSL: bool | None = None
+    """Postgres SSL negotiation: None keeps asyncpg's default (try SSL, fall
+    back to plaintext), True requires SSL, False disables the SSL probe
+    entirely. Set False locally if that probe intermittently resets the
+    connection (seen on some Windows setups with a local proxy/firewall)."""
 
     S3_URL: str = "https://s3.twcstorage.ru"
 

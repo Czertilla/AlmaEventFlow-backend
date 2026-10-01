@@ -28,6 +28,9 @@ letsencrypt/
 secrets/kafka/*
 !secrets/kafka/.gitkeep
 
+# geo bootstrap resume checkpoint (local run state, not source)
+geo_bootstrap_state.json
+
 # auto-generated RSA keys for JWT
 rsa_private.pem
 rsa_public.pem

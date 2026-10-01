@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, computed_field
+from pydantic import BaseModel, ConfigDict, computed_field, model_validator
 
 from core.utils.mixin.pydantic import PatchModel, UUIDMixin
 from geo.schema.city import CityCascadeCreate
@@ -6,16 +6,15 @@ from geo.schema.point import Point
 
 
 class AddressFields(BaseModel):
-    house: str
+    house: str | None = None
     district: str | None = None
     street: str | None = None
     building: str | None = None
     apartment: str | None = None
 
-class AddressFieldsPatchData(AddressFields):
-    house: str | None = None
-    city_id: int | None = None
-    spot: Point | None = None
+    def compose_name(self) -> str:
+        parts = (self.street, self.house, self.building, self.apartment)
+        return ", ".join(part.strip() for part in parts if part and part.strip())
 
 
 class AddressCreate(BaseModel):
@@ -26,9 +25,18 @@ class AddressCreate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+    @model_validator(mode="after")
+    def _ensure_name(self) -> "AddressCreate":
+        if not (self.name and self.name.strip()) and self.parsed:
+            self.name = self.parsed.compose_name()
+        if not (self.name and self.name.strip()):
+            raise ValueError("either name or parsed address fields are required")
+        return self
+
 
 class AddressRead(AddressCreate, UUIDMixin):
     name: str
+    source: str | None = None
 
     @computed_field
     @property
@@ -43,7 +51,10 @@ class AddressRead(AddressCreate, UUIDMixin):
 
 
 class AddressPatchData(PatchModel):
-    parsed: AddressFieldsPatchData | None = None
+    name: str | None = None
+    city_id: int | None = None
+    spot: Point | None = None
+    parsed: AddressFields | None = None
 
 
 class AddressPatch(AddressPatchData, UUIDMixin): ...

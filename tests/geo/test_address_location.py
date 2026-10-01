@@ -2,11 +2,19 @@ import asyncio
 from uuid import uuid4
 
 import pytest
+from sqlalchemy import select
 
 from core.schema.pagination import SPageParam
 from geo.exc.address import AddressNotExistsException
 from geo.filter.location import LocationFilter
-from geo.schema.address import AddressCreate, AddressFields, AddressPatch
+from geo.models.city import CityORM
+from geo.schema.address import (
+    AddressCascadeCreate,
+    AddressCreate,
+    AddressFields,
+    AddressPatch,
+)
+from geo.schema.city import CityCascadeCreate
 from geo.schema.location import LocationCreate
 from geo.service.address import AddressService
 from geo.service.location import LocationService
@@ -33,6 +41,45 @@ async def test_address_name_is_composed_from_parsed_fields(
     )
 
     assert created.name == "Тверская улица, 7, стр. 1"
+
+
+async def test_create_cascade_creates_the_city_hierarchy_when_missing(
+    sessionmaker_, published
+):
+    service = AddressService(AddressUOW(sessionmaker_))
+    created = await service.create_cascade(
+        AddressCascadeCreate(
+            street="Невский проспект",
+            house="1",
+            city=CityCascadeCreate(
+                name="Санкт-Петербург", region="Санкт-Петербург", country="Россия"
+            ),
+        )
+    )
+
+    assert created.name == "Невский проспект, 1"
+    async with sessionmaker_() as session:
+        city = (
+            await session.execute(
+                select(CityORM).where(CityORM.name == "Санкт-Петербург")
+            )
+        ).scalar_one()
+    assert city.id == created.city_id
+
+
+async def test_create_cascade_reuses_an_existing_city_by_name(
+    sessionmaker_, city_id, published
+):
+    service = AddressService(AddressUOW(sessionmaker_))
+    created = await service.create_cascade(
+        AddressCascadeCreate(
+            street="Арбат",
+            house="1",
+            city=CityCascadeCreate(name="Москва", region="Москва", country="Россия"),
+        )
+    )
+
+    assert created.city_id == city_id
 
 
 async def test_patch_updates_name_spot_and_recomposes_name_from_parsed(

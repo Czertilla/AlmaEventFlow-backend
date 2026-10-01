@@ -16,7 +16,8 @@ def get_url(
 
 
 def get_engine(db_url: str = get_url()) -> AsyncEngine:
-    return create_async_engine(db_url)
+    connect_args = {} if settings.DB_SSL is None else {"ssl": settings.DB_SSL}
+    return create_async_engine(db_url, connect_args=connect_args)
 
 
 engine = get_engine()

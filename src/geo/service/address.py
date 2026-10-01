@@ -4,22 +4,26 @@ from uuid import UUID
 from core.schema.message.geo import AddressData
 from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
-from geo.api.kafka.pub.location import on_location_deleted
 from geo.api.kafka.pub.address import (
     on_address_created,
     on_address_deleted,
     on_address_updated,
 )
+from geo.api.kafka.pub.location import on_location_deleted
 from geo.exc.address import AddressNotExistsException
 from geo.filter.address import AddressFilter
 from geo.models.address import AddressORM
 from geo.schema.address import (
+    AddressCascadeCreate,
     AddressCreate,
+    AddressFields,
     AddressPatch,
     AddressPut,
     AddressRead,
 )
 from geo.schema.point import Point
+from geo.service.geography import resolve_or_create_city
+from geo.service.live_fetch import schedule_live_fetch
 from geo.uow.address import AddressUOW
 
 logger = getLogger(__name__)
@@ -65,6 +69,30 @@ class AddressService(BaseService[AddressUOW]):
             result = AddressRead.model_validate(
                 await self._create(address_create)
             )
+            await uow.commit()
+        await on_address_created([AddressData(id=result.id, name=result.name)])
+        return result
+
+    async def create_cascade(self, data: AddressCascadeCreate) -> AddressRead:
+        """Like ``create``, but for a hand-entered address whose city may
+        not exist yet: resolves/creates the country/region/city by name
+        (see ``geo.service.geography``) in the same transaction as the
+        address itself, instead of requiring a pre-existing ``city_id``."""
+        async with self.uow as uow:
+            city_id = await resolve_or_create_city(
+                uow, data.city.country, data.city.region, data.city.name
+            )
+            fields = AddressFields(
+                house=data.house,
+                district=data.district,
+                street=data.street,
+                building=data.building,
+                apartment=data.apartment,
+            )
+            address_create = AddressCreate(
+                city_id=city_id, spot=data.spot, parsed=fields
+            )
+            result = AddressRead.model_validate(await self._create(address_create))
             await uow.commit()
         await on_address_created([AddressData(id=result.id, name=result.name)])
         return result
@@ -117,10 +145,13 @@ class AddressService(BaseService[AddressUOW]):
     ) -> SPage[AddressRead]:
         async with self.uow as uow:
             items, total = await uow.addresses.search(filter, page_params, near=near)
-            return SPage(
+            page = SPage(
                 items=[AddressRead.model_validate(item) for item in items],
                 pagination=SPagination(page=page_params.page, limit=page_params.limit, total=total),
             )
+        if near is not None:
+            schedule_live_fetch(near, sessionmaker=self.uow.session_factory)
+        return page
 
     async def search_in_bbox(
         self,
