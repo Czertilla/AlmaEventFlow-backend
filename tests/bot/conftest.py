@@ -59,7 +59,7 @@ class _BotSeeder:
         async with self._sessionmaker() as session:
             session.add(
                 TGUserORM(
-                    tgid=tgid,
+                    id=tgid,
                     is_bot=False,
                     first_name=f"Test{tgid}",
                     username=username or f"test{tgid}",

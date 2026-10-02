@@ -74,7 +74,7 @@ async def test_relink_replaces_previous_tgid(bot_engine, bot_seed):
     accounts = await bot_seed.all(UserORM)
     assert len(accounts) == 1  # same AEF identity, not duplicated
 
-    tg_rows = {row.tgid: row.user_id for row in await bot_seed.all(TGUserORM)}
+    tg_rows = {row.id: row.user_id for row in await bot_seed.all(TGUserORM)}
     assert tg_rows[new_tgid] == accounts[0].id
     assert tg_rows[old_tgid] is None  # old link cleared
 
