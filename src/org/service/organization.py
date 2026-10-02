@@ -1,38 +1,50 @@
 from logging import getLogger
+from typing import Any
 from uuid import UUID
 
-from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
+from core.dto.base import dto_dict, dto_from_orm
+from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
+from core.schema.message.org import OrganizationData
 from core.service.base import BaseService, required_transaction
 from org.api.kafka.pub.organization import (
     on_organization_created,
     on_organization_deleted,
     on_organization_updated,
 )
+from org.dto.organization import (
+    OrganizationCreateDTO,
+    OrganizationDTO,
+    OrganizationFilterDTO,
+    OrganizationPatchDTO,
+    OrganizationPutDTO,
+)
 from org.exc.organization import OrganizationNotExistsException
 from org.filter.organization import OrganizationFilter
 from org.models.organization import OrganizationORM
-from org.schema.organization import (
-    OrganizationCreate,
-    OrganizationPatch,
-    OrganizationPut,
-    OrganizationRead,
-)
 from org.uow.organization import OrganizationUOW
 
 logger = getLogger(__name__)
 
 
 class OrganizationService(BaseService[OrganizationUOW]):
+    @staticmethod
+    def _to_dto(organization: OrganizationORM) -> OrganizationDTO:
+        return dto_from_orm(organization, OrganizationDTO)
+
+    @staticmethod
+    def _event(organization: OrganizationDTO) -> OrganizationData:
+        return OrganizationData(**dto_dict(organization))
+
     @required_transaction
     async def _create(
-        self, organization_create: OrganizationCreate
+        self, organization_create: OrganizationCreateDTO
     ) -> OrganizationORM:
         return await self.uow.organizations.add_n_return(
-            data=organization_create.model_dump()
+            data=dto_dict(organization_create)
         )
 
     @required_transaction
-    async def _read(self, organization_id: UUID) -> OrganizationORM | None:
+    async def _read(self, organization_id: UUID) -> OrganizationORM:
         organization = await self.uow.organizations.get_by_id(organization_id)
         if organization is None:
             raise OrganizationNotExistsException()
@@ -42,7 +54,7 @@ class OrganizationService(BaseService[OrganizationUOW]):
     async def _update(
         self,
         organization_id: UUID,
-        organization_data: dict,
+        organization_data: dict[str, Any],
         *,
         flush: bool = False,
     ) -> OrganizationORM:
@@ -54,65 +66,55 @@ class OrganizationService(BaseService[OrganizationUOW]):
         return organization
 
     @required_transaction
-    async def _upsert(self, organization_put: OrganizationPut) -> OrganizationORM:
-        return await self.uow.organizations.upsert(
-            organization_put.model_dump()
-        )
+    async def _upsert(self, organization_put: OrganizationPutDTO) -> OrganizationORM:
+        return await self.uow.organizations.upsert(dto_dict(organization_put))
 
     @required_transaction
     async def _delete(self, organization_id: UUID) -> None:
         await self.uow.organizations.delete_one(organization_id)
 
     async def create(
-        self, organization_create: OrganizationCreate
-    ) -> OrganizationRead:
+        self, organization_create: OrganizationCreateDTO
+    ) -> OrganizationDTO:
         async with self.uow as uow:
-            result = OrganizationRead.model_validate(
-                await self._create(organization_create)
-            )
+            result = self._to_dto(await self._create(organization_create))
             await uow.commit()
-        await on_organization_created([result])
+        await on_organization_created([self._event(result)])
         return result
 
-    async def read(self, organization_id: UUID) -> OrganizationRead:
+    async def read(self, organization_id: UUID) -> OrganizationDTO:
         async with self.uow:
-            return OrganizationRead.model_validate(
-                await self._read(organization_id)
-            )
+            return self._to_dto(await self._read(organization_id))
 
-    async def patch(
-        self, organization_patch: OrganizationPatch
-    ) -> OrganizationRead:
+    async def patch(self, organization_patch: OrganizationPatchDTO) -> OrganizationDTO:
         async with self.uow as uow:
-            organization_data = organization_patch.model_dump()
-            result = OrganizationRead.model_validate(
-                await self._update(
-                    organization_data.pop("id"), organization_data
-                )
+            organization_data = dto_dict(
+                organization_patch, only_set=True, exclude={"id"}
+            )
+            result = self._to_dto(
+                await self._update(organization_patch.id, organization_data)
             )
             await uow.commit()
-        await on_organization_updated([result])
+        await on_organization_updated([self._event(result)])
         return result
 
-    async def put(self, organization_put: OrganizationPut) -> OrganizationRead:
+    async def put(self, organization_put: OrganizationPutDTO) -> OrganizationDTO:
         async with self.uow as uow:
-            result = OrganizationRead.model_validate(
-                await self._upsert(organization_put)
-            )
+            result = self._to_dto(await self._upsert(organization_put))
             await uow.commit()
-        await on_organization_updated([result])
+        await on_organization_updated([self._event(result)])
         return result
 
     async def search(
-        self, filter: OrganizationFilter, pagination: PageParamV1
-    ) -> PageV1[OrganizationRead]:
+        self, filter: OrganizationFilterDTO, pagination: PageParamDTO
+    ) -> PageDTO[OrganizationDTO]:
         async with self.uow:
             items, total = await self.uow.organizations.search(
-                filter, pagination
+                OrganizationFilter.from_dto(filter), pagination
             )
-            return PageV1(
-                items=[OrganizationRead.model_validate(item) for item in items],
-                pagination=PaginationV1.sql_validate(
+            return PageDTO(
+                items=[self._to_dto(item) for item in items],
+                pagination=PaginationDTO(
                     page=pagination.page,
                     limit=pagination.limit,
                     total=total,

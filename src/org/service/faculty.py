@@ -1,38 +1,49 @@
 from logging import getLogger
+from typing import Any
 from uuid import UUID
 
+from core.dto.base import dto_dict, dto_from_orm
+from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.schema.message.org import OrganizationData
-from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
 from core.service.base import BaseService, required_transaction
 from org.api.kafka.pub.organization import (
     on_organization_created,
     on_organization_deleted,
     on_organization_updated,
 )
+from org.dto.faculty import (
+    FacultyCreateDTO,
+    FacultyDTO,
+    FacultyFilterDTO,
+    FacultyPatchDTO,
+    FacultyPutDTO,
+)
 from org.exc.faculty import FacultyNotExistsException
 from org.filter.faculty import FacultyFilter
 from org.models.faculty import FacultyORM
-from org.schema.faculty import (
-    FacultyCreate,
-    FacultyPatch,
-    FacultyPut,
-    FacultyRead,
-)
 from org.uow.faculty import FacultyUOW
 
 logger = getLogger(__name__)
 
 
 class FacultyService(BaseService[FacultyUOW]):
+    @staticmethod
+    def _to_dto(faculty: FacultyORM) -> FacultyDTO:
+        return dto_from_orm(faculty, FacultyDTO)
+
+    @staticmethod
+    def _event(faculty: FacultyDTO) -> OrganizationData:
+        return OrganizationData(**dto_dict(faculty))
+
     @required_transaction
-    async def _create(self, faculty_create: FacultyCreate) -> FacultyORM:
-        faculty = FacultyORM(**faculty_create.model_dump())
+    async def _create(self, faculty_create: FacultyCreateDTO) -> FacultyORM:
+        faculty = FacultyORM(**dto_dict(faculty_create))
         self.uow.session.add(faculty)
         await self.uow.session.flush()
         return faculty
 
     @required_transaction
-    async def _read(self, faculty_id: UUID) -> FacultyORM | None:
+    async def _read(self, faculty_id: UUID) -> FacultyORM:
         faculty = await self.uow.faculties.get_by_id(faculty_id)
         if faculty is None:
             raise FacultyNotExistsException()
@@ -42,7 +53,7 @@ class FacultyService(BaseService[FacultyUOW]):
     async def _update(
         self,
         faculty_id: UUID,
-        faculty_data: dict,
+        faculty_data: dict[str, Any],
         *,
         flush: bool = False,
     ) -> FacultyORM:
@@ -57,61 +68,58 @@ class FacultyService(BaseService[FacultyUOW]):
         return faculty
 
     @required_transaction
-    async def _upsert(self, faculty_put: FacultyPut) -> FacultyORM:
-        return await self.uow.faculties.upsert(faculty_put.model_dump())
+    async def _upsert(self, faculty_put: FacultyPutDTO) -> FacultyORM:
+        faculty = await self.uow.faculties.get_by_id(faculty_put.id)
+        faculty_data = dto_dict(faculty_put, exclude={"id"})
+        if faculty is None:
+            faculty = FacultyORM(id=faculty_put.id, **faculty_data)
+            self.uow.session.add(faculty)
+        else:
+            for key, value in faculty_data.items():
+                setattr(faculty, key, value)
+        await self.uow.session.flush()
+        return faculty
 
     @required_transaction
     async def _delete(self, faculty_id: UUID) -> None:
         await self.uow.faculties.delete_one(faculty_id)
 
-    async def create(self, faculty_create: FacultyCreate) -> FacultyRead:
+    async def create(self, faculty_create: FacultyCreateDTO) -> FacultyDTO:
         async with self.uow as uow:
-            result = FacultyRead.model_validate(
-                await self._create(faculty_create)
-            )
+            result = self._to_dto(await self._create(faculty_create))
             await uow.commit()
-        await on_organization_created(
-            [OrganizationData(**result.model_dump(exclude={"type"}), type="faculty")]
-        )
+        await on_organization_created([self._event(result)])
         return result
 
-    async def read(self, faculty_id: UUID) -> FacultyRead:
+    async def read(self, faculty_id: UUID) -> FacultyDTO:
         async with self.uow:
-            return FacultyRead.model_validate(await self._read(faculty_id))
+            return self._to_dto(await self._read(faculty_id))
 
-    async def patch(self, faculty_patch: FacultyPatch) -> FacultyRead:
+    async def patch(self, faculty_patch: FacultyPatchDTO) -> FacultyDTO:
         async with self.uow as uow:
-            faculty_data = faculty_patch.model_dump()
-            result = FacultyRead.model_validate(
-                await self._update(faculty_data.pop("id"), faculty_data)
-            )
+            faculty_data = dto_dict(faculty_patch, only_set=True, exclude={"id"})
+            result = self._to_dto(await self._update(faculty_patch.id, faculty_data))
             await uow.commit()
-        await on_organization_updated(
-            [OrganizationData(**result.model_dump(exclude={"type"}), type="faculty")]
-        )
+        await on_organization_updated([self._event(result)])
         return result
 
-    async def put(self, faculty_put: FacultyPut) -> FacultyRead:
+    async def put(self, faculty_put: FacultyPutDTO) -> FacultyDTO:
         async with self.uow as uow:
-            result = FacultyRead.model_validate(
-                await self._upsert(faculty_put)
-            )
+            result = self._to_dto(await self._upsert(faculty_put))
             await uow.commit()
-        await on_organization_updated(
-            [OrganizationData(**result.model_dump())]
-        )
+        await on_organization_updated([self._event(result)])
         return result
 
     async def search(
-        self, filter: FacultyFilter, pagination: PageParamV1
-    ) -> PageV1[FacultyRead]:
+        self, filter: FacultyFilterDTO, pagination: PageParamDTO
+    ) -> PageDTO[FacultyDTO]:
         async with self.uow:
             items, total = await self.uow.faculties.search(
-                filter, pagination
+                FacultyFilter.from_dto(filter), pagination
             )
-            return PageV1(
-                items=[FacultyRead.model_validate(item) for item in items],
-                pagination=PaginationV1.sql_validate(
+            return PageDTO(
+                items=[self._to_dto(item) for item in items],
+                pagination=PaginationDTO(
                     page=pagination.page,
                     limit=pagination.limit,
                     total=total,

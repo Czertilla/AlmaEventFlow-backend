@@ -46,22 +46,23 @@ def snapshot_path(service: str, version: str) -> Path:
 
 
 def snapshot_files() -> list[tuple[str, str]]:
-    return sorted(
-        (path.parent.name, path.stem)
-        for path in SNAPSHOTS.glob("*/*.json")
-    )
+    return sorted((path.parent.name, path.stem) for path in SNAPSHOTS.glob("*/*.json"))
 
 
 def _generate(service: str) -> dict[str, Any]:
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "openapi.json"
-        subprocess.run(
+        completed = subprocess.run(
             [sys.executable, str(HERE / "_dump_openapi.py"), service, str(out)],
-            check=True,
+            check=False,
             cwd=ROOT,
             env={**os.environ, **PINNED_ENV},
             capture_output=True,
+            text=True,
         )
+        if completed.returncode:
+            tail = completed.stderr[-2000:]
+            raise RuntimeError(f"{service} openapi failed: {tail}")
         return json.loads(out.read_text(encoding="utf-8"))
 
 
@@ -71,7 +72,7 @@ def _collect_refs(node: Any, found: set[tuple[str, str]]) -> None:
         for key, value in mapping.items():
             if key == "$ref" and isinstance(value, str):
                 if value.startswith(_REF_PREFIX):
-                    section, name = value[len(_REF_PREFIX):].split("/", 1)
+                    section, name = value[len(_REF_PREFIX) :].split("/", 1)
                     found.add((section, name))
             else:
                 _collect_refs(value, found)

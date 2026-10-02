@@ -1,0 +1,1685 @@
+{
+  "collective.CollectiveBase": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "ad2a9bb9-a24f-58bf-b4e0-5cfd3233eb1a",
+        "name": "x",
+        "principal_id": "aa1e9452-52df-5610-89e1-127ff7cf7223",
+        "university_id": "0adf9ce1-9a2a-52e4-9c75-f52041f69ff2"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "ad2a9bb9-a24f-58bf-b4e0-5cfd3233eb1a",
+        "name": "x",
+        "principal_id": "aa1e9452-52df-5610-89e1-127ff7cf7223",
+        "university_id": "0adf9ce1-9a2a-52e4-9c75-f52041f69ff2"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null,
+        "university_id": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "collective.CollectiveCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "874e2550-5276-55af-88af-de2a92c8aee1",
+          "name": "x",
+          "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa",
+          "university_id": "16895b19-0757-5d49-a482-f9901af3c5ac"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "874e2550-5276-55af-88af-de2a92c8aee1",
+        "name": "x",
+        "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa",
+        "university_id": "16895b19-0757-5d49-a482-f9901af3c5ac"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "874e2550-5276-55af-88af-de2a92c8aee1",
+        "name": "x",
+        "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa",
+        "university_id": "16895b19-0757-5d49-a482-f9901af3c5ac"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": null,
+          "address_id": null,
+          "name": "x",
+          "principal_id": null,
+          "university_id": null
+        }
+      },
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null,
+        "university_id": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "collective.CollectivePatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "acronym",
+          "address_id",
+          "id",
+          "name",
+          "principal_id",
+          "university_id"
+        ],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "b9d324a6-4ba9-5fc1-8a00-5e0f11a64ad7",
+          "id": "056229f3-b7d4-59f0-aef8-776e1e9605f5",
+          "name": "x",
+          "principal_id": "850b73b0-da59-511b-ae7c-6bd76ca9657a",
+          "university_id": "123332a2-bae6-51dd-892a-9e8701a0dc95"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "b9d324a6-4ba9-5fc1-8a00-5e0f11a64ad7",
+        "id": "056229f3-b7d4-59f0-aef8-776e1e9605f5",
+        "name": "x",
+        "principal_id": "850b73b0-da59-511b-ae7c-6bd76ca9657a",
+        "university_id": "123332a2-bae6-51dd-892a-9e8701a0dc95"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "b9d324a6-4ba9-5fc1-8a00-5e0f11a64ad7",
+        "id": "056229f3-b7d4-59f0-aef8-776e1e9605f5",
+        "name": "x",
+        "principal_id": "850b73b0-da59-511b-ae7c-6bd76ca9657a",
+        "university_id": "123332a2-bae6-51dd-892a-9e8701a0dc95"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "056229f3-b7d4-59f0-aef8-776e1e9605f5"
+        }
+      },
+      "dump": {
+        "id": "056229f3-b7d4-59f0-aef8-776e1e9605f5"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "056229f3-b7d4-59f0-aef8-776e1e9605f5"
+      }
+    }
+  },
+  "collective.CollectivePatchData": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "3a68a9b0-1cdc-5e63-aeb1-bbe0a45c0436",
+        "name": "x",
+        "principal_id": "e4c9a04e-8354-520c-b005-c513688d63db",
+        "university_id": "83be1e01-8f02-5ebe-aed2-c790d62b2030"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "3a68a9b0-1cdc-5e63-aeb1-bbe0a45c0436",
+        "name": "x",
+        "principal_id": "e4c9a04e-8354-520c-b005-c513688d63db",
+        "university_id": "83be1e01-8f02-5ebe-aed2-c790d62b2030"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "collective.CollectivePut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "2df2237f-42ba-5d12-9a39-8396a3f9a262",
+          "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+          "name": "x",
+          "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635",
+          "university_id": "0e590730-648e-52cc-8dc7-c8d13adf19e6"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "2df2237f-42ba-5d12-9a39-8396a3f9a262",
+        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+        "name": "x",
+        "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635",
+        "university_id": "0e590730-648e-52cc-8dc7-c8d13adf19e6"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "2df2237f-42ba-5d12-9a39-8396a3f9a262",
+        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+        "name": "x",
+        "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635",
+        "university_id": "0e590730-648e-52cc-8dc7-c8d13adf19e6"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": null,
+          "address_id": null,
+          "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+          "name": "x",
+          "principal_id": null,
+          "university_id": null
+        }
+      },
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+        "name": "x",
+        "principal_id": null,
+        "university_id": null
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+        "name": "x"
+      }
+    }
+  },
+  "collective.CollectivePutData": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "4721a490-ac71-54d5-a296-8570e30b8a5e",
+        "name": "x",
+        "principal_id": "5a72444d-b9da-5588-8d59-30e3366b467d",
+        "university_id": "465af9b7-765d-50cc-a30f-1ad346285687"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "4721a490-ac71-54d5-a296-8570e30b8a5e",
+        "name": "x",
+        "principal_id": "5a72444d-b9da-5588-8d59-30e3366b467d",
+        "university_id": "465af9b7-765d-50cc-a30f-1ad346285687"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null,
+        "university_id": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "collective.CollectiveRead": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "85224242-0c64-5879-8864-d4a4b200ea82",
+        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
+        "name": "x",
+        "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056",
+        "type": "x",
+        "university_id": "cd3a0ee0-92da-53c0-a1ec-7588db1d9e2b"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id",
+        "type",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "85224242-0c64-5879-8864-d4a4b200ea82",
+        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
+        "name": "x",
+        "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056",
+        "type": "x",
+        "university_id": "cd3a0ee0-92da-53c0-a1ec-7588db1d9e2b"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
+        "name": "x",
+        "principal_id": null,
+        "type": "collective",
+        "university_id": null
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
+        "name": "x"
+      }
+    }
+  },
+  "faculty.FacultyBase": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "a7363367-ec78-5e26-a241-05a68f00d340",
+        "name": "x",
+        "principal_id": "05d6f6e2-a391-5846-98bb-79b001ea3dcf",
+        "university_id": "47e0b5c7-8a39-535a-a9e4-37c002eda96d"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "a7363367-ec78-5e26-a241-05a68f00d340",
+        "name": "x",
+        "principal_id": "05d6f6e2-a391-5846-98bb-79b001ea3dcf",
+        "university_id": "47e0b5c7-8a39-535a-a9e4-37c002eda96d"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null,
+        "university_id": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "faculty.FacultyCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "a7352c24-5e3e-5411-954e-bb8ea72bb247",
+          "name": "x",
+          "principal_id": "f047aa21-5a81-5587-a007-da8e7d604151",
+          "university_id": "b2bcd665-901c-5dae-b21f-f7c111e5e180"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "a7352c24-5e3e-5411-954e-bb8ea72bb247",
+        "name": "x",
+        "principal_id": "f047aa21-5a81-5587-a007-da8e7d604151",
+        "university_id": "b2bcd665-901c-5dae-b21f-f7c111e5e180"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "a7352c24-5e3e-5411-954e-bb8ea72bb247",
+        "name": "x",
+        "principal_id": "f047aa21-5a81-5587-a007-da8e7d604151",
+        "university_id": "b2bcd665-901c-5dae-b21f-f7c111e5e180"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": null,
+          "address_id": null,
+          "name": "x",
+          "principal_id": null,
+          "university_id": null
+        }
+      },
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null,
+        "university_id": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "faculty.FacultyPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "acronym",
+          "address_id",
+          "id",
+          "name",
+          "principal_id",
+          "university_id"
+        ],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "6b241a3f-5731-5f8e-8f77-d937c5e30c03",
+          "id": "bee09ed6-de8d-5640-a0d0-7ba1523c7e43",
+          "name": "x",
+          "principal_id": "f888912e-ba76-5ee4-b318-24b508aac395",
+          "university_id": "6dc3b398-35ae-534d-9e0d-762e399bcef5"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "6b241a3f-5731-5f8e-8f77-d937c5e30c03",
+        "id": "bee09ed6-de8d-5640-a0d0-7ba1523c7e43",
+        "name": "x",
+        "principal_id": "f888912e-ba76-5ee4-b318-24b508aac395",
+        "university_id": "6dc3b398-35ae-534d-9e0d-762e399bcef5"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "6b241a3f-5731-5f8e-8f77-d937c5e30c03",
+        "id": "bee09ed6-de8d-5640-a0d0-7ba1523c7e43",
+        "name": "x",
+        "principal_id": "f888912e-ba76-5ee4-b318-24b508aac395",
+        "university_id": "6dc3b398-35ae-534d-9e0d-762e399bcef5"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "bee09ed6-de8d-5640-a0d0-7ba1523c7e43"
+        }
+      },
+      "dump": {
+        "id": "bee09ed6-de8d-5640-a0d0-7ba1523c7e43"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "bee09ed6-de8d-5640-a0d0-7ba1523c7e43"
+      }
+    }
+  },
+  "faculty.FacultyPatchData": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "add0ac08-deb6-5941-b202-2bf501b8c14a",
+        "name": "x",
+        "principal_id": "74ec09b2-9c19-533d-8778-97924c6b098c",
+        "university_id": "3aec8519-8ba4-5b5a-8c05-0a1f09d52a8f"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "add0ac08-deb6-5941-b202-2bf501b8c14a",
+        "name": "x",
+        "principal_id": "74ec09b2-9c19-533d-8778-97924c6b098c",
+        "university_id": "3aec8519-8ba4-5b5a-8c05-0a1f09d52a8f"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "faculty.FacultyPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "352e8182-6e4b-5c53-965e-0fc255007b4a",
+          "id": "5ad51a59-9bda-5cf4-b107-c0befddd0620",
+          "name": "x",
+          "principal_id": "97479dc5-2095-558c-b651-ea40fb469e00",
+          "university_id": "3893a9ff-7b1c-5a0e-9948-45c7de0503f8"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "352e8182-6e4b-5c53-965e-0fc255007b4a",
+        "id": "5ad51a59-9bda-5cf4-b107-c0befddd0620",
+        "name": "x",
+        "principal_id": "97479dc5-2095-558c-b651-ea40fb469e00",
+        "university_id": "3893a9ff-7b1c-5a0e-9948-45c7de0503f8"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "352e8182-6e4b-5c53-965e-0fc255007b4a",
+        "id": "5ad51a59-9bda-5cf4-b107-c0befddd0620",
+        "name": "x",
+        "principal_id": "97479dc5-2095-558c-b651-ea40fb469e00",
+        "university_id": "3893a9ff-7b1c-5a0e-9948-45c7de0503f8"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": null,
+          "address_id": null,
+          "id": "5ad51a59-9bda-5cf4-b107-c0befddd0620",
+          "name": "x",
+          "principal_id": null,
+          "university_id": null
+        }
+      },
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "id": "5ad51a59-9bda-5cf4-b107-c0befddd0620",
+        "name": "x",
+        "principal_id": null,
+        "university_id": null
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "5ad51a59-9bda-5cf4-b107-c0befddd0620",
+        "name": "x"
+      }
+    }
+  },
+  "faculty.FacultyPutData": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "cf98ec06-2a78-5f85-bc81-2887933dcb17",
+        "name": "x",
+        "principal_id": "83bfeb8b-19ff-5cf6-a02a-6a6835984c43",
+        "university_id": "5eb35589-0981-5202-b102-9f91d0c227cf"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "cf98ec06-2a78-5f85-bc81-2887933dcb17",
+        "name": "x",
+        "principal_id": "83bfeb8b-19ff-5cf6-a02a-6a6835984c43",
+        "university_id": "5eb35589-0981-5202-b102-9f91d0c227cf"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null,
+        "university_id": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "faculty.FacultyRead": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "93be6dd6-f4b0-58f8-a95f-c258fc578f9d",
+        "id": "563e6e27-3610-5bdf-93e2-56d7bb0e6481",
+        "name": "x",
+        "principal_id": "0703e532-107d-5a8b-ad51-fafce3272609",
+        "type": "x",
+        "university_id": "ac7d5ca9-bba0-5a09-8996-8c1ed5bed69b"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id",
+        "type",
+        "university_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "93be6dd6-f4b0-58f8-a95f-c258fc578f9d",
+        "id": "563e6e27-3610-5bdf-93e2-56d7bb0e6481",
+        "name": "x",
+        "principal_id": "0703e532-107d-5a8b-ad51-fafce3272609",
+        "type": "x",
+        "university_id": "ac7d5ca9-bba0-5a09-8996-8c1ed5bed69b"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "id": "563e6e27-3610-5bdf-93e2-56d7bb0e6481",
+        "name": "x",
+        "principal_id": null,
+        "type": "faculty",
+        "university_id": null
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "563e6e27-3610-5bdf-93e2-56d7bb0e6481",
+        "name": "x"
+      }
+    }
+  },
+  "organization.OrganizationBase": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "8fb922ce-aae4-54fc-81ca-14d4e6f23ea0",
+        "name": "x",
+        "principal_id": "a0b8f100-2c02-54f2-9646-b9578c1c00b0",
+        "type": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "type"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "8fb922ce-aae4-54fc-81ca-14d4e6f23ea0",
+        "name": "x",
+        "principal_id": "a0b8f100-2c02-54f2-9646-b9578c1c00b0",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null,
+        "type": "x"
+      },
+      "fields_set": [
+        "name",
+        "type"
+      ],
+      "input": {
+        "name": "x",
+        "type": "x"
+      }
+    }
+  },
+  "organization.OrganizationCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "b7808a69-fc66-5d89-b228-2bb43e08ee9b",
+          "name": "x",
+          "principal_id": "4debadcb-18d0-5aa5-ad66-3b2420337ef8",
+          "type": "x"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "b7808a69-fc66-5d89-b228-2bb43e08ee9b",
+        "name": "x",
+        "principal_id": "4debadcb-18d0-5aa5-ad66-3b2420337ef8",
+        "type": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "type"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "b7808a69-fc66-5d89-b228-2bb43e08ee9b",
+        "name": "x",
+        "principal_id": "4debadcb-18d0-5aa5-ad66-3b2420337ef8",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": null,
+          "address_id": null,
+          "name": "x",
+          "principal_id": null,
+          "type": "x"
+        }
+      },
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null,
+        "type": "x"
+      },
+      "fields_set": [
+        "name",
+        "type"
+      ],
+      "input": {
+        "name": "x",
+        "type": "x"
+      }
+    }
+  },
+  "organization.OrganizationPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "acronym",
+          "address_id",
+          "id",
+          "name",
+          "principal_id",
+          "type"
+        ],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "813bc04a-8806-5e0e-b3a3-14029a3340dd",
+          "id": "06c15207-0183-551c-990e-a86d01a200d5",
+          "name": "x",
+          "principal_id": "ab829f63-8ff4-5915-b861-550da9ae5aa0",
+          "type": "x"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "813bc04a-8806-5e0e-b3a3-14029a3340dd",
+        "id": "06c15207-0183-551c-990e-a86d01a200d5",
+        "name": "x",
+        "principal_id": "ab829f63-8ff4-5915-b861-550da9ae5aa0",
+        "type": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id",
+        "type"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "813bc04a-8806-5e0e-b3a3-14029a3340dd",
+        "id": "06c15207-0183-551c-990e-a86d01a200d5",
+        "name": "x",
+        "principal_id": "ab829f63-8ff4-5915-b861-550da9ae5aa0",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "06c15207-0183-551c-990e-a86d01a200d5"
+        }
+      },
+      "dump": {
+        "id": "06c15207-0183-551c-990e-a86d01a200d5"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "06c15207-0183-551c-990e-a86d01a200d5"
+      }
+    }
+  },
+  "organization.OrganizationPatchData": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "f0f7b845-b889-5c84-ba89-4ed5a77b68db",
+        "name": "x",
+        "principal_id": "b243da63-33b4-5ef8-b79a-3b222e8589cf",
+        "type": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "type"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "f0f7b845-b889-5c84-ba89-4ed5a77b68db",
+        "name": "x",
+        "principal_id": "b243da63-33b4-5ef8-b79a-3b222e8589cf",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "organization.OrganizationPreview": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "id": "6a17a15a-f212-50fa-afb8-cf223c1f72a8",
+        "name": "x",
+        "type": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "id",
+        "name",
+        "type"
+      ],
+      "input": {
+        "acronym": "x",
+        "id": "6a17a15a-f212-50fa-afb8-cf223c1f72a8",
+        "name": "x",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "id": "6a17a15a-f212-50fa-afb8-cf223c1f72a8",
+        "name": "x",
+        "type": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "type"
+      ],
+      "input": {
+        "id": "6a17a15a-f212-50fa-afb8-cf223c1f72a8",
+        "name": "x",
+        "type": "x"
+      }
+    }
+  },
+  "organization.OrganizationPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "06a6f495-37a4-568a-86d5-90f989db55ef",
+          "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+          "name": "x",
+          "principal_id": "f9dcc9bc-f39b-55a5-947b-c4f3b72fa194",
+          "type": "x"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "06a6f495-37a4-568a-86d5-90f989db55ef",
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x",
+        "principal_id": "f9dcc9bc-f39b-55a5-947b-c4f3b72fa194",
+        "type": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id",
+        "type"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "06a6f495-37a4-568a-86d5-90f989db55ef",
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x",
+        "principal_id": "f9dcc9bc-f39b-55a5-947b-c4f3b72fa194",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": null,
+          "address_id": null,
+          "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+          "name": "x",
+          "principal_id": null,
+          "type": "x"
+        }
+      },
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x",
+        "principal_id": null,
+        "type": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "type"
+      ],
+      "input": {
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x",
+        "type": "x"
+      }
+    }
+  },
+  "organization.OrganizationPutData": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "e0656fe7-8031-5c8a-b983-dc9eca34316f",
+        "name": "x",
+        "principal_id": "ea9d8d6b-2c09-501c-9d93-0ff188ebffac",
+        "type": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id",
+        "type"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "e0656fe7-8031-5c8a-b983-dc9eca34316f",
+        "name": "x",
+        "principal_id": "ea9d8d6b-2c09-501c-9d93-0ff188ebffac",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null,
+        "type": "x"
+      },
+      "fields_set": [
+        "name",
+        "type"
+      ],
+      "input": {
+        "name": "x",
+        "type": "x"
+      }
+    }
+  },
+  "organization.OrganizationRead": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "ab6fe0ba-e2e6-555d-b4bb-76c2938d6367",
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x",
+        "principal_id": "ce141cc4-5291-5c59-9ad4-de69aa231830",
+        "type": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id",
+        "type"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "ab6fe0ba-e2e6-555d-b4bb-76c2938d6367",
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x",
+        "principal_id": "ce141cc4-5291-5c59-9ad4-de69aa231830",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x",
+        "principal_id": null,
+        "type": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "type"
+      ],
+      "input": {
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x",
+        "type": "x"
+      }
+    }
+  },
+  "person.PersonCreate": {
+    "full": {
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonItemRead": {
+    "full": {
+      "dump": {
+        "id": "32949139-b77c-5bcb-aff9-7422bb1071cd",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "32949139-b77c-5bcb-aff9-7422bb1071cd",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "32949139-b77c-5bcb-aff9-7422bb1071cd",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "32949139-b77c-5bcb-aff9-7422bb1071cd",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonPatch": {
+    "full": {
+      "dump": {
+        "id": "9c9550c2-e894-5242-b589-8dfe123a1904",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "9c9550c2-e894-5242-b589-8dfe123a1904",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "9c9550c2-e894-5242-b589-8dfe123a1904"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "9c9550c2-e894-5242-b589-8dfe123a1904"
+      }
+    }
+  },
+  "person.PersonPatchData": {
+    "full": {
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "person.PersonPut": {
+    "full": {
+      "dump": {
+        "id": "2882fb16-368e-5107-a9f4-3381a189e99c",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "2882fb16-368e-5107-a9f4-3381a189e99c",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "2882fb16-368e-5107-a9f4-3381a189e99c",
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "surname"
+      ],
+      "input": {
+        "id": "2882fb16-368e-5107-a9f4-3381a189e99c",
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonPutData": {
+    "full": {
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonRead": {
+    "full": {
+      "dump": {
+        "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "university.UniversityBase": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "1d91e864-6c04-5dee-b1ec-e400f4bbfc27",
+        "name": "x",
+        "principal_id": "4f15a9a3-dca0-5ebe-b494-fb28a7817b11"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "1d91e864-6c04-5dee-b1ec-e400f4bbfc27",
+        "name": "x",
+        "principal_id": "4f15a9a3-dca0-5ebe-b494-fb28a7817b11"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "university.UniversityCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "83ed7185-543f-5af3-b529-f26e74a189dd",
+          "name": "x",
+          "principal_id": "9250d996-f373-5d81-bf9c-0d4f48caf0b1"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "83ed7185-543f-5af3-b529-f26e74a189dd",
+        "name": "x",
+        "principal_id": "9250d996-f373-5d81-bf9c-0d4f48caf0b1"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "83ed7185-543f-5af3-b529-f26e74a189dd",
+        "name": "x",
+        "principal_id": "9250d996-f373-5d81-bf9c-0d4f48caf0b1"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": null,
+          "address_id": null,
+          "name": "x",
+          "principal_id": null
+        }
+      },
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "university.UniversityPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "acronym",
+          "address_id",
+          "id",
+          "name",
+          "principal_id"
+        ],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "3b6f1aa0-8006-582c-84fa-1ba67edf76b7",
+          "id": "87efe83c-4a44-5bb4-a9f2-30944e52a13b",
+          "name": "x",
+          "principal_id": "39ffb519-f8a2-55b5-ae8e-92ae876369c9"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "3b6f1aa0-8006-582c-84fa-1ba67edf76b7",
+        "id": "87efe83c-4a44-5bb4-a9f2-30944e52a13b",
+        "name": "x",
+        "principal_id": "39ffb519-f8a2-55b5-ae8e-92ae876369c9"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "3b6f1aa0-8006-582c-84fa-1ba67edf76b7",
+        "id": "87efe83c-4a44-5bb4-a9f2-30944e52a13b",
+        "name": "x",
+        "principal_id": "39ffb519-f8a2-55b5-ae8e-92ae876369c9"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "87efe83c-4a44-5bb4-a9f2-30944e52a13b"
+        }
+      },
+      "dump": {
+        "id": "87efe83c-4a44-5bb4-a9f2-30944e52a13b"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "87efe83c-4a44-5bb4-a9f2-30944e52a13b"
+      }
+    }
+  },
+  "university.UniversityPatchData": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "6722e59f-00f0-50ee-aec7-a33c674169b4",
+        "name": "x",
+        "principal_id": "980f4dce-c568-511a-88c4-6dcfd7c8ef57"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "6722e59f-00f0-50ee-aec7-a33c674169b4",
+        "name": "x",
+        "principal_id": "980f4dce-c568-511a-88c4-6dcfd7c8ef57"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "university.UniversityPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": "x",
+          "address_id": "ec232c7b-e3f3-5f88-ab64-60902808fa7a",
+          "id": "874da5e4-30df-5da6-baea-4c6fa5042a3a",
+          "name": "x",
+          "principal_id": "1a8ba09a-df58-59e0-8788-2862d9a37517"
+        }
+      },
+      "dump": {
+        "acronym": "x",
+        "address_id": "ec232c7b-e3f3-5f88-ab64-60902808fa7a",
+        "id": "874da5e4-30df-5da6-baea-4c6fa5042a3a",
+        "name": "x",
+        "principal_id": "1a8ba09a-df58-59e0-8788-2862d9a37517"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "ec232c7b-e3f3-5f88-ab64-60902808fa7a",
+        "id": "874da5e4-30df-5da6-baea-4c6fa5042a3a",
+        "name": "x",
+        "principal_id": "1a8ba09a-df58-59e0-8788-2862d9a37517"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "acronym": null,
+          "address_id": null,
+          "id": "874da5e4-30df-5da6-baea-4c6fa5042a3a",
+          "name": "x",
+          "principal_id": null
+        }
+      },
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "id": "874da5e4-30df-5da6-baea-4c6fa5042a3a",
+        "name": "x",
+        "principal_id": null
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "874da5e4-30df-5da6-baea-4c6fa5042a3a",
+        "name": "x"
+      }
+    }
+  },
+  "university.UniversityPutData": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "bced4fe9-c4d9-5da0-9793-af7c4fcc1455",
+        "name": "x",
+        "principal_id": "2bb87a3b-12d6-5fb0-9166-f428a5b6ade8"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "name",
+        "principal_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "bced4fe9-c4d9-5da0-9793-af7c4fcc1455",
+        "name": "x",
+        "principal_id": "2bb87a3b-12d6-5fb0-9166-f428a5b6ade8"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "name": "x",
+        "principal_id": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "university.UniversityRead": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "address_id": "18356002-3540-5d64-bc5a-029cf971de1c",
+        "id": "7ff736a5-fa0d-58a0-8b12-de1ceb3d8254",
+        "name": "x",
+        "principal_id": "2c4b1a2b-f4ee-57d1-af91-9c2eb20b2069",
+        "type": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "address_id",
+        "id",
+        "name",
+        "principal_id",
+        "type"
+      ],
+      "input": {
+        "acronym": "x",
+        "address_id": "18356002-3540-5d64-bc5a-029cf971de1c",
+        "id": "7ff736a5-fa0d-58a0-8b12-de1ceb3d8254",
+        "name": "x",
+        "principal_id": "2c4b1a2b-f4ee-57d1-af91-9c2eb20b2069",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "address_id": null,
+        "id": "7ff736a5-fa0d-58a0-8b12-de1ceb3d8254",
+        "name": "x",
+        "principal_id": null,
+        "type": "university"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "7ff736a5-fa0d-58a0-8b12-de1ceb3d8254",
+        "name": "x"
+      }
+    }
+  }
+}

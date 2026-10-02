@@ -4,6 +4,7 @@ SCHEMA_PACKAGES = {
     "core_v1": "core.schema.v1",
     "event_v1": "event.api.v1.schema",
     "event_v2": "event.api.v2.schema",
+    "org_v1": "org.api.v1.schema",
 }
 
 RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
@@ -35,6 +36,15 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "calendar.SubscriptionRead": ("event.dto.calendar:CalendarSubscriptionDTO"),
         },
     ),
+    "org_v1": (
+        "org.api.v1.schema",
+        {
+            "collective.CollectiveRead": "org.dto.collective:CollectiveDTO",
+            "faculty.FacultyRead": "org.dto.faculty:FacultyDTO",
+            "organization.OrganizationRead": "org.dto.organization:OrganizationDTO",
+            "university.UniversityRead": "org.dto.university:UniversityDTO",
+        },
+    ),
 }
 
 BUILT_BY_ROUTER = {"event.api.v2.schema": {"calendar.SubscriptionCreated"}}
@@ -42,6 +52,7 @@ BUILT_BY_ROUTER = {"event.api.v2.schema": {"calendar.SubscriptionCreated"}}
 MIGRATED_LAYERS = {
     "event": ("service", "repository", "uow", "dto", "models"),
     "core": ("dto", "service", "uow", "database"),
+    "org": ("service", "repository", "uow", "dto", "models"),
 }
 
 FORBIDDEN = {
@@ -50,4 +61,8 @@ FORBIDDEN = {
         re.compile(r"^core\.schema\.v\d+"),
     ),
     "core": (re.compile(r"^core\.schema\.v\d+"),),
+    "org": (
+        re.compile(r"^org\.api\.v\d+"),
+        re.compile(r"^core\.schema\.v\d+"),
+    ),
 }

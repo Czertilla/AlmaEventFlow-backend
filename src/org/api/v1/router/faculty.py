@@ -7,9 +7,7 @@ from fastapi_filter import FilterDepends
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.v1.pagination import PageParamV1, PageV1
-from org.dependency.faculty import FacultyUOWDep
-from org.filter.faculty import FacultyFilter
-from org.schema.faculty import (
+from org.api.v1.schema.faculty import (
     FacultyCreate,
     FacultyPatch,
     FacultyPatchData,
@@ -17,26 +15,36 @@ from org.schema.faculty import (
     FacultyPutData,
     FacultyRead,
 )
+from org.dependency.faculty import FacultyUOWDep
+from org.filter.faculty import FacultyFilter
 from org.service.faculty import FacultyService
 
 router = APIRouter(prefix="/faculties", tags=["faculty"])
 
 logger = getLogger(__name__)
 
+
 @router.get("", responses={**auth_responses()})
 async def list_faculties(
     uow: FacultyUOWDep,
     user: UserJWTDep,
     filter: FacultyFilter = FilterDepends(FacultyFilter),
-    page_param=Depends(PageParamV1),
+    page_param: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[FacultyRead]:
-    return await FacultyService(uow).search(filter, page_param)
+    return PageV1[FacultyRead].from_dto_with_page_count(
+        await FacultyService(uow).search(filter.to_dto(), page_param.to_dto())
+    )
 
-@router.get("/{faculty_id}", responses={**auth_responses(), **entity_not_found_responses("faculty")})
+
+@router.get(
+    "/{faculty_id}",
+    responses={**auth_responses(), **entity_not_found_responses("faculty")},
+)
 async def get_faculty(
     faculty_id: UUID, user: UserJWTDep, uow: FacultyUOWDep
 ) -> FacultyRead:
-    return await FacultyService(uow).read(faculty_id)
+    return FacultyRead.from_dto(await FacultyService(uow).read(faculty_id))
+
 
 @router.post("", responses={**auth_responses()})
 async def create_faculty(
@@ -44,31 +52,51 @@ async def create_faculty(
     user: SuperUserJWTDep,
     uow: FacultyUOWDep,
 ) -> FacultyRead:
-    return await FacultyService(uow).create(faculty)
+    return FacultyRead.from_dto(await FacultyService(uow).create(faculty.to_dto()))
 
-@router.put("/{faculty_id}", responses={**auth_responses(), **entity_not_found_responses("faculty")})
+
+@router.put(
+    "/{faculty_id}",
+    responses={**auth_responses(), **entity_not_found_responses("faculty")},
+)
 async def put_faculty(
     faculty_id: UUID,
     faculty: FacultyPutData,
     user: SuperUserJWTDep,
     uow: FacultyUOWDep,
 ) -> FacultyRead:
-    return await FacultyService(uow).put(
-        FacultyPut(id=faculty_id, **faculty.model_dump())
+    return FacultyRead.from_dto(
+        await FacultyService(uow).put(
+            FacultyPut.model_validate(
+                {"id": faculty_id, **faculty.model_dump()}
+            ).to_dto()
+        )
     )
 
-@router.patch("/{faculty_id}", responses={**auth_responses(), **entity_not_found_responses("faculty")})
+
+@router.patch(
+    "/{faculty_id}",
+    responses={**auth_responses(), **entity_not_found_responses("faculty")},
+)
 async def patch_faculty(
     faculty_id: UUID,
     faculty: FacultyPatchData,
     user: SuperUserJWTDep,
     uow: FacultyUOWDep,
 ) -> FacultyRead:
-    return await FacultyService(uow).patch(
-        FacultyPatch(id=faculty_id, **faculty.model_dump())
+    return FacultyRead.from_dto(
+        await FacultyService(uow).patch(
+            FacultyPatch.model_validate(
+                {"id": faculty_id, **faculty.model_dump()}
+            ).to_dto()
+        )
     )
 
-@router.delete("/{faculty_id}", responses={**auth_responses(), **entity_not_found_responses("faculty")})
+
+@router.delete(
+    "/{faculty_id}",
+    responses={**auth_responses(), **entity_not_found_responses("faculty")},
+)
 async def delete_faculty(
     faculty_id: UUID, user: SuperUserJWTDep, uow: FacultyUOWDep
 ) -> None:

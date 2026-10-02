@@ -14,7 +14,7 @@ from _registry import RESPONSES, SCHEMA_PACKAGES
 def _run(args: list[str]) -> Any:
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "behavior.json"
-        subprocess.run(
+        completed = subprocess.run(
             [
                 sys.executable,
                 str(HERE / "_dump_behavior.py"),
@@ -23,11 +23,15 @@ def _run(args: list[str]) -> Any:
                 str(out),
                 *args[2:],
             ],
-            check=True,
+            check=False,
             cwd=ROOT,
             env={**os.environ, **PINNED_ENV},
             capture_output=True,
+            text=True,
         )
+        if completed.returncode:
+            tail = completed.stderr[-2000:]
+            raise RuntimeError(f"{args[:2]} failed: {tail}")
         return json.loads(out.read_text(encoding="utf-8"))
 
 

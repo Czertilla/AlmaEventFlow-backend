@@ -7,14 +7,14 @@ from fastapi_filter import FilterDepends
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.v1.pagination import PageParamV1, PageV1
-from org.dependency.organization import OrganizationUOWDep
-from org.filter.organization import OrganizationFilter
-from org.schema.organization import (
+from org.api.v1.schema.organization import (
     OrganizationCreate,
     OrganizationPatch,
     OrganizationPut,
     OrganizationRead,
 )
+from org.dependency.organization import OrganizationUOWDep
+from org.filter.organization import OrganizationFilter
 from org.service.organization import OrganizationService
 
 router = APIRouter(prefix="/organizations", tags=["organization"])
@@ -27,9 +27,23 @@ async def list_organizations(
     uow: OrganizationUOWDep,
     user: UserJWTDep,
     filter: OrganizationFilter = FilterDepends(OrganizationFilter),
-    page_param=Depends(PageParamV1),
+    page_param: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[OrganizationRead]:
-    return await OrganizationService(uow).search(filter, page_param)
+    return PageV1[OrganizationRead].from_dto_with_page_count(
+        await OrganizationService(uow).search(filter.to_dto(), page_param.to_dto())
+    )
+
+
+@router.get(
+    "/{organization_id}",
+    responses={**auth_responses(), **entity_not_found_responses("organization")},
+)
+async def get_organization(
+    organization_id: UUID, user: UserJWTDep, uow: OrganizationUOWDep
+) -> OrganizationRead:
+    return OrganizationRead.from_dto(
+        await OrganizationService(uow).read(organization_id)
+    )
 
 
 @router.post("", responses={**auth_responses()})
@@ -38,37 +52,45 @@ async def create_organization(
     user: SuperUserJWTDep,
     uow: OrganizationUOWDep,
 ) -> OrganizationRead:
-    return await OrganizationService(uow).create(organization)
+    return OrganizationRead.from_dto(
+        await OrganizationService(uow).create(organization.to_dto())
+    )
 
 
-@router.get("/{organization_id}", responses={**auth_responses(), **entity_not_found_responses("organization")})
-async def get_organization(
-    organization_id: UUID, user: UserJWTDep, uow: OrganizationUOWDep
-) -> OrganizationRead:
-    return await OrganizationService(uow).read(organization_id)
-
-
-@router.put("/{organization_id}", responses={**auth_responses(), **entity_not_found_responses("organization")})
+@router.put(
+    "/{organization_id}",
+    responses={**auth_responses(), **entity_not_found_responses("organization")},
+)
 async def put_organization(
     organization_id: UUID,
     organization: OrganizationPut,
     user: SuperUserJWTDep,
     uow: OrganizationUOWDep,
 ) -> OrganizationRead:
-    return await OrganizationService(uow).put(organization)
+    return OrganizationRead.from_dto(
+        await OrganizationService(uow).put(organization.to_dto())
+    )
 
 
-@router.patch("/{organization_id}", responses={**auth_responses(), **entity_not_found_responses("organization")})
+@router.patch(
+    "/{organization_id}",
+    responses={**auth_responses(), **entity_not_found_responses("organization")},
+)
 async def patch_organization(
     organization_id: UUID,
     organization: OrganizationPatch,
     user: SuperUserJWTDep,
     uow: OrganizationUOWDep,
 ) -> OrganizationRead:
-    return await OrganizationService(uow).patch(organization)
+    return OrganizationRead.from_dto(
+        await OrganizationService(uow).patch(organization.to_dto())
+    )
 
 
-@router.delete("/{organization_id}", responses={**auth_responses(), **entity_not_found_responses("organization")})
+@router.delete(
+    "/{organization_id}",
+    responses={**auth_responses(), **entity_not_found_responses("organization")},
+)
 async def delete_organization(
     organization_id: UUID, user: SuperUserJWTDep, uow: OrganizationUOWDep
 ) -> None:
