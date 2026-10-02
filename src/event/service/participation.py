@@ -59,6 +59,13 @@ class ParticipationService(BaseService[ParticipationUOW]):
         return participation
 
     @required_transaction
+    async def _reload(self, participation_id: UUID) -> ParticipationORM:
+        participation = await self._read(participation_id)
+        if participation is None:
+            raise ParticipationNotExistsException()
+        return participation
+
+    @required_transaction
     async def _update(
         self,
         participation_id: UUID,
@@ -81,8 +88,8 @@ class ParticipationService(BaseService[ParticipationUOW]):
         self, participation_create: ParticipationCreateDTO
     ) -> ParticipationDTO:
         async with self.uow as uow:
-            participation = await self._create(participation_create)
-            result = self._to_dto(participation)
+            created = await self._create(participation_create)
+            result = self._to_dto(await self._reload(created.id))
             await uow.commit()
         return result
 
@@ -98,11 +105,8 @@ class ParticipationService(BaseService[ParticipationUOW]):
     ) -> ParticipationDTO:
         async with self.uow as uow:
             participation_data = dto_dict(participation_patch, only_set=True)
-            participation = await self._update(
-                participation_patch.id,
-                participation_data,
-            )
-            result = self._to_dto(participation)
+            await self._update(participation_patch.id, participation_data)
+            result = self._to_dto(await self._reload(participation_patch.id))
             await uow.commit()
         return result
 
@@ -111,10 +115,8 @@ class ParticipationService(BaseService[ParticipationUOW]):
     ) -> ParticipationDTO:
         async with self.uow as uow:
             participation_data = dto_dict(participation_put, exclude={"id"})
-            participation = await self._update(
-                participation_put.id, participation_data
-            )
-            result = self._to_dto(participation)
+            await self._update(participation_put.id, participation_data)
+            result = self._to_dto(await self._reload(participation_put.id))
             await uow.commit()
         return result
 
@@ -164,11 +166,12 @@ class ParticipationService(BaseService[ParticipationUOW]):
                         )
                     )
 
+            result = self._to_dto(await self._reload(participation_orm.id))
             await uow.commit()
             await notify_event_targets(
                 uow, participation_ids=[participation_orm.id]
             )
-            return self._to_dto(participation_orm)
+            return result
 
     async def search(
         self,

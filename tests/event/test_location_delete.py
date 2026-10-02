@@ -1,27 +1,11 @@
-import os
 from uuid import uuid4
 
-import pytest
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from core.schema.message.geo import LocationData, LocationDelete
 from event.service.location import LocationService
 from event.uow.location import LocationUOW
-
-
-@pytest.fixture
-async def event_engine(test_database):
-    engine = create_async_engine(
-        f"postgresql+asyncpg://{os.environ['DB_USER']}:{os.environ['DB_PASS']}"
-        f"@{os.environ['DB_HOST']}:{os.environ['DB_PORT']}/event"
-    )
-    try:
-        yield engine
-    finally:
-        async with engine.begin() as conn:
-            await conn.execute(text("TRUNCATE event, location CASCADE"))
-        await engine.dispose()
 
 
 async def test_deleting_a_location_detaches_events_instead_of_failing(event_engine):

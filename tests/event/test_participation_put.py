@@ -15,6 +15,9 @@ class Repo:
         self.row = row
         self.calls: list[tuple[Any, dict[str, Any]]] = []
 
+    async def get_by_id(self, *args: Any, **kwargs: Any) -> Any:
+        return self.row
+
     async def update_one(
         self, id: Any, data: dict[str, Any], flush: bool = False
     ) -> Any:
