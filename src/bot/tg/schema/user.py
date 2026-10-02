@@ -21,6 +21,8 @@ class TGUser(BaseModel, FromAttributesV1):
 
     @model_validator(mode="after")
     def validate_language_code(self) -> Self:
+        if self.language_code is None:
+            return self
         self._is_lang_modified = (
             self.language_code == self.language_code.upper()
         )
