@@ -11,6 +11,7 @@ from event.dto.link import (
     LinkPatchDTO,
     LinkPutDTO,
 )
+from event.exc.event import LinkNotExistsException
 from event.filter.link import LinkFilter
 from event.models.link import EventLinkORM
 from event.uow.link import LinkUOW
@@ -56,6 +57,8 @@ class LinkService(BaseService[LinkUOW]):
     async def read(self, link_id: UUID) -> LinkDTO:
         async with self.uow:
             link = await self._read(link_id)
+            if link is None:
+                raise LinkNotExistsException()
             return self._to_dto(link)
 
     async def patch(self, link_patch: LinkPatchDTO) -> LinkDTO:

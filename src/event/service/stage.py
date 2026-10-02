@@ -11,6 +11,7 @@ from event.dto.stage import (
     StagePatchDTO,
     StagePutDTO,
 )
+from event.exc.event import StageNotExistsException
 from event.filter.stage import StageFilter
 from event.models.stage import EventStageORM
 from event.uow.stage import StageUOW
@@ -56,6 +57,8 @@ class StageService(BaseService[StageUOW]):
     async def read(self, stage_id: UUID) -> StageDTO:
         async with self.uow:
             stage = await self._read(stage_id)
+            if stage is None:
+                raise StageNotExistsException()
             return self._to_dto(stage)
 
     async def patch(self, stage_patch: StagePatchDTO) -> StageDTO:

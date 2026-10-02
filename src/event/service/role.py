@@ -11,6 +11,7 @@ from event.dto.role import (
     RolePatchDTO,
     RolePutDTO,
 )
+from event.exc.event import RoleNotExistsException
 from event.filter.role import RoleFilter
 from event.models.role import RoleORM
 from event.uow.role import RoleUOW
@@ -56,6 +57,8 @@ class RoleService(BaseService[RoleUOW]):
     async def read(self, role_id: UUID) -> RoleDTO:
         async with self.uow:
             role = await self._read(role_id)
+            if role is None:
+                raise RoleNotExistsException()
             return self._to_dto(role)
 
     async def patch(self, role_patch: RolePatchDTO) -> RoleDTO:

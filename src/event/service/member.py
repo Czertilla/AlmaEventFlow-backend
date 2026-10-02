@@ -130,6 +130,8 @@ class MemberService(BaseService[MemberUOW]):
     async def read(self, member_id: UUID) -> MemberDTO:
         async with self.uow:
             member = await self._read(member_id)
+            if member is None:
+                raise MemberNotExistsException()
             return self._to_dto(member)
 
     async def patch(self, member_patch: MemberPatchDTO) -> MemberDTO:

@@ -84,6 +84,8 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
     async def read(self, attendance_id: UUID) -> AttendanceDTO:
         async with self.uow:
             attendance = await self._read(attendance_id)
+            if attendance is None:
+                raise AttendanceNotExistsException()
             return self._to_dto(attendance)
 
     async def patch(self, attendance_patch: AttendancePatchDTO) -> AttendanceDTO:
