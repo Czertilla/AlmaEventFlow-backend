@@ -4,16 +4,17 @@ This implements an "inverted Lock" that delays execution and cancels
 previous calls if new ones arrive for the same key.
 """
 from asyncio import CancelledError, Lock, create_task, gather, sleep
+from collections.abc import Awaitable, Callable
 from logging import getLogger
-from typing import Any, Awaitable, Callable, Dict, Optional
+from typing import Any
 
 from aiogram.fsm.context import FSMContext
 
 logger = getLogger(__name__)
 
 # Global debounce state storage
-_debounce_tasks: Dict[str, Any] = {}
-_debounce_locks: Dict[str, Lock] = {}
+_debounce_tasks: dict[str, Any] = {}
+_debounce_locks: dict[str, Lock] = {}
 
 
 class DebounceManager:
@@ -33,7 +34,7 @@ class DebounceManager:
         state: FSMContext,
         func: Callable[..., Awaitable[Any]],
         *args,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
         **kwargs
     ) -> Any:
         """
@@ -142,8 +143,7 @@ class DebounceManager:
 
     async def _execute_immediately(self, state_key: str) -> None:
         """Remove task reference for immediate execution."""
-        if state_key in _debounce_tasks:
-            del _debounce_tasks[state_key]
+        _debounce_tasks.pop(state_key, None)
 
 
 # Global debounce manager instance
@@ -154,7 +154,7 @@ async def debounce_state_call(
     state: FSMContext,
     func: Callable[..., Awaitable[Any]],
     *args,
-    timeout: Optional[float] = None,
+    timeout: float | None = None,
     **kwargs
 ) -> Any:
     """
@@ -175,7 +175,7 @@ async def debounce_state_call(
     )
 
 
-def get_debounce_manager(timeout: Optional[float] = None) -> DebounceManager:
+def get_debounce_manager(timeout: float | None = None) -> DebounceManager:
     """
     Get debounce manager instance.
 

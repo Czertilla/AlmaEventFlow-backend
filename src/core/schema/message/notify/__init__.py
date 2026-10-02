@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 from pydantic import EmailStr, Field, model_validator
@@ -12,7 +12,7 @@ from core.schema.message.core import MQRequest
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class NotificationRequest(MQRequest):

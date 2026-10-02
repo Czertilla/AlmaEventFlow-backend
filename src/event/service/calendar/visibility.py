@@ -26,7 +26,7 @@ class CalendarVisibilityResolver:
         self, uow: CalendarUOW, now: datetime.datetime | None = None
     ) -> None:
         self.uow = uow
-        self._now = now or datetime.datetime.now(datetime.timezone.utc)
+        self._now = now or datetime.datetime.now(datetime.UTC)
 
     async def resolve(
         self, subscription: CalendarSubscriptionORM

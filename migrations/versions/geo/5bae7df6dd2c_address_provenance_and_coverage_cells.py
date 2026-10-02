@@ -14,16 +14,16 @@ fetch outside any bulk-imported city can tell "never fetched" from "already
 covered" without re-querying the source every time.
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "5bae7df6dd2c"
-down_revision: Union[str, None] = "88e6684f390c"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "88e6684f390c"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

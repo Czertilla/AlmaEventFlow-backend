@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from aiogram.types import Message
 from aiogram3_di import Depends
@@ -40,7 +41,7 @@ def _apply_aliases(arguments: dict[str, Any]):
         if isinstance(message, Message) and "message" not in arguments:
             arguments["message"] = message
 
-def _build_provider_function(
+def _build_provider_function[UseCaseT](
     usecase_cls: type[UseCaseT],
     dependencies: dict[str, Any],
 ) -> Callable[..., UseCaseT]:
@@ -66,7 +67,7 @@ def _build_provider_function(
     return provider
 
 
-def build_usecase_dep(
+def build_usecase_dep[UseCaseT](
     usecase_cls: type[UseCaseT],
     /,
     **dependencies: Any,
@@ -80,7 +81,7 @@ class UseCaseDepBuilder:
     def __init__(self, **default_dependencies: Any):
         self._defaults = dict(default_dependencies)
 
-    def with_defaults(self, **extra_defaults: Any) -> "UseCaseDepBuilder":
+    def with_defaults(self, **extra_defaults: Any) -> UseCaseDepBuilder:
         merged = {**self._defaults, **extra_defaults}
         return UseCaseDepBuilder(**merged)
 

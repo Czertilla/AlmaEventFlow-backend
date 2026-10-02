@@ -1,10 +1,10 @@
-from typing import Awaitable, TypeVar
+from collections.abc import Awaitable
+
+from pydantic import BaseModel
 
 from core.broker.kafka import broker
 from core.schema.message.core import MQError, MQRequest, MQResponse
 from core.utils.exc.http import VancedHTTPException
-
-T = TypeVar("T")
 
 
 class RpcError(Exception):
@@ -13,7 +13,7 @@ class RpcError(Exception):
         self.error = error
 
 
-async def rpc_call(
+async def rpc_call[T](
     topic: str, request: MQRequest, response_model: type[T], *, timeout: float = 5.0
 ) -> T:
     raw = await broker.request(request, topic, timeout=timeout)
@@ -32,7 +32,7 @@ async def rpc_call(
     return response.data
 
 
-async def rpc_respond(coro: Awaitable[T]) -> MQResponse[T]:
+async def rpc_respond[T: BaseModel](coro: Awaitable[T]) -> MQResponse[T]:
     try:
         return MQResponse(data=await coro)
     except VancedHTTPException as exc:

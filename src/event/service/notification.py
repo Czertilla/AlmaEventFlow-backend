@@ -1,3 +1,4 @@
+import contextlib
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from datetime import date, datetime
@@ -62,10 +63,8 @@ def _format_time(value: datetime, tz_name: str | None = None) -> str:
     falling back to whatever zone ``value`` already carries (the DB session's,
     for a stage with no recorded creator zone) otherwise."""
     if tz_name:
-        try:
+        with contextlib.suppress(ZoneInfoNotFoundError, ValueError):
             value = value.astimezone(ZoneInfo(tz_name))
-        except (ZoneInfoNotFoundError, ValueError):
-            pass
     return value.strftime("%H:%M")
 
 

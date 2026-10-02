@@ -77,7 +77,8 @@ class Settings(BaseSettings):
     """Hostname or IP address of the database server (required for PostgreSQL)."""
 
     DB_PORT: str | None = None
-    """Port number on which the database server is running (required for PostgreSQL)."""
+    """Port number on which the database server is running
+    (required for PostgreSQL)."""
 
     DB_SSL: bool | None = None
     """Postgres SSL negotiation: None keeps asyncpg's default (try SSL, fall
@@ -160,11 +161,13 @@ class Settings(BaseSettings):
     INVITE_TOKEN_LIFETIME: int = 604800
 
     MAX_PAGE_SIZE: int = 100
-    """Maximum number of items to be displayed on a single page. Default is 100."""
+    """Maximum number of items to be displayed on a single page.
+    Default is 100."""
 
     BOT_TG_TOKEN: str | None = None
     BOT_TG_USERNAME: str | None = None
-    """Bot's ``@username`` (no ``@``), used to build ``t.me/<username>?start=...``
+    """Bot's ``@username`` (no ``@``), used to build
+    ``t.me/<username>?start=...``
     deep links (e.g. account-linking)."""
 
     BOT_TG_PROXY: str | None = None
@@ -185,7 +188,8 @@ class Settings(BaseSettings):
     """The version of this project, displays in messages and descripions"""
 
     model_config = SettingsConfigDict(env_file=environ, extra="ignore")
-    """Configuration for Pydantic settings, defining how environment variables are loaded."""
+    """Configuration for Pydantic settings,
+    defining how environment variables are loaded."""
 
     @field_validator("DB_USER", "DB_PASS", "DB_HOST", "DB_PORT", mode="before")
     @classmethod
@@ -193,7 +197,8 @@ class Settings(BaseSettings):
         cls, value: str | None, info: ValidationInfo
     ) -> str | None:
         """
-        Ensures that PostgreSQL-related fields are set when DB_DBMS is 'postgres'.
+        Ensures that PostgreSQL-related fields are set when
+        DB_DBMS is 'postgres'.
 
         Raises:
             ValueError: If a required PostgreSQL field is missing.

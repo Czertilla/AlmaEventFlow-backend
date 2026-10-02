@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from fastapi import status
 from pydantic import BaseModel
 
 
-class ErrorCode(str, Enum):
+class ErrorCode(StrEnum):
     # Auth
     NOT_AUTHENTICATED = "NOT_AUTHENTICATED"
     INVALID_AUTHENTICATION_CREDENTIALS = "INVALID_AUTHENTICATION_CREDENTIALS"

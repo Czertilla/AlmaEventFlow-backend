@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from logging import getLogger
-from typing import Any, Callable
+from typing import Any
 
 from aiogram.types import Message, Update
 from aiogram.types.user import User as AiogramUser

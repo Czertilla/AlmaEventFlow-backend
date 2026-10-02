@@ -6,7 +6,7 @@ Create Date: 2026-06-14 12:30:00.000000
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
@@ -16,9 +16,9 @@ from event.enum.type_v1 import EventTypeEnumV1
 
 # revision identifiers, used by Alembic.
 revision: str = "b2c3d4e5f6a7"
-down_revision: Union[str, None] = "f3a1b2c3d4e5"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "f3a1b2c3d4e5"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 event_format = sa.Enum(
     EventFormatEnumV1, name="event_format"

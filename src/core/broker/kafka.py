@@ -78,8 +78,7 @@ if not settings.IN_MEMORY_BROKER:
             security_cls = _SASL_MECHANISMS.get(mechanism)
             if security_cls is None:
                 raise ValueError(
-                    "KAFKA_SASL_MECHANISM=%r is not supported; choose one of %s"
-                    % (settings.KAFKA_SASL_MECHANISM, ", ".join(_SASL_MECHANISMS))
+                    "KAFKA_SASL_MECHANISM={!r} is not supported; choose one of {}".format(settings.KAFKA_SASL_MECHANISM, ", ".join(_SASL_MECHANISMS))
                 )
             use_ssl = protocol != "SASL_PLAINTEXT"
             return security_cls(
@@ -92,9 +91,9 @@ if not settings.IN_MEMORY_BROKER:
         context = _ssl_context(protocol)
         if not context and protocol not in {"", "SSL"}:
             raise ValueError(
-                "KAFKA_SECURITY_PROTOCOL=%r is not supported; configure "
+                f"KAFKA_SECURITY_PROTOCOL={settings.KAFKA_SECURITY_PROTOCOL!r} is not supported; configure "
                 "KAFKA_SSL_CA for TLS, KAFKA_SASL_USERNAME/PASSWORD for SASL, "
-                "or leave it unset for PLAINTEXT" % settings.KAFKA_SECURITY_PROTOCOL
+                "or leave it unset for PLAINTEXT"
             )
         if context is None and protocol == "":
             return None
@@ -170,7 +169,7 @@ if not settings.IN_MEMORY_BROKER:
 
 else:
     from core.broker.local import (
-        MonolithBroker as KafkaBroker,  # noqa: F401
+        MonolithBroker as KafkaBroker,
     )
     from core.broker.local import (
         MonolithRouter as KafkaRouter,  # noqa: F401

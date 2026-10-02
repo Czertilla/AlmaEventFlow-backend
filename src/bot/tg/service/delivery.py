@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from logging import getLogger
 
 from aiogram import Bot
@@ -143,5 +143,5 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
     def _is_expired(item: TelegramDeliveryItem) -> bool:
         return (
             item.expires_at is not None
-            and item.expires_at < datetime.now(timezone.utc)
+            and item.expires_at < datetime.now(UTC)
         )

@@ -10,7 +10,7 @@ address-proxy location (unnamed location anchored to an address) unique per
 address so concurrent "pick this address" requests resolve to one row.
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
@@ -18,9 +18,9 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "7c1e5a90d2b4"
-down_revision: Union[str, None] = "5abb14baa932"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "5abb14baa932"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def _recreate_name_tsv(config: str) -> None:

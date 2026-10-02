@@ -18,7 +18,7 @@ class OutboxRow:
     payload: dict
 
 
-def chunked(items: Sequence[T], size: int) -> Iterator[Sequence[T]]:
+def chunked[T](items: Sequence[T], size: int) -> Iterator[Sequence[T]]:
     """Yields consecutive slices of ``items`` of at most ``size`` elements."""
     step = max(size, 1)
     for start in range(0, len(items), step):

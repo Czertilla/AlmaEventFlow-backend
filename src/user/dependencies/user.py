@@ -1,4 +1,4 @@
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -21,7 +21,7 @@ if settings.MONOLITH:
 
 async def get_async_session(
     sessionmaker: async_sessionmaker = Depends(get_session_maker),
-) -> AsyncGenerator[AsyncSession, None]:
+) -> AsyncGenerator[AsyncSession]:
     async with sessionmaker() as session:
         yield session
 

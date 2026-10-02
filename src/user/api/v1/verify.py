@@ -1,4 +1,3 @@
-from typing import Type
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
@@ -11,7 +10,7 @@ templates = Jinja2Templates(directory="templates/user")
 
 def get_verify_router(
     get_user_manager: UserManagerDependency[models.UP, models.ID],
-    user_schema: Type[schemas.U],
+    user_schema: type[schemas.U],
 ):
     router = APIRouter(prefix="/v1")
 

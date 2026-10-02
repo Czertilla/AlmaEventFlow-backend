@@ -14,10 +14,12 @@ def get_client(host: str = settings.MONGO_URL) -> AsyncMongoClient:
 
 
 async def init(
-    document_models: list[Document] = [],
+    document_models: list[Document] | None = None,
     host: str = settings.MONGO_URL,
     db_name: str = settings.DB_NAME,
 ) -> None:
+    if document_models is None:
+        document_models = []
     client = get_client(host)
 
     await init_beanie(database=client[db_name], document_models=document_models)

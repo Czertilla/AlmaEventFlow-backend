@@ -1,9 +1,10 @@
 from asyncio import create_task, iscoroutine
 from collections import defaultdict
+from collections.abc import Awaitable, Callable
 from functools import wraps
 from inspect import signature
 from logging import getLogger
-from typing import Any, Awaitable, Callable
+from typing import Any
 
 from fastapi.params import Depends as FastAPIDepends
 from faststream import apply_types

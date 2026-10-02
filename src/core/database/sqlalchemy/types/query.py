@@ -1,8 +1,8 @@
 from core.config.settings import DBManagerType, settings
 
-if settings.DB_DBMS == DBManagerType.postgres:
+if DBManagerType.postgres == settings.DB_DBMS:
     from sqlalchemy.dialects.postgresql import insert
-elif settings.DB_DBMS == DBManagerType.sqlite:
+elif DBManagerType.sqlite == settings.DB_DBMS:
     from sqlalchemy.dialects.sqlite import insert
 
 __all__ = ["insert"]

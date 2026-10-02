@@ -65,11 +65,7 @@ target_metadata = Base.metadata
 
 
 def include_object(object, name, type_, reflected, compare_to):
-    if not alembic_helpers.include_object(
-        object, name, type_, reflected, compare_to
-    ) or (type_ == "table" and name in ("layer", "topology")):
-        return False
-    return True
+    return not (not alembic_helpers.include_object(object, name, type_, reflected, compare_to) or (type_ == "table" and name in ("layer", "topology")))
 
 
 def run_migrations_offline() -> None:

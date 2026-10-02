@@ -9,6 +9,8 @@ import pytest
 
 logger = logging.getLogger(__name__)
 
+from datetime import UTC
+
 from core.enum.notify import DeliveryStatus, TransportTypeEnum
 from core.schema.message.notify import WebPushDeliveryBatch
 from notify.models.client import ClientORM
@@ -583,11 +585,11 @@ async def test_expired_notification_terminates_all(
     endpoints = [f"https://push.example.com/{i}" for i in range(count)]
     notification_id, delivery_ids = await _seed_webpush(sessionmaker_, endpoints)
 
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
 
     async with sessionmaker_() as session:
         notification = await session.get(NotificationORM, notification_id)
-        notification.expires_at = datetime.now(timezone.utc) - timedelta(hours=1)
+        notification.expires_at = datetime.now(UTC) - timedelta(hours=1)
         await session.commit()
     stats.db_seed_elapsed = time.perf_counter() - t_seed
 

@@ -12,7 +12,7 @@ def utf8_to_uuid(utf8: bytes) -> UUID:
 
 
 if __name__ == "__main__":
-    for i in range(2048**2):
+    for _i in range(2048**2):
         uuid = uuid4()
         encoded = uuid_to_utf8(uuid)
         decoded = utf8_to_uuid(encoded)

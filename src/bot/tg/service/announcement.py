@@ -1,3 +1,4 @@
+import contextlib
 from datetime import date, datetime
 from html import escape
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -49,10 +50,8 @@ def _format_time(value: datetime, tz_name: str | None) -> str:
     Telegram's plain text has no per-viewer rendering, so it commits to the
     zone the stage's creator actually meant."""
     if tz_name:
-        try:
+        with contextlib.suppress(ZoneInfoNotFoundError, ValueError):
             value = value.astimezone(ZoneInfo(tz_name))
-        except (ZoneInfoNotFoundError, ValueError):
-            pass
     return value.strftime("%H:%M")
 
 

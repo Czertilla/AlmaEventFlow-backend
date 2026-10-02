@@ -5,7 +5,7 @@ Revises:
 Create Date: 2025-09-25 19:08:43.382103
 
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import fastapi_users_db_sqlalchemy
 import sqlalchemy as sa
@@ -13,9 +13,9 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '5cf59abf283f'
-down_revision: Union[str, None] = None
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = None
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

@@ -1,6 +1,6 @@
 from logging import getLogger
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 from uuid import UUID
 
 import jwt
@@ -31,7 +31,7 @@ def _load_rsa_public_key() -> str | None:
 
 async def get_token(
     request: Request,
-    bearer: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+    bearer: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
 ) -> str:
     if bearer is None:
         raise VancedHTTPException(
@@ -42,8 +42,8 @@ async def get_token(
 
 
 async def get_optional_token(
-    bearer: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
-) -> Optional[str]:
+    bearer: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+) -> str | None:
     if bearer is not None:
         return bearer.credentials
     return None
@@ -54,7 +54,7 @@ class JWTAuth:
         self,
         secret: str,
         algorithm: str = "RS256",
-        token_audience: Optional[list[str]] = None,
+        token_audience: list[str] | None = None,
         active: bool = True,
         verified: bool = True,
         superuser: bool = False,
@@ -124,8 +124,8 @@ class JWTAuth:
 class OptionalJWTAuth(JWTAuth):
     def __call__(
         self,
-        token: Annotated[Optional[str], Depends(get_optional_token)],
-    ) -> Optional[UserJWT]:
+        token: Annotated[str | None, Depends(get_optional_token)],
+    ) -> UserJWT | None:
         if token is None:
             return None
 

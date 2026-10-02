@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import TypeVar
 from uuid import UUID
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
@@ -10,10 +10,9 @@ from core.models.location import LocationAORM
 
 Model = TypeVar("Model", bound=LocationAORM)
 
-class LocationBaseRepo(
+class LocationBaseRepo[Model: LocationAORM](
     SQLAlchemyRepository[Model],
     IDRepositoryMixin[Model, UUID],
     UpsertRepositoryMixin[Model, UUID],
-    Generic[Model],
 ):
     model: type[Model]

@@ -1,12 +1,13 @@
+from collections.abc import Awaitable
 from functools import wraps
-from typing import Awaitable, Generic, TypeVar
+from typing import TypeVar
 
 from core.utils.abstract.unit_of_work import ABCUnitOfWork
 
 T = TypeVar("T", bound=ABCUnitOfWork)
 
 
-class BaseService(Generic[T]):
+class BaseService[T: ABCUnitOfWork]:
     """
     Base service class for application services.
 

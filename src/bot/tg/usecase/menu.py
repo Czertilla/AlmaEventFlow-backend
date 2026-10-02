@@ -1,4 +1,4 @@
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from bot.tg.enum.message import MessageArgs
 from bot.tg.state.menu import MenuStateGroup

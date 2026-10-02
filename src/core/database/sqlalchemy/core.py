@@ -101,7 +101,7 @@ class SQLAlchemyRepository(Generic[Model], AbstractRepository):
         offset_: int | None = None,
         limit_: int | None = None,
         options_: tuple = (),
-        order_by_: list[SQLColumnExpression] = [],
+        order_by_: list[SQLColumnExpression] | None = None,
         **filters: dict[str, Any],
     ) -> list[Model]:
         stmt = (
@@ -127,14 +127,14 @@ class SQLAlchemyRepository(Generic[Model], AbstractRepository):
     async def get_one(
         self,
         *criterias: list[SQLColumnExpression],
-        options_: list[SQLColumnExpression] = [],
+        options_: list[SQLColumnExpression] | None = None,
         **filters: dict[str, Any],
     ) -> Model | None:
         stmt = (
             select(self.model)
             .where(*criterias)
             .filter_by(**filters)
-            .options(*options_)
+            .options(*(options_ or ()))
         )
         return (await self.execute(stmt)).unique().scalar_one_or_none()
 

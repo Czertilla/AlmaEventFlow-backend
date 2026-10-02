@@ -29,7 +29,7 @@ class AccessStrategy(Base):
             "sub": str(user.id),
             "aud": self.token_audience,
             "per": str(p_id)
-            if isinstance(p_id := getattr(user, "person_id"), UUID)
+            if isinstance(p_id := getattr(user, "person_id"), UUID)  # noqa: B009
             else None,
             "act": user.is_active,
             "ver": user.is_verified,

@@ -12,16 +12,16 @@ from .role import RoleUOWDep
 from .stage import StageUOWDep
 
 __all__ = [
-    "EventUOWDep",
-    "ParticipationUOWDep",
-    "LocationUOWDep",
-    "CollectiveUOWDep",
-    "StageUOWDep",
-    "RewardUOWDep",
-    "LinkUOWDep",
-    "OrganizationUOWDep",
-    "RoleUOWDep",
-    "MemberUOWDep",
-    "PersonUOWDep",
     "AttendanceUOWDep",
+    "CollectiveUOWDep",
+    "EventUOWDep",
+    "LinkUOWDep",
+    "LocationUOWDep",
+    "MemberUOWDep",
+    "OrganizationUOWDep",
+    "ParticipationUOWDep",
+    "PersonUOWDep",
+    "RewardUOWDep",
+    "RoleUOWDep",
+    "StageUOWDep",
 ]

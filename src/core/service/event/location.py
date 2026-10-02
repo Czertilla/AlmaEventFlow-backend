@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import TypeVar
 from uuid import UUID
 
 from core.schema.message.geo import LocationData, LocationDelete
@@ -8,7 +8,7 @@ from core.uow.event.location import LocationAUOW
 UOW = TypeVar("UOW", bound=LocationAUOW)
 
 
-class LocationEventService(BaseService[UOW], Generic[UOW]):
+class LocationEventService[UOW: LocationAUOW](BaseService[UOW]):
     @required_transaction
     async def _create(self, location: LocationData):
         await self.uow.locations.add_n_return(data=location.model_dump())

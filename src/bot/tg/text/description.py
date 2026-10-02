@@ -1,12 +1,12 @@
+from collections.abc import Generator
 from functools import lru_cache
 from logging import getLogger
 from pathlib import Path
-from typing import Generator
 
-from core.utils.path import get_dir
 from i18n.loaders.yaml_loader import Loader, YamlLoader
 
 from bot.enum.locales import Locale
+from core.utils.path import get_dir
 
 logger = getLogger(__name__)
 

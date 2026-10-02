@@ -1,4 +1,5 @@
-from typing import Any, Generic, Mapping, TypeVar, Union
+from collections.abc import Mapping
+from typing import Any, Generic, TypeVar
 from uuid import UUID
 
 from beanie import BulkWriter, DeleteRules, Document, SortDirection, WriteRules
@@ -92,7 +93,7 @@ class BeanieRepository(
         doc: Model,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         session: AsyncClientSession | None = None,
-        skip_actions: list[Union[ActionDirections, str]] | None = None,
+        skip_actions: list[ActionDirections | str] | None = None,
     ):
         await doc.insert(session=self.session)
 
@@ -153,10 +154,10 @@ class BeanieRepository(
     async def update_one(
         self,
         doc: Model,
-        *args: Union[dict[Any, Any], Mapping[Any, Any]],
+        *args: dict[Any, Any] | Mapping[Any, Any],
         ignore_revision: bool = False,
         bulk_writer: BulkWriter | None = None,
-        skip_actions: list[Union[ActionDirections, str]] | None = None,
+        skip_actions: list[ActionDirections | str] | None = None,
         skip_sync: bool | None = None,
         **pymongo_kwargs: Any,
     ) -> Model:

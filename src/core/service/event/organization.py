@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import TypeVar
 from uuid import UUID
 
 from core.schema.message.org import OrganizationData, OrganizationDelete
@@ -8,7 +8,7 @@ from core.uow.event.organization import OrganizationAUOW
 UOW = TypeVar("UOW", bound=OrganizationAUOW)
 
 
-class OrganizationEventService(BaseService[UOW], Generic[UOW]):
+class OrganizationEventService[UOW: OrganizationAUOW](BaseService[UOW]):
     @required_transaction
     async def _create(self, organization: OrganizationData):
         await self.uow.organizations.add_n_return(

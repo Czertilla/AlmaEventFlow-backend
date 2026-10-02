@@ -1,9 +1,6 @@
-from typing import Generic, TypeVar
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
-
-T = TypeVar("T", bound=BaseModel)
 
 
 class MQError(BaseModel):
@@ -16,7 +13,7 @@ class MQError(BaseModel):
     extra: dict[str, str]
 
 
-class MQResponse(BaseModel, Generic[T]):
+class MQResponse[T: BaseModel](BaseModel):
     data: T | None
     error: MQError | None = Field(
         default=None,
@@ -29,7 +26,7 @@ class MQRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", from_attributes=True)
 
 
-class MQEvent(MQRequest, Generic[T]):
+class MQEvent[T: BaseModel](MQRequest):
     event_id: UUID = Field(default_factory=uuid4)
     data: list[T]
 

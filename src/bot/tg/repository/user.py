@@ -1,5 +1,5 @@
+from collections.abc import AsyncGenerator
 from logging import getLogger
-from typing import AsyncGenerator
 from uuid import UUID
 
 from sqlalchemy import ColumnElement, func, select
@@ -68,7 +68,7 @@ class UserRepo(SQLAlchemyRepository[Model]):
     def _search_stmt(
         search_column: ColumnElement,
         query: str,
-        limit: int = None,
+        limit: int | None = None,
         offset: int = 0,
     ):
         rank = func.similarity(search_column, query).label("rank")

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from core.enum.notify import DeliveryStatus
 from notify.config.settings import settings
@@ -27,7 +27,7 @@ class RetryPolicy:
         if attempts_done >= max_attempts:
             return RetryDecision(DeliveryStatus.failed, None)
         delay = min(self._cap, self._base * (2 ** (attempts_done - 1)))
-        next_at = datetime.now(timezone.utc) + timedelta(seconds=delay)
+        next_at = datetime.now(UTC) + timedelta(seconds=delay)
         return RetryDecision(DeliveryStatus.retry_scheduled, next_at)
 
 

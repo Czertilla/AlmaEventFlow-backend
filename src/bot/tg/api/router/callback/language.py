@@ -39,11 +39,11 @@ async def language_change(
     state: FSMContext,
 ):
     if (
-        data
+        (data
         and user._is_lang_modified
-        and data.value == user.language_code
-        or not data
-        and not user._is_lang_modified
+        and data.value == user.language_code)
+        or (not data
+        and not user._is_lang_modified)
     ):
         return
     user = await TelegramUserService(uow).set_lang(

@@ -22,7 +22,7 @@ class NameVariantORM(ModuleBase, Base):
     )
     surname: Mapped[str] = mapped_column(String(128))
     name: Mapped[str] = mapped_column(String(128))
-    patronymic: Mapped[Optional[str]] = mapped_column(String(128))
+    patronymic: Mapped[str | None] = mapped_column(String(128))
     passport: Mapped["PassportORM"] = relationship(
         back_populates="name_variant"
     )

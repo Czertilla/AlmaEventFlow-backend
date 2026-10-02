@@ -1,9 +1,8 @@
+from collections.abc import Generator
 from logging import getLogger
 from pathlib import Path
-from typing import Generator
 
 from aiogram.types import BotCommand
-from core.utils.path import get_dir
 from i18n.loaders.yaml_loader import Loader, YamlLoader
 
 from bot.enum.locales import Locale
@@ -13,6 +12,7 @@ from bot.tg.text.commands.scopes import (
     get_custom_scopes,
     get_scope_types,
 )
+from core.utils.path import get_dir
 
 logger = getLogger(__name__)
 
@@ -61,7 +61,7 @@ async def get_commands_hints():
                     }
                 )
                 continue
-            if scope not in scope_types.keys():
+            if scope not in scope_types:
                 logger.warning(f"{scope} - unknown scope has been ignored")
                 continue
             args.update(

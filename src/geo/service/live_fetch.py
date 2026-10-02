@@ -9,7 +9,7 @@ served locally once the fetch lands.
 """
 
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from logging import getLogger
 
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -73,7 +73,7 @@ async def live_fetch(
             asyncio.Lock(),
             sessionmaker,
             id_fn=lambda s, h: _address_id(city_id, s, h),
-            synced_at=datetime.now(timezone.utc),
+            synced_at=datetime.now(UTC),
         )
     except OverpassError as exc:
         logger.warning("live fetch failed for cell %s: %s", cell, exc)
@@ -86,7 +86,7 @@ async def live_fetch(
                     "cell_row": cell[0],
                     "cell_col": cell[1],
                     "source": "osm",
-                    "fetched_at": datetime.now(timezone.utc),
+                    "fetched_at": datetime.now(UTC),
                 }
             ]
         )

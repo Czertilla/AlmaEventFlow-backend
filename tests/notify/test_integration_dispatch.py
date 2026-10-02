@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 from core.enum.notify import (
@@ -124,7 +124,7 @@ async def test_retry_due_delivery_is_reenqueued(sessionmaker_, seed):
                 status=DeliveryStatus.retry_scheduled,
                 attempts=1,
                 max_attempts=5,
-                next_attempt_at=datetime.now(timezone.utc)
+                next_attempt_at=datetime.now(UTC)
                 - timedelta(minutes=5),
             )
         )

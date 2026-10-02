@@ -9,12 +9,12 @@ from .student import StudentDegree, StudentGroupORM, StudentORM
 __all__ = [
     "ContactORM",
     "DietORM",
+    "NameVariantORM",
     "OrganizationORM",
     "PassportORM",
-    "NameVariantORM",
     "PersonORM",
     "ProfileORM",
-    "StudentORM",
-    "StudentGroupORM",
     "StudentDegree",
+    "StudentGroupORM",
+    "StudentORM",
 ]

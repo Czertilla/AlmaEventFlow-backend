@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlalchemy import select, update
@@ -72,7 +72,7 @@ class NotificationDeliveryRepo(
             .where(
                 self.model.status == DeliveryStatus.retry_scheduled,
                 self.model.next_attempt_at.is_not(None),
-                self.model.next_attempt_at <= datetime.now(timezone.utc),
+                self.model.next_attempt_at <= datetime.now(UTC),
             )
             .order_by(self.model.next_attempt_at)
             .limit(limit)

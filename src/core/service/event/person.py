@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import TypeVar
 from uuid import UUID
 
 from core.schema.message.profile import PersonData, PersonDelete
@@ -8,7 +8,7 @@ from core.uow.event.person import PersonAUOW
 UOW = TypeVar("UOW", bound=PersonAUOW)
 
 
-class PersonEventService(BaseService[UOW], Generic[UOW]):
+class PersonEventService[UOW: PersonAUOW](BaseService[UOW]):
     @required_transaction
     async def _create(self, person: PersonData):
         await self.uow.persons.add_n_return(data=person.model_dump())

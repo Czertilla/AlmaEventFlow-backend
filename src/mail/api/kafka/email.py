@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from logging import getLogger
 
 from fastapi_mail import MessageSchema, MessageType
@@ -42,7 +42,7 @@ async def _report(
 @router.subscriber(EmailQueue.VERIFY)
 async def send_verify_message(request: SendVerifyMessageRequest) -> None:
     with open(
-        "templates/email/verify_message.html", "r", encoding="utf-8"
+        "templates/email/verify_message.html", encoding="utf-8"
     ) as f:
         html = f.read().replace("{{token}}", request.token)
     message = MessageSchema(
@@ -62,7 +62,7 @@ async def send_reset_password_message(
     request: SendResetPasswordMessageRequest,
 ) -> None:
     with open(
-        "templates/email/reset_message.html", "r", encoding="utf-8"
+        "templates/email/reset_message.html", encoding="utf-8"
     ) as f:
         html = f.read().replace("{{token}}", request.token)
     message = MessageSchema(
@@ -100,7 +100,7 @@ async def send_templated_message(request: SendTemplatedEmailRequest) -> None:
 def _is_expired(item: EmailDeliveryItem) -> bool:
     return (
         item.expires_at is not None
-        and item.expires_at < datetime.now(timezone.utc)
+        and item.expires_at < datetime.now(UTC)
     )
 
 

@@ -27,7 +27,7 @@ import time
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from logging import basicConfig, getLogger
 from pathlib import Path
 from uuid import NAMESPACE_URL, UUID, uuid5
@@ -200,7 +200,7 @@ async def _run(
             "it would delete addresses merely outside this run's area"
         )
 
-    run_started_at = datetime.now(timezone.utc)
+    run_started_at = datetime.now(UTC)
     bbox = (
         (args.min_lat, args.min_lon, args.max_lat, args.max_lon)
         if args.min_lat is not None

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlalchemy import select, update
@@ -21,7 +21,7 @@ class SessionRepo(
     async def list_active_for_user(self, user_id: UUID) -> list[Model]:
         """Sessions of ``user_id`` that still hold at least one non-revoked,
         non-expired refresh token, most recently used first."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         stmt = (
             select(Model)
             .join(RefreshTokenORM, RefreshTokenORM.session_id == Model.id)
@@ -48,7 +48,7 @@ class SessionRepo(
         ip_address: str | None = None,
         device_info: str | None = None,
     ) -> None:
-        values: dict = {"last_used_at": datetime.now(timezone.utc)}
+        values: dict = {"last_used_at": datetime.now(UTC)}
         if ip_address is not None:
             values["ip_address"] = ip_address
         if device_info is not None:

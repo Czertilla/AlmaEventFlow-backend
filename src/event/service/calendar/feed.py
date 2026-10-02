@@ -32,7 +32,7 @@ class CalendarFeedService(BaseService[CalendarUOW]):
     async def render(
         self, token: str, *, if_none_match: str | None = None
     ) -> FeedResult:
-        now = datetime.datetime.now(datetime.timezone.utc)
+        now = datetime.datetime.now(datetime.UTC)
         token_hash = self._tokens.hash(token)
         async with self.uow as uow:
             subscription = (
@@ -80,7 +80,7 @@ class CalendarFeedService(BaseService[CalendarUOW]):
         last_modified = max(
             (ve.last_modified for ve in vevents),
             default=datetime.datetime.min.replace(
-                tzinfo=datetime.timezone.utc
+                tzinfo=datetime.UTC
             ),
         )
         raw = f"{subscription_id}:{len(vevents)}:{last_modified.isoformat()}"

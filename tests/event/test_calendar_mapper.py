@@ -41,7 +41,7 @@ def test_single_stage_event_carries_its_location_name():
         id=uuid4(),
         event_id=event.id,
         name="Выступление",
-        start_at=datetime.datetime(2026, 5, 1, 18, 0, tzinfo=datetime.timezone.utc),
+        start_at=datetime.datetime(2026, 5, 1, 18, 0, tzinfo=datetime.UTC),
     )
 
     vevents = CalendarEventMapper().map_items([_item(event, [stage])])

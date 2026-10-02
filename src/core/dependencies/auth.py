@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import Depends
 
@@ -10,5 +10,5 @@ SuperUserJWTDep = Annotated[UserJWT, Depends(create_jwt_auth(superuser=True))]
 ActiveUserJWTDep = Annotated[UserJWT, Depends(create_jwt_auth(verified=False))]
 
 OptionalUserJWTDep = Annotated[
-    Optional[UserJWT], Depends(create_optional_jwt_auth())
+    UserJWT | None, Depends(create_optional_jwt_auth())
 ]

@@ -2,7 +2,6 @@ from asyncio import create_task
 from logging import getLogger
 
 from aiogram import Bot, Dispatcher
-from aiogram.client.telegram import TEST
 from aiogram3_di import setup_di
 from fastapi import FastAPI
 

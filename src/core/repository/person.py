@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import TypeVar
 from uuid import UUID
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
@@ -11,10 +11,9 @@ from core.models.person import PersonAORM
 Model = TypeVar("Model", bound=PersonAORM)
 
 
-class PersonBaseRepo(
+class PersonBaseRepo[Model: PersonAORM](
     SQLAlchemyRepository[Model],
     IDRepositoryMixin[Model, UUID],
     UpsertRepositoryMixin[Model, UUID],
-    Generic[Model],
 ):
     model: type[Model]

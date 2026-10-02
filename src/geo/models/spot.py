@@ -16,11 +16,11 @@ def spot_column():
 
 class SpotMixin:
     @declared_attr
-    def spot(cls: "Base") -> Mapped[UUID]:
+    def spot(cls: "Base") -> Mapped[UUID]:  # noqa: N805
         return spot_column()
 
 
 class OptionalSpotMixin:
     @declared_attr
-    def spot(cls: "Base") -> Mapped[WKBElement | None]:
+    def spot(cls: "Base") -> Mapped[WKBElement | None]:  # noqa: N805
         return spot_column()

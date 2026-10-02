@@ -3,6 +3,7 @@ from urllib.parse import quote
 from uuid import UUID, uuid4
 
 from fastapi import UploadFile
+from redis import Redis
 
 from core.dependencies.redis import redis
 from core.schema.pagination import SPage, SPageParam, SPagination
@@ -18,7 +19,6 @@ from event.schema.reward import (
     RewardRead,
 )
 from event.uow.reward import RewardUOW
-from redis import Redis
 
 logger = getLogger(__name__)
 

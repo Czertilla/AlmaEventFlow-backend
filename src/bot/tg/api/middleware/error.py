@@ -62,7 +62,7 @@ class ErrorHandlerMiddleware(
     class Guard:
         def __init__(
             self,
-            middleware: "ErrorHandlerMiddleware",
+            middleware: ErrorHandlerMiddleware,
             event: ErrorEvent,
             data: dict[str, Any],
         ) -> None:
@@ -101,7 +101,7 @@ class ErrorHandlerMiddleware(
         err_id = getattr(err, "id", None)
         if err_id is None:
             err_id = uuid4()
-            setattr(err, "id", err_id)
+            setattr(err, "id", err_id)  # noqa: B010
         return err_id
 
     def _resolve_handler(self, err: BaseException) -> ExceptionHandler | None:
@@ -136,7 +136,7 @@ class ErrorHandlerMiddleware(
     ) -> None:
         err_id = getattr(exc, "id", None)
         self.logger.critical(
-            f"Unexpected error {str(exc)} during ",
+            f"Unexpected error {exc!s} during ",
             exc_info=(exc_type, exc, tb),
             stack_info=True,
             extra={"err_id": str(err_id)},

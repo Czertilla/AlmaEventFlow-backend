@@ -12,15 +12,15 @@ from .role import RoleService
 from .stage import StageService
 
 __all__ = [
-    "EventService",
-    "ParticipationService",
-    "LocationService",
-    "StageService",
-    "RewardService",
-    "LinkService",
-    # "OrganizationService",
-    "RoleService",
-    "MemberService",
     # "PersonService",
     "AttendanceService",
+    "EventService",
+    "LinkService",
+    "LocationService",
+    "MemberService",
+    "ParticipationService",
+    "RewardService",
+    # "OrganizationService",
+    "RoleService",
+    "StageService",
 ]

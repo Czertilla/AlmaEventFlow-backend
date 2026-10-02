@@ -13,10 +13,12 @@ class VancedHTTPException(HTTPException):
         self,
         status_code=None,
         detail=None,
-        headers: dict[str, str] = {},
+        headers: dict[str, str] | None = None,
         *,
         err_id: UUID | None = None,
     ):
+        if headers is None:
+            headers = {}
         self.id = err_id or uuid4()
         headers.update({"err-id": str(self.id)})
         super().__init__(

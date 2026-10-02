@@ -10,15 +10,15 @@ its own ``spot`` alongside an ``address_id`` -- refining the location to a
 specific point near/within that address instead of the address as a whole.
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "88e6684f390c"
-down_revision: Union[str, None] = "7c1e5a90d2b4"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "7c1e5a90d2b4"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

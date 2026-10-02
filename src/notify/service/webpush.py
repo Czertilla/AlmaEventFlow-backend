@@ -1,6 +1,6 @@
 import asyncio
 from collections import defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from logging import getLogger
 from uuid import UUID
 
@@ -154,7 +154,7 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
         dead_clients: list[UUID] = []
         dead_deliveries: list[UUID] = []
         retries: dict[datetime, list[UUID]] = defaultdict(list)
-        for (delivery, client), outcome in zip(sendable, results):
+        for (delivery, client), outcome in zip(sendable, results, strict=False):
             if outcome is None:
                 sent.append(delivery.id)
             elif outcome.dead:
@@ -202,7 +202,7 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
 
     @staticmethod
     def _flat_retry_at() -> datetime:
-        return datetime.now(timezone.utc) + timedelta(
+        return datetime.now(UTC) + timedelta(
             seconds=settings.DELIVERY_RETRY_BACKOFF_BASE_SECONDS
         )
 
@@ -210,5 +210,5 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
     def _expired(notification: NotificationORM) -> bool:
         return (
             notification.expires_at is not None
-            and notification.expires_at < datetime.now(timezone.utc)
+            and notification.expires_at < datetime.now(UTC)
         )

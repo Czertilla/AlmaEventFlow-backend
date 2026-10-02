@@ -1,1 +1,1 @@
-from user.app.app import app
+from user.app.app import app  # noqa: F401  # pyright: ignore[reportUnusedImport]

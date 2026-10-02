@@ -1,6 +1,6 @@
+from collections.abc import Callable
 from functools import wraps
 from logging import Logger, getLogger
-from typing import Callable
 
 from aiogram.dispatcher.middlewares.data import MiddlewareData
 from aiogram.types import CallbackQuery, Message, User
@@ -50,7 +50,7 @@ class GetMessageBuilderMixin:
         super().__init__(*args, **kwargs)
 
     def get_text_builder(self, data: dict) -> TextBuilder:
-        text_builder = data.get("text_builder", None)
+        text_builder = data.get("text_builder")
         if not isinstance(text_builder, TextBuilder):
             self.logger.warning(
                 "passed data not contains text_builder, fallback to "

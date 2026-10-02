@@ -137,10 +137,7 @@ def pick_administrative_names(levels: dict[int, str]) -> tuple[str, str, str]:
     country_level = 2 if 2 in levels else min(levels)
     country = levels[country_level]
 
-    if 4 in levels and 4 != country_level:
-        region = levels[4]
-    else:
-        region = country
+    region = levels[4] if 4 in levels and country_level != 4 else country
 
     city = levels.get(8, levels[6]) if 6 in levels else region
 
@@ -219,7 +216,7 @@ class OverpassSource:
             url = await self._idle.get()
             try:
                 payload = await self._request(url, query)
-            except (_Retryable, aiohttp.ClientError, asyncio.TimeoutError) as exc:
+            except (TimeoutError, _Retryable, aiohttp.ClientError) as exc:
                 last_error = exc
                 self._strikes[url] += 1
                 delay = min(self.cooldown * self._strikes[url], 300.0)

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlalchemy import delete, update
@@ -21,7 +21,7 @@ class RefreshTokenRepo(
         return await self.get_many(
             Model.session_id == session_id,
             ~Model.is_revoked,
-            Model.expires_at > datetime.now(timezone.utc),
+            Model.expires_at > datetime.now(UTC),
         )
 
     async def revoke(self, token_id: UUID) -> None:
@@ -44,6 +44,6 @@ class RefreshTokenRepo(
         await self.execute(stmt, flush=True)
 
     async def delete_expired(self) -> int:
-        stmt = delete(Model).where(Model.expires_at < datetime.now(timezone.utc))
+        stmt = delete(Model).where(Model.expires_at < datetime.now(UTC))
         result = await self.execute(stmt)
         return result.rowcount

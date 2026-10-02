@@ -1,13 +1,13 @@
+from collections.abc import Callable
 from functools import wraps
 from logging import Logger
-from typing import Callable
 from uuid import uuid4
 
 
 def inject_err_id(func: Callable):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        extra = kwargs.get("extra", None) or {}
+        extra = kwargs.get("extra") or {}
         if "err_id" not in extra:
             extra.update({"err_id": uuid4()})
         kwargs["extra"] = extra

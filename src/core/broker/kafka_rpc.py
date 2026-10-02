@@ -25,6 +25,7 @@ same as any other topic this app publishes to.
 """
 
 import asyncio
+import contextlib
 import types
 from logging import getLogger
 from typing import TYPE_CHECKING, Any
@@ -59,7 +60,7 @@ class KafkaRpcReplyConsumer:
         self._bootstrap_servers = bootstrap_servers
         self._client_id = client_id
         self._connect_kwargs = connect_kwargs
-        self._pending: dict[str, "asyncio.Future[Any]"] = {}
+        self._pending: dict[str, asyncio.Future[Any]] = {}
         self._consumer: AIOKafkaConsumer | None = None
         self._consume_task: asyncio.Task | None = None
         self._start_lock = asyncio.Lock()
@@ -87,10 +88,8 @@ class KafkaRpcReplyConsumer:
     async def stop(self) -> None:
         if self._consume_task is not None:
             self._consume_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._consume_task
-            except asyncio.CancelledError:
-                pass
             self._consume_task = None
         if self._consumer is not None:
             await self._consumer.stop()
@@ -110,7 +109,7 @@ class KafkaRpcReplyConsumer:
     ) -> Any:
         await self._ensure_started()
         cmd.reply_to = REPLY_TOPIC
-        future: "asyncio.Future[Any]" = asyncio.get_running_loop().create_future()
+        future: asyncio.Future[Any] = asyncio.get_running_loop().create_future()
         self._pending[cmd.correlation_id] = future
         try:
             await producer.publish(cmd)

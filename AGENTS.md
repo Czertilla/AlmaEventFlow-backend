@@ -18,8 +18,12 @@ sharing one codebase and one dependency-resolution graph:
   (`core/utils/jwt/`), and the EDA message envelopes (`core/schema/message/`).
 - `src/user/`, `src/profile/`, `src/org/`, `src/event/`, `src/geo/`, `src/mail/`, `src/notify/`,
   `src/bot/` — independent microservices. Each has its own Postgres database (`DB_NAME` env var),
-  its own `Dockerfile`, `run.sh`, `main.py` (`from <service>.app.app import app`), and its own
-  `api/`, `models/`, `service/`, `uow/`, `repository/`, `schema/`, `dependency/` subtree.
+  its own `Dockerfile`, `run.sh`, `main.py` (`from <service>.app.app import app  # noqa: F401  #
+  pyright: ignore[reportUnusedImport]` — the import is the ASGI entrypoint `uvicorn
+  <service>.main:app` points at, not dead code; both suppressions are required, one per linter, or
+  `ruff --fix`/`basedpyright` strict mode will each independently "clean up" what looks like an
+  unused import and silently break the entrypoint), and its own `api/`, `models/`, `service/`,
+  `uow/`, `repository/`, `schema/`, `dependency/` subtree.
 - `src/aef/` — the **monolith entrypoint**. `aef.app.app` builds one `FastAPI` app that mounts
   every service's HTTP routers (`aef/api/__init__.py`, each service's `include_routers(app)`) and
   aggregates lifespans that own background work (`AEFContextManager` wraps e.g.
@@ -125,10 +129,44 @@ Across `src/*/service/*.py`:
   a single service without booting the whole app, import **one service tree per interpreter**,
   e.g. `cd src && ../.venv/Scripts/python.exe -c "import event.service.participation"`. Use
   `python -m py_compile <files>` for a pure syntax check.
-- Backend checks: `uv run pytest`, `uv run ruff check .`, `uv run pyright` (config permitting).
+- Backend checks: `uv run pytest`, `uv run ruff check .`, `uv run basedpyright`.
   `tests/conftest.py` forces `DB_DBMS=sqlite`, `MONOLITH=false`, `IN_MEMORY_BROKER=true` before
   imports specifically to dodge the metadata collision above — new test modules should rely on
   that, not reintroduce a second workaround.
+- **Lint/type-check are strict by config, not by current codebase state.** `[tool.ruff.lint]`
+  selects `E, F, I, UP, B, SIM, C4, RUF, ASYNC, N` (not just the bare `E, F, I` this repo started
+  with); a full run has ~458 pre-existing, non-auto-fixable findings that are accepted debt, not
+  something to silently "clean up" as a drive-by in an unrelated change. `[tool.basedpyright]` sets `typeCheckingMode = "strict"` — `basedpyright` (a pyright
+  fork; replaced plain `pyright` specifically for this feature) supports a baseline file,
+  `.basedpyright/baseline.json`, that grandfathers every finding that existed when it was
+  generated (currently ~4700, covering the whole repo — `src/`, `tests/`, `migrations/`,
+  `scripts/` — matching the bare `uv run basedpyright` command's own default scope, not just
+  `src/`), so a clean `uv run basedpyright` run means **zero new findings**, not zero findings
+  ever. Consequences for how you work:
+  - A file you touch may still show pre-existing ruff/basedpyright findings outside the lines you
+    changed — that's expected, not a regression to fix unless asked.
+  - If your change introduces a genuinely new finding (in a new file, or a line the baseline
+    doesn't cover), both tools report it normally — the baseline only suppresses what was already
+    there, it does not go slack for new code.
+  - If you fix something that happened to be in the baseline, regenerate it (`uv run basedpyright
+    --writebaseline`, no path — matching the bare check command's scope) in the same change so the
+    fix is actually reflected, rather than leaving a stale baseline entry pointing at code that no
+    longer has the problem.
+  - Regenerate the baseline against a fully-synced environment (`uv sync --all-groups`) — a
+    partially-installed venv (e.g. missing one service's extras) produces spurious
+    "type is unknown" findings from unresolved imports that have nothing to do with real type
+    errors, and poisons the baseline with noise specific to that venv.
+  - **`ruff --fix` is not blindly safe here, even for "safe" fixes** — two of its rules have
+    already produced real regressions once, caught only by re-running `basedpyright` afterward:
+    `N805` renames a `@declared_attr` method's first parameter `cls` → `self` (SQLAlchemy's
+    declarative-attribute convention genuinely wants `cls` there — this isn't a real instance
+    method; see `core/database/sqlalchemy/mixins/models.py` and `geo/models/spot.py`, both now
+    `# noqa: N805`), and `UP046`/`UP047` (the PEP 695 `class Foo[T]`/`def f[T]` rewrite) can drop
+    an existing `TypeVar` bound if the original bound lived on a *different* module-level
+    `TypeVar` than the one actually substituted in (`core/broker/rpc.py`'s `rpc_respond` lost its
+    implicit `bound=BaseModel` this way). After any `ruff check --fix` that touches rule categories
+    beyond plain `E/F/I`, re-run `basedpyright` before trusting the result — ruff's lints don't
+    know this codebase's SQLAlchemy/pydantic conventions, only Python's.
 - After adding/changing a migration: `uv run alembic -n <service> upgrade head` against the local
   dev Postgres (`docker compose up -d pg`).
 - Frontend (submodule): `npx vue-tsc --noEmit`, `npx eslint <files>`; regenerate the API client

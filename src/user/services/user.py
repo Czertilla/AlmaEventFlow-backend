@@ -1,10 +1,11 @@
 import hashlib
 import secrets
 import uuid
-from datetime import datetime, timedelta, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime, timedelta
 from functools import wraps
 from logging import getLogger
-from typing import Any, Callable, Optional, TypeVar, Union
+from typing import Any, TypeVar, Union
 
 import jwt
 from fastapi import Request, Response
@@ -152,7 +153,7 @@ class UserService(
         self,
         user_create: schemas.UC,
         safe: bool = False,
-        request: Optional[Request] = None,
+        request: Request | None = None,
     ) -> UserRead:
         await self.validate_password(user_create.password, user_create)
         if await self.uow.users.exists_email(user_create.email):
@@ -248,9 +249,9 @@ class UserService(
         access_token: str,
         account_id: str,
         account_email: tuple[str, str | None],
-        expires_at: Optional[int] = None,
-        refresh_token: Optional[str] = None,
-        request: Optional[Request] = None,
+        expires_at: int | None = None,
+        refresh_token: str | None = None,
+        request: Request | None = None,
         *,
         associate_by_email: bool = False,
         is_verified_by_default: bool = False,
@@ -296,9 +297,9 @@ class UserService(
         access_token: str,
         account_id: str,
         account_email: tuple[str, str | None],
-        expires_at: Optional[int] = None,
-        refresh_token: Optional[str] = None,
-        request: Optional[Request] = None,
+        expires_at: int | None = None,
+        refresh_token: str | None = None,
+        request: Request | None = None,
     ) -> UserOauthAccount:
         oauth_account_dict = OAuthAccountDict(
             oauth_name=oauth_name,
@@ -343,7 +344,7 @@ class UserService(
 
     @user_transaction(UserRead)
     async def verify(
-        self, token: str, request: Optional[Request] = None
+        self, token: str, request: Request | None = None
     ) -> UserRead:
         try:
             data = decode_jwt(
@@ -391,7 +392,7 @@ class UserService(
             return await uow.users.exists_username(username)
 
     async def forgot_password(
-        self, user: models.UP, request: Optional[Request] = None
+        self, user: models.UP, request: Request | None = None
     ) -> None:
         async with self.uow:
             db_user = await self._get(user.id)
@@ -414,7 +415,7 @@ class UserService(
 
     @user_transaction(UserRead)
     async def reset_password(
-        self, token: str, password: str, request: Optional[Request] = None
+        self, token: str, password: str, request: Request | None = None
     ) -> UserRead:
         try:
             data = decode_jwt(
@@ -451,7 +452,7 @@ class UserService(
         user_update: schemas.UU,
         user: models.UP,
         safe: bool = False,
-        request: Optional[Request] = None,
+        request: Request | None = None,
     ) -> UserRead:
         if safe:
             updated_user_data = user_update.create_update_dict()
@@ -486,7 +487,7 @@ class UserService(
     async def delete(
         self,
         user: models.UP,
-        request: Optional[Request] = None,
+        request: Request | None = None,
     ) -> None:
         await self.on_before_delete(user, request)
         async with self.uow as uow:
@@ -495,12 +496,12 @@ class UserService(
         await self.on_after_delete(user, request)
 
     async def validate_password(
-        self, password: str, user: Union[schemas.UC, models.UP]
+        self, password: str, user: Union[schemas.UC, models.UP],  # noqa: UP007
     ) -> None:
         return  # pragma: no cover
 
     async def on_after_register(
-        self, user: UserORM, request: Optional[Request] = None
+        self, user: UserORM, request: Request | None = None
     ):
         logger.info(f"User {user.id} has registered.")
         await publish_account_created(
@@ -511,7 +512,7 @@ class UserService(
         self,
         user: models.UP,
         update_dict: dict[str, Any],
-        request: Optional[Request] = None,
+        request: Request | None = None,
     ) -> None:
         if update_dict.keys() & {"email", "is_verified", "person_id"}:
             await publish_account_updated(
@@ -519,7 +520,7 @@ class UserService(
             )
 
     async def on_after_request_verify(
-        self, user: UserORM, token: str, request: Optional[Request] = None
+        self, user: UserORM, token: str, request: Request | None = None
     ) -> JSONResponse:
         logger.warning(
             f"Verification requested for user {user.id}. Verification token: {token}"
@@ -527,26 +528,26 @@ class UserService(
         return await send_verify_message(email=user.email, token=token)
 
     async def on_after_verify(
-        self, user: models.UP, request: Optional[Request] = None
+        self, user: models.UP, request: Request | None = None
     ) -> None:
         await publish_account_email_verified(user.id)
 
     async def on_after_forgot_password(
-        self, user: UserORM, token: str, request: Optional[Request] = None
+        self, user: UserORM, token: str, request: Request | None = None
     ):
         logger.debug(f"User {user.id} requested a password reset")
         await send_reset_message(email=user.email, token=token)
 
     async def on_after_reset_password(
-        self, user: models.UP, request: Optional[Request] = None
+        self, user: models.UP, request: Request | None = None
     ) -> None:
         return  # pragma: no cover
 
     async def on_after_login(
         self,
         user: models.UP,
-        request: Optional[Request] = None,
-        response: Optional[Response] = None,
+        request: Request | None = None,
+        response: Response | None = None,
     ) -> None:
         if response is None:
             return
@@ -574,12 +575,12 @@ class UserService(
         )
 
     async def on_before_delete(
-        self, user: models.UP, request: Optional[Request] = None
+        self, user: models.UP, request: Request | None = None
     ) -> None:
         return  # pragma: no cover
 
     async def on_after_delete(
-        self, user: models.UP, request: Optional[Request] = None
+        self, user: models.UP, request: Request | None = None
     ) -> None:
         await publish_account_deleted(user.id)
 
@@ -664,7 +665,7 @@ class UserService(
             settings.USER_SECRET.get_secret_value(),
             lifetime,
         )
-        expires_at = int(datetime.now(timezone.utc).timestamp()) + lifetime
+        expires_at = int(datetime.now(UTC).timestamp()) + lifetime
         return InviteTokenRead(token=token, expires_at=expires_at)
 
     async def create_telegram_link_token(
@@ -685,7 +686,7 @@ class UserService(
         lifetime = TELEGRAM_LINK_TOKEN_LIFETIME
         code = secrets.token_urlsafe(16)
         await publish_telegram_link_code_issued(code, person_id, lifetime)
-        expires_at = int(datetime.now(timezone.utc).timestamp()) + lifetime
+        expires_at = int(datetime.now(UTC).timestamp()) + lifetime
         deep_link = f"https://t.me/{settings.BOT_TG_USERNAME}?start={code}"
         return TelegramLinkTokenRead(
             token=code, deep_link=deep_link, expires_at=expires_at
@@ -844,7 +845,7 @@ class UserService(
                 "token_hash": hashed,
                 "user_id": user_id,
                 "session_id": session.id,
-                "expires_at": datetime.now(timezone.utc)
+                "expires_at": datetime.now(UTC)
                 + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRE_SECONDS),
             }
         )
@@ -861,7 +862,7 @@ class UserService(
         stored = await self.uow.refresh_tokens.get_by_token_hash(token_hash)
         if stored is None:
             return None
-        if stored.expires_at < datetime.now(timezone.utc):
+        if stored.expires_at < datetime.now(UTC):
             return None
         if stored.is_revoked:
             return None
@@ -883,7 +884,7 @@ class UserService(
                 "token_hash": new_hashed,
                 "user_id": stored.user_id,
                 "session_id": stored.session_id,
-                "expires_at": datetime.now(timezone.utc)
+                "expires_at": datetime.now(UTC)
                 + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRE_SECONDS),
             }
         )

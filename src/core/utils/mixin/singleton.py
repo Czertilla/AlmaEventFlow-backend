@@ -1,4 +1,4 @@
-class SingletonMixin(object):
+class SingletonMixin:
     """
     Mixin class that implements the Singleton pattern.
 
@@ -16,5 +16,5 @@ class SingletonMixin(object):
             The singleton instance of the class.
         """
         if not hasattr(cls, "instance"):
-            cls.instance = super(SingletonMixin, cls).__new__(cls)
+            cls.instance = super().__new__(cls)
         return cls.instance

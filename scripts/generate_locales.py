@@ -40,7 +40,7 @@ def parse_yaml_to_enums(yaml_path: Path, output_path: Path) -> None:
         yaml_path: Путь к YAML-файлу с локализацией.
         output_path: Путь к выходному файлу с enum-классами.
     """
-    with open(yaml_path, "r", encoding="utf-8") as f:
+    with open(yaml_path, encoding="utf-8") as f:
         data = yaml.safe_load(f)
 
     if not data or "en" not in data:

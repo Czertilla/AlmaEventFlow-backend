@@ -1,9 +1,10 @@
 import os
 
-import geo.api  # noqa: F401  (must load before geo.service.*, else circular import)
 import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
+import geo.api  # noqa: F401  (must load before geo.service.*, else circular import)
 
 _GEO_TABLES = (
     "location",

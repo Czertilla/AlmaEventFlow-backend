@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import TypeVar
 from uuid import UUID
 
 from core.schema.message.geo import AddressData, AddressDelete
@@ -7,7 +7,7 @@ from core.uow.event.address import AddressAUOW
 
 UOW = TypeVar("UOW", bound=AddressAUOW)
 
-class AddressEventService(BaseService[UOW], Generic[UOW]):
+class AddressEventService[UOW: AddressAUOW](BaseService[UOW]):
     @required_transaction
     async def _create(self, address: AddressData):
         await self.uow.addresses.add_n_return(data=address.model_dump())
