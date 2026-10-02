@@ -180,9 +180,12 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   e.g. `cd src && ../.venv/Scripts/python.exe -c "import event.service.participation"`. Use
   `python -m py_compile <files>` for a pure syntax check.
 - Backend checks: `uv run pytest`, `uv run ruff check .`, `uv run basedpyright`.
-  `tests/conftest.py` forces `DB_DBMS=sqlite`, `MONOLITH=false`, `IN_MEMORY_BROKER=true` before
-  imports specifically to dodge the metadata collision above — new test modules should rely on
-  that, not reintroduce a second workaround.
+  `tests/conftest.py` sets defaults (`os.environ.setdefault`, so a real env var wins) before any
+  import: `DB_DBMS=postgres` on `localhost:5433`, `MONOLITH=true`, `IN_MEMORY_BROKER=true`,
+  `GEO_LIVE_FETCH=false` and dummy S3 credentials. Only tests that request the session fixture
+  `test_database` need Docker: it starts `docker-compose.test.yml` (PostGIS) and migrates every
+  service database (geo, notify, bot and the event location test do; unit tests, `tests/core` and
+  `tests/contract` do not). New tests should not need a database unless they exercise SQL.
 - **Lint/type-check are strict by config, not by current codebase state.** `[tool.ruff.lint]`
   selects `E, F, I, UP, B, SIM, C4, RUF, ASYNC, N` (not just the bare `E, F, I` this repo started
   with); a full run has ~423 pre-existing, non-auto-fixable findings that are accepted debt, not
