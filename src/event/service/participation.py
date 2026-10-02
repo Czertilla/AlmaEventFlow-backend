@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import select
@@ -69,7 +70,7 @@ class ParticipationService(BaseService[ParticipationUOW]):
     async def _update(
         self,
         participation_id: UUID,
-        participation_data: dict,
+        participation_data: dict[str, Any],
         *,
         flush: bool = False,
     ) -> ParticipationORM:

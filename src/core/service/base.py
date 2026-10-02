@@ -1,6 +1,6 @@
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import TypeVar
+from typing import Any, Concatenate, TypeVar
 
 from core.utils.abstract.unit_of_work import ABCUnitOfWork
 
@@ -30,28 +30,23 @@ class BaseService[T: ABCUnitOfWork]:
 class RequiredTransactionException(Exception): ...
 
 
-def required_transaction(func):
-    if isinstance(func, Awaitable):
-
-        @wraps(func)
-        def wrapper(self: BaseService[T], *args, **kwargs):
-            if not self.uow.is_transacting():
-                raise RequiredTransactionException
-            return func(self, *args, **kwargs)
-    else:
-
-        @wraps(func)
-        async def wrapper(self: BaseService[T], *args, **kwargs):
-            if not self.uow.is_transacting():
-                raise RequiredTransactionException
-            return await func(self, *args, **kwargs)
+def required_transaction[S: BaseService[Any], **P, R](
+    func: Callable[Concatenate[S, P], Awaitable[R]],
+) -> Callable[Concatenate[S, P], Awaitable[R]]:
+    @wraps(func)
+    async def wrapper(self: S, *args: P.args, **kwargs: P.kwargs) -> R:
+        if not self.uow.is_transacting():
+            raise RequiredTransactionException
+        return await func(self, *args, **kwargs)
 
     return wrapper
 
 
-def autocommit(func):
+def autocommit[S: BaseService[Any], **P, R](
+    func: Callable[Concatenate[S, P], Awaitable[R]],
+) -> Callable[Concatenate[S, P], Awaitable[R]]:
     @wraps(func)
-    async def wrapper(self: BaseService[T], *args, **kwargs):
+    async def wrapper(self: S, *args: P.args, **kwargs: P.kwargs) -> R:
         result = await func(self, *args, **kwargs)
         await self.uow.commit()
         return result

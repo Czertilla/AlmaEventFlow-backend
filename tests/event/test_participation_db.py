@@ -1,6 +1,7 @@
 from uuid import UUID, uuid4
 
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from event.dto.participation import (
     ParticipationCreateDTO,
@@ -12,7 +13,7 @@ from event.service.participation import ParticipationService
 from event.uow.participation import ParticipationUOW
 
 
-async def _seed(engine) -> tuple[UUID, UUID, UUID]:
+async def _seed(engine: AsyncEngine) -> tuple[UUID, UUID, UUID]:
     collective_id, event_id, participation_id = uuid4(), uuid4(), uuid4()
     async with engine.begin() as conn:
         await conn.execute(
@@ -51,8 +52,9 @@ async def _seed(engine) -> tuple[UUID, UUID, UUID]:
 
 
 async def test_put_replaces_the_priority_and_names_the_collective(
-    event_engine, event_sessionmaker
-):
+    event_engine: AsyncEngine,
+    event_sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
     collective_id, event_id, participation_id = await _seed(event_engine)
     service = ParticipationService(ParticipationUOW(event_sessionmaker))
 
@@ -72,8 +74,9 @@ async def test_put_replaces_the_priority_and_names_the_collective(
 
 
 async def test_patch_clears_the_priority_when_it_is_sent_as_null(
-    event_engine, event_sessionmaker
-):
+    event_engine: AsyncEngine,
+    event_sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
     _, _, participation_id = await _seed(event_engine)
     service = ParticipationService(ParticipationUOW(event_sessionmaker))
 
@@ -89,7 +92,10 @@ async def test_patch_clears_the_priority_when_it_is_sent_as_null(
     assert (await service.read(participation_id)).priority_degree is None
 
 
-async def test_create_names_the_collective(event_engine, event_sessionmaker):
+async def test_create_names_the_collective(
+    event_engine: AsyncEngine,
+    event_sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
     collective_id, _, _ = await _seed(event_engine)
     other_event = uuid4()
     async with event_engine.begin() as conn:
