@@ -14,6 +14,7 @@ from event.dto.participation import (
     ParticipationDTO,
     ParticipationFilterDTO,
     ParticipationPatchDTO,
+    ParticipationPutDTO,
 )
 from event.exc.event import ParticipationNotExistsException
 from event.filter.participation import ParticipationFilter
@@ -100,6 +101,18 @@ class ParticipationService(BaseService[ParticipationUOW]):
             participation = await self._update(
                 participation_patch.id,
                 participation_data,
+            )
+            result = self._to_dto(participation)
+            await uow.commit()
+        return result
+
+    async def put(
+        self, participation_put: ParticipationPutDTO
+    ) -> ParticipationDTO:
+        async with self.uow as uow:
+            participation_data = dto_dict(participation_put, exclude={"id"})
+            participation = await self._update(
+                participation_put.id, participation_data
             )
             result = self._to_dto(participation)
             await uow.commit()
