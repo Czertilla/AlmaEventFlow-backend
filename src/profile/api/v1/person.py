@@ -33,7 +33,7 @@ from core.schema.error import (
     detail_400,
     entity_not_found_responses,
 )
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 
 router = APIRouter(prefix="/persons", tags=["person"])
 
@@ -46,8 +46,8 @@ async def search_person(
     uow: PersonUOWDep,
     user: UserJWTDep,
     filter: PersonFilter = FilterDepends(PersonFilter),
-    page_param=Depends(SPageParam),
-) -> SPage[PersonItemRead]:
+    page_param=Depends(PageParamV1),
+) -> PageV1[PersonItemRead]:
     return await PersonService(uow).search(filter, page_param)
 
 
@@ -138,8 +138,8 @@ async def get_person_contacts(
     user: UserJWTDep,
     uow: ContactUOWDep,
     filter: ContactFilter = FilterDepends(ContactFilter),
-    page_params=Depends(SPageParam),
-) -> SPage[ContactItemRead]:
+    page_params=Depends(PageParamV1),
+) -> PageV1[ContactItemRead]:
     return await ContactService(uow).search_by_person(
         person_id, filter, page_params
     )

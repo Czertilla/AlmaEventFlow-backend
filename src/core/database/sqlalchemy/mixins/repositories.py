@@ -5,7 +5,7 @@ from sqlalchemy import Select, delete, exists, func, select, update
 from sqlalchemy.sql.base import ExecutableOption
 
 from core.config.settings import settings
-from core.schema.pagination import SPageParam
+from core.dto.pagination import PageParams
 
 if settings.DB_DBMS == "postgres":
     from sqlalchemy.dialects.postgresql import insert
@@ -126,7 +126,7 @@ class SearchRepositoryMixin(Generic[Model], AbstractRepository):
     async def search(
         self,
         filter: Filter,
-        pagination: SPageParam,
+        pagination: PageParams,
         *,
         options=None,
         scope: list | None = None,

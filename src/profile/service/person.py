@@ -17,7 +17,7 @@ from profile.schema.person import (
 from profile.uow.person import PersonUOW
 from uuid import UUID
 
-from core.schema.pagination import SPage, SPageParam, SPagination
+from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
 from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
@@ -79,15 +79,15 @@ class PersonService(BaseService[PersonUOW]):
             return PersonRead.model_validate(await self._read(person_id, True))
 
     async def search(
-        self, filter: PersonFilter, page_params: SPageParam = SPageParam()
-    ) -> SPage[PersonItemRead]:
+        self, filter: PersonFilter, page_params: PageParamV1 = PageParamV1()
+    ) -> PageV1[PersonItemRead]:
         async with self.uow as uow:
             persons, total = await uow.persons.search(filter, page_params)
-            return SPage(
+            return PageV1(
                 items=[
                     PersonItemRead.model_validate(person) for person in persons
                 ],
-                pagination=SPagination(
+                pagination=PaginationV1(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )

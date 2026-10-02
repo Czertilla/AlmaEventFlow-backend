@@ -12,7 +12,7 @@ from core.database.sqlalchemy.mixins.repositories import (
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
-from core.schema.pagination import SPageParam
+from core.dto.pagination import PageParams
 from geo.models.address import AddressORM
 from geo.models.location import LocationORM as Model
 from geo.schema.point import Point
@@ -57,7 +57,7 @@ class LocationRepo(
     async def search(
         self,
         filter: Filter,
-        pagination: SPageParam,
+        pagination: PageParams,
         *,
         options=None,
         scope: list | None = None,
@@ -103,7 +103,7 @@ class LocationRepo(
         self,
         filter: Filter,
         near: Point,
-        pagination: SPageParam,
+        pagination: PageParams,
         *,
         options=None,
         scope: list | None = None,
@@ -160,7 +160,7 @@ class LocationRepo(
         min_lon: float,
         max_lat: float,
         max_lon: float,
-        pagination: SPageParam,
+        pagination: PageParams,
     ) -> tuple[list[Model], int]:
         """An address-anchored location has no ``spot`` of its own -- its
         effective point for map display is the linked address's ``spot``,

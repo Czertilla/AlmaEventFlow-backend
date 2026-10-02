@@ -23,7 +23,7 @@ from core.schema.error import (
     detail_400,
     entity_not_found_responses,
 )
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 
 router = APIRouter(prefix="/profiles", tags=["profile"])
 
@@ -35,8 +35,8 @@ async def get_many(
     uow: ProfileUOWDep,
     user: UserJWTDep,
     filter: ProfileFilter = FilterDepends(ProfileFilter),
-    page_param=Depends(SPageParam),
-) -> SPage[ProfileRead]:
+    page_param=Depends(PageParamV1),
+) -> PageV1[ProfileRead]:
     return await ProfileService(uow).search(filter, page_param)
 
 

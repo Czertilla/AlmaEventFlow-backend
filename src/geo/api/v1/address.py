@@ -6,7 +6,7 @@ from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 from geo.dependency.address import AddressUOWDep
 from geo.filter.address import AddressFilter
 from geo.schema.address import (
@@ -30,10 +30,10 @@ async def get_addresses(
     uow: AddressUOWDep,
     user: UserJWTDep,
     filter: AddressFilter = FilterDepends(AddressFilter),
-    page_param=Depends(SPageParam),
+    page_param=Depends(PageParamV1),
     near_lat: float | None = None,
     near_lon: float | None = None,
-) -> SPage[AddressRead]:
+) -> PageV1[AddressRead]:
     # near_lat/near_lon sort by distance instead of name, but only when search is empty (see service)
     near = Point(lat=near_lat, lon=near_lon) if near_lat is not None and near_lon is not None else None
     return await AddressService(uow).search(filter, page_param, near=near)

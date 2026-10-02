@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from core.utils.mixin.pydantic import PatchModel, PutUUIDMixin, UUIDMixin
+from core.schema.v1.mixin.model import PatchModelV1, PutUUIDMixinV1, UUIDMixinV1
 
 
 class NameVariantCreate(BaseModel):
@@ -14,22 +14,22 @@ class NameVariantCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class NameVariantRead(NameVariantCreate, UUIDMixin): ...
+class NameVariantRead(NameVariantCreate, UUIDMixinV1): ...
 
 
-class NameVariantPatchData(PatchModel):
+class NameVariantPatchData(PatchModelV1):
     surname: str | None = Field(max_length=128, default=None)
     name: str | None = Field(max_length=128, default=None)
     patronymic: str | None = Field(max_length=128, default=None)
 
 
-class NameVariantPatch(NameVariantPatchData, UUIDMixin): ...
+class NameVariantPatch(NameVariantPatchData, UUIDMixinV1): ...
 
 
 class NameVariantPutData(NameVariantCreate): ...
 
 
-class NameVariantPut(NameVariantPutData, UUIDMixin): ...
+class NameVariantPut(NameVariantPutData, UUIDMixinV1): ...
 
 
 class PassportItemCreate(BaseModel):
@@ -47,7 +47,7 @@ class PassportCreate(PassportItemCreate):
     profile_id: UUID
 
 
-class PassportItemRead(BaseModel, UUIDMixin):
+class PassportItemRead(BaseModel, UUIDMixinV1):
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -55,7 +55,7 @@ class PassportRead(PassportItemRead, PassportItemCreate):
     profile_id: UUID
 
 
-class PassportPatchData(PatchModel):
+class PassportPatchData(PatchModelV1):
     number: str | None = Field(max_length=32, default=None)
     name_variant: NameVariantPatchData | None = None
     expire_date: date | None = Field(default=None)
@@ -64,11 +64,11 @@ class PassportPatchData(PatchModel):
     issued_authority: str | None = None
 
 
-class PassportPatch(PassportPatchData, UUIDMixin): ...
+class PassportPatch(PassportPatchData, UUIDMixinV1): ...
 
 
 class PassportPutData(PassportItemCreate):
     profile_id: UUID
 
 
-class PassportPut(PassportPutData, PutUUIDMixin): ...
+class PassportPut(PassportPutData, PutUUIDMixinV1): ...

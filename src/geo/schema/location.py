@@ -9,7 +9,7 @@ from pydantic import (
     model_validator,
 )
 
-from core.utils.mixin.pydantic import PatchModel, UUIDMixin
+from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
 from geo.schema.address import AddressRead
 from geo.schema.point import Point
 
@@ -43,7 +43,7 @@ class LocationCreate(BaseModel):
         return self
 
 
-class LocationRead(LocationCreate, UUIDMixin):
+class LocationRead(LocationCreate, UUIDMixinV1):
     address: AddressRead | None = None
     """Populated when the repository eager-loads the relationship (see
     ``LocationService.read``/``search``) -- lets ``map_uri`` below resolve
@@ -67,7 +67,7 @@ class LocationRead(LocationCreate, UUIDMixin):
         return self.name or (self.address.name if self.address else None)
 
 
-class LocationPatchData(PatchModel):
+class LocationPatchData(PatchModelV1):
     name: str | None = Field(max_length=512, default=None)
     address_id: UUID | None = None
     spot: Point | None = None
@@ -75,13 +75,13 @@ class LocationPatchData(PatchModel):
     _normalize_name = field_validator("name")(_blank_to_none)
 
 
-class LocationPatch(LocationPatchData, UUIDMixin): ...
+class LocationPatch(LocationPatchData, UUIDMixinV1): ...
 
 
 class LocationPutData(LocationCreate): ...
 
 
-class LocationPut(LocationPutData, UUIDMixin): ...
+class LocationPut(LocationPutData, UUIDMixinV1): ...
 
 
 class LocationFromAddressCreate(BaseModel):

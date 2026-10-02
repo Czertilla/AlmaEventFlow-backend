@@ -20,7 +20,7 @@ from profile.uow.passport import PassportUOW
 from profile.uow.profile import ProfilePassportUOW
 from uuid import UUID
 
-from core.schema.pagination import SPage, SPageParam, SPagination
+from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
 from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
@@ -93,16 +93,16 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
     async def search(
         self,
         filter: PassportFilter,
-        page_params: SPageParam = SPageParam(),
-    ) -> SPage[PassportItemRead]:
+        page_params: PageParamV1 = PageParamV1(),
+    ) -> PageV1[PassportItemRead]:
         async with self.uow as uow:
             passports, total = await uow.passports.search(filter, page_params)
-            return SPage(
+            return PageV1(
                 items=[
                     PassportItemRead.model_validate(passport)
                     for passport in passports
                 ],
-                pagination=SPagination(
+                pagination=PaginationV1(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
@@ -111,20 +111,20 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         self,
         profile_id: UUID,
         filter: PassportFilter,
-        page_params: SPageParam = SPageParam(),
-    ) -> SPage[PassportItemRead]:
+        page_params: PageParamV1 = PageParamV1(),
+    ) -> PageV1[PassportItemRead]:
         async with self.uow as uow:
             passports, total = await uow.passports.search(
                 filter,
                 page_params,
                 scope=[PassportORM.profile_id == profile_id],
             )
-            return SPage(
+            return PageV1(
                 items=[
                     PassportItemRead.model_validate(passport)
                     for passport in passports
                 ],
-                pagination=SPagination(
+                pagination=PaginationV1(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )

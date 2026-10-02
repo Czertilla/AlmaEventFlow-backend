@@ -1,0 +1,3889 @@
+{
+  "components": {
+    "schemas": {
+      "CollectiveCreate": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "university_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "University Id"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "CollectiveCreate",
+        "type": "object"
+      },
+      "CollectivePatchData": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "university_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "University Id"
+          }
+        },
+        "title": "CollectivePatchData",
+        "type": "object"
+      },
+      "CollectivePutData": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "university_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "University Id"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "CollectivePutData",
+        "type": "object"
+      },
+      "CollectiveRead": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "type": {
+            "default": "collective",
+            "title": "Type",
+            "type": "string"
+          },
+          "university_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "University Id"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "CollectiveRead",
+        "type": "object"
+      },
+      "ErrorModel": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorModel",
+        "type": "object"
+      },
+      "FacultyCreate": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "university_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "University Id"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "FacultyCreate",
+        "type": "object"
+      },
+      "FacultyPatchData": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "university_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "University Id"
+          }
+        },
+        "title": "FacultyPatchData",
+        "type": "object"
+      },
+      "FacultyPutData": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "university_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "University Id"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "FacultyPutData",
+        "type": "object"
+      },
+      "FacultyRead": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "type": {
+            "default": "faculty",
+            "title": "Type",
+            "type": "string"
+          },
+          "university_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "University Id"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "FacultyRead",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "OrganizationCreate": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "name"
+        ],
+        "title": "OrganizationCreate",
+        "type": "object"
+      },
+      "OrganizationPatch": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "OrganizationPatch",
+        "type": "object"
+      },
+      "OrganizationPut": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "name"
+        ],
+        "title": "OrganizationPut",
+        "type": "object"
+      },
+      "OrganizationRead": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "name"
+        ],
+        "title": "OrganizationRead",
+        "type": "object"
+      },
+      "PageV1_CollectiveRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CollectiveRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[CollectiveRead]",
+        "type": "object"
+      },
+      "PageV1_FacultyRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FacultyRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[FacultyRead]",
+        "type": "object"
+      },
+      "PageV1_OrganizationRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OrganizationRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[OrganizationRead]",
+        "type": "object"
+      },
+      "PageV1_UniversityRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/UniversityRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[UniversityRead]",
+        "type": "object"
+      },
+      "PaginationV1": {
+        "properties": {
+          "limit": {
+            "default": 10,
+            "exclusiveMinimum": 0.0,
+            "maximum": 100.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "page": {
+            "default": 0,
+            "title": "Page",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total"
+        ],
+        "title": "PaginationV1",
+        "type": "object"
+      },
+      "UniversityCreate": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "UniversityCreate",
+        "type": "object"
+      },
+      "UniversityPatchData": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          }
+        },
+        "title": "UniversityPatchData",
+        "type": "object"
+      },
+      "UniversityPutData": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "UniversityPutData",
+        "type": "object"
+      },
+      "UniversityRead": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "type": {
+            "default": "university",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "UniversityRead",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "paths": {
+    "/org/v1/collectives": {
+      "get": {
+        "operationId": "list_collectives_org_v1_collectives_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "order_by",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "name",
+              "title": "Order By"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "university_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "University Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_CollectiveRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Collectives",
+        "tags": [
+          "collective"
+        ]
+      },
+      "post": {
+        "operationId": "create_collective_org_v1_collectives_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollectiveCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Collective",
+        "tags": [
+          "collective"
+        ]
+      }
+    },
+    "/org/v1/collectives/{collective_id}": {
+      "delete": {
+        "operationId": "delete_collective_org_v1_collectives__collective_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collective_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Collective Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "COLLECTIVE_NOT_FOUND": {
+                    "summary": "COLLECTIVE_NOT_FOUND",
+                    "value": {
+                      "detail": "COLLECTIVE_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "COLLECTIVE_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Collective",
+        "tags": [
+          "collective"
+        ]
+      },
+      "get": {
+        "operationId": "get_collective_org_v1_collectives__collective_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collective_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Collective Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "COLLECTIVE_NOT_FOUND": {
+                    "summary": "COLLECTIVE_NOT_FOUND",
+                    "value": {
+                      "detail": "COLLECTIVE_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "COLLECTIVE_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Collective",
+        "tags": [
+          "collective"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_collective_org_v1_collectives__collective_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collective_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Collective Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollectivePatchData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "COLLECTIVE_NOT_FOUND": {
+                    "summary": "COLLECTIVE_NOT_FOUND",
+                    "value": {
+                      "detail": "COLLECTIVE_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "COLLECTIVE_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Patch Collective",
+        "tags": [
+          "collective"
+        ]
+      },
+      "put": {
+        "operationId": "put_collective_org_v1_collectives__collective_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collective_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Collective Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollectivePutData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "COLLECTIVE_NOT_FOUND": {
+                    "summary": "COLLECTIVE_NOT_FOUND",
+                    "value": {
+                      "detail": "COLLECTIVE_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "COLLECTIVE_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Put Collective",
+        "tags": [
+          "collective"
+        ]
+      }
+    },
+    "/org/v1/faculties": {
+      "get": {
+        "operationId": "list_faculties_org_v1_faculties_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "order_by",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "name",
+              "title": "Order By"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_FacultyRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Faculties",
+        "tags": [
+          "faculty"
+        ]
+      },
+      "post": {
+        "operationId": "create_faculty_org_v1_faculties_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacultyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacultyRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Faculty",
+        "tags": [
+          "faculty"
+        ]
+      }
+    },
+    "/org/v1/faculties/{faculty_id}": {
+      "delete": {
+        "operationId": "delete_faculty_org_v1_faculties__faculty_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "faculty_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Faculty Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FACULTY_NOT_FOUND": {
+                    "summary": "FACULTY_NOT_FOUND",
+                    "value": {
+                      "detail": "FACULTY_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "FACULTY_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Faculty",
+        "tags": [
+          "faculty"
+        ]
+      },
+      "get": {
+        "operationId": "get_faculty_org_v1_faculties__faculty_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "faculty_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Faculty Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacultyRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FACULTY_NOT_FOUND": {
+                    "summary": "FACULTY_NOT_FOUND",
+                    "value": {
+                      "detail": "FACULTY_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "FACULTY_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Faculty",
+        "tags": [
+          "faculty"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_faculty_org_v1_faculties__faculty_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "faculty_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Faculty Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacultyPatchData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacultyRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FACULTY_NOT_FOUND": {
+                    "summary": "FACULTY_NOT_FOUND",
+                    "value": {
+                      "detail": "FACULTY_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "FACULTY_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Patch Faculty",
+        "tags": [
+          "faculty"
+        ]
+      },
+      "put": {
+        "operationId": "put_faculty_org_v1_faculties__faculty_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "faculty_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Faculty Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacultyPutData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacultyRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FACULTY_NOT_FOUND": {
+                    "summary": "FACULTY_NOT_FOUND",
+                    "value": {
+                      "detail": "FACULTY_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "FACULTY_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Put Faculty",
+        "tags": [
+          "faculty"
+        ]
+      }
+    },
+    "/org/v1/organizations": {
+      "get": {
+        "operationId": "list_organizations_org_v1_organizations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "order_by",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "name",
+              "title": "Order By"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_OrganizationRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Organizations",
+        "tags": [
+          "organization"
+        ]
+      },
+      "post": {
+        "operationId": "create_organization_org_v1_organizations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Organization",
+        "tags": [
+          "organization"
+        ]
+      }
+    },
+    "/org/v1/organizations/{organization_id}": {
+      "delete": {
+        "operationId": "delete_organization_org_v1_organizations__organization_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ORGANIZATION_NOT_FOUND": {
+                    "summary": "ORGANIZATION_NOT_FOUND",
+                    "value": {
+                      "detail": "ORGANIZATION_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ORGANIZATION_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Organization",
+        "tags": [
+          "organization"
+        ]
+      },
+      "get": {
+        "operationId": "get_organization_org_v1_organizations__organization_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ORGANIZATION_NOT_FOUND": {
+                    "summary": "ORGANIZATION_NOT_FOUND",
+                    "value": {
+                      "detail": "ORGANIZATION_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ORGANIZATION_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Organization",
+        "tags": [
+          "organization"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_organization_org_v1_organizations__organization_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ORGANIZATION_NOT_FOUND": {
+                    "summary": "ORGANIZATION_NOT_FOUND",
+                    "value": {
+                      "detail": "ORGANIZATION_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ORGANIZATION_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Patch Organization",
+        "tags": [
+          "organization"
+        ]
+      },
+      "put": {
+        "operationId": "put_organization_org_v1_organizations__organization_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ORGANIZATION_NOT_FOUND": {
+                    "summary": "ORGANIZATION_NOT_FOUND",
+                    "value": {
+                      "detail": "ORGANIZATION_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ORGANIZATION_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Put Organization",
+        "tags": [
+          "organization"
+        ]
+      }
+    },
+    "/org/v1/universities": {
+      "get": {
+        "operationId": "list_universities_org_v1_universities_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "order_by",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "name",
+              "title": "Order By"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_UniversityRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Universities",
+        "tags": [
+          "university"
+        ]
+      },
+      "post": {
+        "operationId": "create_university_org_v1_universities_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UniversityCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UniversityRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create University",
+        "tags": [
+          "university"
+        ]
+      }
+    },
+    "/org/v1/universities/{university_id}": {
+      "delete": {
+        "operationId": "delete_university_org_v1_universities__university_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "university_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "University Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "UNIVERSITY_NOT_FOUND": {
+                    "summary": "UNIVERSITY_NOT_FOUND",
+                    "value": {
+                      "detail": "UNIVERSITY_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "UNIVERSITY_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete University",
+        "tags": [
+          "university"
+        ]
+      },
+      "get": {
+        "operationId": "get_university_org_v1_universities__university_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "university_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "University Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UniversityRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "UNIVERSITY_NOT_FOUND": {
+                    "summary": "UNIVERSITY_NOT_FOUND",
+                    "value": {
+                      "detail": "UNIVERSITY_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "UNIVERSITY_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get University",
+        "tags": [
+          "university"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_university_org_v1_universities__university_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "university_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "University Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UniversityPatchData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UniversityRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "UNIVERSITY_NOT_FOUND": {
+                    "summary": "UNIVERSITY_NOT_FOUND",
+                    "value": {
+                      "detail": "UNIVERSITY_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "UNIVERSITY_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Patch University",
+        "tags": [
+          "university"
+        ]
+      },
+      "put": {
+        "operationId": "put_university_org_v1_universities__university_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "university_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "University Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UniversityPutData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UniversityRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "UNIVERSITY_NOT_FOUND": {
+                    "summary": "UNIVERSITY_NOT_FOUND",
+                    "value": {
+                      "detail": "UNIVERSITY_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "UNIVERSITY_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Put University",
+        "tags": [
+          "university"
+        ]
+      }
+    }
+  }
+}

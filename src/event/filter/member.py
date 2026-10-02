@@ -1,18 +1,39 @@
+from typing import Self
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 
+from core.dto.base import dto_dict
+from core.schema.v1.mixin.dto import ToDTOMixinV1
+from event.dto.member import MemberFilterDTO
 from event.models.member import MemberORM
 
 
-class MemberFilter(Filter):
-    order_by: list[str] | None = ["person__surname", "person__name", "person__patronymic"]
+class MemberFilter(Filter, ToDTOMixinV1):
+    """``order_by``'s default uses dotted join paths (``person__surname``)
+    that this class's own ``sort()`` override resolves by hand -- fastapi-filter's
+    ordering validator accepts them unvalidated as a default but rejects them
+    as explicit input, so reconstruction uses ``model_construct`` (trusted,
+    already-validated data) instead of the generic ``FromDTOMixin``."""
+
+    __dto_cls__ = MemberFilterDTO
+
+    order_by: list[str] | None = [
+        "person__surname",
+        "person__name",
+        "person__patronymic",
+    ]
     is_active: bool = True
     collective_id: UUID | None = None
     person_id: UUID | None = None
 
     class Constants(Filter.Constants):
         model = MemberORM
+
+    @classmethod
+    def from_dto(cls, dto: MemberFilterDTO) -> Self:
+        # model_construct: the order_by validator rejects dotted join paths as input
+        return cls.model_construct(**dto_dict(dto))
 
     def sort(self, query):
         if not self.ordering_values:

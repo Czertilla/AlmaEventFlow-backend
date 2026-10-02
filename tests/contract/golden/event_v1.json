@@ -1,0 +1,3842 @@
+{
+  "attendance.AttendanceCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "comment": "x",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "45770e24-3828-5e13-a048-d88faf85bde7",
+          "participation_id": "26f703ec-5dc9-579e-973d-aa8e55826403"
+        }
+      },
+      "dump": {
+        "comment": "x",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "45770e24-3828-5e13-a048-d88faf85bde7",
+        "participation_id": "26f703ec-5dc9-579e-973d-aa8e55826403"
+      },
+      "fields_set": [
+        "comment",
+        "is_attended",
+        "is_verified",
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "comment": "x",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "45770e24-3828-5e13-a048-d88faf85bde7",
+        "participation_id": "26f703ec-5dc9-579e-973d-aa8e55826403"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "comment": null,
+          "is_attended": false,
+          "is_verified": false,
+          "member_id": "45770e24-3828-5e13-a048-d88faf85bde7",
+          "participation_id": "26f703ec-5dc9-579e-973d-aa8e55826403"
+        }
+      },
+      "dump": {
+        "comment": null,
+        "is_attended": false,
+        "is_verified": false,
+        "member_id": "45770e24-3828-5e13-a048-d88faf85bde7",
+        "participation_id": "26f703ec-5dc9-579e-973d-aa8e55826403"
+      },
+      "fields_set": [
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "member_id": "45770e24-3828-5e13-a048-d88faf85bde7",
+        "participation_id": "26f703ec-5dc9-579e-973d-aa8e55826403"
+      }
+    }
+  },
+  "attendance.AttendancePatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "comment",
+          "id",
+          "is_attended",
+          "is_verified"
+        ],
+        "mapped": {
+          "comment": "x",
+          "id": "a4284707-aebe-5421-9654-9b802ff443af",
+          "is_attended": true,
+          "is_verified": true
+        }
+      },
+      "dump": {
+        "comment": "x",
+        "id": "a4284707-aebe-5421-9654-9b802ff443af",
+        "is_attended": true,
+        "is_verified": true
+      },
+      "fields_set": [
+        "comment",
+        "id",
+        "is_attended",
+        "is_verified"
+      ],
+      "input": {
+        "comment": "x",
+        "id": "a4284707-aebe-5421-9654-9b802ff443af",
+        "is_attended": true,
+        "is_verified": true
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "a4284707-aebe-5421-9654-9b802ff443af"
+        }
+      },
+      "dump": {
+        "id": "a4284707-aebe-5421-9654-9b802ff443af"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "a4284707-aebe-5421-9654-9b802ff443af"
+      }
+    }
+  },
+  "attendance.AttendancePatchData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "comment",
+          "is_attended"
+        ],
+        "mapped": {
+          "comment": "x",
+          "is_attended": true
+        }
+      },
+      "dump": {
+        "comment": "x",
+        "is_attended": true
+      },
+      "fields_set": [
+        "comment",
+        "is_attended"
+      ],
+      "input": {
+        "comment": "x",
+        "is_attended": true
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [],
+        "mapped": {}
+      },
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "attendance.AttendancePrincipalPatchData": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "is_verified"
+        ],
+        "fields_set": [
+          "comment",
+          "is_attended",
+          "is_verified"
+        ],
+        "mapped": {
+          "comment": "x",
+          "is_attended": true
+        }
+      },
+      "dump": {
+        "comment": "x",
+        "is_attended": true,
+        "is_verified": true
+      },
+      "fields_set": [
+        "comment",
+        "is_attended",
+        "is_verified"
+      ],
+      "input": {
+        "comment": "x",
+        "is_attended": true,
+        "is_verified": true
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [],
+        "mapped": {}
+      },
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "attendance.AttendancePut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "comment": "x",
+          "id": "2f87e5ed-5a0e-54ff-ab1a-f8a037163e97",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "42005581-1504-5155-b202-ed032a61c6aa",
+          "participation_id": "107ade39-8301-5837-b676-41a4bb8d3f12"
+        }
+      },
+      "dump": {
+        "comment": "x",
+        "id": "2f87e5ed-5a0e-54ff-ab1a-f8a037163e97",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "42005581-1504-5155-b202-ed032a61c6aa",
+        "participation_id": "107ade39-8301-5837-b676-41a4bb8d3f12"
+      },
+      "fields_set": [
+        "comment",
+        "id",
+        "is_attended",
+        "is_verified",
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "comment": "x",
+        "id": "2f87e5ed-5a0e-54ff-ab1a-f8a037163e97",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "42005581-1504-5155-b202-ed032a61c6aa",
+        "participation_id": "107ade39-8301-5837-b676-41a4bb8d3f12"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "comment": null,
+          "id": "2f87e5ed-5a0e-54ff-ab1a-f8a037163e97",
+          "is_attended": false,
+          "is_verified": false,
+          "member_id": "42005581-1504-5155-b202-ed032a61c6aa",
+          "participation_id": "107ade39-8301-5837-b676-41a4bb8d3f12"
+        }
+      },
+      "dump": {
+        "comment": null,
+        "id": "2f87e5ed-5a0e-54ff-ab1a-f8a037163e97",
+        "is_attended": false,
+        "is_verified": false,
+        "member_id": "42005581-1504-5155-b202-ed032a61c6aa",
+        "participation_id": "107ade39-8301-5837-b676-41a4bb8d3f12"
+      },
+      "fields_set": [
+        "id",
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "id": "2f87e5ed-5a0e-54ff-ab1a-f8a037163e97",
+        "member_id": "42005581-1504-5155-b202-ed032a61c6aa",
+        "participation_id": "107ade39-8301-5837-b676-41a4bb8d3f12"
+      }
+    }
+  },
+  "attendance.AttendancePutData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "comment": "x",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "b37e2e4a-c33a-5ed1-880c-51a4d01daf37",
+          "participation_id": "cdf9d1a8-f7f5-5c66-a4a0-7d40a3974dc1"
+        }
+      },
+      "dump": {
+        "comment": "x",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "b37e2e4a-c33a-5ed1-880c-51a4d01daf37",
+        "participation_id": "cdf9d1a8-f7f5-5c66-a4a0-7d40a3974dc1"
+      },
+      "fields_set": [
+        "comment",
+        "is_attended",
+        "is_verified",
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "comment": "x",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "b37e2e4a-c33a-5ed1-880c-51a4d01daf37",
+        "participation_id": "cdf9d1a8-f7f5-5c66-a4a0-7d40a3974dc1"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "comment": null,
+          "is_attended": false,
+          "is_verified": false,
+          "member_id": "b37e2e4a-c33a-5ed1-880c-51a4d01daf37",
+          "participation_id": "cdf9d1a8-f7f5-5c66-a4a0-7d40a3974dc1"
+        }
+      },
+      "dump": {
+        "comment": null,
+        "is_attended": false,
+        "is_verified": false,
+        "member_id": "b37e2e4a-c33a-5ed1-880c-51a4d01daf37",
+        "participation_id": "cdf9d1a8-f7f5-5c66-a4a0-7d40a3974dc1"
+      },
+      "fields_set": [
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "member_id": "b37e2e4a-c33a-5ed1-880c-51a4d01daf37",
+        "participation_id": "cdf9d1a8-f7f5-5c66-a4a0-7d40a3974dc1"
+      }
+    }
+  },
+  "attendance.AttendanceRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "created_at",
+          "edited_at",
+          "id"
+        ],
+        "mapped": {
+          "comment": "x",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "d2795763-df98-5b80-afb0-3b8f424590d1",
+          "participation_id": "daccd7a6-cb65-545b-a2cb-e8100e1f82b1"
+        }
+      },
+      "dump": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "91e6a431-4c02-5e24-bf03-8d5438803bac",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "d2795763-df98-5b80-afb0-3b8f424590d1",
+        "participation_id": "daccd7a6-cb65-545b-a2cb-e8100e1f82b1"
+      },
+      "fields_set": [
+        "comment",
+        "created_at",
+        "edited_at",
+        "id",
+        "is_attended",
+        "is_verified",
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "91e6a431-4c02-5e24-bf03-8d5438803bac",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "d2795763-df98-5b80-afb0-3b8f424590d1",
+        "participation_id": "daccd7a6-cb65-545b-a2cb-e8100e1f82b1"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "created_at",
+          "edited_at",
+          "id"
+        ],
+        "mapped": {
+          "comment": null,
+          "is_attended": false,
+          "is_verified": false,
+          "member_id": "d2795763-df98-5b80-afb0-3b8f424590d1",
+          "participation_id": "daccd7a6-cb65-545b-a2cb-e8100e1f82b1"
+        }
+      },
+      "dump": {
+        "comment": null,
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "91e6a431-4c02-5e24-bf03-8d5438803bac",
+        "is_attended": false,
+        "is_verified": false,
+        "member_id": "d2795763-df98-5b80-afb0-3b8f424590d1",
+        "participation_id": "daccd7a6-cb65-545b-a2cb-e8100e1f82b1"
+      },
+      "fields_set": [
+        "created_at",
+        "edited_at",
+        "id",
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "91e6a431-4c02-5e24-bf03-8d5438803bac",
+        "member_id": "d2795763-df98-5b80-afb0-3b8f424590d1",
+        "participation_id": "daccd7a6-cb65-545b-a2cb-e8100e1f82b1"
+      }
+    }
+  },
+  "collective.CollectiveCreate": {
+    "full": {
+      "dump": {
+        "id": "967c10f4-564d-56df-9abb-59270e73d1c0",
+        "is_verified": true,
+        "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa"
+      },
+      "fields_set": [
+        "id",
+        "is_verified",
+        "principal_id"
+      ],
+      "input": {
+        "id": "967c10f4-564d-56df-9abb-59270e73d1c0",
+        "is_verified": true,
+        "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "967c10f4-564d-56df-9abb-59270e73d1c0",
+        "is_verified": true,
+        "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa"
+      },
+      "fields_set": [
+        "id",
+        "is_verified",
+        "principal_id"
+      ],
+      "input": {
+        "id": "967c10f4-564d-56df-9abb-59270e73d1c0",
+        "is_verified": true,
+        "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa"
+      }
+    }
+  },
+  "collective.CollectivePatch": {
+    "full": {
+      "dump": {
+        "id": "056229f3-b7d4-59f0-aef8-776e1e9605f5",
+        "is_verified": true,
+        "principal_id": "850b73b0-da59-511b-ae7c-6bd76ca9657a"
+      },
+      "fields_set": [
+        "id",
+        "is_verified",
+        "principal_id"
+      ],
+      "input": {
+        "id": "056229f3-b7d4-59f0-aef8-776e1e9605f5",
+        "is_verified": true,
+        "principal_id": "850b73b0-da59-511b-ae7c-6bd76ca9657a"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "collective.CollectivePatchData": {
+    "full": {
+      "dump": {
+        "id": "7f83b3ab-eaa8-5984-a605-1340d748be40",
+        "is_verified": true,
+        "principal_id": "e4c9a04e-8354-520c-b005-c513688d63db"
+      },
+      "fields_set": [
+        "id",
+        "is_verified",
+        "principal_id"
+      ],
+      "input": {
+        "id": "7f83b3ab-eaa8-5984-a605-1340d748be40",
+        "is_verified": true,
+        "principal_id": "e4c9a04e-8354-520c-b005-c513688d63db"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "collective.CollectivePut": {
+    "full": {
+      "dump": {
+        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+        "is_verified": true,
+        "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635"
+      },
+      "fields_set": [
+        "id",
+        "is_verified",
+        "principal_id"
+      ],
+      "input": {
+        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+        "is_verified": true,
+        "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+        "is_verified": true,
+        "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635"
+      },
+      "fields_set": [
+        "id",
+        "is_verified",
+        "principal_id"
+      ],
+      "input": {
+        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+        "is_verified": true,
+        "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635"
+      }
+    }
+  },
+  "collective.CollectivePutData": {
+    "full": {
+      "dump": {
+        "id": "56c0077e-a269-554f-8954-e50f76306aa6",
+        "is_verified": true,
+        "principal_id": "5a72444d-b9da-5588-8d59-30e3366b467d"
+      },
+      "fields_set": [
+        "id",
+        "is_verified",
+        "principal_id"
+      ],
+      "input": {
+        "id": "56c0077e-a269-554f-8954-e50f76306aa6",
+        "is_verified": true,
+        "principal_id": "5a72444d-b9da-5588-8d59-30e3366b467d"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "56c0077e-a269-554f-8954-e50f76306aa6",
+        "is_verified": true,
+        "principal_id": "5a72444d-b9da-5588-8d59-30e3366b467d"
+      },
+      "fields_set": [
+        "id",
+        "is_verified",
+        "principal_id"
+      ],
+      "input": {
+        "id": "56c0077e-a269-554f-8954-e50f76306aa6",
+        "is_verified": true,
+        "principal_id": "5a72444d-b9da-5588-8d59-30e3366b467d"
+      }
+    }
+  },
+  "collective.CollectiveRead": {
+    "full": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
+        "is_verified": true,
+        "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056"
+      },
+      "fields_set": [
+        "created_at",
+        "edited_at",
+        "id",
+        "is_verified",
+        "principal_id"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
+        "is_verified": true,
+        "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056"
+      }
+    },
+    "required": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
+        "is_verified": true,
+        "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056"
+      },
+      "fields_set": [
+        "created_at",
+        "edited_at",
+        "id",
+        "is_verified",
+        "principal_id"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
+        "is_verified": true,
+        "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056"
+      }
+    }
+  },
+  "collective.MyCollectiveRead": {
+    "full": {
+      "dump": {
+        "id": "c55d137e-c711-5b39-b034-247f3c963fb7",
+        "is_verified": true,
+        "name": "x",
+        "principal_id": "d2ecf8f2-603a-5b29-a140-e3e9bad2c708"
+      },
+      "fields_set": [
+        "id",
+        "is_verified",
+        "name",
+        "principal_id"
+      ],
+      "input": {
+        "id": "c55d137e-c711-5b39-b034-247f3c963fb7",
+        "is_verified": true,
+        "name": "x",
+        "principal_id": "d2ecf8f2-603a-5b29-a140-e3e9bad2c708"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "c55d137e-c711-5b39-b034-247f3c963fb7",
+        "is_verified": true,
+        "name": "x",
+        "principal_id": "d2ecf8f2-603a-5b29-a140-e3e9bad2c708"
+      },
+      "fields_set": [
+        "id",
+        "is_verified",
+        "name",
+        "principal_id"
+      ],
+      "input": {
+        "id": "c55d137e-c711-5b39-b034-247f3c963fb7",
+        "is_verified": true,
+        "name": "x",
+        "principal_id": "d2ecf8f2-603a-5b29-a140-e3e9bad2c708"
+      }
+    }
+  },
+  "event.EventCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "date": "2026-01-01",
+          "description": "x",
+          "format": "online",
+          "level": "internal",
+          "location_id": "200b6871-d46c-565c-817b-dbe265fd3695",
+          "name": "x",
+          "organizer_id": "818fd342-6c35-50a4-a7cb-ddfbe1d7360e",
+          "status": "draft",
+          "type": "rehearsal"
+        }
+      },
+      "dump": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "level": "internal",
+        "location_id": "200b6871-d46c-565c-817b-dbe265fd3695",
+        "name": "x",
+        "organizer_id": "818fd342-6c35-50a4-a7cb-ddfbe1d7360e",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "date",
+        "description",
+        "format",
+        "level",
+        "location_id",
+        "name",
+        "organizer_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "level": "internal",
+        "location_id": "200b6871-d46c-565c-817b-dbe265fd3695",
+        "name": "x",
+        "organizer_id": "818fd342-6c35-50a4-a7cb-ddfbe1d7360e",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "date": null,
+          "description": null,
+          "format": "offline",
+          "level": null,
+          "location_id": null,
+          "name": "x",
+          "organizer_id": null,
+          "status": "draft",
+          "type": null
+        }
+      },
+      "dump": {
+        "date": null,
+        "description": null,
+        "format": "offline",
+        "level": null,
+        "location_id": null,
+        "name": "x",
+        "organizer_id": null,
+        "status": "draft",
+        "type": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "event.EventPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "date",
+          "description",
+          "format",
+          "id",
+          "level",
+          "location_id",
+          "name",
+          "organizer_id",
+          "status",
+          "type"
+        ],
+        "mapped": {
+          "date": "2026-01-01",
+          "description": "x",
+          "format": "online",
+          "id": "1d2a1959-60e2-5671-a3e7-f932998b5227",
+          "level": "internal",
+          "location_id": "1105700a-7a1c-50c1-9fd2-63f23f7eecbc",
+          "name": "x",
+          "organizer_id": "a0c2d49a-74ac-50dd-ae76-f6a0adc4e191",
+          "status": "draft",
+          "type": "rehearsal"
+        }
+      },
+      "dump": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "id": "1d2a1959-60e2-5671-a3e7-f932998b5227",
+        "level": "internal",
+        "location_id": "1105700a-7a1c-50c1-9fd2-63f23f7eecbc",
+        "name": "x",
+        "organizer_id": "a0c2d49a-74ac-50dd-ae76-f6a0adc4e191",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "date",
+        "description",
+        "format",
+        "id",
+        "level",
+        "location_id",
+        "name",
+        "organizer_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "id": "1d2a1959-60e2-5671-a3e7-f932998b5227",
+        "level": "internal",
+        "location_id": "1105700a-7a1c-50c1-9fd2-63f23f7eecbc",
+        "name": "x",
+        "organizer_id": "a0c2d49a-74ac-50dd-ae76-f6a0adc4e191",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "1d2a1959-60e2-5671-a3e7-f932998b5227"
+        }
+      },
+      "dump": {
+        "id": "1d2a1959-60e2-5671-a3e7-f932998b5227"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "1d2a1959-60e2-5671-a3e7-f932998b5227"
+      }
+    }
+  },
+  "event.EventPatchData": {
+    "full": {
+      "dump": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "level": "internal",
+        "location_id": "4b4eb4a2-c996-54f8-875a-6545b374ffea",
+        "name": "x",
+        "organizer_id": "f448af68-09b1-5dff-abfc-9bb26ab65c6c",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "date",
+        "description",
+        "format",
+        "level",
+        "location_id",
+        "name",
+        "organizer_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "level": "internal",
+        "location_id": "4b4eb4a2-c996-54f8-875a-6545b374ffea",
+        "name": "x",
+        "organizer_id": "f448af68-09b1-5dff-abfc-9bb26ab65c6c",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "event.EventPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "date": "2026-01-01",
+          "description": "x",
+          "format": "online",
+          "id": "c96f20f8-d982-5914-8718-933d96e8a4bd",
+          "level": "internal",
+          "location_id": "e3082261-4d92-5c34-b55e-e88a6def4737",
+          "name": "x",
+          "organizer_id": "3969e474-6b62-5dca-8cb6-228d43f9b7e9",
+          "status": "draft",
+          "type": "rehearsal"
+        }
+      },
+      "dump": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "id": "c96f20f8-d982-5914-8718-933d96e8a4bd",
+        "level": "internal",
+        "location_id": "e3082261-4d92-5c34-b55e-e88a6def4737",
+        "name": "x",
+        "organizer_id": "3969e474-6b62-5dca-8cb6-228d43f9b7e9",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "date",
+        "description",
+        "format",
+        "id",
+        "level",
+        "location_id",
+        "name",
+        "organizer_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "id": "c96f20f8-d982-5914-8718-933d96e8a4bd",
+        "level": "internal",
+        "location_id": "e3082261-4d92-5c34-b55e-e88a6def4737",
+        "name": "x",
+        "organizer_id": "3969e474-6b62-5dca-8cb6-228d43f9b7e9",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "date": null,
+          "description": null,
+          "format": "offline",
+          "id": "c96f20f8-d982-5914-8718-933d96e8a4bd",
+          "level": null,
+          "location_id": null,
+          "name": "x",
+          "organizer_id": null,
+          "status": "draft",
+          "type": null
+        }
+      },
+      "dump": {
+        "date": null,
+        "description": null,
+        "format": "offline",
+        "id": "c96f20f8-d982-5914-8718-933d96e8a4bd",
+        "level": null,
+        "location_id": null,
+        "name": "x",
+        "organizer_id": null,
+        "status": "draft",
+        "type": null
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "c96f20f8-d982-5914-8718-933d96e8a4bd",
+        "name": "x"
+      }
+    }
+  },
+  "event.EventPutData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "date": "2026-01-01",
+          "description": "x",
+          "format": "online",
+          "level": "internal",
+          "location_id": "dc116775-3577-588d-821c-f9a5117c022e",
+          "name": "x",
+          "organizer_id": "a936a124-24b2-5d36-ad3c-9fecf0dc421b",
+          "status": "draft",
+          "type": "rehearsal"
+        }
+      },
+      "dump": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "level": "internal",
+        "location_id": "dc116775-3577-588d-821c-f9a5117c022e",
+        "name": "x",
+        "organizer_id": "a936a124-24b2-5d36-ad3c-9fecf0dc421b",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "date",
+        "description",
+        "format",
+        "level",
+        "location_id",
+        "name",
+        "organizer_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "level": "internal",
+        "location_id": "dc116775-3577-588d-821c-f9a5117c022e",
+        "name": "x",
+        "organizer_id": "a936a124-24b2-5d36-ad3c-9fecf0dc421b",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "date": null,
+          "description": null,
+          "format": "offline",
+          "level": null,
+          "location_id": null,
+          "name": "x",
+          "organizer_id": null,
+          "status": "draft",
+          "type": null
+        }
+      },
+      "dump": {
+        "date": null,
+        "description": null,
+        "format": "offline",
+        "level": null,
+        "location_id": null,
+        "name": "x",
+        "organizer_id": null,
+        "status": "draft",
+        "type": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "event.EventRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "created_at",
+          "edited_at",
+          "id"
+        ],
+        "mapped": {
+          "date": "2026-01-01",
+          "description": "x",
+          "format": "online",
+          "level": "internal",
+          "location_id": "05442f1b-ad7b-5ffe-8b37-d7efa157c60c",
+          "name": "x",
+          "organizer_id": "7e0b6ac9-4e7d-5483-86dc-5c98d5ac8393",
+          "status": "draft",
+          "type": "rehearsal"
+        }
+      },
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "82b05688-f0a9-5245-9aed-3773656518dc",
+        "level": "internal",
+        "location_id": "05442f1b-ad7b-5ffe-8b37-d7efa157c60c",
+        "name": "x",
+        "organizer_id": "7e0b6ac9-4e7d-5483-86dc-5c98d5ac8393",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "created_at",
+        "date",
+        "description",
+        "edited_at",
+        "format",
+        "id",
+        "level",
+        "location_id",
+        "name",
+        "organizer_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "82b05688-f0a9-5245-9aed-3773656518dc",
+        "level": "internal",
+        "location_id": "05442f1b-ad7b-5ffe-8b37-d7efa157c60c",
+        "name": "x",
+        "organizer_id": "7e0b6ac9-4e7d-5483-86dc-5c98d5ac8393",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "created_at",
+          "edited_at",
+          "id"
+        ],
+        "mapped": {
+          "date": null,
+          "description": null,
+          "format": "offline",
+          "level": null,
+          "location_id": null,
+          "name": "x",
+          "organizer_id": null,
+          "status": "draft",
+          "type": null
+        }
+      },
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": null,
+        "description": null,
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "offline",
+        "id": "82b05688-f0a9-5245-9aed-3773656518dc",
+        "level": null,
+        "location_id": null,
+        "name": "x",
+        "organizer_id": null,
+        "status": "draft",
+        "type": null
+      },
+      "fields_set": [
+        "created_at",
+        "edited_at",
+        "id",
+        "name"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "82b05688-f0a9-5245-9aed-3773656518dc",
+        "name": "x"
+      }
+    }
+  },
+  "link.LinkCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": "x",
+          "event_id": "577d7096-6645-52f5-b9d3-65c1f3a9d123",
+          "type": "reward",
+          "url": "x"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "event_id": "577d7096-6645-52f5-b9d3-65c1f3a9d123",
+        "type": "reward",
+        "url": "x"
+      },
+      "fields_set": [
+        "description",
+        "event_id",
+        "type",
+        "url"
+      ],
+      "input": {
+        "description": "x",
+        "event_id": "577d7096-6645-52f5-b9d3-65c1f3a9d123",
+        "type": "reward",
+        "url": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": null,
+          "event_id": "577d7096-6645-52f5-b9d3-65c1f3a9d123",
+          "type": "reward",
+          "url": "x"
+        }
+      },
+      "dump": {
+        "description": null,
+        "event_id": "577d7096-6645-52f5-b9d3-65c1f3a9d123",
+        "type": "reward",
+        "url": "x"
+      },
+      "fields_set": [
+        "event_id",
+        "type",
+        "url"
+      ],
+      "input": {
+        "event_id": "577d7096-6645-52f5-b9d3-65c1f3a9d123",
+        "type": "reward",
+        "url": "x"
+      }
+    }
+  },
+  "link.LinkCreateData": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "type": "reward",
+        "url": "x"
+      },
+      "fields_set": [
+        "description",
+        "type",
+        "url"
+      ],
+      "input": {
+        "description": "x",
+        "type": "reward",
+        "url": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "description": null,
+        "type": "reward",
+        "url": "x"
+      },
+      "fields_set": [
+        "type",
+        "url"
+      ],
+      "input": {
+        "type": "reward",
+        "url": "x"
+      }
+    }
+  },
+  "link.LinkPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "description",
+          "id",
+          "type",
+          "url"
+        ],
+        "mapped": {
+          "description": "x",
+          "id": "edb0cf96-9220-576c-bae6-0f1703ed46f7",
+          "type": "x",
+          "url": "x"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "id": "edb0cf96-9220-576c-bae6-0f1703ed46f7",
+        "type": "x",
+        "url": "x"
+      },
+      "fields_set": [
+        "description",
+        "id",
+        "type",
+        "url"
+      ],
+      "input": {
+        "description": "x",
+        "id": "edb0cf96-9220-576c-bae6-0f1703ed46f7",
+        "type": "x",
+        "url": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "edb0cf96-9220-576c-bae6-0f1703ed46f7"
+        }
+      },
+      "dump": {
+        "id": "edb0cf96-9220-576c-bae6-0f1703ed46f7"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "edb0cf96-9220-576c-bae6-0f1703ed46f7"
+      }
+    }
+  },
+  "link.LinkPatchData": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "type": "x",
+        "url": "x"
+      },
+      "fields_set": [
+        "description",
+        "type",
+        "url"
+      ],
+      "input": {
+        "description": "x",
+        "type": "x",
+        "url": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "link.LinkPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": "x",
+          "id": "3c45294b-0d99-5714-bd92-8db5eef659a6",
+          "type": "reward",
+          "url": "x"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "id": "3c45294b-0d99-5714-bd92-8db5eef659a6",
+        "type": "reward",
+        "url": "x"
+      },
+      "fields_set": [
+        "description",
+        "id",
+        "type",
+        "url"
+      ],
+      "input": {
+        "description": "x",
+        "id": "3c45294b-0d99-5714-bd92-8db5eef659a6",
+        "type": "reward",
+        "url": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": null,
+          "id": "3c45294b-0d99-5714-bd92-8db5eef659a6",
+          "type": "reward",
+          "url": "x"
+        }
+      },
+      "dump": {
+        "description": null,
+        "id": "3c45294b-0d99-5714-bd92-8db5eef659a6",
+        "type": "reward",
+        "url": "x"
+      },
+      "fields_set": [
+        "id",
+        "type",
+        "url"
+      ],
+      "input": {
+        "id": "3c45294b-0d99-5714-bd92-8db5eef659a6",
+        "type": "reward",
+        "url": "x"
+      }
+    }
+  },
+  "link.LinkPutData": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "type": "reward",
+        "url": "x"
+      },
+      "fields_set": [
+        "description",
+        "type",
+        "url"
+      ],
+      "input": {
+        "description": "x",
+        "type": "reward",
+        "url": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "description": null,
+        "type": "reward",
+        "url": "x"
+      },
+      "fields_set": [
+        "type",
+        "url"
+      ],
+      "input": {
+        "type": "reward",
+        "url": "x"
+      }
+    }
+  },
+  "link.LinkRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "description": "x",
+          "event_id": "1f70e60f-30c1-5c2c-afad-2543bba4e22a",
+          "type": "reward",
+          "url": "x"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "event_id": "1f70e60f-30c1-5c2c-afad-2543bba4e22a",
+        "id": "75df302f-e97d-5850-8e05-4f8948262bad",
+        "type": "reward",
+        "url": "x"
+      },
+      "fields_set": [
+        "description",
+        "event_id",
+        "id",
+        "type",
+        "url"
+      ],
+      "input": {
+        "description": "x",
+        "event_id": "1f70e60f-30c1-5c2c-afad-2543bba4e22a",
+        "id": "75df302f-e97d-5850-8e05-4f8948262bad",
+        "type": "reward",
+        "url": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "description": null,
+          "event_id": "1f70e60f-30c1-5c2c-afad-2543bba4e22a",
+          "type": "reward",
+          "url": "x"
+        }
+      },
+      "dump": {
+        "description": null,
+        "event_id": "1f70e60f-30c1-5c2c-afad-2543bba4e22a",
+        "id": "75df302f-e97d-5850-8e05-4f8948262bad",
+        "type": "reward",
+        "url": "x"
+      },
+      "fields_set": [
+        "event_id",
+        "id",
+        "type",
+        "url"
+      ],
+      "input": {
+        "event_id": "1f70e60f-30c1-5c2c-afad-2543bba4e22a",
+        "id": "75df302f-e97d-5850-8e05-4f8948262bad",
+        "type": "reward",
+        "url": "x"
+      }
+    }
+  },
+  "location.LocationCreate": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "location.LocationPatch": {
+    "full": {
+      "dump": {
+        "id": "36119a93-d6ad-5391-9ac5-df3f4cebc8ba",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "36119a93-d6ad-5391-9ac5-df3f4cebc8ba",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "36119a93-d6ad-5391-9ac5-df3f4cebc8ba"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "36119a93-d6ad-5391-9ac5-df3f4cebc8ba"
+      }
+    }
+  },
+  "location.LocationPatchData": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "location.LocationPut": {
+    "full": {
+      "dump": {
+        "id": "8da2383a-b7c4-5371-842b-7f1a2b9a620d",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "8da2383a-b7c4-5371-842b-7f1a2b9a620d",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "8da2383a-b7c4-5371-842b-7f1a2b9a620d",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "8da2383a-b7c4-5371-842b-7f1a2b9a620d",
+        "name": "x"
+      }
+    }
+  },
+  "location.LocationPutData": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "location.LocationRead": {
+    "full": {
+      "dump": {
+        "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f",
+        "name": "x"
+      }
+    }
+  },
+  "me.MeAttendanceCreateData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "comment": "x",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "f0f6a6d7-1552-5bb0-ba21-0ccf604f439f"
+        }
+      },
+      "dump": {
+        "comment": "x",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "f0f6a6d7-1552-5bb0-ba21-0ccf604f439f"
+      },
+      "fields_set": [
+        "comment",
+        "is_attended",
+        "is_verified",
+        "member_id"
+      ],
+      "input": {
+        "comment": "x",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "f0f6a6d7-1552-5bb0-ba21-0ccf604f439f"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "comment": null,
+          "is_attended": true,
+          "is_verified": false,
+          "member_id": "f0f6a6d7-1552-5bb0-ba21-0ccf604f439f"
+        }
+      },
+      "dump": {
+        "comment": null,
+        "is_attended": true,
+        "is_verified": false,
+        "member_id": "f0f6a6d7-1552-5bb0-ba21-0ccf604f439f"
+      },
+      "fields_set": [
+        "member_id"
+      ],
+      "input": {
+        "member_id": "f0f6a6d7-1552-5bb0-ba21-0ccf604f439f"
+      }
+    }
+  },
+  "me.MeEventCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "collective_id",
+          "date",
+          "description",
+          "format",
+          "level",
+          "location_id",
+          "member_ids",
+          "name",
+          "organizer_id",
+          "stages",
+          "status",
+          "template_id",
+          "type"
+        ],
+        "mapped": {
+          "collective_id": "12b64b6d-da60-5f2f-842a-b6377ca3b69d",
+          "date": "2026-01-01",
+          "description": "x",
+          "format": "online",
+          "level": "internal",
+          "location_id": "c8a7c600-f78f-5e00-956a-c6b07e95c9e2",
+          "member_ids": [
+            "cc1f8882-d25a-5438-a825-6951d43370ac"
+          ],
+          "name": "x",
+          "organizer_id": "f9ca343d-766a-54e6-ae70-c12fd2c85093",
+          "stages": [
+            {
+              "description": "x",
+              "end_at": "2026-01-01T10:00:00+00:00",
+              "name": "x",
+              "start_at": "2026-01-01T10:00:00+00:00",
+              "timezone": "Europe/Moscow"
+            }
+          ],
+          "status": "draft",
+          "template_id": "13d9b8b0-5c1d-5473-a08b-0dfa01b1bcb4",
+          "type": "rehearsal"
+        }
+      },
+      "dump": {
+        "collective_id": "12b64b6d-da60-5f2f-842a-b6377ca3b69d",
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "level": "internal",
+        "location_id": "c8a7c600-f78f-5e00-956a-c6b07e95c9e2",
+        "member_ids": [
+          "cc1f8882-d25a-5438-a825-6951d43370ac"
+        ],
+        "name": "x",
+        "organizer_id": "f9ca343d-766a-54e6-ae70-c12fd2c85093",
+        "stages": [
+          {
+            "description": "x",
+            "end_at": "2026-01-01T10:00:00Z",
+            "name": "x",
+            "start_at": "2026-01-01T10:00:00Z",
+            "timezone": "Europe/Moscow"
+          }
+        ],
+        "status": "draft",
+        "template_id": "13d9b8b0-5c1d-5473-a08b-0dfa01b1bcb4",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "collective_id",
+        "date",
+        "description",
+        "format",
+        "level",
+        "location_id",
+        "member_ids",
+        "name",
+        "organizer_id",
+        "stages",
+        "status",
+        "template_id",
+        "type"
+      ],
+      "input": {
+        "collective_id": "12b64b6d-da60-5f2f-842a-b6377ca3b69d",
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "level": "internal",
+        "location_id": "c8a7c600-f78f-5e00-956a-c6b07e95c9e2",
+        "member_ids": [
+          "cc1f8882-d25a-5438-a825-6951d43370ac"
+        ],
+        "name": "x",
+        "organizer_id": "f9ca343d-766a-54e6-ae70-c12fd2c85093",
+        "stages": [
+          {
+            "description": "x",
+            "end_at": "2026-01-01T10:00:00Z",
+            "name": "x",
+            "start_at": "2026-01-01T10:00:00Z",
+            "timezone": "Europe/Moscow"
+          }
+        ],
+        "status": "draft",
+        "template_id": "13d9b8b0-5c1d-5473-a08b-0dfa01b1bcb4",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "collective_id",
+          "name"
+        ],
+        "mapped": {
+          "collective_id": "12b64b6d-da60-5f2f-842a-b6377ca3b69d",
+          "date": null,
+          "description": null,
+          "format": "offline",
+          "level": null,
+          "location_id": null,
+          "member_ids": null,
+          "name": "x",
+          "organizer_id": null,
+          "stages": null,
+          "status": "draft",
+          "template_id": null,
+          "type": null
+        }
+      },
+      "dump": {
+        "collective_id": "12b64b6d-da60-5f2f-842a-b6377ca3b69d",
+        "date": null,
+        "description": null,
+        "format": "offline",
+        "level": null,
+        "location_id": null,
+        "member_ids": null,
+        "name": "x",
+        "organizer_id": null,
+        "stages": null,
+        "status": "draft",
+        "template_id": null,
+        "type": null
+      },
+      "fields_set": [
+        "collective_id",
+        "name"
+      ],
+      "input": {
+        "collective_id": "12b64b6d-da60-5f2f-842a-b6377ca3b69d",
+        "name": "x"
+      }
+    }
+  },
+  "me.MeEventRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "id",
+          "participation_id"
+        ],
+        "mapped": {
+          "date": "2026-01-01",
+          "description": "x",
+          "format": "online",
+          "level": "internal",
+          "location_id": "0d8b5d57-bf1e-5275-9e65-73fdfd2e6ba3",
+          "name": "x",
+          "organizer_id": "b3cf632d-a947-54fb-9e98-13d6d96babb8",
+          "status": "draft",
+          "type": "rehearsal"
+        }
+      },
+      "dump": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "id": "e8a7ef20-7430-59e7-b462-77997e2581dd",
+        "level": "internal",
+        "location_id": "0d8b5d57-bf1e-5275-9e65-73fdfd2e6ba3",
+        "name": "x",
+        "organizer_id": "b3cf632d-a947-54fb-9e98-13d6d96babb8",
+        "participation_id": "0cda4a4d-67a2-5e3e-8925-173ff79280ed",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "date",
+        "description",
+        "format",
+        "id",
+        "level",
+        "location_id",
+        "name",
+        "organizer_id",
+        "participation_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "date": "2026-01-01",
+        "description": "x",
+        "format": "online",
+        "id": "e8a7ef20-7430-59e7-b462-77997e2581dd",
+        "level": "internal",
+        "location_id": "0d8b5d57-bf1e-5275-9e65-73fdfd2e6ba3",
+        "name": "x",
+        "organizer_id": "b3cf632d-a947-54fb-9e98-13d6d96babb8",
+        "participation_id": "0cda4a4d-67a2-5e3e-8925-173ff79280ed",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "id",
+          "participation_id"
+        ],
+        "mapped": {
+          "date": null,
+          "description": null,
+          "format": "offline",
+          "level": null,
+          "location_id": null,
+          "name": "x",
+          "organizer_id": null,
+          "status": "draft",
+          "type": null
+        }
+      },
+      "dump": {
+        "date": null,
+        "description": null,
+        "format": "offline",
+        "id": "e8a7ef20-7430-59e7-b462-77997e2581dd",
+        "level": null,
+        "location_id": null,
+        "name": "x",
+        "organizer_id": null,
+        "participation_id": null,
+        "status": "draft",
+        "type": null
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "e8a7ef20-7430-59e7-b462-77997e2581dd",
+        "name": "x"
+      }
+    }
+  },
+  "me.MeParticipationCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "event_id": "0ed5cb8b-d910-5ba0-a3a0-66830e635e0e",
+          "member_ids": [
+            "c835cb25-13fa-5d5f-ad93-c85febc75720"
+          ],
+          "priority_degree": "hight"
+        }
+      },
+      "dump": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "0ed5cb8b-d910-5ba0-a3a0-66830e635e0e",
+        "member_ids": [
+          "c835cb25-13fa-5d5f-ad93-c85febc75720"
+        ]
+      },
+      "fields_set": [
+        "event_id",
+        "member_ids",
+        "priority_degree"
+      ],
+      "input": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "0ed5cb8b-d910-5ba0-a3a0-66830e635e0e",
+        "member_ids": [
+          "c835cb25-13fa-5d5f-ad93-c85febc75720"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "event_id": "0ed5cb8b-d910-5ba0-a3a0-66830e635e0e",
+          "member_ids": null,
+          "priority_degree": null
+        }
+      },
+      "dump": {
+        "EventPriorityEnumV1": null,
+        "event_id": "0ed5cb8b-d910-5ba0-a3a0-66830e635e0e",
+        "member_ids": null
+      },
+      "fields_set": [
+        "event_id"
+      ],
+      "input": {
+        "event_id": "0ed5cb8b-d910-5ba0-a3a0-66830e635e0e"
+      }
+    }
+  },
+  "member.MemberCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": "fd01f8f1-a551-587f-8d49-2d0e1fcd5865",
+          "is_active": true,
+          "person_id": "2cfbc614-8fc1-5346-a402-86dac2ee87e3",
+          "roles": [
+            "d8786e22-9471-51cc-8b8b-c9c5db562c07"
+          ]
+        }
+      },
+      "dump": {
+        "collective_id": "fd01f8f1-a551-587f-8d49-2d0e1fcd5865",
+        "is_active": true,
+        "person_id": "2cfbc614-8fc1-5346-a402-86dac2ee87e3",
+        "roles": [
+          "d8786e22-9471-51cc-8b8b-c9c5db562c07"
+        ]
+      },
+      "fields_set": [
+        "collective_id",
+        "is_active",
+        "person_id",
+        "roles"
+      ],
+      "input": {
+        "collective_id": "fd01f8f1-a551-587f-8d49-2d0e1fcd5865",
+        "is_active": true,
+        "person_id": "2cfbc614-8fc1-5346-a402-86dac2ee87e3",
+        "roles": [
+          "d8786e22-9471-51cc-8b8b-c9c5db562c07"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": "fd01f8f1-a551-587f-8d49-2d0e1fcd5865",
+          "is_active": true,
+          "person_id": "2cfbc614-8fc1-5346-a402-86dac2ee87e3",
+          "roles": []
+        }
+      },
+      "dump": {
+        "collective_id": "fd01f8f1-a551-587f-8d49-2d0e1fcd5865",
+        "is_active": true,
+        "person_id": "2cfbc614-8fc1-5346-a402-86dac2ee87e3",
+        "roles": []
+      },
+      "fields_set": [
+        "collective_id",
+        "person_id"
+      ],
+      "input": {
+        "collective_id": "fd01f8f1-a551-587f-8d49-2d0e1fcd5865",
+        "person_id": "2cfbc614-8fc1-5346-a402-86dac2ee87e3"
+      }
+    }
+  },
+  "member.MemberCreateData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "is_active": true,
+          "person_id": "31328155-b36e-55aa-ab1f-b200f0101a69",
+          "roles": [
+            "31de2039-df83-513f-aad5-68c625b5e7c5"
+          ]
+        }
+      },
+      "dump": {
+        "is_active": true,
+        "person_id": "31328155-b36e-55aa-ab1f-b200f0101a69",
+        "roles": [
+          "31de2039-df83-513f-aad5-68c625b5e7c5"
+        ]
+      },
+      "fields_set": [
+        "is_active",
+        "person_id",
+        "roles"
+      ],
+      "input": {
+        "is_active": true,
+        "person_id": "31328155-b36e-55aa-ab1f-b200f0101a69",
+        "roles": [
+          "31de2039-df83-513f-aad5-68c625b5e7c5"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "is_active": true,
+          "person_id": "31328155-b36e-55aa-ab1f-b200f0101a69",
+          "roles": []
+        }
+      },
+      "dump": {
+        "is_active": true,
+        "person_id": "31328155-b36e-55aa-ab1f-b200f0101a69",
+        "roles": []
+      },
+      "fields_set": [
+        "person_id"
+      ],
+      "input": {
+        "person_id": "31328155-b36e-55aa-ab1f-b200f0101a69"
+      }
+    }
+  },
+  "member.MemberPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id",
+          "is_active",
+          "roles"
+        ],
+        "mapped": {
+          "id": "15404cd3-8609-5353-8e44-541d132ad840",
+          "is_active": true,
+          "roles": [
+            "62ca514b-72a2-540f-a8d4-6292c2b78914"
+          ]
+        }
+      },
+      "dump": {
+        "id": "15404cd3-8609-5353-8e44-541d132ad840",
+        "is_active": true,
+        "roles": [
+          "62ca514b-72a2-540f-a8d4-6292c2b78914"
+        ]
+      },
+      "fields_set": [
+        "id",
+        "is_active",
+        "roles"
+      ],
+      "input": {
+        "id": "15404cd3-8609-5353-8e44-541d132ad840",
+        "is_active": true,
+        "roles": [
+          "62ca514b-72a2-540f-a8d4-6292c2b78914"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "15404cd3-8609-5353-8e44-541d132ad840"
+        }
+      },
+      "dump": {
+        "id": "15404cd3-8609-5353-8e44-541d132ad840"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "15404cd3-8609-5353-8e44-541d132ad840"
+      }
+    }
+  },
+  "member.MemberPatchData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "is_active",
+          "roles"
+        ],
+        "mapped": {
+          "is_active": true,
+          "roles": [
+            "f5d8fb19-a33f-5296-b590-5735e492a5ab"
+          ]
+        }
+      },
+      "dump": {
+        "is_active": true,
+        "roles": [
+          "f5d8fb19-a33f-5296-b590-5735e492a5ab"
+        ]
+      },
+      "fields_set": [
+        "is_active",
+        "roles"
+      ],
+      "input": {
+        "is_active": true,
+        "roles": [
+          "f5d8fb19-a33f-5296-b590-5735e492a5ab"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [],
+        "mapped": {}
+      },
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "member.MemberPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "628b30cc-7e53-59a3-83e7-cf1c47d79858",
+          "is_active": true,
+          "roles": [
+            "d9fc2d16-bad3-59ef-9c4c-2965fad0a6a6"
+          ]
+        }
+      },
+      "dump": {
+        "id": "628b30cc-7e53-59a3-83e7-cf1c47d79858",
+        "is_active": true,
+        "roles": [
+          "d9fc2d16-bad3-59ef-9c4c-2965fad0a6a6"
+        ]
+      },
+      "fields_set": [
+        "id",
+        "is_active",
+        "roles"
+      ],
+      "input": {
+        "id": "628b30cc-7e53-59a3-83e7-cf1c47d79858",
+        "is_active": true,
+        "roles": [
+          "d9fc2d16-bad3-59ef-9c4c-2965fad0a6a6"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "628b30cc-7e53-59a3-83e7-cf1c47d79858",
+          "is_active": true,
+          "roles": []
+        }
+      },
+      "dump": {
+        "id": "628b30cc-7e53-59a3-83e7-cf1c47d79858",
+        "is_active": true,
+        "roles": []
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "628b30cc-7e53-59a3-83e7-cf1c47d79858"
+      }
+    }
+  },
+  "member.MemberPutData": {
+    "full": {
+      "dump": {
+        "is_active": true,
+        "roles": [
+          "5d8ca17f-cd68-5854-b5f2-20528dcc0f19"
+        ]
+      },
+      "fields_set": [
+        "is_active",
+        "roles"
+      ],
+      "input": {
+        "is_active": true,
+        "roles": [
+          "5d8ca17f-cd68-5854-b5f2-20528dcc0f19"
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "is_active": true,
+        "roles": []
+      },
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "member.MemberRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "collective_id": "d0edd0aa-426f-551f-bd5f-abfb648f4707",
+          "is_active": true,
+          "person_id": "c9e7ec23-6b46-574e-b406-889bc4d33a1f",
+          "roles": [
+            {
+              "id": "36828293-06d6-5f71-b8b5-d4185c10e9e6",
+              "name": "x"
+            }
+          ]
+        }
+      },
+      "dump": {
+        "collective_id": "d0edd0aa-426f-551f-bd5f-abfb648f4707",
+        "id": "9a90f096-d6be-5ef9-b897-499b33f7c66d",
+        "is_active": true,
+        "person_id": "c9e7ec23-6b46-574e-b406-889bc4d33a1f",
+        "roles": [
+          {
+            "id": "36828293-06d6-5f71-b8b5-d4185c10e9e6",
+            "name": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "collective_id",
+        "id",
+        "is_active",
+        "person_id",
+        "roles"
+      ],
+      "input": {
+        "collective_id": "d0edd0aa-426f-551f-bd5f-abfb648f4707",
+        "id": "9a90f096-d6be-5ef9-b897-499b33f7c66d",
+        "is_active": true,
+        "person_id": "c9e7ec23-6b46-574e-b406-889bc4d33a1f",
+        "roles": [
+          {
+            "id": "36828293-06d6-5f71-b8b5-d4185c10e9e6",
+            "name": "x"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "collective_id": "d0edd0aa-426f-551f-bd5f-abfb648f4707",
+          "is_active": true,
+          "person_id": "c9e7ec23-6b46-574e-b406-889bc4d33a1f",
+          "roles": [
+            {
+              "id": "36828293-06d6-5f71-b8b5-d4185c10e9e6",
+              "name": "x"
+            }
+          ]
+        }
+      },
+      "dump": {
+        "collective_id": "d0edd0aa-426f-551f-bd5f-abfb648f4707",
+        "id": "9a90f096-d6be-5ef9-b897-499b33f7c66d",
+        "is_active": true,
+        "person_id": "c9e7ec23-6b46-574e-b406-889bc4d33a1f",
+        "roles": [
+          {
+            "id": "36828293-06d6-5f71-b8b5-d4185c10e9e6",
+            "name": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "collective_id",
+        "id",
+        "person_id",
+        "roles"
+      ],
+      "input": {
+        "collective_id": "d0edd0aa-426f-551f-bd5f-abfb648f4707",
+        "id": "9a90f096-d6be-5ef9-b897-499b33f7c66d",
+        "person_id": "c9e7ec23-6b46-574e-b406-889bc4d33a1f",
+        "roles": [
+          {
+            "id": "36828293-06d6-5f71-b8b5-d4185c10e9e6",
+            "name": "x"
+          }
+        ]
+      }
+    }
+  },
+  "organization.OrganizationCreate": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "name": "x",
+        "type": "x"
+      },
+      "fields_set": [
+        "description",
+        "name",
+        "type"
+      ],
+      "input": {
+        "description": "x",
+        "name": "x",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "description": null,
+        "name": "x",
+        "type": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "organization.OrganizationPatch": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "id": "06c15207-0183-551c-990e-a86d01a200d5",
+        "name": "x",
+        "type": "x"
+      },
+      "fields_set": [
+        "description",
+        "id",
+        "name",
+        "type"
+      ],
+      "input": {
+        "description": "x",
+        "id": "06c15207-0183-551c-990e-a86d01a200d5",
+        "name": "x",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "06c15207-0183-551c-990e-a86d01a200d5"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "06c15207-0183-551c-990e-a86d01a200d5"
+      }
+    }
+  },
+  "organization.OrganizationPatchData": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "name": "x",
+        "type": "x"
+      },
+      "fields_set": [
+        "description",
+        "name",
+        "type"
+      ],
+      "input": {
+        "description": "x",
+        "name": "x",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "organization.OrganizationPut": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x",
+        "type": "x"
+      },
+      "fields_set": [
+        "description",
+        "id",
+        "name",
+        "type"
+      ],
+      "input": {
+        "description": "x",
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "description": null,
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x",
+        "type": null
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x"
+      }
+    }
+  },
+  "organization.OrganizationPutData": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "name": "x",
+        "type": "x"
+      },
+      "fields_set": [
+        "description",
+        "name",
+        "type"
+      ],
+      "input": {
+        "description": "x",
+        "name": "x",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "description": null,
+        "name": "x",
+        "type": null
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "organization.OrganizationRead": {
+    "full": {
+      "unusable": "class-not-fully-defined"
+    },
+    "required": {
+      "unusable": "class-not-fully-defined"
+    }
+  },
+  "participation.ParticipationCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": "634fe429-98bb-5e4b-90d1-d69778830f29",
+          "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6",
+          "priority_degree": "hight"
+        }
+      },
+      "dump": {
+        "EventPriorityEnumV1": "hight",
+        "collective_id": "634fe429-98bb-5e4b-90d1-d69778830f29",
+        "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6"
+      },
+      "fields_set": [
+        "collective_id",
+        "event_id",
+        "priority_degree"
+      ],
+      "input": {
+        "EventPriorityEnumV1": "hight",
+        "collective_id": "634fe429-98bb-5e4b-90d1-d69778830f29",
+        "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": "634fe429-98bb-5e4b-90d1-d69778830f29",
+          "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6",
+          "priority_degree": null
+        }
+      },
+      "dump": {
+        "EventPriorityEnumV1": null,
+        "collective_id": "634fe429-98bb-5e4b-90d1-d69778830f29",
+        "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6"
+      },
+      "fields_set": [
+        "collective_id",
+        "event_id"
+      ],
+      "input": {
+        "collective_id": "634fe429-98bb-5e4b-90d1-d69778830f29",
+        "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6"
+      }
+    }
+  },
+  "participation.ParticipationCreateData": {
+    "full": {
+      "dump": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "796deed3-4a86-5f3b-80e5-b28d41524ec1"
+      },
+      "fields_set": [
+        "event_id",
+        "priority_degree"
+      ],
+      "input": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "796deed3-4a86-5f3b-80e5-b28d41524ec1"
+      }
+    },
+    "required": {
+      "dump": {
+        "EventPriorityEnumV1": null,
+        "event_id": "796deed3-4a86-5f3b-80e5-b28d41524ec1"
+      },
+      "fields_set": [
+        "event_id"
+      ],
+      "input": {
+        "event_id": "796deed3-4a86-5f3b-80e5-b28d41524ec1"
+      }
+    }
+  },
+  "participation.ParticipationPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "event_id",
+          "id",
+          "priority_degree"
+        ],
+        "mapped": {
+          "event_id": "6febf617-643c-59e8-8c57-bdc38335c5ff",
+          "id": "0172f0ac-84fc-5421-88b5-21298e3bb904",
+          "priority_degree": "hight"
+        }
+      },
+      "dump": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "6febf617-643c-59e8-8c57-bdc38335c5ff",
+        "id": "0172f0ac-84fc-5421-88b5-21298e3bb904"
+      },
+      "fields_set": [
+        "event_id",
+        "id",
+        "priority_degree"
+      ],
+      "input": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "6febf617-643c-59e8-8c57-bdc38335c5ff",
+        "id": "0172f0ac-84fc-5421-88b5-21298e3bb904"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "0172f0ac-84fc-5421-88b5-21298e3bb904"
+        }
+      },
+      "dump": {
+        "id": "0172f0ac-84fc-5421-88b5-21298e3bb904"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "0172f0ac-84fc-5421-88b5-21298e3bb904"
+      }
+    }
+  },
+  "participation.ParticipationPatchData": {
+    "full": {
+      "dump": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "f8a90d29-9ff3-55f6-89ef-77d38ce634fc"
+      },
+      "fields_set": [
+        "event_id",
+        "priority_degree"
+      ],
+      "input": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "f8a90d29-9ff3-55f6-89ef-77d38ce634fc"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "participation.ParticipationPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "event_id": "a2453d59-aa42-5081-8017-439ab4f5cd3e",
+          "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477",
+          "priority_degree": "hight"
+        }
+      },
+      "dump": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "a2453d59-aa42-5081-8017-439ab4f5cd3e",
+        "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477"
+      },
+      "fields_set": [
+        "event_id",
+        "id",
+        "priority_degree"
+      ],
+      "input": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "a2453d59-aa42-5081-8017-439ab4f5cd3e",
+        "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "event_id": "a2453d59-aa42-5081-8017-439ab4f5cd3e",
+          "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477",
+          "priority_degree": null
+        }
+      },
+      "dump": {
+        "EventPriorityEnumV1": null,
+        "event_id": "a2453d59-aa42-5081-8017-439ab4f5cd3e",
+        "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477"
+      },
+      "fields_set": [
+        "event_id",
+        "id"
+      ],
+      "input": {
+        "event_id": "a2453d59-aa42-5081-8017-439ab4f5cd3e",
+        "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477"
+      }
+    }
+  },
+  "participation.ParticipationPutData": {
+    "full": {
+      "dump": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "675ebebf-a898-5023-8496-d1a2ef865a39"
+      },
+      "fields_set": [
+        "event_id",
+        "priority_degree"
+      ],
+      "input": {
+        "EventPriorityEnumV1": "hight",
+        "event_id": "675ebebf-a898-5023-8496-d1a2ef865a39"
+      }
+    },
+    "required": {
+      "dump": {
+        "EventPriorityEnumV1": null,
+        "event_id": "675ebebf-a898-5023-8496-d1a2ef865a39"
+      },
+      "fields_set": [
+        "event_id"
+      ],
+      "input": {
+        "event_id": "675ebebf-a898-5023-8496-d1a2ef865a39"
+      }
+    }
+  },
+  "participation.ParticipationRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "collective_name",
+          "id"
+        ],
+        "mapped": {
+          "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
+          "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
+          "priority_degree": "hight"
+        }
+      },
+      "dump": {
+        "EventPriorityEnumV1": "hight",
+        "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
+        "collective_name": "x",
+        "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
+        "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b"
+      },
+      "fields_set": [
+        "collective_id",
+        "collective_name",
+        "event_id",
+        "id",
+        "priority_degree"
+      ],
+      "input": {
+        "EventPriorityEnumV1": "hight",
+        "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
+        "collective_name": "x",
+        "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
+        "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "collective_name",
+          "id"
+        ],
+        "mapped": {
+          "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
+          "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
+          "priority_degree": null
+        }
+      },
+      "dump": {
+        "EventPriorityEnumV1": null,
+        "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
+        "collective_name": null,
+        "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
+        "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b"
+      },
+      "fields_set": [
+        "collective_id",
+        "event_id",
+        "id"
+      ],
+      "input": {
+        "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
+        "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
+        "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b"
+      }
+    }
+  },
+  "reward.RewardCreate": {
+    "full": {
+      "error": [
+        "file:value_error"
+      ],
+      "input": {
+        "degree": 1,
+        "file": "x",
+        "name": "x",
+        "participation_id": "7473a519-4622-5612-b0a5-815065d4a993"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "degree": null,
+          "file": null,
+          "name": "x",
+          "participation_id": "7473a519-4622-5612-b0a5-815065d4a993"
+        }
+      },
+      "dump": {
+        "degree": null,
+        "file": null,
+        "name": "x",
+        "participation_id": "7473a519-4622-5612-b0a5-815065d4a993"
+      },
+      "fields_set": [
+        "name",
+        "participation_id"
+      ],
+      "input": {
+        "name": "x",
+        "participation_id": "7473a519-4622-5612-b0a5-815065d4a993"
+      }
+    }
+  },
+  "reward.RewardCreateData": {
+    "full": {
+      "dump": {
+        "degree": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree",
+        "name"
+      ],
+      "input": {
+        "degree": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "degree": null,
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "reward.RewardPatch": {
+    "full": {
+      "error": [
+        "file:value_error"
+      ],
+      "input": {
+        "degree": 1,
+        "file": "x",
+        "id": "b567cf25-7eac-521e-9985-e27dddd417ba",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "b567cf25-7eac-521e-9985-e27dddd417ba"
+        }
+      },
+      "dump": {
+        "id": "b567cf25-7eac-521e-9985-e27dddd417ba"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "b567cf25-7eac-521e-9985-e27dddd417ba"
+      }
+    }
+  },
+  "reward.RewardPatchData": {
+    "full": {
+      "error": [
+        "file:value_error"
+      ],
+      "input": {
+        "degree": 1,
+        "file": "x",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "reward.RewardPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "degree": 1,
+          "id": "12c20634-1de3-59cc-b3f3-75eda0e537b8",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree": 1,
+        "id": "12c20634-1de3-59cc-b3f3-75eda0e537b8",
+        "name": "x"
+      },
+      "fields_set": [
+        "degree",
+        "id",
+        "name"
+      ],
+      "input": {
+        "degree": 1,
+        "id": "12c20634-1de3-59cc-b3f3-75eda0e537b8",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "degree": null,
+          "id": "12c20634-1de3-59cc-b3f3-75eda0e537b8",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree": null,
+        "id": "12c20634-1de3-59cc-b3f3-75eda0e537b8",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "12c20634-1de3-59cc-b3f3-75eda0e537b8",
+        "name": "x"
+      }
+    }
+  },
+  "reward.RewardPutData": {
+    "full": {
+      "dump": {
+        "degree": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree",
+        "name"
+      ],
+      "input": {
+        "degree": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "degree": null,
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "reward.RewardRead": {
+    "full": {
+      "dump": {
+        "degree": 1,
+        "file_link": "https://example.com/x",
+        "id": "cc499cd8-9b7b-535c-bd71-c9ec11990af0",
+        "name": "x",
+        "participation_id": "e4b53d86-1673-570a-83ed-bc6a45f5b743"
+      },
+      "fields_set": [
+        "degree",
+        "file_link",
+        "id",
+        "name",
+        "participation_id"
+      ],
+      "input": {
+        "degree": 1,
+        "file_link": "https://example.com/x",
+        "id": "cc499cd8-9b7b-535c-bd71-c9ec11990af0",
+        "name": "x",
+        "participation_id": "e4b53d86-1673-570a-83ed-bc6a45f5b743"
+      }
+    },
+    "required": {
+      "dump": {
+        "degree": null,
+        "file_link": null,
+        "id": "cc499cd8-9b7b-535c-bd71-c9ec11990af0",
+        "name": "x",
+        "participation_id": "e4b53d86-1673-570a-83ed-bc6a45f5b743"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "participation_id"
+      ],
+      "input": {
+        "id": "cc499cd8-9b7b-535c-bd71-c9ec11990af0",
+        "name": "x",
+        "participation_id": "e4b53d86-1673-570a-83ed-bc6a45f5b743"
+      }
+    }
+  },
+  "role.RoleCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": "0f080da4-e26f-59f6-a262-8bd85f1b3562",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "collective_id": "0f080da4-e26f-59f6-a262-8bd85f1b3562",
+        "name": "x"
+      },
+      "fields_set": [
+        "collective_id",
+        "name"
+      ],
+      "input": {
+        "collective_id": "0f080da4-e26f-59f6-a262-8bd85f1b3562",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": "0f080da4-e26f-59f6-a262-8bd85f1b3562",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "collective_id": "0f080da4-e26f-59f6-a262-8bd85f1b3562",
+        "name": "x"
+      },
+      "fields_set": [
+        "collective_id",
+        "name"
+      ],
+      "input": {
+        "collective_id": "0f080da4-e26f-59f6-a262-8bd85f1b3562",
+        "name": "x"
+      }
+    }
+  },
+  "role.RoleCreateData": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "role.RolePatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id",
+          "name"
+        ],
+        "mapped": {
+          "id": "14eb4b24-b83f-5a0d-9c63-26e91055f19a",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "id": "14eb4b24-b83f-5a0d-9c63-26e91055f19a",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "14eb4b24-b83f-5a0d-9c63-26e91055f19a",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "14eb4b24-b83f-5a0d-9c63-26e91055f19a"
+        }
+      },
+      "dump": {
+        "id": "14eb4b24-b83f-5a0d-9c63-26e91055f19a"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "14eb4b24-b83f-5a0d-9c63-26e91055f19a"
+      }
+    }
+  },
+  "role.RolePatchData": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "role.RolePreview": {
+    "full": {
+      "dump": {
+        "id": "6d397930-1b40-5b73-8872-478ec973fa2c",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "6d397930-1b40-5b73-8872-478ec973fa2c",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "6d397930-1b40-5b73-8872-478ec973fa2c",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "6d397930-1b40-5b73-8872-478ec973fa2c",
+        "name": "x"
+      }
+    }
+  },
+  "role.RolePut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "786d4a03-c09d-5197-a271-0aec9f790c28",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "id": "786d4a03-c09d-5197-a271-0aec9f790c28",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "786d4a03-c09d-5197-a271-0aec9f790c28",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "786d4a03-c09d-5197-a271-0aec9f790c28",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "id": "786d4a03-c09d-5197-a271-0aec9f790c28",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "786d4a03-c09d-5197-a271-0aec9f790c28",
+        "name": "x"
+      }
+    }
+  },
+  "role.RolePutData": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "role.RoleRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "collective_id": "39790c99-7000-5f9d-8b44-5f5edbb4b86d",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "collective_id": "39790c99-7000-5f9d-8b44-5f5edbb4b86d",
+        "id": "47aaf428-79e2-542a-b05d-6ff4791f0bb8",
+        "name": "x"
+      },
+      "fields_set": [
+        "collective_id",
+        "id",
+        "name"
+      ],
+      "input": {
+        "collective_id": "39790c99-7000-5f9d-8b44-5f5edbb4b86d",
+        "id": "47aaf428-79e2-542a-b05d-6ff4791f0bb8",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "collective_id": "39790c99-7000-5f9d-8b44-5f5edbb4b86d",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "collective_id": "39790c99-7000-5f9d-8b44-5f5edbb4b86d",
+        "id": "47aaf428-79e2-542a-b05d-6ff4791f0bb8",
+        "name": "x"
+      },
+      "fields_set": [
+        "collective_id",
+        "id",
+        "name"
+      ],
+      "input": {
+        "collective_id": "39790c99-7000-5f9d-8b44-5f5edbb4b86d",
+        "id": "47aaf428-79e2-542a-b05d-6ff4791f0bb8",
+        "name": "x"
+      }
+    }
+  },
+  "stage.StageCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": "x",
+          "end_at": "2026-01-01T10:00:00+00:00",
+          "event_id": "6bac24f8-d1e4-5dda-869a-07807d703f2f",
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": "Europe/Moscow"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "event_id": "6bac24f8-d1e4-5dda-869a-07807d703f2f",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      },
+      "fields_set": [
+        "description",
+        "end_at",
+        "event_id",
+        "name",
+        "start_at",
+        "timezone"
+      ],
+      "input": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "event_id": "6bac24f8-d1e4-5dda-869a-07807d703f2f",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": null,
+          "end_at": null,
+          "event_id": "6bac24f8-d1e4-5dda-869a-07807d703f2f",
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": null
+        }
+      },
+      "dump": {
+        "description": null,
+        "end_at": null,
+        "event_id": "6bac24f8-d1e4-5dda-869a-07807d703f2f",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": null
+      },
+      "fields_set": [
+        "event_id",
+        "name",
+        "start_at"
+      ],
+      "input": {
+        "event_id": "6bac24f8-d1e4-5dda-869a-07807d703f2f",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z"
+      }
+    }
+  },
+  "stage.StageCreateData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": "x",
+          "end_at": "2026-01-01T10:00:00+00:00",
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": "Europe/Moscow"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      },
+      "fields_set": [
+        "description",
+        "end_at",
+        "name",
+        "start_at",
+        "timezone"
+      ],
+      "input": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": null,
+          "end_at": null,
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": null
+        }
+      },
+      "dump": {
+        "description": null,
+        "end_at": null,
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": null
+      },
+      "fields_set": [
+        "name",
+        "start_at"
+      ],
+      "input": {
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z"
+      }
+    }
+  },
+  "stage.StagePatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "description",
+          "end_at",
+          "id",
+          "name",
+          "start_at",
+          "timezone"
+        ],
+        "mapped": {
+          "description": "x",
+          "end_at": "2026-01-01T10:00:00+00:00",
+          "id": "d80c1cc3-b001-5506-817a-1bb00613ed1a",
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": "Europe/Moscow"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "id": "d80c1cc3-b001-5506-817a-1bb00613ed1a",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      },
+      "fields_set": [
+        "description",
+        "end_at",
+        "id",
+        "name",
+        "start_at",
+        "timezone"
+      ],
+      "input": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "id": "d80c1cc3-b001-5506-817a-1bb00613ed1a",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "d80c1cc3-b001-5506-817a-1bb00613ed1a"
+        }
+      },
+      "dump": {
+        "id": "d80c1cc3-b001-5506-817a-1bb00613ed1a"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "d80c1cc3-b001-5506-817a-1bb00613ed1a"
+      }
+    }
+  },
+  "stage.StagePatchData": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      },
+      "fields_set": [
+        "description",
+        "end_at",
+        "name",
+        "start_at",
+        "timezone"
+      ],
+      "input": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "stage.StagePut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": "x",
+          "end_at": "2026-01-01T10:00:00+00:00",
+          "id": "3fc8ca03-12cf-547f-9caf-a9158c5620e5",
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": "Europe/Moscow"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "id": "3fc8ca03-12cf-547f-9caf-a9158c5620e5",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      },
+      "fields_set": [
+        "description",
+        "end_at",
+        "id",
+        "name",
+        "start_at",
+        "timezone"
+      ],
+      "input": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "id": "3fc8ca03-12cf-547f-9caf-a9158c5620e5",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": null,
+          "end_at": null,
+          "id": "3fc8ca03-12cf-547f-9caf-a9158c5620e5",
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": null
+        }
+      },
+      "dump": {
+        "description": null,
+        "end_at": null,
+        "id": "3fc8ca03-12cf-547f-9caf-a9158c5620e5",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": null
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "start_at"
+      ],
+      "input": {
+        "id": "3fc8ca03-12cf-547f-9caf-a9158c5620e5",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z"
+      }
+    }
+  },
+  "stage.StagePutData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": "x",
+          "end_at": "2026-01-01T10:00:00+00:00",
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": "Europe/Moscow"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      },
+      "fields_set": [
+        "description",
+        "end_at",
+        "name",
+        "start_at",
+        "timezone"
+      ],
+      "input": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": null,
+          "end_at": null,
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": null
+        }
+      },
+      "dump": {
+        "description": null,
+        "end_at": null,
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": null
+      },
+      "fields_set": [
+        "name",
+        "start_at"
+      ],
+      "input": {
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z"
+      }
+    }
+  },
+  "stage.StageRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "description": "x",
+          "end_at": "2026-01-01T10:00:00+00:00",
+          "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": "Europe/Moscow"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
+        "id": "0afc80b6-f1cf-54f4-b26b-0b2eba4a6163",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      },
+      "fields_set": [
+        "description",
+        "end_at",
+        "event_id",
+        "id",
+        "name",
+        "start_at",
+        "timezone"
+      ],
+      "input": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
+        "id": "0afc80b6-f1cf-54f4-b26b-0b2eba4a6163",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "description": null,
+          "end_at": null,
+          "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00+00:00",
+          "timezone": null
+        }
+      },
+      "dump": {
+        "description": null,
+        "end_at": null,
+        "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
+        "id": "0afc80b6-f1cf-54f4-b26b-0b2eba4a6163",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": null
+      },
+      "fields_set": [
+        "event_id",
+        "id",
+        "name",
+        "start_at"
+      ],
+      "input": {
+        "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
+        "id": "0afc80b6-f1cf-54f4-b26b-0b2eba4a6163",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z"
+      }
+    }
+  }
+}

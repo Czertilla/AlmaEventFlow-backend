@@ -4,10 +4,10 @@ from uuid import UUID
 
 from pydantic import BaseModel, model_validator
 
-from core.utils.mixin.pydantic import FromAttributes
+from core.schema.v1.mixin.model import FromAttributesV1
 
 
-class TGUser(BaseModel, FromAttributes):
+class TGUser(BaseModel, FromAttributesV1):
     id: int
     user_id: UUID | None = None
     is_bot: bool

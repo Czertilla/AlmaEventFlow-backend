@@ -4,7 +4,7 @@ from uuid import uuid4
 import pytest
 from sqlalchemy import select
 
-from core.schema.pagination import SPageParam
+from core.schema.v1.pagination import PageParamV1
 from geo.exc.address import AddressNotExistsException
 from geo.filter.location import LocationFilter
 from geo.models.city import CityORM
@@ -191,7 +191,7 @@ async def test_deleting_address_removes_dependent_locations_and_publishes(
 
     await address_service.delete(address.id)
 
-    remaining = await location_service.search(LocationFilter(), SPageParam())
+    remaining = await location_service.search(LocationFilter(), PageParamV1())
     assert [item.id for item in remaining.items] == [standalone.id]
     deleted_locations = next(
         payload for name, payload in published if name == "on_location_deleted"

@@ -6,10 +6,10 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
-from core.utils.mixin.pydantic import PatchModel, TimestampMixin, UUIDMixin
+from core.schema.v1.mixin.model import PatchModelV1, TimestampMixinV1, UUIDMixinV1
 
 
-class ProfileCreate(BaseModel, UUIDMixin):
+class ProfileCreate(BaseModel, UUIDMixinV1):
     birthdate: date | None = None
     workplace_id: UUID | None = None
     diet_id: int | None = None
@@ -17,13 +17,13 @@ class ProfileCreate(BaseModel, UUIDMixin):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ProfileRead(ProfileCreate, UUIDMixin, TimestampMixin):
+class ProfileRead(ProfileCreate, UUIDMixinV1, TimestampMixinV1):
     person: PersonRead | None = None
     diet: DietRead | None = None
     workplace: OrganizationRead | None = None
 
 
-class ProfilePatchData(PatchModel):
+class ProfilePatchData(PatchModelV1):
     birthdate: date | None = None
     workplace_id: UUID | None = None
     diet_id: int | None = None
@@ -31,10 +31,10 @@ class ProfilePatchData(PatchModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ProfilePatch(ProfilePatchData, UUIDMixin): ...
+class ProfilePatch(ProfilePatchData, UUIDMixinV1): ...
 
 
 class ProfilePutData(ProfileCreate): ...
 
 
-class ProfilePut(ProfilePutData, UUIDMixin): ...
+class ProfilePut(ProfilePutData, UUIDMixinV1): ...

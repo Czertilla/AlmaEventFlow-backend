@@ -1,0 +1,2868 @@
+{
+  "components": {
+    "schemas": {
+      "AddressCascadeCreate": {
+        "properties": {
+          "apartment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Apartment"
+          },
+          "building": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Building"
+          },
+          "city": {
+            "$ref": "#/components/schemas/CityCascadeCreate"
+          },
+          "district": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "District"
+          },
+          "house": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "House"
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "street": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Street"
+          }
+        },
+        "required": [
+          "city"
+        ],
+        "title": "AddressCascadeCreate",
+        "type": "object"
+      },
+      "AddressCreate": {
+        "properties": {
+          "city_id": {
+            "title": "City Id",
+            "type": "integer"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "parsed": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AddressFields"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "city_id"
+        ],
+        "title": "AddressCreate",
+        "type": "object"
+      },
+      "AddressFields": {
+        "properties": {
+          "apartment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Apartment"
+          },
+          "building": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Building"
+          },
+          "district": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "District"
+          },
+          "house": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "House"
+          },
+          "street": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Street"
+          }
+        },
+        "title": "AddressFields",
+        "type": "object"
+      },
+      "AddressPatchData": {
+        "properties": {
+          "city_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "parsed": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AddressFields"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "AddressPatchData",
+        "type": "object"
+      },
+      "AddressPutData": {
+        "properties": {
+          "city_id": {
+            "title": "City Id",
+            "type": "integer"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "parsed": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AddressFields"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "city_id"
+        ],
+        "title": "AddressPutData",
+        "type": "object"
+      },
+      "AddressRead": {
+        "properties": {
+          "city_id": {
+            "title": "City Id",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "map_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "RFC 5870 ``geo:`` URI -- the one scheme both Android and iOS\nresolve to whatever maps app the viewer actually has installed,\nwithout picking a specific provider (Google/Apple/Yandex/OsmAnd\nall register as handlers).",
+            "readOnly": true,
+            "title": "Map Uri"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "parsed": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AddressFields"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "city_id",
+          "name",
+          "map_uri"
+        ],
+        "title": "AddressRead",
+        "type": "object"
+      },
+      "CityCascadeCreate": {
+        "properties": {
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "region",
+          "country"
+        ],
+        "title": "CityCascadeCreate",
+        "type": "object"
+      },
+      "CityRead": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "region_id": {
+            "title": "Region Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "region_id",
+          "name"
+        ],
+        "title": "CityRead",
+        "type": "object"
+      },
+      "ErrorModel": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorModel",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "LocationCreate": {
+        "properties": {
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "LocationCreate",
+        "type": "object"
+      },
+      "LocationFromAddressCreate": {
+        "description": "The \"user picked an address, may or may not have bothered naming a\nlocation\" flow -- ``name=None`` resolves to the (idempotent)\naddress-proxy location instead of creating a new named one.",
+        "properties": {
+          "address_id": {
+            "format": "uuid",
+            "title": "Address Id",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "required": [
+          "address_id"
+        ],
+        "title": "LocationFromAddressCreate",
+        "type": "object"
+      },
+      "LocationPatchData": {
+        "properties": {
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "LocationPatchData",
+        "type": "object"
+      },
+      "LocationPutData": {
+        "properties": {
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "LocationPutData",
+        "type": "object"
+      },
+      "LocationRead": {
+        "properties": {
+          "address": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AddressRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "``name`` is ``None`` for an address-proxy location by design --\nthis is the text other services should actually show/sync (matches\nthe ``name || address?.name`` fallback already used across the\nfrontend, e.g. ``useGeoSearch.ts``).",
+            "readOnly": true,
+            "title": "Display Name"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "map_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Map Uri"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "map_uri",
+          "display_name"
+        ],
+        "title": "LocationRead",
+        "type": "object"
+      },
+      "MapResult": {
+        "description": "Two separate paginated lists rather than one merged/tagged\ncollection -- simpler for a map layer to consume as two marker types\n(two icons), and each already paginates independently.",
+        "properties": {
+          "addresses": {
+            "$ref": "#/components/schemas/PageV1_AddressRead_"
+          },
+          "locations": {
+            "$ref": "#/components/schemas/PageV1_LocationRead_"
+          }
+        },
+        "required": [
+          "addresses",
+          "locations"
+        ],
+        "title": "MapResult",
+        "type": "object"
+      },
+      "PageV1_AddressRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AddressRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[AddressRead]",
+        "type": "object"
+      },
+      "PageV1_CityRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CityRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[CityRead]",
+        "type": "object"
+      },
+      "PageV1_LocationRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LocationRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[LocationRead]",
+        "type": "object"
+      },
+      "PaginationV1": {
+        "properties": {
+          "limit": {
+            "default": 10,
+            "exclusiveMinimum": 0.0,
+            "maximum": 100.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "page": {
+            "default": 0,
+            "title": "Page",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total"
+        ],
+        "title": "PaginationV1",
+        "type": "object"
+      },
+      "Point": {
+        "properties": {
+          "lat": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "Point",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "paths": {
+    "/geo/v1/addresses": {
+      "get": {
+        "operationId": "get_addresses_geo_v1_addresses_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "near_lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Near Lat"
+            }
+          },
+          {
+            "in": "query",
+            "name": "near_lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Near Lon"
+            }
+          },
+          {
+            "in": "query",
+            "name": "order_by",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "name",
+              "title": "Order By"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "city_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "City Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_AddressRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Addresses",
+        "tags": [
+          "address"
+        ]
+      },
+      "post": {
+        "operationId": "create_address_geo_v1_addresses_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Address",
+        "tags": [
+          "address"
+        ]
+      }
+    },
+    "/geo/v1/addresses/cascade": {
+      "post": {
+        "description": "Like ``POST /addresses``, but for a hand-entered address whose city\nisn't in the database yet -- names the country/region/city instead of\nrequiring an existing ``city_id``, and creates whichever levels are\nmissing.",
+        "operationId": "create_address_cascade_geo_v1_addresses_cascade_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressCascadeCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Address Cascade",
+        "tags": [
+          "address"
+        ]
+      }
+    },
+    "/geo/v1/addresses/{address_id}": {
+      "delete": {
+        "operationId": "delete_address_geo_v1_addresses__address_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "address_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Address Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ADDRESS_NOT_FOUND": {
+                    "summary": "ADDRESS_NOT_FOUND",
+                    "value": {
+                      "detail": "ADDRESS_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ADDRESS_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Address",
+        "tags": [
+          "address"
+        ]
+      },
+      "get": {
+        "operationId": "get_address_geo_v1_addresses__address_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "address_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Address Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ADDRESS_NOT_FOUND": {
+                    "summary": "ADDRESS_NOT_FOUND",
+                    "value": {
+                      "detail": "ADDRESS_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ADDRESS_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Address",
+        "tags": [
+          "address"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_address_geo_v1_addresses__address_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "address_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Address Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressPatchData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ADDRESS_NOT_FOUND": {
+                    "summary": "ADDRESS_NOT_FOUND",
+                    "value": {
+                      "detail": "ADDRESS_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ADDRESS_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Patch Address",
+        "tags": [
+          "address"
+        ]
+      },
+      "put": {
+        "operationId": "put_address_geo_v1_addresses__address_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "address_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Address Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressPutData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ADDRESS_NOT_FOUND": {
+                    "summary": "ADDRESS_NOT_FOUND",
+                    "value": {
+                      "detail": "ADDRESS_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ADDRESS_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Put Address",
+        "tags": [
+          "address"
+        ]
+      }
+    },
+    "/geo/v1/cities": {
+      "get": {
+        "description": "List/search-only -- cities are seeded (bootstrap or hand-entered\nalongside an address's city), not admin-CRUD-managed in their own\nright. This exists so a city picker never has to fall back to typing\na raw id.",
+        "operationId": "get_cities_geo_v1_cities_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "order_by",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "name",
+              "title": "Order By"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_CityRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Cities",
+        "tags": [
+          "city"
+        ]
+      }
+    },
+    "/geo/v1/cities/{city_id}": {
+      "get": {
+        "operationId": "get_city_geo_v1_cities__city_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "city_id",
+            "required": true,
+            "schema": {
+              "title": "City Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CityRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "CITY_NOT_FOUND": {
+                    "summary": "CITY_NOT_FOUND",
+                    "value": {
+                      "detail": "CITY_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "CITY_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get City",
+        "tags": [
+          "city"
+        ]
+      }
+    },
+    "/geo/v1/locations": {
+      "get": {
+        "operationId": "get_locations_geo_v1_locations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "near_lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Near Lat"
+            }
+          },
+          {
+            "in": "query",
+            "name": "near_lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Near Lon"
+            }
+          },
+          {
+            "in": "query",
+            "name": "order_by",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "name",
+              "title": "Order By"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "address_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Address Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "name__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_LocationRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Locations",
+        "tags": [
+          "location"
+        ]
+      },
+      "post": {
+        "description": "Any authenticated user may add a location -- e.g. a collective\nprincipal picking/pinning a venue for an event. Editing/removing an\nexisting location stays superuser-only (no ownership model exists yet\nto gate that safely per-collective).",
+        "operationId": "create_location_geo_v1_locations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Location",
+        "tags": [
+          "location"
+        ]
+      }
+    },
+    "/geo/v1/locations/from-address": {
+      "post": {
+        "description": "Backend half of the \"pick an address, optionally name it\" flow: an\naddress is already selected (via address search), this turns it into a\nlocation id usable for ``EventCreate.location_id``. Omitting ``name``\nreuses the existing address-proxy location instead of creating a\nduplicate.",
+        "operationId": "create_location_from_address_geo_v1_locations_from_address_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationFromAddressCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Location From Address",
+        "tags": [
+          "location"
+        ]
+      }
+    },
+    "/geo/v1/locations/{location_id}": {
+      "delete": {
+        "operationId": "delete_location_geo_v1_locations__location_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "location_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Location Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "LOCATION_NOT_FOUND": {
+                    "summary": "LOCATION_NOT_FOUND",
+                    "value": {
+                      "detail": "LOCATION_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "LOCATION_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Location",
+        "tags": [
+          "location"
+        ]
+      },
+      "get": {
+        "operationId": "get_location_geo_v1_locations__location_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "location_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Location Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "LOCATION_NOT_FOUND": {
+                    "summary": "LOCATION_NOT_FOUND",
+                    "value": {
+                      "detail": "LOCATION_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "LOCATION_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Location",
+        "tags": [
+          "location"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_location_geo_v1_locations__location_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "location_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Location Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationPatchData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "LOCATION_NOT_FOUND": {
+                    "summary": "LOCATION_NOT_FOUND",
+                    "value": {
+                      "detail": "LOCATION_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "LOCATION_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Patch Location",
+        "tags": [
+          "location"
+        ]
+      },
+      "put": {
+        "operationId": "put_location_geo_v1_locations__location_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "location_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Location Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationPutData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "LOCATION_NOT_FOUND": {
+                    "summary": "LOCATION_NOT_FOUND",
+                    "value": {
+                      "detail": "LOCATION_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "LOCATION_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Put Location",
+        "tags": [
+          "location"
+        ]
+      }
+    },
+    "/geo/v1/map": {
+      "get": {
+        "description": "Both marker types (addresses and locations) inside a bounding box,\nfor a map component to render -- backed by the GIST spatial index on\n``spot`` via PostGIS's ``&&`` bbox operator, paginated independently.",
+        "operationId": "get_map_geo_v1_map_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "min_lat",
+            "required": true,
+            "schema": {
+              "maximum": 90,
+              "minimum": -90,
+              "title": "Min Lat",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "min_lon",
+            "required": true,
+            "schema": {
+              "maximum": 180,
+              "minimum": -180,
+              "title": "Min Lon",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_lat",
+            "required": true,
+            "schema": {
+              "maximum": 90,
+              "minimum": -90,
+              "title": "Max Lat",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_lon",
+            "required": true,
+            "schema": {
+              "maximum": 180,
+              "minimum": -180,
+              "title": "Max Lon",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Map",
+        "tags": [
+          "map"
+        ]
+      }
+    }
+  }
+}

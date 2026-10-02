@@ -1,0 +1,142 @@
+{
+  "components": {
+    "schemas": {
+      "WebhookInfo": {
+        "additionalProperties": true,
+        "description": "Describes the current status of a webhook.\n\nSource: https://core.telegram.org/bots/api#webhookinfo",
+        "properties": {
+          "allowed_updates": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allowed Updates"
+          },
+          "has_custom_certificate": {
+            "title": "Has Custom Certificate",
+            "type": "boolean"
+          },
+          "ip_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ip Address"
+          },
+          "last_error_date": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error Date"
+          },
+          "last_error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error Message"
+          },
+          "last_synchronization_error_date": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Synchronization Error Date"
+          },
+          "max_connections": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Connections"
+          },
+          "pending_update_count": {
+            "title": "Pending Update Count",
+            "type": "integer"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "has_custom_certificate",
+          "pending_update_count"
+        ],
+        "title": "WebhookInfo",
+        "type": "object"
+      }
+    }
+  },
+  "paths": {
+    "/bot/v1/webhook/tg": {
+      "get": {
+        "description": "Returns information about the webhook.\n\nArgs:\n    bot: The Telegram bot instance.\n\nReturns:\n    WebhookInfo: Information about the current webhook.",
+        "operationId": "webhook_info_bot_v1_webhook_tg_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Webhook Info",
+        "tags": [
+          "tg"
+        ]
+      },
+      "post": {
+        "description": "Handles incoming Telegram updates via webhook.\n\nValidates the ``X-Telegram-Bot-Api-Secret-Token`` header (when\n``BOT_TG_WEBHOOK_SECRET`` is configured) so third parties can't inject\nfake updates, then validates the request JSON as an aiogram Update model\nand feeds it to the aiogram Dispatcher.\n\nArgs:\n    request: The FastAPI Request object containing the update data.\n    bot: The Telegram bot instance.\n    dp: The aiogram dispatcher instance.",
+        "operationId": "webhook_bot_v1_webhook_tg_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Webhook",
+        "tags": [
+          "tg"
+        ]
+      }
+    }
+  }
+}

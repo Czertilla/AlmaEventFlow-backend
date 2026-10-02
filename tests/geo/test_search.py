@@ -1,4 +1,4 @@
-from core.schema.pagination import SPageParam
+from core.schema.v1.pagination import PageParamV1
 from geo.filter.address import AddressFilter
 from geo.filter.location import LocationFilter
 from geo.schema.address import AddressCreate
@@ -30,7 +30,7 @@ async def _seed_addresses(sessionmaker_, city_id) -> dict:
 
 async def _address_names(sessionmaker_, query: str, **filters) -> list[str]:
     page = await AddressService(AddressUOW(sessionmaker_)).search(
-        AddressFilter(search=query, **filters), SPageParam()
+        AddressFilter(search=query, **filters), PageParamV1()
     )
     return [item.name for item in page.items]
 
@@ -108,7 +108,7 @@ async def test_location_search_matches_own_name_and_address_name(
     )
 
     async def found(**filter_kwargs) -> set:
-        page = await service.search(LocationFilter(**filter_kwargs), SPageParam())
+        page = await service.search(LocationFilter(**filter_kwargs), PageParamV1())
         return {item.id for item in page.items}
 
     assert await found(search="актового зала") == {hall.id}
@@ -136,7 +136,7 @@ async def test_address_search_near_orders_by_distance(
     no_spot = await service.create(AddressCreate(city_id=city_id, name="Без точки"))
 
     page = await service.search(
-        AddressFilter(), SPageParam(), near=Point(lat=55.75, lon=37.6173)
+        AddressFilter(), PageParamV1(), near=Point(lat=55.75, lon=37.6173)
     )
 
     assert [item.id for item in page.items] == [near.id, mid.id, far.id]
@@ -149,7 +149,7 @@ async def test_address_search_near_is_ignored_when_search_text_is_given(
     await _seed_addresses(sessionmaker_, city_id)
 
     page = await AddressService(AddressUOW(sessionmaker_)).search(
-        AddressFilter(search="тверской"), SPageParam(), near=Point(lat=0, lon=0)
+        AddressFilter(search="тверской"), PageParamV1(), near=Point(lat=0, lon=0)
     )
 
     assert {item.name for item in page.items} == {
@@ -181,7 +181,7 @@ async def test_location_search_near_falls_back_to_address_spot(
     )
 
     page = await location_service.search(
-        LocationFilter(), SPageParam(), near=Point(lat=55.75, lon=37.6173)
+        LocationFilter(), PageParamV1(), near=Point(lat=55.75, lon=37.6173)
     )
 
     ids = [item.id for item in page.items]

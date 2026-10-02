@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, computed_field, model_validator
 
-from core.utils.mixin.pydantic import PatchModel, UUIDMixin
+from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
 from geo.schema.city import CityCascadeCreate
 from geo.schema.point import Point
 
@@ -34,7 +34,7 @@ class AddressCreate(BaseModel):
         return self
 
 
-class AddressRead(AddressCreate, UUIDMixin):
+class AddressRead(AddressCreate, UUIDMixinV1):
     name: str
     source: str | None = None
 
@@ -50,20 +50,20 @@ class AddressRead(AddressCreate, UUIDMixin):
         return f"geo:{self.spot.lat},{self.spot.lon}"
 
 
-class AddressPatchData(PatchModel):
+class AddressPatchData(PatchModelV1):
     name: str | None = None
     city_id: int | None = None
     spot: Point | None = None
     parsed: AddressFields | None = None
 
 
-class AddressPatch(AddressPatchData, UUIDMixin): ...
+class AddressPatch(AddressPatchData, UUIDMixinV1): ...
 
 
 class AddressPutData(AddressCreate): ...
 
 
-class AddressPut(AddressPutData, UUIDMixin): ...
+class AddressPut(AddressPutData, UUIDMixinV1): ...
 
 
 class AddressCascadeCreate(AddressFields):

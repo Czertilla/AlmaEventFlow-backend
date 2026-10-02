@@ -11,7 +11,7 @@ from core.database.sqlalchemy.mixins.repositories import (
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
-from core.schema.pagination import SPageParam
+from core.dto.pagination import PageParams
 from geo.models.address import AddressORM as Model
 from geo.schema.point import Point
 from geo.search import search_page, text_match
@@ -60,7 +60,7 @@ class AddressAlchemyRepo(
     async def search(
         self,
         filter: Filter,
-        pagination: SPageParam,
+        pagination: PageParams,
         *,
         options=None,
         scope: list | None = None,
@@ -99,7 +99,7 @@ class AddressAlchemyRepo(
         self,
         filter: Filter,
         near: Point,
-        pagination: SPageParam,
+        pagination: PageParams,
         *,
         options=None,
         scope: list | None = None,
@@ -132,7 +132,7 @@ class AddressAlchemyRepo(
         min_lon: float,
         max_lat: float,
         max_lon: float,
-        pagination: SPageParam,
+        pagination: PageParams,
     ) -> tuple[list[Model], int]:
         """PostGIS bounding-box (``&&``) query against ``ST_MakeEnvelope`` --
         index-only, exactly what the GIST spatial index on ``spot`` exists

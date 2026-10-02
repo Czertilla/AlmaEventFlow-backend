@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query
 
 from core.dependencies.auth import UserJWTDep
 from core.schema.error import auth_responses
-from core.schema.pagination import SPageParam
+from core.schema.v1.pagination import PageParamV1
 from geo.dependency.address import AddressUOWDep
 from geo.dependency.location import LocationUOWDep
 from geo.schema.map import MapResult
@@ -25,7 +25,7 @@ async def get_map(
     min_lon: float = Query(..., ge=-180, le=180),
     max_lat: float = Query(..., ge=-90, le=90),
     max_lon: float = Query(..., ge=-180, le=180),
-    page_param=Depends(SPageParam),
+    page_param=Depends(PageParamV1),
 ) -> MapResult:
     """Both marker types (addresses and locations) inside a bounding box,
     for a map component to render -- backed by the GIST spatial index on

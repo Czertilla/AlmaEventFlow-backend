@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from core.utils.mixin.pydantic import IDMixin, PatchModel, UUIDMixin
+from core.schema.v1.mixin.model import IDMixinV1, PatchModelV1, UUIDMixinV1
 
 
 class StudentDegreeCreate(BaseModel):
@@ -13,20 +13,20 @@ class StudentDegreeCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class StudentDegreeRead(StudentDegreeCreate, IDMixin): ...
+class StudentDegreeRead(StudentDegreeCreate, IDMixinV1): ...
 
 
-class StudentDegreePatchData(PatchModel):
+class StudentDegreePatchData(PatchModelV1):
     name: str | None = Field(max_length=32, default=None)
 
 
-class StudentDegreePatch(StudentDegreePatchData, IDMixin): ...
+class StudentDegreePatch(StudentDegreePatchData, IDMixinV1): ...
 
 
 class StudentDegreePutData(StudentDegreeCreate): ...
 
 
-class StudentDegreePut(StudentDegreePutData, IDMixin): ...
+class StudentDegreePut(StudentDegreePutData, IDMixinV1): ...
 
 
 class StudentGroupCreate(BaseModel):
@@ -38,26 +38,26 @@ class StudentGroupCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class StudentGroupRead(StudentGroupCreate, IDMixin): ...
+class StudentGroupRead(StudentGroupCreate, IDMixinV1): ...
 
 
-class StudentGroupPatchData(PatchModel):
+class StudentGroupPatchData(PatchModelV1):
     name: str | None = Field(max_length=32, default=None)
     degree_id: int | None = None
     faculty_id: UUID | None = None
     grade: int | None = None
 
 
-class StudentGroupPatch(StudentGroupPatchData, IDMixin): ...
+class StudentGroupPatch(StudentGroupPatchData, IDMixinV1): ...
 
 
 class StudentGroupPutData(StudentGroupCreate): ...
 
 
-class StudentGroupPut(StudentGroupPutData, IDMixin): ...
+class StudentGroupPut(StudentGroupPutData, IDMixinV1): ...
 
 
-class StudentCreate(BaseModel, UUIDMixin):
+class StudentCreate(BaseModel, UUIDMixinV1):
     student_id: str = Field(max_length=64)
     faculty_id: UUID | None = None
     group_id: int
@@ -74,7 +74,7 @@ class StudentRead(StudentCreate):
     group: StudentGroupRead | None = None
 
 
-class StudentPatchData(PatchModel):
+class StudentPatchData(PatchModelV1):
     student_id: str | None = Field(max_length=64, default=None)
     faculty_id: UUID | None = None
     group_id: int | None = None
@@ -83,10 +83,10 @@ class StudentPatchData(PatchModel):
     is_active: bool | None = None
 
 
-class StudentPatch(StudentPatchData, UUIDMixin): ...
+class StudentPatch(StudentPatchData, UUIDMixinV1): ...
 
 
 class StudentPutData(StudentCreate): ...
 
 
-class StudentPut(StudentPutData, UUIDMixin): ...
+class StudentPut(StudentPutData, UUIDMixinV1): ...

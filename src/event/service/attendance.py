@@ -3,10 +3,20 @@ from uuid import UUID
 
 from sqlalchemy import select
 
+from core.dto.base import dto_dict, dto_from_orm
+from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.schema.error import ErrorCode
-from core.schema.pagination import SPage, SPageParam, SPagination
 from core.service.base import BaseService, required_transaction
 from core.utils.exc.http import VancedHTTPException
+from event.dto.attendance import (
+    AttendanceCreateDTO,
+    AttendanceDTO,
+    AttendanceFilterDTO,
+    AttendanceMinePatchDTO,
+    AttendancePatchDTO,
+    AttendancePutDTO,
+)
+from event.dto.me import MeAttendanceCreateDataDTO
 from event.exc.event import (
     AttendanceNotExistsException,
     MemberNotExistsException,
@@ -16,14 +26,6 @@ from event.filter.attendance import AttendanceFilter
 from event.models.attendance import AttendanceORM
 from event.models.member import MemberORM
 from event.models.participation import ParticipationORM
-from event.schema.attendance import (
-    AttendanceCreate,
-    AttendancePatch,
-    AttendancePatchData,
-    AttendancePut,
-    AttendanceRead,
-)
-from event.schema.me import MeAttendanceCreateData
 from event.service.notification import notify_event_targets
 from event.uow.attendance import AttendanceUOW
 from event.uow.me import ParticipationComposeUOW
@@ -32,11 +34,15 @@ logger = getLogger(__name__)
 
 
 class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
+    @staticmethod
+    def _to_dto(attendance: AttendanceORM) -> AttendanceDTO:
+        return dto_from_orm(attendance, AttendanceDTO)
+
     @required_transaction
     async def _create(
-        self, attendance_create: AttendanceCreate
+        self, attendance_create: AttendanceCreateDTO
     ) -> AttendanceORM:
-        attendance_data = attendance_create.model_dump()
+        attendance_data = dto_dict(attendance_create)
         attendance = await self.uow.attendances.add_n_return(
             data=attendance_data
         )
@@ -58,42 +64,42 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
         return attendance
 
     @required_transaction
-    async def _upsert(self, attendance_put: AttendancePut) -> AttendanceORM:
-        return await self.uow.attendances.upsert(attendance_put.model_dump())
+    async def _upsert(self, attendance_put: AttendancePutDTO) -> AttendanceORM:
+        return await self.uow.attendances.upsert(dto_dict(attendance_put))
 
     @required_transaction
     async def _delete(self, attendance_id: UUID) -> None:
         await self.uow.attendances.delete_one(attendance_id)
 
     async def create(
-        self, attendance_create: AttendanceCreate
-    ) -> AttendanceRead:
+        self, attendance_create: AttendanceCreateDTO
+    ) -> AttendanceDTO:
         async with self.uow as uow:
             attendance = await self._create(attendance_create)
-            result = AttendanceRead.model_validate(attendance)
+            result = self._to_dto(attendance)
             await uow.commit()
             await notify_event_targets(uow, attendance_ids=[attendance.id])
         return result
 
-    async def read(self, attendance_id: UUID) -> AttendanceRead:
+    async def read(self, attendance_id: UUID) -> AttendanceDTO:
         async with self.uow:
             attendance = await self._read(attendance_id)
-            return AttendanceRead.model_validate(attendance)
+            return self._to_dto(attendance)
 
-    async def patch(self, attendance_patch: AttendancePatch) -> AttendanceRead:
+    async def patch(self, attendance_patch: AttendancePatchDTO) -> AttendanceDTO:
         async with self.uow as uow:
-            attendance_data = attendance_patch.model_dump()
+            attendance_data = dto_dict(attendance_patch, only_set=True)
             attendance = await self._update(
                 attendance_patch.id, attendance_data
             )
-            result = AttendanceRead.model_validate(attendance)
+            result = self._to_dto(attendance)
             await uow.commit()
         return result
 
-    async def put(self, attendance_put: AttendancePut) -> AttendanceRead:
+    async def put(self, attendance_put: AttendancePutDTO) -> AttendanceDTO:
         async with self.uow as uow:
             attendance = await self._upsert(attendance_put)
-            result = AttendanceRead.model_validate(attendance)
+            result = self._to_dto(attendance)
             await uow.commit()
         return result
 
@@ -103,8 +109,11 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
             await uow.commit()
 
     async def patch_mine(
-        self, member_id: UUID, attendance_id: UUID, patch_data: AttendancePatchData
-    ) -> AttendanceRead:
+        self,
+        member_id: UUID,
+        attendance_id: UUID,
+        patch_data: AttendanceMinePatchDTO,
+    ) -> AttendanceDTO:
         async with self.uow as uow:
             attendance = await self._read(attendance_id)
             if not attendance:
@@ -116,9 +125,9 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
                     status_code=403, detail=ErrorCode.ATTENDANCE_ALREADY_VERIFIED
                 )
 
-            attendance_data = patch_data.model_dump()
+            attendance_data = dto_dict(patch_data, only_set=True)
             attendance = await self._update(attendance_id, attendance_data)
-            result = AttendanceRead.model_validate(attendance)
+            result = self._to_dto(attendance)
             await uow.commit()
         return result
 
@@ -126,8 +135,8 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
         self,
         collective_id: UUID,
         participation_id: UUID,
-        data: MeAttendanceCreateData,
-    ) -> AttendanceRead:
+        data: MeAttendanceCreateDataDTO,
+    ) -> AttendanceDTO:
         async with self.uow as uow:
             participation = await uow.participations.get_by_id(participation_id)
             if not participation or participation.collective_id != collective_id:
@@ -137,7 +146,7 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
             if not member or member.collective_id != collective_id:
                 raise MemberNotExistsException()
 
-            attendance_create = AttendanceCreate(
+            attendance_create = AttendanceCreateDTO(
                 member_id=data.member_id,
                 participation_id=participation_id,
                 is_attended=data.is_attended,
@@ -145,12 +154,14 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
                 comment=data.comment,
             )
             attendance = await self._create(attendance_create)
-            result = AttendanceRead.model_validate(attendance)
+            result = self._to_dto(attendance)
             await uow.commit()
             await notify_event_targets(uow, attendance_ids=[attendance.id])
         return result
 
-    async def verify_by_participation(self, participation_id: UUID) -> list[AttendanceRead]:
+    async def verify_by_participation(
+        self, participation_id: UUID
+    ) -> list[AttendanceDTO]:
         async with self.uow as uow:
             stmt = select(AttendanceORM).where(
                 AttendanceORM.participation_id == participation_id
@@ -165,11 +176,11 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
 
             result = await uow.session.execute(stmt)
             attendances = result.unique().scalars().all()
-            return [AttendanceRead.model_validate(att) for att in attendances]
+            return [self._to_dto(att) for att in attendances]
 
     async def get_mine_for_event(
         self, person_id: UUID, event_id: UUID
-    ) -> list[AttendanceRead]:
+    ) -> list[AttendanceDTO]:
         """Resolves the caller's own attendance row(s) for ``event_id`` across
         every collective they're a member of. Self-service lookup so a caller
         (e.g. the Telegram bot's attendance buttons) can act without already
@@ -189,13 +200,17 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
                 )
             )
             rows = (await uow.session.execute(stmt)).unique().scalars().all()
-            return [AttendanceRead.model_validate(row) for row in rows]
+            return [self._to_dto(row) for row in rows]
 
-    async def search(self, filter: AttendanceFilter, page_params: SPageParam = SPageParam()) -> SPage[AttendanceRead]:
+    async def search(
+        self, filter: AttendanceFilterDTO, page_params: PageParamDTO = PageParamDTO()
+    ) -> PageDTO[AttendanceDTO]:
         async with self.uow as uow:
-            items, total = await uow.attendances.search(filter, page_params)
-            return SPage(
-                items=[AttendanceRead.model_validate(item) for item in items],
-                pagination=SPagination(
-                    page=page_params.page, limit=page_params.limit, total=total),
+            orm_filter = AttendanceFilter.from_dto(filter)
+            items, total = await uow.attendances.search(orm_filter, page_params)
+            return PageDTO(
+                items=[self._to_dto(item) for item in items],
+                pagination=PaginationDTO(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
             )

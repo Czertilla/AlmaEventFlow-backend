@@ -11,7 +11,7 @@ from core.schema.error import (
     detail_404,
     error_response,
 )
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 from user.dependencies.user import get_user_uow
 from user.filter.user import UserFilter
 from user.schemas.user import (
@@ -43,8 +43,8 @@ async def check_username(
 async def get_many(
     uow: Annotated[UserUOW, Depends(get_user_uow)],
     filter: UserFilter = FilterDepends(UserFilter),
-    page_param: SPageParam = Depends(SPageParam),
-) -> SPage[UserRead]:
+    page_param: PageParamV1 = Depends(PageParamV1),
+) -> PageV1[UserRead]:
     return await UserService(uow).search(filter, page_param)
 
 

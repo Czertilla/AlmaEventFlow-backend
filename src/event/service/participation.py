@@ -4,18 +4,20 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from core.schema.pagination import SPage, SPageParam, SPagination
+from core.dto.base import dto_dict
+from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.service.base import BaseService, required_transaction
+from event.dto.attendance import AttendanceCreateDTO
+from event.dto.me import MeParticipationCreateDTO
+from event.dto.participation import (
+    ParticipationCreateDTO,
+    ParticipationDTO,
+    ParticipationFilterDTO,
+    ParticipationPatchDTO,
+)
 from event.filter.participation import ParticipationFilter
 from event.models.member import MemberORM
 from event.models.participation import ParticipationORM
-from event.schema.attendance import AttendanceCreate
-from event.schema.me import MeParticipationCreate
-from event.schema.participation import (
-    ParticipationCreate,
-    ParticipationPatch,
-    ParticipationRead,
-)
 from event.service.attendance import AttendanceService
 from event.service.notification import notify_event_targets
 from event.uow.participation import ParticipationUOW
@@ -25,18 +27,21 @@ logger = getLogger(__name__)
 
 class ParticipationService(BaseService[ParticipationUOW]):
     @staticmethod
-    def _to_read(participation: ParticipationORM) -> ParticipationRead:
-        result = ParticipationRead.model_validate(participation)
+    def _to_dto(participation: ParticipationORM) -> ParticipationDTO:
         collective = getattr(participation, "collective", None)
-        if collective is not None:
-            result.collective_name = collective.name
-        return result
+        return ParticipationDTO(
+            id=participation.id,
+            event_id=participation.event_id,
+            collective_id=participation.collective_id,
+            priority_degree=participation.priority_degree,
+            collective_name=collective.name if collective is not None else None,
+        )
 
     @required_transaction
     async def _create(
-        self, participation_create: ParticipationCreate
+        self, participation_create: ParticipationCreateDTO
     ) -> ParticipationORM:
-        participation_data = participation_create.model_dump()
+        participation_data = dto_dict(participation_create)
         participation = await self.uow.participations.add_n_return(
             data=participation_data
         )
@@ -69,31 +74,29 @@ class ParticipationService(BaseService[ParticipationUOW]):
         await self.uow.participations.delete_one(participation_id)
 
     async def create(
-        self, participation_create: ParticipationCreate
-    ) -> ParticipationRead:
+        self, participation_create: ParticipationCreateDTO
+    ) -> ParticipationDTO:
         async with self.uow as uow:
             participation = await self._create(participation_create)
-            result = ParticipationRead.model_validate(participation)
+            result = self._to_dto(participation)
             await uow.commit()
         return result
 
-    async def read(self, participation_id: UUID) -> ParticipationRead:
+    async def read(self, participation_id: UUID) -> ParticipationDTO:
         async with self.uow:
             participation = await self._read(participation_id)
-            return self._to_read(participation)
+            return self._to_dto(participation)
 
     async def patch(
-        self, participation_patch: ParticipationPatch
-    ) -> ParticipationRead:
+        self, participation_patch: ParticipationPatchDTO
+    ) -> ParticipationDTO:
         async with self.uow as uow:
-            participation_data = participation_patch.model_dump(
-                exclude_unset=True
-            )
+            participation_data = dto_dict(participation_patch, only_set=True)
             participation = await self._update(
                 participation_patch.id,
                 participation_data,
             )
-            result = ParticipationRead.model_validate(participation)
+            result = self._to_dto(participation)
             await uow.commit()
         return result
 
@@ -103,11 +106,11 @@ class ParticipationService(BaseService[ParticipationUOW]):
             await uow.commit()
 
     async def create_with_attendance(
-        self, collective_id: UUID, participation_data: MeParticipationCreate
-    ) -> ParticipationRead:
+        self, collective_id: UUID, participation_data: MeParticipationCreateDTO
+    ) -> ParticipationDTO:
         async with self.uow as uow:
             participation_orm = await self._create(
-                ParticipationCreate(
+                ParticipationCreateDTO(
                     collective_id=collective_id,
                     event_id=participation_data.event_id,
                     priority_degree=participation_data.priority_degree,
@@ -137,7 +140,7 @@ class ParticipationService(BaseService[ParticipationUOW]):
                 attendance_service = AttendanceService(self.uow)
                 for member_id in member_ids:
                     await attendance_service._create(
-                        AttendanceCreate(
+                        AttendanceCreateDTO(
                             member_id=member_id,
                             participation_id=participation_orm.id,
                         )
@@ -147,18 +150,21 @@ class ParticipationService(BaseService[ParticipationUOW]):
             await notify_event_targets(
                 uow, participation_ids=[participation_orm.id]
             )
-            return ParticipationRead.model_validate(participation_orm)
+            return self._to_dto(participation_orm)
 
     async def search(
         self,
-        filter: ParticipationFilter,
-        page_params: SPageParam = SPageParam(),
-    ) -> SPage[ParticipationRead]:
+        filter: ParticipationFilterDTO,
+        page_params: PageParamDTO = PageParamDTO(),
+    ) -> PageDTO[ParticipationDTO]:
         async with self.uow as uow:
-            items, total = await uow.participations.search(filter, page_params)
-            return SPage(
-                items=[self._to_read(item) for item in items],
-                pagination=SPagination(
+            orm_filter = ParticipationFilter.from_dto(filter)
+            items, total = await uow.participations.search(
+                orm_filter, page_params
+            )
+            return PageDTO(
+                items=[self._to_dto(item) for item in items],
+                pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )

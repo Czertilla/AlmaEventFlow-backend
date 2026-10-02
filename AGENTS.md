@@ -88,6 +88,56 @@ Across `src/*/service/*.py`:
   reads `self.uow.<name>` where the UoW class declares that attribute (e.g. `AppUnitOfWork`/
   per-service UoW composing repos via type hints scanned in `BaseUOW.__aenter__`).
 
+## API layer, DTOs and schema versioning
+
+Migrated so far: `event` (pilot). Other services still use a flat `schema/` and pass pydantic
+models into services; migrate one service at a time, copying `event`'s shape.
+
+- A service's HTTP API lives in `<service>/api/v<N>/router/` + `<service>/api/v<N>/schema/`
+  (horizontal split, same as everywhere else — not per-entity packages, so schemas can import
+  each other freely). `api/v<N>/__init__.py` aggregates the routers with
+  `load_common(f"{__name__}.router", ...)`. A released `v<N>` schema never changes shape: a
+  breaking change is a new `v<N+1>` package (v2 may import v1 schemas, never the reverse).
+- Shared schema building blocks are versioned the same way: `core/schema/v1/` holds `PageV1`,
+  `PageParamV1`, `PaginationV1`, and the schema mixins in `core/schema/v1/mixin/`
+  (`FromDTOMixinV1`, `ToDTOMixinV1` in `dto.py`; `PatchModelV1`, `UUIDMixinV1`, `TimestampMixinV1`,
+  … in `model.py`). Class names carry the `V1` suffix; a breaking change is a `…V2` class in
+  `core/schema/v2/`, never an edit to the V1 one.
+- Services and repositories are **DTO-only**: `<service>/dto/*.py` are frozen/slots dataclasses
+  (`core/dto/`: `FieldsSetDTOMixin`, `dto_dict`, `dto_from_orm`, `PageDTO`/`PageParamDTO`/
+  `PaginationDTO`); they never import `<service>.api.*` or `core.schema.*`. The router converts at
+  the edge: request `schema.to_dto()` (set `__dto_cls__`), response `Read.from_dto(dto)`, list
+  `PageV1[Read].from_dto(page_dto)`, page query `page_param.to_dto()`.
+- `Filter` classes (fastapi-filter) stay ORM-bound in `<service>/filter/`; the service takes a
+  `…FilterDTO` and rebuilds the `Filter` with `Filter.from_dto` right before the repository call.
+
+### Contract tests (`tests/contract/`)
+
+They pin the API of every released version and the isolation between the service layer and the
+schemas. No DB or Docker needed; `uv run pytest tests/contract` takes ~75s (each service's OpenAPI
+is generated in its own subprocess with a pinned env, so a local `.env` cannot change a snapshot).
+
+- `snapshots/<service>/<vN>.json` — the OpenAPI paths and reachable components of each service
+  version. `test_every_api_version_has_a_snapshot` fails for a new version without a snapshot or a
+  snapshot whose version is gone.
+- `golden/<package>.json` — schema characterization: a deterministic sample payload per schema
+  class (`required` and `full` variants) → validated → dumped → mapped to its DTO (`mapped`/
+  `dropped` fields). Catches what OpenAPI cannot show: custom validators, aliases, defaults,
+  `fields_set` semantics, a schema field silently not reaching the DTO.
+- `golden/<package>_from_dto.json` — a sample service DTO rendered through its response schema
+  (`RESPONSES` in `test_service_schema_isolation.py`). A new schema with `from_dto` must be
+  registered there or the pairing test fails.
+- `test_service_layer_does_not_depend_on_api_schemas` — AST scan: the layers listed in
+  `MIGRATED_LAYERS` never import `<service>.api` or `core.schema.v<N>`. Add a service there when
+  it is migrated.
+- A service-layer change (new DTO field with a default, refactored service, renamed internals)
+  must leave every contract test green **without regenerating anything** — if one fails, the
+  change leaked into the API. Renaming or removing a DTO field a schema reads, or adding a
+  required DTO field a request schema cannot fill, fails by design.
+- A released version is frozen: never "fix" a failing contract test by regenerating its snapshot.
+  A deliberate change is a new `v<N+1>`; only pilot/pre-release work may regenerate with
+  `UPDATE_CONTRACTS=1 uv run pytest tests/contract` and must review the resulting file diff.
+
 ## Code style
 
 - Domain exceptions live in `<service>/exc/` (or the older `exceptions/` in `user`) as plain
@@ -135,11 +185,11 @@ Across `src/*/service/*.py`:
   that, not reintroduce a second workaround.
 - **Lint/type-check are strict by config, not by current codebase state.** `[tool.ruff.lint]`
   selects `E, F, I, UP, B, SIM, C4, RUF, ASYNC, N` (not just the bare `E, F, I` this repo started
-  with); a full run has ~458 pre-existing, non-auto-fixable findings that are accepted debt, not
+  with); a full run has ~423 pre-existing, non-auto-fixable findings that are accepted debt, not
   something to silently "clean up" as a drive-by in an unrelated change. `[tool.basedpyright]` sets `typeCheckingMode = "strict"` — `basedpyright` (a pyright
   fork; replaced plain `pyright` specifically for this feature) supports a baseline file,
   `.basedpyright/baseline.json`, that grandfathers every finding that existed when it was
-  generated (currently ~4700, covering the whole repo — `src/`, `tests/`, `migrations/`,
+  generated (currently ~4600, covering the whole repo — `src/`, `tests/`, `migrations/`,
   `scripts/` — matching the bare `uv run basedpyright` command's own default scope, not just
   `src/`), so a clean `uv run basedpyright` run means **zero new findings**, not zero findings
   ever. Consequences for how you work:

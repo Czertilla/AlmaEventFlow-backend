@@ -10,7 +10,7 @@ from profile.schema.diet import (
 )
 from profile.uow.diet import DietUOW
 
-from core.schema.pagination import SPage, SPageParam, SPagination
+from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
 from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
@@ -46,13 +46,13 @@ class DietService(BaseService[DietUOW]):
         await self.uow.diets.delete_one(diet_id)
 
     async def search(
-        self, filter: DietFilter, page_params: SPageParam = SPageParam()
-    ) -> SPage[DietRead]:
+        self, filter: DietFilter, page_params: PageParamV1 = PageParamV1()
+    ) -> PageV1[DietRead]:
         async with self.uow as uow:
             diets, total = await uow.diets.search(filter, page_params)
-            return SPage(
+            return PageV1(
                 items=[DietRead.model_validate(diet) for diet in diets],
-                pagination=SPagination(
+                pagination=PaginationV1(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )

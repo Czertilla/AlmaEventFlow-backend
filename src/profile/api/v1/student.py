@@ -37,7 +37,7 @@ from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 
 router = APIRouter(prefix="/students", tags=["student"])
 
@@ -49,8 +49,8 @@ async def get_students(
     user: SuperUserJWTDep,
     uow: StudentUOWDep,
     filter: StudentFilter = FilterDepends(StudentFilter),
-    page_param: SPageParam = Depends(SPageParam),
-) -> SPage[StudentRead]:
+    page_param: PageParamV1 = Depends(PageParamV1),
+) -> PageV1[StudentRead]:
     return await StudentService(uow).search(filter, page_param)
 
 
@@ -108,8 +108,8 @@ async def get_student_degrees(
     user: ActiveUserJWTDep,
     uow: StudentUOWDep,
     filter: StudentDegreeFilter = FilterDepends(StudentDegreeFilter),
-    page_param: SPageParam = Depends(SPageParam),
-) -> SPage[StudentDegreeRead]:
+    page_param: PageParamV1 = Depends(PageParamV1),
+) -> PageV1[StudentDegreeRead]:
     return await StudentDegreeService(uow).search(filter, page_param)
 
 
@@ -167,8 +167,8 @@ async def get_student_groups(
     user: ActiveUserJWTDep,
     uow: StudentUOWDep,
     filter: StudentGroupFilter = FilterDepends(StudentGroupFilter),
-    page_param: SPageParam = Depends(SPageParam),
-) -> SPage[StudentGroupRead]:
+    page_param: PageParamV1 = Depends(PageParamV1),
+) -> PageV1[StudentGroupRead]:
     return await StudentGroupService(uow).search(filter, page_param)
 
 

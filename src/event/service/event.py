@@ -1,14 +1,27 @@
+import dataclasses
 from logging import getLogger
 from uuid import UUID
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
+from core.dto.base import dto_dict, dto_from_orm
+from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.schema.error import ErrorCode
-from core.schema.pagination import SPage, SPageParam, SPagination
 from core.schema.user import UserJWT
 from core.service.base import BaseService, required_transaction
 from core.utils.exc.http import VancedHTTPException
+from event.dto.attendance import AttendanceCreateDTO
+from event.dto.event import (
+    EventCreateDTO,
+    EventDTO,
+    EventFilterDTO,
+    EventPatchDTO,
+    EventPutDTO,
+)
+from event.dto.me import MeEventCreateDTO, MeEventDTO
+from event.dto.participation import ParticipationCreateDTO
+from event.dto.stage import StageCreateDataDTO, StageCreateDTO, StageDTO, StagePatchDTO
 from event.enum.calendar import CalendarChangeTypeEnum
 from event.enum.format import EventFormatEnumV1
 from event.enum.level import EventLevelEnumV1
@@ -30,21 +43,6 @@ from event.models.event import (
 )
 from event.models.member import MemberORM
 from event.models.participation import ParticipationORM
-from event.schema.attendance import AttendanceCreate
-from event.schema.event import (
-    EventCreate,
-    EventPatch,
-    EventPut,
-    EventRead,
-)
-from event.schema.me import MeEventCreate, MeEventRead
-from event.schema.participation import ParticipationCreate
-from event.schema.stage import (
-    StageCreate,
-    StageCreateData,
-    StagePatch,
-    StageRead,
-)
 from event.service.attendance import AttendanceService
 from event.service.notification import (
     is_trigger_status,
@@ -60,8 +58,8 @@ logger = getLogger(__name__)
 
 class EventService(BaseService[EventUOW]):
     @staticmethod
-    def _orm_to_read(event: EventORM) -> EventRead:
-        return EventRead(
+    def _orm_to_dto(event: EventORM) -> EventDTO:
+        return EventDTO(
             id=event.id,
             name=event.name,
             date=event.date,
@@ -139,16 +137,15 @@ class EventService(BaseService[EventUOW]):
         return template
 
     def _apply_template_defaults(
-        self, event_data: MeEventCreate, template: EventORM
-    ) -> MeEventCreate:
+        self, event_data: MeEventCreateDTO, template: EventORM
+    ) -> MeEventCreateDTO:
         """Only fills in fields the caller didn't explicitly set on this
         request -- a principal can start from a template and still
         override just the date, for instance. Never touches
         status/stages/member_ids; those are never copied from a template.
-        ``model_copy(update=...)`` skips validation, so enum fields are
-        constructed the same way ``_orm_to_read`` already does for the
-        matching ORM attributes."""
-        set_fields = event_data.model_fields_set
+        Skips validation, same as ``_orm_to_dto`` does for the matching
+        ORM attributes."""
+        set_fields = event_data.fields_set
         candidates = {
             "name": template.name,
             "date": template.date,
@@ -168,14 +165,12 @@ class EventService(BaseService[EventUOW]):
             for field, value in candidates.items()
             if field not in set_fields
         }
-        return event_data.model_copy(update=overrides)
+        return dataclasses.replace(event_data, **overrides)
 
     @required_transaction
-    async def _create(self, event_create: EventCreate) -> EventORM:
+    async def _create(self, event_create: EventCreateDTO) -> EventORM:
         self._ensure_active_has_date(event_create.status, event_create.date)
-        event_data = event_create.model_dump(
-            exclude={"status", "level", "type"}
-        )
+        event_data = dto_dict(event_create, exclude={"status", "level", "type"})
         event_data["status_id"] = await self._resolve_status_id(
             event_create.status
         )
@@ -261,21 +256,21 @@ class EventService(BaseService[EventUOW]):
         ):
             await self._publish_event_notice(event.id)
 
-    async def create(self, event_create: EventCreate) -> EventRead:
+    async def create(self, event_create: EventCreateDTO) -> EventDTO:
         async with self.uow as uow:
             event = await self._create(event_create)
-            result = self._orm_to_read(event)
+            result = self._orm_to_dto(event)
             await uow.commit()
         return result
 
-    async def read(self, event_id: UUID) -> EventRead:
+    async def read(self, event_id: UUID) -> EventDTO:
         async with self.uow:
             event = await self._read(event_id)
-            return self._orm_to_read(event)
+            return self._orm_to_dto(event)
 
     async def get_templates_for_collective(
         self, collective_id: UUID
-    ) -> list[EventRead]:
+    ) -> list[EventDTO]:
         """The list a principal picks from when starting a new event
         ``from`` a template -- same collective-scoping join as everywhere
         else, filtered to ``status=template`` instead of the active/trigger
@@ -298,40 +293,41 @@ class EventService(BaseService[EventUOW]):
             events = (
                 (await self.uow.session.execute(stmt)).unique().scalars()
             )
-            return [self._orm_to_read(event) for event in events]
+            return [self._orm_to_dto(event) for event in events]
 
-    async def _validate_patch_active_date(self, event_patch: EventPatch) -> None:
+    async def _validate_patch_active_date(
+        self, event_patch: EventPatchDTO
+    ) -> None:
         """Сверяем итоговое состояние (текущее + патч) с правилом active+date."""
         current = await self._read(event_patch.id)
         if current is None:
             raise EventNotExistsException()
-        fields = event_patch.model_fields_set
+        fields = event_patch.fields_set
         final_status = (
             event_patch.status if "status" in fields else current.status
         )
         final_date = event_patch.date if "date" in fields else current.date
         self._ensure_active_has_date(final_status, final_date)
 
-    async def patch(self, event_patch: EventPatch) -> EventRead:
+    async def patch(self, event_patch: EventPatchDTO) -> EventDTO:
         async with self.uow as uow:
             await self._validate_patch_active_date(event_patch)
             old = await self._read(event_patch.id)
-            # PatchModel.model_dump already forces exclude_unset=True
-            event_data = event_patch.model_dump(
-                exclude={"status", "level", "type"}
+            event_data = dto_dict(
+                event_patch, only_set=True, exclude={"status", "level", "type"}
             )
-            if "status" in event_patch.model_fields_set:
+            if "status" in event_patch.fields_set:
                 event_data["status_id"] = await self._resolve_status_id(
                     event_patch.status
                 )
-            if "level" in event_patch.model_fields_set:
+            if "level" in event_patch.fields_set:
                 if event_patch.level is not None:
                     event_data["level_id"] = await self._resolve_level_id(
                         event_patch.level
                     )
                 else:
                     event_data["level_id"] = None
-            if "type" in event_patch.model_fields_set:
+            if "type" in event_patch.fields_set:
                 if event_patch.type is not None:
                     event_data["type_id"] = await self._resolve_type_id(
                         event_patch.type
@@ -339,17 +335,17 @@ class EventService(BaseService[EventUOW]):
                 else:
                     event_data["type_id"] = None
             event = await self._update(event_patch.id, event_data)
-            result = self._orm_to_read(event)
+            result = self._orm_to_dto(event)
             await uow.commit()
             await self._publish_activation(old, event)
         return result
 
-    async def put(self, event_put: EventPut) -> EventRead:
+    async def put(self, event_put: EventPutDTO) -> EventDTO:
         async with self.uow as uow:
             self._ensure_active_has_date(event_put.status, event_put.date)
             old = await self._read(event_put.id)
-            event_data = event_put.model_dump(
-                exclude={"id", "status", "level", "type"}
+            event_data = dto_dict(
+                event_put, exclude={"id", "status", "level", "type"}
             )
             event_data["status_id"] = await self._resolve_status_id(
                 event_put.status
@@ -367,7 +363,7 @@ class EventService(BaseService[EventUOW]):
             else:
                 event_data["type_id"] = None
             event = await self._update(event_put.id, event_data)
-            result = self._orm_to_read(event)
+            result = self._orm_to_dto(event)
             await uow.commit()
             await self._publish_activation(old, event)
         return result
@@ -378,8 +374,8 @@ class EventService(BaseService[EventUOW]):
             await uow.commit()
 
     async def create_with_collective(
-        self, event_data: MeEventCreate, user: UserJWT
-    ) -> MeEventRead:
+        self, event_data: MeEventCreateDTO, user: UserJWT
+    ) -> MeEventDTO:
         async with self.uow as uow:
             collective = await uow.collectives.get_by_id(
                 event_data.collective_id
@@ -406,28 +402,29 @@ class EventService(BaseService[EventUOW]):
                     event_data, template
                 )
 
-            event_create_data = event_data.model_dump(
+            event_create_data = dto_dict(
+                event_data,
                 exclude={
                     "collective_id",
                     "member_ids",
                     "stages",
                     "template_id",
-                }
+                },
             )
-            event_orm = await self._create(EventCreate(**event_create_data))
+            event_orm = await self._create(EventCreateDTO(**event_create_data))
 
             if event_data.stages:
                 stage_service = StageService(self.uow)
                 for stage_data in event_data.stages:
                     await stage_service._create(
-                        StageCreate(
-                            event_id=event_orm.id, **stage_data.model_dump()
+                        StageCreateDTO(
+                            event_id=event_orm.id, **dto_dict(stage_data)
                         )
                     )
 
             participation_service = ParticipationService(self.uow)
             participation_orm = await participation_service._create(
-                ParticipationCreate(
+                ParticipationCreateDTO(
                     collective_id=event_data.collective_id,
                     event_id=event_orm.id,
                 )
@@ -457,7 +454,7 @@ class EventService(BaseService[EventUOW]):
                 attendance_service = AttendanceService(self.uow)
                 for member_id in member_ids:
                     await attendance_service._create(
-                        AttendanceCreate(
+                        AttendanceCreateDTO(
                             member_id=member_id,
                             participation_id=participation_orm.id,
                         )
@@ -466,8 +463,11 @@ class EventService(BaseService[EventUOW]):
             await uow.commit()
             await self._publish_event_notice(event_orm.id)
 
-            return MeEventRead(
-                **self._orm_to_read(event_orm).model_dump(),
+            return MeEventDTO(
+                **dto_dict(
+                    self._orm_to_dto(event_orm),
+                    exclude={"created_at", "edited_at"},
+                ),
                 participation_id=participation_orm.id,
             )
 
@@ -490,8 +490,8 @@ class EventService(BaseService[EventUOW]):
         return participation
 
     async def put_for_collective(
-        self, collective_id: UUID, event_put: EventPut
-    ) -> EventRead:
+        self, collective_id: UUID, event_put: EventPutDTO
+    ) -> EventDTO:
         async with self.uow as uow:
             await self._require_collective_participation(
                 collective_id, event_put.id
@@ -499,8 +499,8 @@ class EventService(BaseService[EventUOW]):
             self._ensure_active_has_date(event_put.status, event_put.date)
             old = await self._read(event_put.id)
 
-            event_data = event_put.model_dump(
-                exclude={"id", "status", "level", "type"}
+            event_data = dto_dict(
+                event_put, exclude={"id", "status", "level", "type"}
             )
             event_data["status_id"] = await self._resolve_status_id(
                 event_put.status
@@ -518,14 +518,14 @@ class EventService(BaseService[EventUOW]):
             else:
                 event_data["type_id"] = None
             event = await self._update(event_put.id, event_data)
-            result = self._orm_to_read(event)
+            result = self._orm_to_dto(event)
             await uow.commit()
             await self._publish_activation(old, event)
         return result
 
     async def patch_for_collective(
-        self, collective_id: UUID, event_patch: EventPatch
-    ) -> EventRead:
+        self, collective_id: UUID, event_patch: EventPatchDTO
+    ) -> EventDTO:
         async with self.uow as uow:
             await self._require_collective_participation(
                 collective_id, event_patch.id
@@ -533,22 +533,21 @@ class EventService(BaseService[EventUOW]):
             await self._validate_patch_active_date(event_patch)
             old = await self._read(event_patch.id)
 
-            # PatchModel.model_dump already forces exclude_unset=True
-            event_data = event_patch.model_dump(
-                exclude={"status", "level", "type"}
+            event_data = dto_dict(
+                event_patch, only_set=True, exclude={"status", "level", "type"}
             )
-            if "status" in event_patch.model_fields_set:
+            if "status" in event_patch.fields_set:
                 event_data["status_id"] = await self._resolve_status_id(
                     event_patch.status
                 )
-            if "level" in event_patch.model_fields_set:
+            if "level" in event_patch.fields_set:
                 if event_patch.level is not None:
                     event_data["level_id"] = await self._resolve_level_id(
                         event_patch.level
                     )
                 else:
                     event_data["level_id"] = None
-            if "type" in event_patch.model_fields_set:
+            if "type" in event_patch.fields_set:
                 if event_patch.type is not None:
                     event_data["type_id"] = await self._resolve_type_id(
                         event_patch.type
@@ -556,7 +555,7 @@ class EventService(BaseService[EventUOW]):
                 else:
                     event_data["type_id"] = None
             event = await self._update(event_patch.id, event_data)
-            result = self._orm_to_read(event)
+            result = self._orm_to_dto(event)
             await uow.commit()
             await self._publish_activation(old, event)
         return result
@@ -638,23 +637,23 @@ class EventService(BaseService[EventUOW]):
     # --- Этапы мероприятия от лица руководителя коллектива-участника ---
 
     async def create_stage_for_collective(
-        self, collective_id: UUID, event_id: UUID, stage_data: StageCreateData
-    ) -> StageRead:
+        self, collective_id: UUID, event_id: UUID, stage_data: StageCreateDataDTO
+    ) -> StageDTO:
         async with self.uow as uow:
             await self._require_collective_participation(
                 collective_id, event_id
             )
             stage = await StageService(self.uow)._create(
-                StageCreate(event_id=event_id, **stage_data.model_dump())
+                StageCreateDTO(event_id=event_id, **dto_dict(stage_data))
             )
-            result = StageRead.model_validate(stage)
+            result = dto_from_orm(stage, StageDTO)
             await uow.commit()
             await notify_collective_chats(uow, event_ids=[event_id])
         return result
 
     async def patch_stage_for_collective(
-        self, collective_id: UUID, stage_patch: StagePatch
-    ) -> StageRead:
+        self, collective_id: UUID, stage_patch: StagePatchDTO
+    ) -> StageDTO:
         async with self.uow as uow:
             stage = await uow.stages.get_by_id(stage_patch.id)
             if stage is None:
@@ -663,11 +662,11 @@ class EventService(BaseService[EventUOW]):
                 collective_id, stage.event_id
             )
             event_id = stage.event_id
-            stage_data = stage_patch.model_dump(exclude={"id"})
+            stage_data = dto_dict(stage_patch, only_set=True)
             stage = await StageService(self.uow)._update(
                 stage_patch.id, stage_data
             )
-            result = StageRead.model_validate(stage)
+            result = dto_from_orm(stage, StageDTO)
             await uow.commit()
             await notify_collective_chats(uow, event_ids=[event_id])
         return result
@@ -688,13 +687,14 @@ class EventService(BaseService[EventUOW]):
             await notify_collective_chats(uow, event_ids=[event_id])
 
     async def search(
-        self, filter: EventFilter, page_params: SPageParam = SPageParam()
-    ) -> SPage[EventRead]:
+        self, filter: EventFilterDTO, page_params: PageParamDTO = PageParamDTO()
+    ) -> PageDTO[EventDTO]:
         async with self.uow as uow:
-            items, total = await uow.events.search(filter, page_params)
-            return SPage(
-                items=[self._orm_to_read(item) for item in items],
-                pagination=SPagination(
+            orm_filter = EventFilter.from_dto(filter)
+            items, total = await uow.events.search(orm_filter, page_params)
+            return PageDTO(
+                items=[self._orm_to_dto(item) for item in items],
+                pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )

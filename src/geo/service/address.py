@@ -2,7 +2,7 @@ from logging import getLogger
 from uuid import UUID
 
 from core.schema.message.geo import AddressData
-from core.schema.pagination import SPage, SPageParam, SPagination
+from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
 from core.service.base import BaseService, required_transaction
 from geo.api.kafka.pub.address import (
     on_address_created,
@@ -140,14 +140,14 @@ class AddressService(BaseService[AddressUOW]):
     async def search(
         self,
         filter: AddressFilter,
-        page_params: SPageParam = SPageParam(),
+        page_params: PageParamV1 = PageParamV1(),
         near: Point | None = None,
-    ) -> SPage[AddressRead]:
+    ) -> PageV1[AddressRead]:
         async with self.uow as uow:
             items, total = await uow.addresses.search(filter, page_params, near=near)
-            page = SPage(
+            page = PageV1(
                 items=[AddressRead.model_validate(item) for item in items],
-                pagination=SPagination(page=page_params.page, limit=page_params.limit, total=total),
+                pagination=PaginationV1(page=page_params.page, limit=page_params.limit, total=total),
             )
         if near is not None:
             schedule_live_fetch(near, sessionmaker=self.uow.session_factory)
@@ -159,15 +159,15 @@ class AddressService(BaseService[AddressUOW]):
         min_lon: float,
         max_lat: float,
         max_lon: float,
-        page_params: SPageParam = SPageParam(),
-    ) -> SPage[AddressRead]:
+        page_params: PageParamV1 = PageParamV1(),
+    ) -> PageV1[AddressRead]:
         async with self.uow as uow:
             items, total = await uow.addresses.search_in_bbox(
                 min_lat, min_lon, max_lat, max_lon, page_params
             )
-            return SPage(
+            return PageV1(
                 items=[AddressRead.model_validate(item) for item in items],
-                pagination=SPagination(
+                pagination=PaginationV1(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )

@@ -2,7 +2,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from core.utils.mixin.pydantic import PatchModel, UUIDMixin
+from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
 
 
 class UniversityCreate(BaseModel):
@@ -14,19 +14,19 @@ class UniversityCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class UniversityRead(UniversityCreate, UUIDMixin):
+class UniversityRead(UniversityCreate, UUIDMixinV1):
     type: str = Field(default="university", repr=False)
 
 
-class UniversityPatchData(UniversityCreate, PatchModel):
+class UniversityPatchData(UniversityCreate, PatchModelV1):
     name: str | None = Field(max_length=128, default=None)
     acronym: str | None = Field(max_length=16, default=None)
 
 
-class UniversityPatch(UniversityPatchData, UUIDMixin): ...
+class UniversityPatch(UniversityPatchData, UUIDMixinV1): ...
 
 
 class UniversityPutData(UniversityCreate): ...
 
 
-class UniversityPut(UniversityPutData, UUIDMixin): ...
+class UniversityPut(UniversityPutData, UUIDMixinV1): ...

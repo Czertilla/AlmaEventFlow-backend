@@ -3,6 +3,8 @@ from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 
+from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
+from event.dto.event import EventFilterDTO
 from event.enum.format import EventFormatEnumV1
 from event.enum.level import EventLevelEnumV1
 from event.enum.status import EventStatusEnumV1
@@ -16,7 +18,9 @@ from event.models.event import (
 from event.models.participation import ParticipationORM
 
 
-class EventFilter(Filter):
+class EventFilter(Filter, FromDTOMixinV1, ToDTOMixinV1):
+    __dto_cls__ = EventFilterDTO
+
     order_by: list[str] | None = ["date"]
     search: None | str = None
     status: None | EventStatusEnumV1 = None

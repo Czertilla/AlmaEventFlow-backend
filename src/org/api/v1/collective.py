@@ -6,7 +6,7 @@ from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 from org.dependency.collective import CollectiveUOWDep
 from org.filter.collective import CollectiveFilter
 from org.schema.collective import (
@@ -28,8 +28,8 @@ async def list_collectives(
     uow: CollectiveUOWDep,
     user: UserJWTDep,
     filter: CollectiveFilter = FilterDepends(CollectiveFilter),
-    page_param=Depends(SPageParam),
-) -> SPage[CollectiveRead]:
+    page_param=Depends(PageParamV1),
+) -> PageV1[CollectiveRead]:
     return await CollectiveService(uow).search(filter, page_param)
 
 @router.get("/{collective_id}", responses={**auth_responses(), **entity_not_found_responses("collective")})

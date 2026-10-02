@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 from core.database.sqlalchemy.mixins.models import TimestampMixin
-from core.utils.mixin.pydantic import PatchModel, UUIDMixin
+from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
 
 
 class PersonCreate(BaseModel):
@@ -12,23 +12,23 @@ class PersonCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class PersonItemRead(PersonCreate, UUIDMixin):
+class PersonItemRead(PersonCreate, UUIDMixinV1):
     patronymic: str | None = Field(max_length=128)
 
 
 class PersonRead(PersonItemRead, TimestampMixin): ...
 
 
-class PersonPatchData(PersonCreate, PatchModel):
+class PersonPatchData(PersonCreate, PatchModelV1):
     surname: str | None = Field(max_length=128, default=None)
     name: str | None = Field(max_length=128, default=None)
 
 
-class PersonPatch(PersonPatchData, UUIDMixin): ...
+class PersonPatch(PersonPatchData, UUIDMixinV1): ...
 
 
 class PersonPutData(PersonCreate):
     patronymic: str | None = Field(max_length=128, default=None)
 
 
-class PersonPut(PersonPutData, UUIDMixin): ...
+class PersonPut(PersonPutData, UUIDMixinV1): ...

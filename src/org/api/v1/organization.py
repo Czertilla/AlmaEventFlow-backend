@@ -6,7 +6,7 @@ from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 from org.dependency.organization import OrganizationUOWDep
 from org.filter.organization import OrganizationFilter
 from org.schema.organization import (
@@ -27,8 +27,8 @@ async def list_organizations(
     uow: OrganizationUOWDep,
     user: UserJWTDep,
     filter: OrganizationFilter = FilterDepends(OrganizationFilter),
-    page_param=Depends(SPageParam),
-) -> SPage[OrganizationRead]:
+    page_param=Depends(PageParamV1),
+) -> PageV1[OrganizationRead]:
     return await OrganizationService(uow).search(filter, page_param)
 
 

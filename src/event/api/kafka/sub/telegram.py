@@ -16,8 +16,8 @@ from core.schema.message.event import (
 )
 from core.utils.exc.http import VancedHTTPException
 from event.dependency._uow import UOWDep
+from event.dto.attendance import AttendanceMinePatchDTO
 from event.exc.event import MemberNotExistsException
-from event.schema.attendance import AttendancePatchData
 from event.service.attendance import AttendanceService
 from event.service.collective import CollectiveService
 from event.uow.attendance import AttendanceUOW
@@ -81,7 +81,10 @@ async def on_patch_my_attendance(
         attendance = await AttendanceService(attendance_uow).patch_mine(
             request.member_id,
             request.attendance_id,
-            AttendancePatchData(is_attended=request.is_attended),
+            AttendanceMinePatchDTO(
+                is_attended=request.is_attended,
+                fields_set=frozenset({"is_attended"}),
+            ),
         )
         return AttendanceData.model_validate(attendance)
 

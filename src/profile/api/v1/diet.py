@@ -15,7 +15,7 @@ from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 
 router = APIRouter(prefix="/diets", tags=["diet"])
 
@@ -27,8 +27,8 @@ async def get_many(
     uow: DietUOWDep,
     user: UserJWTDep,
     filter: DietFilter = FilterDepends(DietFilter),
-    page_param=Depends(SPageParam),
-) -> SPage[DietRead]:
+    page_param=Depends(PageParamV1),
+) -> PageV1[DietRead]:
     return await DietService(uow).search(filter, page_param)
 
 

@@ -6,7 +6,7 @@ from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 from org.dependency.faculty import FacultyUOWDep
 from org.filter.faculty import FacultyFilter
 from org.schema.faculty import (
@@ -28,8 +28,8 @@ async def list_faculties(
     uow: FacultyUOWDep,
     user: UserJWTDep,
     filter: FacultyFilter = FilterDepends(FacultyFilter),
-    page_param=Depends(SPageParam),
-) -> SPage[FacultyRead]:
+    page_param=Depends(PageParamV1),
+) -> PageV1[FacultyRead]:
     return await FacultyService(uow).search(filter, page_param)
 
 @router.get("/{faculty_id}", responses={**auth_responses(), **entity_not_found_responses("faculty")})

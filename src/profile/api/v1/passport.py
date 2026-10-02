@@ -32,7 +32,7 @@ from core.schema.error import (
     detail_400,
     entity_not_found_responses,
 )
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 
 router = APIRouter(prefix="/passports", tags=["passport"])
 
@@ -44,8 +44,8 @@ async def get_my_passports(
     user: UserJWTDep,
     uow: ProfilePassportUOWDep,
     filter: PassportFilter = FilterDepends(PassportFilter),
-    page_params=Depends(SPageParam),
-) -> SPage[PassportItemRead]:
+    page_params=Depends(PageParamV1),
+) -> PageV1[PassportItemRead]:
     if user.person_id is None:
         raise NonPersonalUserException()
     await ProfileService(uow).ensure_existance(user.person_id)
@@ -124,8 +124,8 @@ async def get_passports(
     user: SuperUserJWTDep,
     uow: PassportUOWDep,
     filter: PassportFilter = FilterDepends(PassportFilter),
-    page_params=Depends(SPageParam),
-) -> SPage[PassportItemRead]:
+    page_params=Depends(PageParamV1),
+) -> PageV1[PassportItemRead]:
     return await PassportService(uow).search(filter, page_params)
 
 

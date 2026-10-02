@@ -2,7 +2,7 @@ from logging import getLogger
 from uuid import UUID
 
 from core.schema.message.org import OrganizationData
-from core.schema.pagination import SPage, SPageParam, SPagination
+from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
 from core.service.base import BaseService, required_transaction
 from org.api.kafka.pub.organization import (
     on_organization_created,
@@ -103,15 +103,15 @@ class FacultyService(BaseService[FacultyUOW]):
         return result
 
     async def search(
-        self, filter: FacultyFilter, pagination: SPageParam
-    ) -> SPage[FacultyRead]:
+        self, filter: FacultyFilter, pagination: PageParamV1
+    ) -> PageV1[FacultyRead]:
         async with self.uow:
             items, total = await self.uow.faculties.search(
                 filter, pagination
             )
-            return SPage(
+            return PageV1(
                 items=[FacultyRead.model_validate(item) for item in items],
-                pagination=SPagination.sql_validate(
+                pagination=PaginationV1.sql_validate(
                     page=pagination.page,
                     limit=pagination.limit,
                     total=total,

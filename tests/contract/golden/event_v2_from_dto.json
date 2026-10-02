@@ -1,0 +1,44 @@
+{
+  "calendar.AvailableFeeds": {
+    "response": {
+      "member_collectives": [
+        {
+          "collective_id": "8bb2ab26-ec51-5e11-bea3-42575fb0df3f",
+          "title": "x",
+          "type": "personal_all"
+        }
+      ],
+      "personal": {
+        "collective_id": "a04cded6-0997-5b28-b67b-502409881c11",
+        "title": "x",
+        "type": "personal_all"
+      },
+      "principal_collectives": [
+        {
+          "collective_id": "31fe2c43-d629-5ccc-b2f9-a65e9bf8d051",
+          "title": "x",
+          "type": "personal_all"
+        }
+      ]
+    }
+  },
+  "calendar.FeedDescriptor": {
+    "response": {
+      "collective_id": "b5f8aa9d-c7a3-5555-a041-a24efa3ab09e",
+      "title": "x",
+      "type": "personal_all"
+    }
+  },
+  "calendar.SubscriptionRead": {
+    "response": {
+      "collective_id": "f647b966-4853-5c9e-8353-13d1635b90d1",
+      "created_at": "2026-01-01T10:00:00Z",
+      "feed_url": null,
+      "id": "f7c55734-ae92-529e-bbb1-edb036e22e53",
+      "is_active": true,
+      "last_accessed_at": "2026-01-01T10:00:00Z",
+      "title": "x",
+      "type": "personal_all"
+    }
+  }
+}

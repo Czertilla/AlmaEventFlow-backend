@@ -3,18 +3,20 @@ from uuid import UUID
 
 from fastapi import status
 
+from core.dto.base import dto_from_orm
 from core.schema.error import ErrorCode
 from core.schema.user import UserJWT
 from core.service.base import BaseService, required_transaction
 from core.utils.exc.http import VancedHTTPException
+from event.dto.calendar import (
+    AvailableFeedsDTO,
+    CalendarSubscriptionDTO,
+    FeedDescriptorDTO,
+    SubscriptionCreateDTO,
+)
 from event.enum.calendar import CalendarSubscriptionTypeEnum
 from event.exc.event import CollectiveNotExistsException
 from event.models.calendar import CalendarSubscriptionORM
-from event.schema.calendar import (
-    AvailableFeeds,
-    FeedDescriptor,
-    SubscriptionCreate,
-)
 from event.uow.calendar import CalendarUOW
 
 from .token import CalendarTokenService
@@ -38,6 +40,10 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
     def __init__(self, uow: CalendarUOW) -> None:
         super().__init__(uow)
         self._tokens = CalendarTokenService()
+
+    @staticmethod
+    def _to_dto(sub: CalendarSubscriptionORM) -> CalendarSubscriptionDTO:
+        return dto_from_orm(sub, CalendarSubscriptionDTO)
 
     @required_transaction
     async def _insert(self, data: dict) -> CalendarSubscriptionORM:
@@ -75,7 +81,7 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
         return _member_title(collective.name)
 
     async def _authorize(
-        self, user: UserJWT, data: SubscriptionCreate
+        self, user: UserJWT, data: SubscriptionCreateDTO
     ) -> None:
         if user.person_id is None:
             raise VancedHTTPException(
@@ -106,10 +112,10 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
                 detail=ErrorCode.NOT_COLLECTIVE_PRINCIPAL,
             )
 
-    async def available_feeds(self, user: UserJWT) -> AvailableFeeds:
+    async def available_feeds(self, user: UserJWT) -> AvailableFeedsDTO:
         async with self.uow:
             if user.person_id is None:
-                return AvailableFeeds()
+                return AvailableFeedsDTO()
             full_name = await self.uow.calendar_feed.person_full_name(
                 user.person_id
             )
@@ -119,13 +125,13 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
             principal_collectives = (
                 await self.uow.collectives.get_by_principal_id(user.person_id)
             )
-            return AvailableFeeds(
-                personal=FeedDescriptor(
+            return AvailableFeedsDTO(
+                personal=FeedDescriptorDTO(
                     type=CalendarSubscriptionTypeEnum.personal_all,
                     title=_personal_title(full_name or PERSONAL_FALLBACK),
                 ),
                 member_collectives=[
-                    FeedDescriptor(
+                    FeedDescriptorDTO(
                         type=CalendarSubscriptionTypeEnum.personal_collective,
                         title=_member_title(c.name),
                         collective_id=c.id,
@@ -133,7 +139,7 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
                     for c in member_collectives
                 ],
                 principal_collectives=[
-                    FeedDescriptor(
+                    FeedDescriptorDTO(
                         type=CalendarSubscriptionTypeEnum.principal_collective,
                         title=_principal_title(c.name),
                         collective_id=c.id,
@@ -144,15 +150,16 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
 
     async def list_active(
         self, user: UserJWT
-    ) -> list[CalendarSubscriptionORM]:
+    ) -> list[CalendarSubscriptionDTO]:
         async with self.uow:
-            return await self.uow.calendar_subscriptions.get_active_by_owner(
+            subs = await self.uow.calendar_subscriptions.get_active_by_owner(
                 user.id
             )
+            return [self._to_dto(sub) for sub in subs]
 
     async def create(
-        self, user: UserJWT, data: SubscriptionCreate
-    ) -> tuple[CalendarSubscriptionORM, str]:
+        self, user: UserJWT, data: SubscriptionCreateDTO
+    ) -> tuple[CalendarSubscriptionDTO, str]:
         async with self.uow as uow:
             await self._authorize(user, data)
             title = await self._resolve_title(
@@ -173,11 +180,11 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
                 }
             )
             await uow.commit()
-        return sub, token
+        return self._to_dto(sub), token
 
     async def rotate_token(
         self, user: UserJWT, subscription_id: UUID
-    ) -> tuple[CalendarSubscriptionORM, str]:
+    ) -> tuple[CalendarSubscriptionDTO, str]:
         async with self.uow as uow:
             await self._get_owned(user.id, subscription_id)
             token = self._tokens.generate()
@@ -189,11 +196,9 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
                     "revoked_at": None,
                 },
             )
-            sub = await self.uow.calendar_subscriptions.get_loaded(
-                subscription_id
-            )
+            sub = await self._get_owned(user.id, subscription_id)
             await uow.commit()
-        return sub, token
+        return self._to_dto(sub), token
 
     async def delete(self, user: UserJWT, subscription_id: UUID) -> None:
         async with self.uow as uow:
@@ -203,7 +208,7 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
                 {
                     "is_active": False,
                     "revoked_at": datetime.datetime.now(
-                        datetime.timezone.utc
+                        datetime.UTC
                     ),
                 },
             )

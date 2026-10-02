@@ -17,7 +17,7 @@ from profile.uow.contact import ContactUOW
 from profile.uow.person import PersonContactUOW
 from uuid import UUID
 
-from core.schema.pagination import SPage, SPageParam, SPagination
+from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
 from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
@@ -78,16 +78,16 @@ class ContactService(BaseService[ContactUOW | PersonContactUOW]):
     async def search(
         self,
         filter: ContactFilter,
-        page_params: SPageParam = SPageParam(),
-    ) -> SPage[ContactItemRead]:
+        page_params: PageParamV1 = PageParamV1(),
+    ) -> PageV1[ContactItemRead]:
         async with self.uow as uow:
             contacts, total = await uow.contacts.search(filter, page_params)
-            return SPage(
+            return PageV1(
                 items=[
                     ContactItemRead.model_validate(contact)
                     for contact in contacts
                 ],
-                pagination=SPagination(
+                pagination=PaginationV1(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
@@ -96,20 +96,20 @@ class ContactService(BaseService[ContactUOW | PersonContactUOW]):
         self,
         person_id: UUID,
         filter: ContactFilter,
-        page_params: SPageParam = SPageParam(),
-    ) -> SPage[ContactItemRead]:
+        page_params: PageParamV1 = PageParamV1(),
+    ) -> PageV1[ContactItemRead]:
         async with self.uow as uow:
             contacts, total = await uow.contacts.search(
                 filter,
                 page_params,
                 scope=[ContactORM.person_id == person_id],
             )
-            return SPage(
+            return PageV1(
                 items=[
                     ContactItemRead.model_validate(contact)
                     for contact in contacts
                 ],
-                pagination=SPagination(
+                pagination=PaginationV1(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )

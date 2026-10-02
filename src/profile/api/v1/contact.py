@@ -25,7 +25,7 @@ from core.schema.error import (
     detail_400,
     entity_not_found_responses,
 )
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 
 router = APIRouter(prefix="/contacts", tags=["contact"])
 
@@ -37,8 +37,8 @@ async def get_my_contacts(
     user: ActiveUserJWTDep,
     uow: ContactUOWDep,
     filter: ContactFilter = FilterDepends(ContactFilter),
-    page_params=Depends(SPageParam),
-) -> SPage[ContactItemRead]:
+    page_params=Depends(PageParamV1),
+) -> PageV1[ContactItemRead]:
     if user.person_id is None:
         raise NonPersonalUserException()
     return await ContactService(uow).search_by_person(
@@ -107,8 +107,8 @@ async def get_contacts(
     user: SuperUserJWTDep,
     uow: ContactUOWDep,
     filter: ContactFilter = FilterDepends(ContactFilter),
-    page_params=Depends(SPageParam),
-) -> SPage[ContactItemRead]:
+    page_params=Depends(PageParamV1),
+) -> PageV1[ContactItemRead]:
     return await ContactService(uow).search(filter, page_params)
 
 

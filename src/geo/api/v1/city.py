@@ -5,7 +5,7 @@ from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
-from core.schema.pagination import SPage, SPageParam
+from core.schema.v1.pagination import PageParamV1, PageV1
 from geo.dependency.city import CityUOWDep
 from geo.filter.city import CityFilter
 from geo.schema.city import CityRead
@@ -21,8 +21,8 @@ async def get_cities(
     uow: CityUOWDep,
     user: UserJWTDep,
     filter: CityFilter = FilterDepends(CityFilter),
-    page_param=Depends(SPageParam),
-) -> SPage[CityRead]:
+    page_param=Depends(PageParamV1),
+) -> PageV1[CityRead]:
     """List/search-only -- cities are seeded (bootstrap or hand-entered
     alongside an address's city), not admin-CRUD-managed in their own
     right. This exists so a city picker never has to fall back to typing

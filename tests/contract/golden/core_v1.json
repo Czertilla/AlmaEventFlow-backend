@@ -1,0 +1,140 @@
+{
+  "pagination.PageParamV1": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "limit": 1,
+          "page": 1
+        }
+      },
+      "dump": {
+        "limit": 1,
+        "page": 1
+      },
+      "fields_set": [
+        "limit",
+        "page"
+      ],
+      "input": {
+        "limit": 1,
+        "page": 1
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "limit": 10,
+          "page": 0
+        }
+      },
+      "dump": {
+        "limit": 10,
+        "page": 0
+      },
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "pagination.PageV1": {
+    "full": {
+      "dump": {
+        "items": [
+          "x"
+        ],
+        "pagination": {
+          "limit": 1,
+          "page": 1,
+          "total": 1
+        }
+      },
+      "fields_set": [
+        "items",
+        "pagination"
+      ],
+      "input": {
+        "items": [
+          "x"
+        ],
+        "pagination": {
+          "limit": 1,
+          "page": 1,
+          "total": 1
+        }
+      }
+    },
+    "required": {
+      "dump": {
+        "items": [
+          "x"
+        ],
+        "pagination": {
+          "limit": 10,
+          "page": 0,
+          "total": 1
+        }
+      },
+      "fields_set": [
+        "items",
+        "pagination"
+      ],
+      "input": {
+        "items": [
+          "x"
+        ],
+        "pagination": {
+          "total": 1
+        }
+      }
+    }
+  },
+  "pagination.PaginationV1": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "limit": 1,
+          "page": 1,
+          "total": 1
+        }
+      },
+      "dump": {
+        "limit": 1,
+        "page": 1,
+        "total": 1
+      },
+      "fields_set": [
+        "limit",
+        "page",
+        "total"
+      ],
+      "input": {
+        "limit": 1,
+        "page": 1,
+        "total": 1
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "limit": 10,
+          "page": 0,
+          "total": 1
+        }
+      },
+      "dump": {
+        "limit": 10,
+        "page": 0,
+        "total": 1
+      },
+      "fields_set": [
+        "total"
+      ],
+      "input": {
+        "total": 1
+      }
+    }
+  }
+}

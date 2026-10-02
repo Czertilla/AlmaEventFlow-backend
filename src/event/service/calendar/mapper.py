@@ -24,7 +24,7 @@ class CalendarEventMapper:
     """
 
     def __init__(self, now: datetime.datetime | None = None) -> None:
-        self._now = now or datetime.datetime.now(datetime.timezone.utc)
+        self._now = now or datetime.datetime.now(datetime.UTC)
         self._base_url = settings.FRONTEND_URL.rstrip("/")
 
     def map_items(self, items: list[FeedItem]) -> list[VEvent]:

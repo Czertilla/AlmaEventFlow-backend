@@ -1,0 +1,252 @@
+{
+  "calendar.AvailableFeeds": {
+    "full": {
+      "dump": {
+        "member_collectives": [
+          {
+            "collective_id": "6122a221-44bb-5a2f-9743-4b1cb8085a04",
+            "title": "x",
+            "type": "personal_all"
+          }
+        ],
+        "personal": {
+          "collective_id": "51bbcf98-e9c2-5006-98ca-bb7db4c0751c",
+          "title": "x",
+          "type": "personal_all"
+        },
+        "principal_collectives": [
+          {
+            "collective_id": "cd2f0be8-decc-5ddc-8c03-4f269c79fc09",
+            "title": "x",
+            "type": "personal_all"
+          }
+        ]
+      },
+      "fields_set": [
+        "member_collectives",
+        "personal",
+        "principal_collectives"
+      ],
+      "input": {
+        "member_collectives": [
+          {
+            "collective_id": "6122a221-44bb-5a2f-9743-4b1cb8085a04",
+            "title": "x",
+            "type": "personal_all"
+          }
+        ],
+        "personal": {
+          "collective_id": "51bbcf98-e9c2-5006-98ca-bb7db4c0751c",
+          "title": "x",
+          "type": "personal_all"
+        },
+        "principal_collectives": [
+          {
+            "collective_id": "cd2f0be8-decc-5ddc-8c03-4f269c79fc09",
+            "title": "x",
+            "type": "personal_all"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "member_collectives": [],
+        "personal": null,
+        "principal_collectives": []
+      },
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "calendar.FeedDescriptor": {
+    "full": {
+      "dump": {
+        "collective_id": "d8ce53df-24ed-5717-b05c-bbe6e79d40de",
+        "title": "x",
+        "type": "personal_all"
+      },
+      "fields_set": [
+        "collective_id",
+        "title",
+        "type"
+      ],
+      "input": {
+        "collective_id": "d8ce53df-24ed-5717-b05c-bbe6e79d40de",
+        "title": "x",
+        "type": "personal_all"
+      }
+    },
+    "required": {
+      "dump": {
+        "collective_id": null,
+        "title": "x",
+        "type": "personal_all"
+      },
+      "fields_set": [
+        "title",
+        "type"
+      ],
+      "input": {
+        "title": "x",
+        "type": "personal_all"
+      }
+    }
+  },
+  "calendar.SubscriptionCreate": {
+    "full": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {
+        "collective_id": "0228bd05-f9e0-5818-94a6-8f290274bbb0",
+        "type": "personal_all"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": null,
+          "type": "personal_all"
+        }
+      },
+      "dump": {
+        "collective_id": null,
+        "type": "personal_all"
+      },
+      "fields_set": [
+        "type"
+      ],
+      "input": {
+        "type": "personal_all"
+      }
+    }
+  },
+  "calendar.SubscriptionCreated": {
+    "full": {
+      "dump": {
+        "collective_id": "ef447512-e868-5938-a789-5b52dbca4514",
+        "created_at": "2026-01-01T10:00:00Z",
+        "feed_url": "x",
+        "id": "bcbe575e-cee9-5eda-82cf-0d3141e04fac",
+        "is_active": true,
+        "last_accessed_at": "2026-01-01T10:00:00Z",
+        "title": "x",
+        "type": "personal_all"
+      },
+      "fields_set": [
+        "collective_id",
+        "created_at",
+        "feed_url",
+        "id",
+        "is_active",
+        "last_accessed_at",
+        "title",
+        "type"
+      ],
+      "input": {
+        "collective_id": "ef447512-e868-5938-a789-5b52dbca4514",
+        "created_at": "2026-01-01T10:00:00Z",
+        "feed_url": "x",
+        "id": "bcbe575e-cee9-5eda-82cf-0d3141e04fac",
+        "is_active": true,
+        "last_accessed_at": "2026-01-01T10:00:00Z",
+        "title": "x",
+        "type": "personal_all"
+      }
+    },
+    "required": {
+      "dump": {
+        "collective_id": "ef447512-e868-5938-a789-5b52dbca4514",
+        "created_at": "2026-01-01T10:00:00Z",
+        "feed_url": "x",
+        "id": "bcbe575e-cee9-5eda-82cf-0d3141e04fac",
+        "is_active": true,
+        "last_accessed_at": null,
+        "title": "x",
+        "type": "personal_all"
+      },
+      "fields_set": [
+        "collective_id",
+        "created_at",
+        "feed_url",
+        "id",
+        "is_active",
+        "title",
+        "type"
+      ],
+      "input": {
+        "collective_id": "ef447512-e868-5938-a789-5b52dbca4514",
+        "created_at": "2026-01-01T10:00:00Z",
+        "feed_url": "x",
+        "id": "bcbe575e-cee9-5eda-82cf-0d3141e04fac",
+        "is_active": true,
+        "title": "x",
+        "type": "personal_all"
+      }
+    }
+  },
+  "calendar.SubscriptionRead": {
+    "full": {
+      "dump": {
+        "collective_id": "9561573c-352a-5a65-ad24-be87e0cb8a7b",
+        "created_at": "2026-01-01T10:00:00Z",
+        "feed_url": "x",
+        "id": "6d29e4ce-37f5-501f-a855-64e04e21391f",
+        "is_active": true,
+        "last_accessed_at": "2026-01-01T10:00:00Z",
+        "title": "x",
+        "type": "personal_all"
+      },
+      "fields_set": [
+        "collective_id",
+        "created_at",
+        "feed_url",
+        "id",
+        "is_active",
+        "last_accessed_at",
+        "title",
+        "type"
+      ],
+      "input": {
+        "collective_id": "9561573c-352a-5a65-ad24-be87e0cb8a7b",
+        "created_at": "2026-01-01T10:00:00Z",
+        "feed_url": "x",
+        "id": "6d29e4ce-37f5-501f-a855-64e04e21391f",
+        "is_active": true,
+        "last_accessed_at": "2026-01-01T10:00:00Z",
+        "title": "x",
+        "type": "personal_all"
+      }
+    },
+    "required": {
+      "dump": {
+        "collective_id": "9561573c-352a-5a65-ad24-be87e0cb8a7b",
+        "created_at": "2026-01-01T10:00:00Z",
+        "feed_url": null,
+        "id": "6d29e4ce-37f5-501f-a855-64e04e21391f",
+        "is_active": true,
+        "last_accessed_at": null,
+        "title": "x",
+        "type": "personal_all"
+      },
+      "fields_set": [
+        "collective_id",
+        "created_at",
+        "id",
+        "is_active",
+        "title",
+        "type"
+      ],
+      "input": {
+        "collective_id": "9561573c-352a-5a65-ad24-be87e0cb8a7b",
+        "created_at": "2026-01-01T10:00:00Z",
+        "id": "6d29e4ce-37f5-501f-a855-64e04e21391f",
+        "is_active": true,
+        "title": "x",
+        "type": "personal_all"
+      }
+    }
+  }
+}

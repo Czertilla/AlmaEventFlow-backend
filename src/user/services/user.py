@@ -25,7 +25,7 @@ from pydantic import BaseModel
 from core.config.settings import settings
 from core.enum.notify import NotificationCategory
 from core.schema.message.notify import NotificationRequest
-from core.schema.pagination import SPage, SPageParam, SPagination
+from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
 from core.service.base import BaseService, T, required_transaction
 from core.utils.notify import send_notification
 from user.exceptions.profile import InvitePersonNotExistsException
@@ -376,13 +376,13 @@ class UserService(
         return verified_user
 
     async def search(
-        self, filter: UserFilter, page_params: SPageParam = SPageParam()
-    ) -> SPage[UserRead]:
+        self, filter: UserFilter, page_params: PageParamV1 = PageParamV1()
+    ) -> PageV1[UserRead]:
         async with self.uow as uow:
             users, total = await uow.users.search(filter, page_params)
-            return SPage(
+            return PageV1(
                 items=[UserRead.model_validate(user) for user in users],
-                pagination=SPagination(
+                pagination=PaginationV1(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )

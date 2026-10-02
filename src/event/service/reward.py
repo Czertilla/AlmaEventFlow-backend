@@ -6,18 +6,20 @@ from fastapi import UploadFile
 from redis import Redis
 
 from core.dependencies.redis import redis
-from core.schema.pagination import SPage, SPageParam, SPagination
+from core.dto.base import dto_dict
+from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.service.base import BaseService, required_transaction
 from core.utils.requirer import required_field
 from core.utils.s3_client import S3Client
+from event.dto.reward import (
+    RewardCreateDTO,
+    RewardDTO,
+    RewardFilterDTO,
+    RewardPatchDTO,
+    RewardPutDTO,
+)
 from event.filter.reward import RewardFilter
 from event.models.reward import RewardORM
-from event.schema.reward import (
-    RewardCreate,
-    RewardPatch,
-    RewardPut,
-    RewardRead,
-)
 from event.uow.reward import RewardUOW
 
 logger = getLogger(__name__)
@@ -48,20 +50,35 @@ class RewardService(BaseService[RewardUOW]):
         return url
 
     @required_s3
-    async def _put_file(self, reward_create: RewardCreate, file_id: UUID):
+    async def _put_file(self, file: UploadFile, file_id: UUID):
         await self.s3.put_file(
             (file_id := str(file_id)),
-            await reward_create.file.read(),
-            ContentType=reward_create.file.content_type,
-            ContentDisposition='filename="'
-            f'{quote(reward_create.file.filename)}"',
+            await file.read(),
+            ContentType=file.content_type,
+            ContentDisposition='filename="' f'{quote(file.filename)}"',
         )
 
+    @staticmethod
+    async def _to_dto(
+        reward: RewardORM, file_link: str | None = None
+    ) -> RewardDTO:
+        return RewardDTO(
+            id=reward.id,
+            participation_id=reward.participation_id,
+            name=reward.name,
+            degree=reward.degree,
+            file_link=file_link,
+        )
+
+    async def _resolve_file_link(self, reward: RewardORM) -> str | None:
+        if not reward.file_id:
+            return None
+        return await self._get_presigned_file(reward.file_id)
+
     @required_transaction
-    async def _create(self, reward_create: RewardCreate) -> RewardORM:
-        reward_data = reward_create.model_dump()
-        upload_file: UploadFile = reward_data.pop("file", None)
-        if upload_file:
+    async def _create(self, reward_create: RewardCreateDTO) -> RewardORM:
+        reward_data = dto_dict(reward_create, exclude={"file"})
+        if reward_create.file:
             reward_data["file_id"] = uuid4()
         return await self.uow.rewards.add_n_return(data=reward_data)
 
@@ -80,50 +97,41 @@ class RewardService(BaseService[RewardUOW]):
     async def _delete(self, reward_id: UUID) -> None:
         await self.uow.rewards.delete_one(reward_id)
 
-    async def create(self, reward_create: RewardCreate) -> RewardRead:
+    async def create(self, reward_create: RewardCreateDTO) -> RewardDTO:
         async with self.uow as uow:
             reward = await self._create(reward_create)
-            result = RewardRead.model_validate(reward)
+            file_link = None
             if reward_create.file:
-                await self._put_file(reward_create, reward.file_id)
-                result.file_link = await self._get_presigned_file(
-                    reward.file_id
-                )
+                await self._put_file(reward_create.file, reward.file_id)
+                file_link = await self._get_presigned_file(reward.file_id)
+            result = await self._to_dto(reward, file_link)
             await uow.commit()
         return result
 
-    async def read(self, reward_id: UUID) -> RewardRead:
+    async def read(self, reward_id: UUID) -> RewardDTO:
         async with self.uow:
             reward = await self._read(reward_id)
-            result = RewardRead.model_validate(reward)
-            result.file_link = await self._get_presigned_file(
-                str(reward.file_id)
-            )
-        return result
+            file_link = await self._resolve_file_link(reward)
+        return await self._to_dto(reward, file_link)
 
-    async def patch(self, reward_patch: RewardPatch) -> RewardRead:
+    async def patch(self, reward_patch: RewardPatchDTO) -> RewardDTO:
         async with self.uow as uow:
-            reward_data = reward_patch.model_dump()
+            reward_data = dto_dict(reward_patch, only_set=True)
             reward = await self._update(reward_patch.id, reward_data)
-            result = RewardRead.model_validate(reward)
+            file_link = None
             if reward_patch.file:
-                await self._put_file(reward_patch, reward.file_id)
-                result.file_link = await self._get_presigned_file(
-                    str(reward.file_id)
-                )
+                await self._put_file(reward_patch.file, reward.file_id)
+                file_link = await self._get_presigned_file(reward.file_id)
+            result = await self._to_dto(reward, file_link)
             await uow.commit()
         return result
 
-    async def put(self, reward_put: RewardPut) -> RewardRead:
+    async def put(self, reward_put: RewardPutDTO) -> RewardDTO:
         async with self.uow as uow:
-            reward_data = reward_put.model_dump()
-            reward_id = reward_data.pop("id")
-            reward = await self._update(reward_id, reward_data)
-            result = RewardRead.model_validate(reward)
-            if reward.file_id:
-                result.file_link = await self._get_presigned_file(
-                    str(reward.file_id)
-                )
+            reward_data = dto_dict(reward_put, exclude={"id"})
+            reward = await self._update(reward_put.id, reward_data)
+            file_link = await self._resolve_file_link(reward)
+            result = await self._to_dto(reward, file_link)
             await uow.commit()
         return result
 
@@ -137,13 +145,14 @@ class RewardService(BaseService[RewardUOW]):
             await uow.commit()
 
     async def search(
-        self, filter: RewardFilter, page_params: SPageParam = SPageParam()
-    ) -> SPage[RewardRead]:
+        self, filter: RewardFilterDTO, page_params: PageParamDTO = PageParamDTO()
+    ) -> PageDTO[RewardDTO]:
         async with self.uow as uow:
-            items, total = await uow.rewards.search(filter, page_params)
-            return SPage(
-                items=[RewardRead.model_validate(item) for item in items],
-                pagination=SPagination(
+            orm_filter = RewardFilter.from_dto(filter)
+            items, total = await uow.rewards.search(orm_filter, page_params)
+            return PageDTO(
+                items=[await self._to_dto(item) for item in items],
+                pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )

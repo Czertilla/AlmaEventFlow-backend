@@ -14,7 +14,7 @@ from sqlalchemy import (
 )
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
-from core.schema.pagination import SPageParam
+from core.dto.pagination import PageParams
 
 TS_CONFIG = literal_column("'russian'::regconfig")
 WORD_SIMILARITY_THRESHOLD = "0.5"
@@ -63,7 +63,7 @@ async def search_page(
     repo: SQLAlchemyRepository,
     build: Callable[[ColumnElement[bool]], Select],
     match: TextMatch,
-    pagination: SPageParam,
+    pagination: PageParams,
     *,
     tie_break: tuple[ColumnElement, ...] = (),
     options=None,

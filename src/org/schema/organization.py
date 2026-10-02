@@ -2,7 +2,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from core.utils.mixin.pydantic import PatchModel, UUIDMixin
+from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
 
 
 class OrganizationCreate(BaseModel):
@@ -15,25 +15,25 @@ class OrganizationCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class OrganizationPreview(BaseModel, UUIDMixin):
+class OrganizationPreview(BaseModel, UUIDMixinV1):
     type: str
     name: str = Field(max_length=128)
     acronym: str | None = Field(max_length=16, default=None)
 
 
-class OrganizationRead(OrganizationCreate, UUIDMixin): ...
+class OrganizationRead(OrganizationCreate, UUIDMixinV1): ...
 
 
-class OrganizationPatchData(OrganizationCreate, PatchModel):
+class OrganizationPatchData(OrganizationCreate, PatchModelV1):
     type: str | None = None
     name: str | None = Field(max_length=128, default=None)
     acronym: str | None = Field(max_length=16, default=None)
 
 
-class OrganizationPatch(OrganizationPatchData, UUIDMixin): ...
+class OrganizationPatch(OrganizationPatchData, UUIDMixinV1): ...
 
 
 class OrganizationPutData(OrganizationCreate): ...
 
 
-class OrganizationPut(OrganizationPutData, UUIDMixin): ...
+class OrganizationPut(OrganizationPutData, UUIDMixinV1): ...
