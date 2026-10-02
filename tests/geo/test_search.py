@@ -1,9 +1,7 @@
-from core.schema.v1.pagination import PageParamV1
-from geo.filter.address import AddressFilter
-from geo.filter.location import LocationFilter
-from geo.schema.address import AddressCreate
-from geo.schema.location import LocationCreate
-from geo.schema.point import Point
+from core.dto.pagination import PageParamDTO
+from geo.dto.address import AddressCreateDTO, AddressFilterDTO
+from geo.dto.location import LocationCreateDTO, LocationFilterDTO
+from geo.dto.point import PointDTO
 from geo.service.address import AddressService
 from geo.service.location import LocationService
 from geo.uow.address import AddressUOW
@@ -23,21 +21,19 @@ STREETS = [
 async def _seed_addresses(sessionmaker_, city_id) -> dict:
     service = AddressService(AddressUOW(sessionmaker_))
     return {
-        name: await service.create(AddressCreate(city_id=city_id, name=name))
+        name: await service.create(AddressCreateDTO(city_id=city_id, name=name))
         for name in STREETS
     }
 
 
 async def _address_names(sessionmaker_, query: str, **filters) -> list[str]:
     page = await AddressService(AddressUOW(sessionmaker_)).search(
-        AddressFilter(search=query, **filters), PageParamV1()
+        AddressFilterDTO(search=query, **filters), PageParamDTO()
     )
     return [item.name for item in page.items]
 
 
-async def test_address_search_matches_word_forms(
-    sessionmaker_, city_id, published
-):
+async def test_address_search_matches_word_forms(sessionmaker_, city_id, published):
     await _seed_addresses(sessionmaker_, city_id)
 
     assert "Мясницкая улица, 20" in await _address_names(
@@ -80,9 +76,7 @@ async def test_address_search_tolerates_typos_only_when_nothing_matches(
     assert await _address_names(sessionmaker_, "!!!") == []
 
 
-async def test_address_search_respects_city_filter(
-    sessionmaker_, city_id, published
-):
+async def test_address_search_respects_city_filter(sessionmaker_, city_id, published):
     await _seed_addresses(sessionmaker_, city_id)
 
     assert await _address_names(sessionmaker_, "тверская", city_id=city_id + 1) == []
@@ -94,21 +88,19 @@ async def test_location_search_matches_own_name_and_address_name(
     addresses = await _seed_addresses(sessionmaker_, city_id)
     service = LocationService(LocationUOW(sessionmaker_))
     hall = await service.create(
-        LocationCreate(
+        LocationCreateDTO(
             name="Актовый зал", address_id=addresses["Мясницкая улица, 20"].id
         )
     )
     bench = await service.create(
-        LocationCreate(
-            name="Скамейка у фонтана", spot={"lat": 55.75, "lon": 37.62}
+        LocationCreateDTO(
+            name="Скамейка у фонтана", spot=PointDTO(lat=55.75, lon=37.62)
         )
     )
-    proxy = await service.create_from_address(
-        addresses["Тверская улица, 7"].id, None
-    )
+    proxy = await service.create_from_address(addresses["Тверская улица, 7"].id, None)
 
     async def found(**filter_kwargs) -> set:
-        page = await service.search(LocationFilter(**filter_kwargs), PageParamV1())
+        page = await service.search(LocationFilterDTO(**filter_kwargs), PageParamDTO())
         return {item.id for item in page.items}
 
     assert await found(search="актового зала") == {hall.id}
@@ -125,18 +117,24 @@ async def test_address_search_near_orders_by_distance(
 ):
     service = AddressService(AddressUOW(sessionmaker_))
     near = await service.create(
-        AddressCreate(city_id=city_id, name="Рядом", spot={"lat": 55.751, "lon": 37.618})
+        AddressCreateDTO(
+            city_id=city_id, name="Рядом", spot=PointDTO(lat=55.751, lon=37.618)
+        )
     )
     mid = await service.create(
-        AddressCreate(city_id=city_id, name="Средне", spot={"lat": 55.80, "lon": 37.618})
+        AddressCreateDTO(
+            city_id=city_id, name="Средне", spot=PointDTO(lat=55.80, lon=37.618)
+        )
     )
     far = await service.create(
-        AddressCreate(city_id=city_id, name="Далеко", spot={"lat": 56.5, "lon": 37.618})
+        AddressCreateDTO(
+            city_id=city_id, name="Далеко", spot=PointDTO(lat=56.5, lon=37.618)
+        )
     )
-    no_spot = await service.create(AddressCreate(city_id=city_id, name="Без точки"))
+    no_spot = await service.create(AddressCreateDTO(city_id=city_id, name="Без точки"))
 
     page = await service.search(
-        AddressFilter(), PageParamV1(), near=Point(lat=55.75, lon=37.6173)
+        AddressFilterDTO(), PageParamDTO(), near=PointDTO(lat=55.75, lon=37.6173)
     )
 
     assert [item.id for item in page.items] == [near.id, mid.id, far.id]
@@ -149,7 +147,7 @@ async def test_address_search_near_is_ignored_when_search_text_is_given(
     await _seed_addresses(sessionmaker_, city_id)
 
     page = await AddressService(AddressUOW(sessionmaker_)).search(
-        AddressFilter(search="тверской"), PageParamV1(), near=Point(lat=0, lon=0)
+        AddressFilterDTO(search="тверской"), PageParamDTO(), near=PointDTO(lat=0, lon=0)
     )
 
     assert {item.name for item in page.items} == {
@@ -165,23 +163,27 @@ async def test_location_search_near_falls_back_to_address_spot(
     address_service = AddressService(AddressUOW(sessionmaker_))
     location_service = LocationService(LocationUOW(sessionmaker_))
     near_address = await address_service.create(
-        AddressCreate(city_id=city_id, name="Рядом", spot={"lat": 55.751, "lon": 37.618})
+        AddressCreateDTO(
+            city_id=city_id, name="Рядом", spot=PointDTO(lat=55.751, lon=37.618)
+        )
     )
     far_address = await address_service.create(
-        AddressCreate(city_id=city_id, name="Далеко", spot={"lat": 56.5, "lon": 37.618})
+        AddressCreateDTO(
+            city_id=city_id, name="Далеко", spot=PointDTO(lat=56.5, lon=37.618)
+        )
     )
     hall = await location_service.create(
-        LocationCreate(name="Зал", address_id=near_address.id)
+        LocationCreateDTO(name="Зал", address_id=near_address.id)
     )
     bench = await location_service.create(
-        LocationCreate(name="Скамейка", spot={"lat": 55.752, "lon": 37.619})
+        LocationCreateDTO(name="Скамейка", spot=PointDTO(lat=55.752, lon=37.619))
     )
     far_hall = await location_service.create(
-        LocationCreate(name="Дальний зал", address_id=far_address.id)
+        LocationCreateDTO(name="Дальний зал", address_id=far_address.id)
     )
 
     page = await location_service.search(
-        LocationFilter(), PageParamV1(), near=Point(lat=55.75, lon=37.6173)
+        LocationFilterDTO(), PageParamDTO(), near=PointDTO(lat=55.75, lon=37.6173)
     )
 
     ids = [item.id for item in page.items]

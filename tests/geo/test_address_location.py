@@ -4,18 +4,18 @@ from uuid import uuid4
 import pytest
 from sqlalchemy import select
 
-from core.schema.v1.pagination import PageParamV1
-from geo.exc.address import AddressNotExistsException
-from geo.filter.location import LocationFilter
-from geo.models.city import CityORM
-from geo.schema.address import (
-    AddressCascadeCreate,
-    AddressCreate,
-    AddressFields,
-    AddressPatch,
+from core.dto.pagination import PageParamDTO
+from geo.dto.address import (
+    AddressCascadeCreateDTO,
+    AddressCreateDTO,
+    AddressFieldsDTO,
+    AddressPatchDTO,
 )
-from geo.schema.city import CityCascadeCreate
-from geo.schema.location import LocationCreate
+from geo.dto.city import CityCascadeCreateDTO
+from geo.dto.location import LocationCreateDTO, LocationFilterDTO
+from geo.dto.point import PointDTO
+from geo.exc.address import AddressNotExistsException
+from geo.models.city import CityORM
 from geo.service.address import AddressService
 from geo.service.location import LocationService
 from geo.uow.address import AddressUOW
@@ -24,7 +24,7 @@ from geo.uow.location import LocationUOW
 
 async def _address(sessionmaker_, city_id, name="Арбат, 10"):
     return await AddressService(AddressUOW(sessionmaker_)).create(
-        AddressCreate(city_id=city_id, name=name)
+        AddressCreateDTO(city_id=city_id, name=name)
     )
 
 
@@ -32,9 +32,9 @@ async def test_address_name_is_composed_from_parsed_fields(
     sessionmaker_, city_id, published
 ):
     created = await AddressService(AddressUOW(sessionmaker_)).create(
-        AddressCreate(
+        AddressCreateDTO(
             city_id=city_id,
-            parsed=AddressFields(
+            parsed=AddressFieldsDTO(
                 street="Тверская улица", house="7", building="стр. 1"
             ),
         )
@@ -48,10 +48,10 @@ async def test_create_cascade_creates_the_city_hierarchy_when_missing(
 ):
     service = AddressService(AddressUOW(sessionmaker_))
     created = await service.create_cascade(
-        AddressCascadeCreate(
+        AddressCascadeCreateDTO(
             street="Невский проспект",
             house="1",
-            city=CityCascadeCreate(
+            city=CityCascadeCreateDTO(
                 name="Санкт-Петербург", region="Санкт-Петербург", country="Россия"
             ),
         )
@@ -72,10 +72,10 @@ async def test_create_cascade_reuses_an_existing_city_by_name(
 ):
     service = AddressService(AddressUOW(sessionmaker_))
     created = await service.create_cascade(
-        AddressCascadeCreate(
+        AddressCascadeCreateDTO(
             street="Арбат",
             house="1",
-            city=CityCascadeCreate(name="Москва", region="Москва", country="Россия"),
+            city=CityCascadeCreateDTO(name="Москва", region="Москва", country="Россия"),
         )
     )
 
@@ -89,16 +89,21 @@ async def test_patch_updates_name_spot_and_recomposes_name_from_parsed(
     created = await _address(sessionmaker_, city_id, "Старое имя")
 
     renamed = await service.patch(
-        AddressPatch(
-            id=created.id, name="Новое имя", spot={"lat": 55.75, "lon": 37.6}
+        AddressPatchDTO(
+            id=created.id,
+            name="Новое имя",
+            spot=PointDTO(lat=55.75, lon=37.6),
+            fields_set=frozenset({"name", "spot"}),
         )
     )
     assert renamed.name == "Новое имя"
     assert renamed.spot.lat == pytest.approx(55.75)
 
     reparsed = await service.patch(
-        AddressPatch(
-            id=created.id, parsed=AddressFields(street="Арбат", house="11")
+        AddressPatchDTO(
+            id=created.id,
+            parsed=AddressFieldsDTO(street="Арбат", house="11"),
+            fields_set=frozenset({"parsed"}),
         )
     )
     assert reparsed.name == "Арбат, 11"
@@ -112,7 +117,12 @@ async def test_patch_ignores_explicit_null_for_required_columns(
     created = await _address(sessionmaker_, city_id)
 
     patched = await service.patch(
-        AddressPatch(id=created.id, name=None, city_id=None)
+        AddressPatchDTO(
+            id=created.id,
+            name=None,
+            city_id=None,
+            fields_set=frozenset({"name", "city_id"}),
+        )
     )
 
     assert (patched.name, patched.city_id) == ("Арбат, 10", city_id)
@@ -126,7 +136,7 @@ async def test_address_proxy_location_is_idempotent_and_publishes_once(
 
     first = await service.create_from_address(address.id, None)
     second = await service.create_from_address(address.id, None)
-    third = await service.create(LocationCreate(address_id=address.id))
+    third = await service.create(LocationCreateDTO(address_id=address.id))
 
     assert first.id == second.id == third.id
     assert first.name is None and first.address.name == "Арбат, 10"
@@ -185,13 +195,13 @@ async def test_deleting_address_removes_dependent_locations_and_publishes(
     proxy = await location_service.create_from_address(address.id, None)
     hall = await location_service.create_from_address(address.id, "Актовый зал")
     standalone = await location_service.create(
-        LocationCreate(name="Скамейка", spot={"lat": 55.75, "lon": 37.62})
+        LocationCreateDTO(name="Скамейка", spot=PointDTO(lat=55.75, lon=37.62))
     )
     published.clear()
 
     await address_service.delete(address.id)
 
-    remaining = await location_service.search(LocationFilter(), PageParamV1())
+    remaining = await location_service.search(LocationFilterDTO(), PageParamDTO())
     assert [item.id for item in remaining.items] == [standalone.id]
     deleted_locations = next(
         payload for name, payload in published if name == "on_location_deleted"
@@ -204,26 +214,28 @@ async def test_location_can_refine_an_address_with_its_own_spot(
     sessionmaker_, city_id, published
 ):
     address = await AddressService(AddressUOW(sessionmaker_)).create(
-        AddressCreate(
-            city_id=city_id, name="Арбат, 10", spot={"lat": 55.75, "lon": 37.6}
+        AddressCreateDTO(
+            city_id=city_id, name="Арбат, 10", spot=PointDTO(lat=55.75, lon=37.6)
         )
     )
     service = LocationService(LocationUOW(sessionmaker_))
 
     entrance = await service.create(
-        LocationCreate(
+        LocationCreateDTO(
             name="Служебный вход",
             address_id=address.id,
-            spot={"lat": 55.7501, "lon": 37.6001},
+            spot=PointDTO(lat=55.7501, lon=37.6001),
         )
     )
 
     assert entrance.address_id == address.id
     assert entrance.spot.lat == pytest.approx(55.7501)
-    assert entrance.map_uri == f"geo:{entrance.spot.lat},{entrance.spot.lon}"
+    assert entrance.spot.lon == pytest.approx(37.6001)
 
 
-async def test_upsert_many_inserts_then_updates_in_place(sessionmaker_, city_id, published):
+async def test_upsert_many_inserts_then_updates_in_place(
+    sessionmaker_, city_id, published
+):
     ids = [uuid4(), uuid4()]
 
     def rows(prefix: str) -> list[dict]:

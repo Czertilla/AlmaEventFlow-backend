@@ -1,0 +1,136 @@
+{
+  "address.AddressRead": {
+    "response": {
+      "city_id": 1,
+      "id": "f74b2953-2c5c-5c4f-bae2-71b94cf3ea21",
+      "map_uri": "geo:1.5,1.5",
+      "name": "x",
+      "parsed": {
+        "apartment": "x",
+        "building": "x",
+        "district": "x",
+        "house": "x",
+        "street": "x"
+      },
+      "source": "x",
+      "spot": {
+        "lat": 1.5,
+        "lon": 1.5
+      }
+    }
+  },
+  "city.CityRead": {
+    "response": {
+      "acronym": "x",
+      "id": 1,
+      "name": "x",
+      "region_id": 1
+    }
+  },
+  "location.LocationRead": {
+    "response": {
+      "address": {
+        "city_id": 1,
+        "id": "33322549-d2c6-5ff4-bbc0-0395baec3b7a",
+        "map_uri": "geo:1.5,1.5",
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "source": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "address_id": "cfc690fc-42dc-51a3-b6bb-06b1f1a44bf3",
+      "display_name": "x",
+      "id": "351f0a9f-8a49-5464-b047-ab6177ea94e2",
+      "map_uri": "geo:1.5,1.5",
+      "name": "x",
+      "spot": {
+        "lat": 1.5,
+        "lon": 1.5
+      }
+    }
+  },
+  "map.MapResult": {
+    "response": {
+      "addresses": {
+        "items": [
+          {
+            "city_id": 1,
+            "id": "0c2e6240-4fff-5b3c-94fd-115532e9981b",
+            "map_uri": "geo:1.5,1.5",
+            "name": "x",
+            "parsed": {
+              "apartment": "x",
+              "building": "x",
+              "district": "x",
+              "house": "x",
+              "street": "x"
+            },
+            "source": "x",
+            "spot": {
+              "lat": 1.5,
+              "lon": 1.5
+            }
+          }
+        ],
+        "pagination": {
+          "limit": 1,
+          "page": 1,
+          "total": 1
+        }
+      },
+      "locations": {
+        "items": [
+          {
+            "address": {
+              "city_id": 1,
+              "id": "1ba02ac5-1ba7-5766-9da7-b60aaf465883",
+              "map_uri": "geo:1.5,1.5",
+              "name": "x",
+              "parsed": {
+                "apartment": "x",
+                "building": "x",
+                "district": "x",
+                "house": "x",
+                "street": "x"
+              },
+              "source": "x",
+              "spot": {
+                "lat": 1.5,
+                "lon": 1.5
+              }
+            },
+            "address_id": "ba33daa7-e404-5ebf-af30-bed8f028817c",
+            "display_name": "x",
+            "id": "34a5f63c-3b1a-56b5-9348-c0e8558b332e",
+            "map_uri": "geo:1.5,1.5",
+            "name": "x",
+            "spot": {
+              "lat": 1.5,
+              "lon": 1.5
+            }
+          }
+        ],
+        "pagination": {
+          "limit": 1,
+          "page": 1,
+          "total": 1
+        }
+      }
+    }
+  },
+  "point.Point": {
+    "response": {
+      "lat": 1.5,
+      "lon": 1.5
+    }
+  }
+}

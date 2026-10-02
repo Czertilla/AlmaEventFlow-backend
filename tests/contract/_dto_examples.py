@@ -11,9 +11,38 @@ from _examples import FIELD_OVERRIDES
 _NONE_TYPE = type(None)
 
 
+def _substitute(tp: Any, mapping: dict[Any, Any]) -> Any:
+    if tp in mapping:
+        return mapping[tp]
+    args = typing.get_args(tp)
+    origin = typing.get_origin(tp)
+    if not args or origin is None:
+        return tp
+    replaced = tuple(_substitute(arg, mapping) for arg in args)
+    if origin in (typing.Union, types.UnionType):
+        union: Any = replaced[0]
+        for member in replaced[1:]:
+            union = union | member
+        return union
+    return origin[replaced]
+
+
+def _generic_example(origin: type, args: tuple[Any, ...], path: str) -> Any:
+    mapping = dict(zip(origin.__type_params__, args, strict=False))
+    hints = typing.get_type_hints(origin)
+    kwargs = {
+        f.name: value_for(_substitute(hints[f.name], mapping), f"{path}.{f.name}")
+        for f in dataclasses.fields(origin)
+        if f.init and f.name != "fields_set"
+    }
+    return origin(**kwargs)
+
+
 def value_for(tp: Any, path: str) -> Any:
     origin = typing.get_origin(tp)
     args = typing.get_args(tp)
+    if isinstance(origin, type) and dataclasses.is_dataclass(origin):
+        return _generic_example(origin, args, path)
     if origin in (typing.Union, types.UnionType):
         return value_for(next(a for a in args if a is not _NONE_TYPE), path)
     if origin is typing.Literal:

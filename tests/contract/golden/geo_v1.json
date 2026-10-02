@@ -1,0 +1,1275 @@
+{
+  "address.AddressBase": {
+    "full": {
+      "dump": {
+        "city_id": 1,
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "city_id",
+        "name",
+        "parsed",
+        "spot"
+      ],
+      "input": {
+        "city_id": 1,
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {
+        "city_id": 1
+      }
+    }
+  },
+  "address.AddressCascadeCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "apartment": "x",
+          "building": "x",
+          "city": {
+            "country": "x",
+            "name": "x",
+            "region": "x"
+          },
+          "district": "x",
+          "house": "x",
+          "spot": {
+            "lat": 1.5,
+            "lon": 1.5
+          },
+          "street": "x"
+        }
+      },
+      "dump": {
+        "apartment": "x",
+        "building": "x",
+        "city": {
+          "country": "x",
+          "name": "x",
+          "region": "x"
+        },
+        "district": "x",
+        "house": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        },
+        "street": "x"
+      },
+      "fields_set": [
+        "apartment",
+        "building",
+        "city",
+        "district",
+        "house",
+        "spot",
+        "street"
+      ],
+      "input": {
+        "apartment": "x",
+        "building": "x",
+        "city": {
+          "country": "x",
+          "name": "x",
+          "region": "x"
+        },
+        "district": "x",
+        "house": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        },
+        "street": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "apartment": null,
+          "building": null,
+          "city": {
+            "country": "x",
+            "name": "x",
+            "region": "x"
+          },
+          "district": null,
+          "house": null,
+          "spot": null,
+          "street": null
+        }
+      },
+      "dump": {
+        "apartment": null,
+        "building": null,
+        "city": {
+          "country": "x",
+          "name": "x",
+          "region": "x"
+        },
+        "district": null,
+        "house": null,
+        "spot": null,
+        "street": null
+      },
+      "fields_set": [
+        "city"
+      ],
+      "input": {
+        "city": {
+          "country": "x",
+          "name": "x",
+          "region": "x"
+        }
+      }
+    }
+  },
+  "address.AddressCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "city_id": 1,
+          "name": "x",
+          "parsed": {
+            "apartment": "x",
+            "building": "x",
+            "district": "x",
+            "house": "x",
+            "street": "x"
+          },
+          "spot": {
+            "lat": 1.5,
+            "lon": 1.5
+          }
+        }
+      },
+      "dump": {
+        "city_id": 1,
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "city_id",
+        "name",
+        "parsed",
+        "spot"
+      ],
+      "input": {
+        "city_id": 1,
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {
+        "city_id": 1
+      }
+    }
+  },
+  "address.AddressFields": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        }
+      },
+      "dump": {
+        "apartment": "x",
+        "building": "x",
+        "district": "x",
+        "house": "x",
+        "street": "x"
+      },
+      "fields_set": [
+        "apartment",
+        "building",
+        "district",
+        "house",
+        "street"
+      ],
+      "input": {
+        "apartment": "x",
+        "building": "x",
+        "district": "x",
+        "house": "x",
+        "street": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "apartment": null,
+          "building": null,
+          "district": null,
+          "house": null,
+          "street": null
+        }
+      },
+      "dump": {
+        "apartment": null,
+        "building": null,
+        "district": null,
+        "house": null,
+        "street": null
+      },
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "address.AddressPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "city_id",
+          "id",
+          "name",
+          "parsed",
+          "spot"
+        ],
+        "mapped": {
+          "city_id": 1,
+          "id": "46c16480-d019-5d10-b97e-9aa146101aa8",
+          "name": "x",
+          "parsed": {
+            "apartment": "x",
+            "building": "x",
+            "district": "x",
+            "house": "x",
+            "street": "x"
+          },
+          "spot": {
+            "lat": 1.5,
+            "lon": 1.5
+          }
+        }
+      },
+      "dump": {
+        "city_id": 1,
+        "id": "46c16480-d019-5d10-b97e-9aa146101aa8",
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "city_id",
+        "id",
+        "name",
+        "parsed",
+        "spot"
+      ],
+      "input": {
+        "city_id": 1,
+        "id": "46c16480-d019-5d10-b97e-9aa146101aa8",
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "46c16480-d019-5d10-b97e-9aa146101aa8"
+        }
+      },
+      "dump": {
+        "id": "46c16480-d019-5d10-b97e-9aa146101aa8"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "46c16480-d019-5d10-b97e-9aa146101aa8"
+      }
+    }
+  },
+  "address.AddressPatchData": {
+    "full": {
+      "dump": {
+        "city_id": 1,
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "city_id",
+        "name",
+        "parsed",
+        "spot"
+      ],
+      "input": {
+        "city_id": 1,
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "address.AddressPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "city_id": 1,
+          "id": "a76cc35b-ba92-55af-b7e6-2259627ab989",
+          "name": "x",
+          "parsed": {
+            "apartment": "x",
+            "building": "x",
+            "district": "x",
+            "house": "x",
+            "street": "x"
+          },
+          "spot": {
+            "lat": 1.5,
+            "lon": 1.5
+          }
+        }
+      },
+      "dump": {
+        "city_id": 1,
+        "id": "a76cc35b-ba92-55af-b7e6-2259627ab989",
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "city_id",
+        "id",
+        "name",
+        "parsed",
+        "spot"
+      ],
+      "input": {
+        "city_id": 1,
+        "id": "a76cc35b-ba92-55af-b7e6-2259627ab989",
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {
+        "city_id": 1,
+        "id": "a76cc35b-ba92-55af-b7e6-2259627ab989"
+      }
+    }
+  },
+  "address.AddressPutData": {
+    "full": {
+      "dump": {
+        "city_id": 1,
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "city_id",
+        "name",
+        "parsed",
+        "spot"
+      ],
+      "input": {
+        "city_id": 1,
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {
+        "city_id": 1
+      }
+    }
+  },
+  "address.AddressRead": {
+    "full": {
+      "dump": {
+        "city_id": 1,
+        "id": "f82a50e3-9891-5bc9-b48a-f1d1abb15ece",
+        "map_uri": "geo:1.5,1.5",
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "source": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "city_id",
+        "id",
+        "name",
+        "parsed",
+        "source",
+        "spot"
+      ],
+      "input": {
+        "city_id": 1,
+        "id": "f82a50e3-9891-5bc9-b48a-f1d1abb15ece",
+        "name": "x",
+        "parsed": {
+          "apartment": "x",
+          "building": "x",
+          "district": "x",
+          "house": "x",
+          "street": "x"
+        },
+        "source": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "dump": {
+        "city_id": 1,
+        "id": "f82a50e3-9891-5bc9-b48a-f1d1abb15ece",
+        "map_uri": null,
+        "name": "x",
+        "parsed": null,
+        "source": null,
+        "spot": null
+      },
+      "fields_set": [
+        "city_id",
+        "id",
+        "name"
+      ],
+      "input": {
+        "city_id": 1,
+        "id": "f82a50e3-9891-5bc9-b48a-f1d1abb15ece",
+        "name": "x"
+      }
+    }
+  },
+  "city.CityCascadeCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "country": "x",
+          "name": "x",
+          "region": "x"
+        }
+      },
+      "dump": {
+        "country": "x",
+        "name": "x",
+        "region": "x"
+      },
+      "fields_set": [
+        "country",
+        "name",
+        "region"
+      ],
+      "input": {
+        "country": "x",
+        "name": "x",
+        "region": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "country": "x",
+          "name": "x",
+          "region": "x"
+        }
+      },
+      "dump": {
+        "country": "x",
+        "name": "x",
+        "region": "x"
+      },
+      "fields_set": [
+        "country",
+        "name",
+        "region"
+      ],
+      "input": {
+        "country": "x",
+        "name": "x",
+        "region": "x"
+      }
+    }
+  },
+  "city.CityCreate": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "city.CityRead": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "id": 1,
+        "name": "x",
+        "region_id": 1
+      },
+      "fields_set": [
+        "acronym",
+        "id",
+        "name",
+        "region_id"
+      ],
+      "input": {
+        "acronym": "x",
+        "id": 1,
+        "name": "x",
+        "region_id": 1
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "id": 1,
+        "name": "x",
+        "region_id": 1
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "region_id"
+      ],
+      "input": {
+        "id": 1,
+        "name": "x",
+        "region_id": 1
+      }
+    }
+  },
+  "location.LocationBase": {
+    "full": {
+      "dump": {
+        "address_id": "2be49b08-6ba9-564c-a3bc-7064423fdd7f",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "address_id",
+        "name",
+        "spot"
+      ],
+      "input": {
+        "address_id": "2be49b08-6ba9-564c-a3bc-7064423fdd7f",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {}
+    }
+  },
+  "location.LocationCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "address_id": "8d036c83-1a3e-5288-bbc2-a3dcec8ba95a",
+          "name": "x",
+          "spot": {
+            "lat": 1.5,
+            "lon": 1.5
+          }
+        }
+      },
+      "dump": {
+        "address_id": "8d036c83-1a3e-5288-bbc2-a3dcec8ba95a",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "address_id",
+        "name",
+        "spot"
+      ],
+      "input": {
+        "address_id": "8d036c83-1a3e-5288-bbc2-a3dcec8ba95a",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {}
+    }
+  },
+  "location.LocationFromAddressCreate": {
+    "full": {
+      "dump": {
+        "address_id": "d7dc8ab4-e26c-58bc-8bc1-2364a7d17526",
+        "name": "x"
+      },
+      "fields_set": [
+        "address_id",
+        "name"
+      ],
+      "input": {
+        "address_id": "d7dc8ab4-e26c-58bc-8bc1-2364a7d17526",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "address_id": "d7dc8ab4-e26c-58bc-8bc1-2364a7d17526",
+        "name": null
+      },
+      "fields_set": [
+        "address_id"
+      ],
+      "input": {
+        "address_id": "d7dc8ab4-e26c-58bc-8bc1-2364a7d17526"
+      }
+    }
+  },
+  "location.LocationPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "address_id",
+          "id",
+          "name",
+          "spot"
+        ],
+        "mapped": {
+          "address_id": "c403731e-d4c5-54a8-952d-10ba0e62d291",
+          "id": "36119a93-d6ad-5391-9ac5-df3f4cebc8ba",
+          "name": "x",
+          "spot": {
+            "lat": 1.5,
+            "lon": 1.5
+          }
+        }
+      },
+      "dump": {
+        "address_id": "c403731e-d4c5-54a8-952d-10ba0e62d291",
+        "id": "36119a93-d6ad-5391-9ac5-df3f4cebc8ba",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "address_id",
+        "id",
+        "name",
+        "spot"
+      ],
+      "input": {
+        "address_id": "c403731e-d4c5-54a8-952d-10ba0e62d291",
+        "id": "36119a93-d6ad-5391-9ac5-df3f4cebc8ba",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "36119a93-d6ad-5391-9ac5-df3f4cebc8ba"
+        }
+      },
+      "dump": {
+        "id": "36119a93-d6ad-5391-9ac5-df3f4cebc8ba"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "36119a93-d6ad-5391-9ac5-df3f4cebc8ba"
+      }
+    }
+  },
+  "location.LocationPatchData": {
+    "full": {
+      "dump": {
+        "address_id": "b657fd52-538a-5573-96ac-2873daabf8b3",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "address_id",
+        "name",
+        "spot"
+      ],
+      "input": {
+        "address_id": "b657fd52-538a-5573-96ac-2873daabf8b3",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "location.LocationPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "address_id": "9b8bb8b5-c705-584c-8fea-0b52af284da4",
+          "id": "8da2383a-b7c4-5371-842b-7f1a2b9a620d",
+          "name": "x",
+          "spot": {
+            "lat": 1.5,
+            "lon": 1.5
+          }
+        }
+      },
+      "dump": {
+        "address_id": "9b8bb8b5-c705-584c-8fea-0b52af284da4",
+        "id": "8da2383a-b7c4-5371-842b-7f1a2b9a620d",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "address_id",
+        "id",
+        "name",
+        "spot"
+      ],
+      "input": {
+        "address_id": "9b8bb8b5-c705-584c-8fea-0b52af284da4",
+        "id": "8da2383a-b7c4-5371-842b-7f1a2b9a620d",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {
+        "id": "8da2383a-b7c4-5371-842b-7f1a2b9a620d"
+      }
+    }
+  },
+  "location.LocationPutData": {
+    "full": {
+      "dump": {
+        "address_id": "8b01f8ee-0e3f-5064-ac3b-bc74f4167b03",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "address_id",
+        "name",
+        "spot"
+      ],
+      "input": {
+        "address_id": "8b01f8ee-0e3f-5064-ac3b-bc74f4167b03",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {}
+    }
+  },
+  "location.LocationRead": {
+    "full": {
+      "dump": {
+        "address": {
+          "city_id": 1,
+          "id": "aae3fdff-e6dc-5e7a-99b0-90711c68a84d",
+          "map_uri": "geo:1.5,1.5",
+          "name": "x",
+          "parsed": {
+            "apartment": "x",
+            "building": "x",
+            "district": "x",
+            "house": "x",
+            "street": "x"
+          },
+          "source": "x",
+          "spot": {
+            "lat": 1.5,
+            "lon": 1.5
+          }
+        },
+        "address_id": "8493471e-ebd5-57a2-b339-b1631c90e9ee",
+        "display_name": "x",
+        "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f",
+        "map_uri": "geo:1.5,1.5",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "address",
+        "address_id",
+        "id",
+        "name",
+        "spot"
+      ],
+      "input": {
+        "address": {
+          "city_id": 1,
+          "id": "aae3fdff-e6dc-5e7a-99b0-90711c68a84d",
+          "name": "x",
+          "parsed": {
+            "apartment": "x",
+            "building": "x",
+            "district": "x",
+            "house": "x",
+            "street": "x"
+          },
+          "source": "x",
+          "spot": {
+            "lat": 1.5,
+            "lon": 1.5
+          }
+        },
+        "address_id": "8493471e-ebd5-57a2-b339-b1631c90e9ee",
+        "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {
+        "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f"
+      }
+    }
+  },
+  "map.MapResult": {
+    "full": {
+      "dump": {
+        "addresses": {
+          "items": [
+            {
+              "city_id": 1,
+              "id": "eceb725a-be1d-5d8d-8602-29d074b835a3",
+              "map_uri": "geo:1.5,1.5",
+              "name": "x",
+              "parsed": {
+                "apartment": "x",
+                "building": "x",
+                "district": "x",
+                "house": "x",
+                "street": "x"
+              },
+              "source": "x",
+              "spot": {
+                "lat": 1.5,
+                "lon": 1.5
+              }
+            }
+          ],
+          "pagination": {
+            "limit": 1,
+            "page": 1,
+            "total": 1
+          }
+        },
+        "locations": {
+          "items": [
+            {
+              "address": {
+                "city_id": 1,
+                "id": "2c233829-62f4-5a59-859a-e0216edfff0f",
+                "map_uri": "geo:1.5,1.5",
+                "name": "x",
+                "parsed": {
+                  "apartment": "x",
+                  "building": "x",
+                  "district": "x",
+                  "house": "x",
+                  "street": "x"
+                },
+                "source": "x",
+                "spot": {
+                  "lat": 1.5,
+                  "lon": 1.5
+                }
+              },
+              "address_id": "294e76ce-893b-5e46-9476-201b660f3fc7",
+              "display_name": "x",
+              "id": "6e57ae83-8955-5152-91c6-0528c8f26d3f",
+              "map_uri": "geo:1.5,1.5",
+              "name": "x",
+              "spot": {
+                "lat": 1.5,
+                "lon": 1.5
+              }
+            }
+          ],
+          "pagination": {
+            "limit": 1,
+            "page": 1,
+            "total": 1
+          }
+        }
+      },
+      "fields_set": [
+        "addresses",
+        "locations"
+      ],
+      "input": {
+        "addresses": {
+          "items": [
+            {
+              "city_id": 1,
+              "id": "eceb725a-be1d-5d8d-8602-29d074b835a3",
+              "name": "x",
+              "parsed": {
+                "apartment": "x",
+                "building": "x",
+                "district": "x",
+                "house": "x",
+                "street": "x"
+              },
+              "source": "x",
+              "spot": {
+                "lat": 1.5,
+                "lon": 1.5
+              }
+            }
+          ],
+          "pagination": {
+            "limit": 1,
+            "page": 1,
+            "total": 1
+          }
+        },
+        "locations": {
+          "items": [
+            {
+              "address": {
+                "city_id": 1,
+                "id": "2c233829-62f4-5a59-859a-e0216edfff0f",
+                "name": "x",
+                "parsed": {
+                  "apartment": "x",
+                  "building": "x",
+                  "district": "x",
+                  "house": "x",
+                  "street": "x"
+                },
+                "source": "x",
+                "spot": {
+                  "lat": 1.5,
+                  "lon": 1.5
+                }
+              },
+              "address_id": "294e76ce-893b-5e46-9476-201b660f3fc7",
+              "id": "6e57ae83-8955-5152-91c6-0528c8f26d3f",
+              "name": "x",
+              "spot": {
+                "lat": 1.5,
+                "lon": 1.5
+              }
+            }
+          ],
+          "pagination": {
+            "limit": 1,
+            "page": 1,
+            "total": 1
+          }
+        }
+      }
+    },
+    "required": {
+      "error": [
+        "locations.items.0:value_error"
+      ],
+      "input": {
+        "addresses": {
+          "items": [
+            {
+              "city_id": 1,
+              "id": "eceb725a-be1d-5d8d-8602-29d074b835a3",
+              "name": "x"
+            }
+          ],
+          "pagination": {
+            "total": 1
+          }
+        },
+        "locations": {
+          "items": [
+            {
+              "id": "6e57ae83-8955-5152-91c6-0528c8f26d3f"
+            }
+          ],
+          "pagination": {
+            "total": 1
+          }
+        }
+      }
+    }
+  },
+  "point.Point": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "dump": {
+        "lat": 1.5,
+        "lon": 1.5
+      },
+      "fields_set": [
+        "lat",
+        "lon"
+      ],
+      "input": {
+        "lat": 1.5,
+        "lon": 1.5
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "dump": {
+        "lat": 1.5,
+        "lon": 1.5
+      },
+      "fields_set": [
+        "lat",
+        "lon"
+      ],
+      "input": {
+        "lat": 1.5,
+        "lon": 1.5
+      }
+    }
+  }
+}

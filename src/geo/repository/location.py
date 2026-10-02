@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID, uuid4
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -13,9 +14,10 @@ from core.database.sqlalchemy.mixins.repositories import (
     UpsertRepositoryMixin,
 )
 from core.dto.pagination import PageParams
+from geo.dto.point import PointDTO
 from geo.models.address import AddressORM
 from geo.models.location import LocationORM as Model
-from geo.schema.point import Point
+from geo.models.spot import spot_element
 from geo.search import TS_CONFIG, search_page, text_match
 
 
@@ -28,15 +30,10 @@ class LocationRepo(
     model = Model
 
     @staticmethod
-    def dump_spot(data: dict):
+    def dump_spot(data: dict[str, Any]):
         if "spot" not in data:
             return
-        point = data.pop("spot")
-        data["spot"] = (
-            WKTElement(f"POINT({point['lon']} {point['lat']})", srid=4326)
-            if point
-            else None
-        )
+        data["spot"] = spot_element(data.pop("spot"))
 
     def add_n_return(self, data, options=()):
         self.dump_spot(data)
@@ -61,7 +58,7 @@ class LocationRepo(
         *,
         options=None,
         scope: list | None = None,
-        near: Point | None = None,
+        near: PointDTO | None = None,
     ) -> tuple[list[Model], int]:
         haystack = func.concat_ws(" ", self.model.name, AddressORM.name)
         match = (
@@ -102,7 +99,7 @@ class LocationRepo(
     async def _search_near(
         self,
         filter: Filter,
-        near: Point,
+        near: PointDTO,
         pagination: PageParams,
         *,
         options=None,

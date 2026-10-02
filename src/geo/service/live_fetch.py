@@ -22,7 +22,7 @@ from geo.bootstrap.sources import (
     OverpassSource,
     resolve_mirror_urls,
 )
-from geo.schema.point import Point
+from geo.dto.point import PointDTO
 from geo.uow.address import AddressUOW
 
 logger = getLogger("geo.bootstrap")
@@ -45,15 +45,13 @@ def _shared_source() -> OverpassSource:
         # mirror builds the area index reverse_geocode's is_in query needs --
         # one that doesn't fails every single time (not just transient), so
         # enough attempts to cycle past it and reach one that does matters.
-        _source = OverpassSource(
-            urls=urls, timeout=25.0, attempts=10, cooldown=10.0
-        )
+        _source = OverpassSource(urls=urls, timeout=25.0, attempts=10, cooldown=10.0)
     return _source
 
 
 async def live_fetch(
     cell: tuple[int, int],
-    near: Point,
+    near: PointDTO,
     *,
     sessionmaker: async_sessionmaker | None = None,
     source: OverpassSource | None = None,
@@ -95,7 +93,7 @@ async def live_fetch(
 
 async def _guarded_live_fetch(
     cell: tuple[int, int],
-    near: Point,
+    near: PointDTO,
     sessionmaker: async_sessionmaker | None,
     *,
     source: OverpassSource | None = None,
@@ -110,7 +108,7 @@ async def _guarded_live_fetch(
 
 
 def schedule_live_fetch(
-    near: Point, *, sessionmaker: async_sessionmaker | None = None
+    near: PointDTO, *, sessionmaker: async_sessionmaker | None = None
 ) -> None:
     """Fire-and-forget: never awaited by the caller, must not raise."""
     if not settings.GEO_LIVE_FETCH:

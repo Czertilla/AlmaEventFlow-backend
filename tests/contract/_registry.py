@@ -4,6 +4,7 @@ SCHEMA_PACKAGES = {
     "core_v1": "core.schema.v1",
     "event_v1": "event.api.v1.schema",
     "event_v2": "event.api.v2.schema",
+    "geo_v1": "geo.api.v1.schema",
     "org_v1": "org.api.v1.schema",
 }
 
@@ -36,6 +37,16 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "calendar.SubscriptionRead": ("event.dto.calendar:CalendarSubscriptionDTO"),
         },
     ),
+    "geo_v1": (
+        "geo.api.v1.schema",
+        {
+            "address.AddressRead": "geo.dto.address:AddressDTO",
+            "city.CityRead": "geo.dto.city:CityDTO",
+            "location.LocationRead": "geo.dto.location:LocationDTO",
+            "map.MapResult": "geo.dto.map:MapResultDTO",
+            "point.Point": "geo.dto.point:PointDTO",
+        },
+    ),
     "org_v1": (
         "org.api.v1.schema",
         {
@@ -53,6 +64,7 @@ MIGRATED_LAYERS = {
     "event": ("service", "repository", "uow", "dto", "models"),
     "core": ("dto", "service", "uow", "database"),
     "org": ("service", "repository", "uow", "dto", "models"),
+    "geo": ("service", "repository", "uow", "dto", "models"),
 }
 
 FORBIDDEN = {
@@ -63,6 +75,10 @@ FORBIDDEN = {
     "core": (re.compile(r"^core\.schema\.v\d+"),),
     "org": (
         re.compile(r"^org\.api\.v\d+"),
+        re.compile(r"^core\.schema\.v\d+"),
+    ),
+    "geo": (
+        re.compile(r"^geo\.api\.v\d+"),
         re.compile(r"^core\.schema\.v\d+"),
     ),
 }

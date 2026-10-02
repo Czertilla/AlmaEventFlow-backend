@@ -13,8 +13,8 @@ from core.database.sqlalchemy.mixins.models import (
 )
 from core.database.sqlalchemy.types.pydantic import PydanticJSONB
 from core.models.address import AddressAORM
+from geo.dto.address import AddressFieldsDTO
 from geo.models.spot import OptionalSpotMixin
-from geo.schema.address import AddressFields
 
 from ._base import ModuleBase
 
@@ -34,8 +34,8 @@ class AddressORM(
     city_id: Mapped[int] = mapped_column(
         ForeignKey("city.id", ondelete="CASCADE")
     )
-    parsed: Mapped[AddressFields | None] = mapped_column(
-        PydanticJSONB(AddressFields)
+    parsed: Mapped[AddressFieldsDTO | None] = mapped_column(
+        PydanticJSONB(AddressFieldsDTO)
     )
     source: Mapped[str | None] = mapped_column(String(32))
     """Where this row came from, e.g. ``"osm"`` -- ``NULL`` for a row created

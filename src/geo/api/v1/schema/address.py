@@ -1,11 +1,21 @@
 from pydantic import BaseModel, ConfigDict, computed_field, model_validator
 
+from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
-from geo.schema.city import CityCascadeCreate
-from geo.schema.point import Point
+from geo.api.v1.schema.city import CityCascadeCreate
+from geo.api.v1.schema.point import Point
+from geo.dto.address import (
+    AddressCascadeCreateDTO,
+    AddressCreateDTO,
+    AddressFieldsDTO,
+    AddressPatchDTO,
+    AddressPutDTO,
+)
 
 
-class AddressFields(BaseModel):
+class AddressFields(BaseModel, ToDTOMixinV1):
+    __dto_cls__ = AddressFieldsDTO
+
     house: str | None = None
     district: str | None = None
     street: str | None = None
@@ -17,7 +27,7 @@ class AddressFields(BaseModel):
         return ", ".join(part.strip() for part in parts if part and part.strip())
 
 
-class AddressCreate(BaseModel):
+class AddressBase(BaseModel):
     city_id: int
     name: str | None = None
     spot: Point | None = None
@@ -26,7 +36,7 @@ class AddressCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     @model_validator(mode="after")
-    def _ensure_name(self) -> "AddressCreate":
+    def _ensure_name(self) -> "AddressBase":
         if not (self.name and self.name.strip()) and self.parsed:
             self.name = self.parsed.compose_name()
         if not (self.name and self.name.strip()):
@@ -34,7 +44,11 @@ class AddressCreate(BaseModel):
         return self
 
 
-class AddressRead(AddressCreate, UUIDMixinV1):
+class AddressCreate(AddressBase, ToDTOMixinV1):
+    __dto_cls__ = AddressCreateDTO
+
+
+class AddressRead(FromDTOMixinV1, AddressBase, UUIDMixinV1):
     name: str
     source: str | None = None
 
@@ -57,16 +71,20 @@ class AddressPatchData(PatchModelV1):
     parsed: AddressFields | None = None
 
 
-class AddressPatch(AddressPatchData, UUIDMixinV1): ...
+class AddressPatch(AddressPatchData, UUIDMixinV1, ToDTOMixinV1):
+    __dto_cls__ = AddressPatchDTO
 
 
-class AddressPutData(AddressCreate): ...
+class AddressPutData(AddressBase): ...
 
 
-class AddressPut(AddressPutData, UUIDMixinV1): ...
+class AddressPut(AddressPutData, UUIDMixinV1, ToDTOMixinV1):
+    __dto_cls__ = AddressPutDTO
 
 
 class AddressCascadeCreate(AddressFields):
+    __dto_cls__ = AddressCascadeCreateDTO
+
     city: CityCascadeCreate
     spot: Point | None = None
 

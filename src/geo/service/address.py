@@ -1,8 +1,11 @@
+from dataclasses import replace
 from logging import getLogger
+from typing import Any
 from uuid import UUID
 
+from core.dto.base import dto_dict
+from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.schema.message.geo import AddressData
-from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
 from core.service.base import BaseService, required_transaction
 from geo.api.kafka.pub.address import (
     on_address_created,
@@ -10,34 +13,50 @@ from geo.api.kafka.pub.address import (
     on_address_updated,
 )
 from geo.api.kafka.pub.location import on_location_deleted
+from geo.dto.address import (
+    AddressCascadeCreateDTO,
+    AddressCreateDTO,
+    AddressDTO,
+    AddressFieldsDTO,
+    AddressFilterDTO,
+    AddressPatchDTO,
+    AddressPutDTO,
+)
+from geo.dto.point import PointDTO
 from geo.exc.address import AddressNotExistsException
 from geo.filter.address import AddressFilter
 from geo.models.address import AddressORM
-from geo.schema.address import (
-    AddressCascadeCreate,
-    AddressCreate,
-    AddressFields,
-    AddressPatch,
-    AddressPut,
-    AddressRead,
-)
-from geo.schema.point import Point
 from geo.service.geography import resolve_or_create_city
 from geo.service.live_fetch import schedule_live_fetch
+from geo.service.mapping import address_to_dto
 from geo.uow.address import AddressUOW
 
 logger = getLogger(__name__)
 
 
 class AddressService(BaseService[AddressUOW]):
+    @staticmethod
+    def _to_dto(address: AddressORM) -> AddressDTO:
+        return address_to_dto(address)
+
+    @staticmethod
+    def _named(address_create: AddressCreateDTO) -> AddressCreateDTO:
+        if address_create.name and address_create.name.strip():
+            return address_create
+        parsed = address_create.parsed
+        name = parsed.compose_name() if parsed else ""
+        if not name.strip():
+            raise ValueError("either name or parsed address fields are required")
+        return replace(address_create, name=name)
+
     @required_transaction
-    async def _create(self, address_create: AddressCreate) -> AddressORM:
+    async def _create(self, address_create: AddressCreateDTO) -> AddressORM:
         return await self.uow.addresses.add_n_return(
-            address_create.model_dump()
+            dto_dict(self._named(address_create))
         )
 
     @required_transaction
-    async def _read(self, address_id: UUID) -> AddressORM | None:
+    async def _read(self, address_id: UUID) -> AddressORM:
         address = await self.uow.addresses.get_by_id(address_id)
         if address is None:
             raise AddressNotExistsException()
@@ -45,18 +64,23 @@ class AddressService(BaseService[AddressUOW]):
 
     @required_transaction
     async def _update(
-        self, address_id: UUID, address_data: dict, *, flush: bool = False
+        self,
+        address_id: UUID,
+        address_data: dict[str, Any],
+        *,
+        flush: bool = False,
     ) -> AddressORM:
-        address = await self.uow.addresses.update_one(
-            address_id, address_data, flush
-        )
+        address = await self.uow.addresses.update_one(address_id, address_data, flush)
         if address is None:
             raise AddressNotExistsException()
         return address
 
     @required_transaction
-    async def _upsert(self, address_put: AddressPut) -> AddressORM:
-        return await self.uow.addresses.upsert(address_put.model_dump())
+    async def _upsert(self, address_put: AddressPutDTO) -> AddressORM:
+        address = await self.uow.addresses.upsert(dto_dict(address_put))
+        if address is None:
+            raise AddressNotExistsException()
+        return address
 
     @required_transaction
     async def _delete(self, address_id: UUID) -> list[UUID]:
@@ -64,46 +88,40 @@ class AddressService(BaseService[AddressUOW]):
         await self.uow.addresses.delete_one(address_id)
         return location_ids
 
-    async def create(self, address_create: AddressCreate) -> AddressRead:
+    async def create(self, address_create: AddressCreateDTO) -> AddressDTO:
         async with self.uow as uow:
-            result = AddressRead.model_validate(
-                await self._create(address_create)
-            )
+            result = self._to_dto(await self._create(address_create))
             await uow.commit()
         await on_address_created([AddressData(id=result.id, name=result.name)])
         return result
 
-    async def create_cascade(self, data: AddressCascadeCreate) -> AddressRead:
-        """Like ``create``, but for a hand-entered address whose city may
-        not exist yet: resolves/creates the country/region/city by name
-        (see ``geo.service.geography``) in the same transaction as the
-        address itself, instead of requiring a pre-existing ``city_id``."""
+    async def create_cascade(self, data: AddressCascadeCreateDTO) -> AddressDTO:
         async with self.uow as uow:
             city_id = await resolve_or_create_city(
                 uow, data.city.country, data.city.region, data.city.name
             )
-            fields = AddressFields(
+            fields = AddressFieldsDTO(
                 house=data.house,
                 district=data.district,
                 street=data.street,
                 building=data.building,
                 apartment=data.apartment,
             )
-            address_create = AddressCreate(
+            address_create = AddressCreateDTO(
                 city_id=city_id, spot=data.spot, parsed=fields
             )
-            result = AddressRead.model_validate(await self._create(address_create))
+            result = self._to_dto(await self._create(address_create))
             await uow.commit()
         await on_address_created([AddressData(id=result.id, name=result.name)])
         return result
 
-    async def read(self, address_id: UUID) -> AddressRead:
+    async def read(self, address_id: UUID) -> AddressDTO:
         async with self.uow:
-            return AddressRead.model_validate(await self._read(address_id))
+            return self._to_dto(await self._read(address_id))
 
-    async def patch(self, address_patch: AddressPatch) -> AddressRead:
+    async def patch(self, address_patch: AddressPatchDTO) -> AddressDTO:
         async with self.uow as uow:
-            address_data = address_patch.model_dump()
+            address_data = dto_dict(address_patch, only_set=True, exclude={"id"})
             for required in ("name", "city_id"):
                 if address_data.get(required) is None:
                     address_data.pop(required, None)
@@ -111,23 +129,18 @@ class AddressService(BaseService[AddressUOW]):
                 composed = address_patch.parsed.compose_name()
                 if composed:
                     address_data["name"] = composed
-            result = AddressRead.model_validate(
-                await self._update(address_data.pop("id"), address_data)
-            )
+            result = self._to_dto(await self._update(address_patch.id, address_data))
             await uow.commit()
         await on_address_updated([AddressData(id=result.id, name=result.name)])
         return result
 
-    async def put(self, address_put: AddressPut) -> AddressRead:
+    async def put(self, address_put: AddressPutDTO) -> AddressDTO:
         async with self.uow as uow:
-            result = AddressRead.model_validate(
-                await self._upsert(address_put)
-            )
+            upserted = await self._upsert(address_put)
+            result = self._to_dto(await self._read(upserted.id))
             await uow.commit()
         await on_address_updated([AddressData(id=result.id, name=result.name)])
-        return (
-            result.model_dump() | address_put.model_dump()
-        )  # TODO remove bypass
+        return result
 
     async def delete(self, address_id: UUID) -> None:
         async with self.uow as uow:
@@ -139,15 +152,19 @@ class AddressService(BaseService[AddressUOW]):
 
     async def search(
         self,
-        filter: AddressFilter,
-        page_params: PageParamV1 = PageParamV1(),
-        near: Point | None = None,
-    ) -> PageV1[AddressRead]:
+        filter: AddressFilterDTO,
+        page_params: PageParamDTO = PageParamDTO(),
+        near: PointDTO | None = None,
+    ) -> PageDTO[AddressDTO]:
         async with self.uow as uow:
-            items, total = await uow.addresses.search(filter, page_params, near=near)
-            page = PageV1(
-                items=[AddressRead.model_validate(item) for item in items],
-                pagination=PaginationV1(page=page_params.page, limit=page_params.limit, total=total),
+            items, total = await uow.addresses.search(
+                AddressFilter.from_dto(filter), page_params, near=near
+            )
+            page = PageDTO(
+                items=[self._to_dto(item) for item in items],
+                pagination=PaginationDTO(
+                    page=page_params.page, limit=page_params.limit, total=total
+                ),
             )
         if near is not None:
             schedule_live_fetch(near, sessionmaker=self.uow.session_factory)
@@ -159,15 +176,15 @@ class AddressService(BaseService[AddressUOW]):
         min_lon: float,
         max_lat: float,
         max_lon: float,
-        page_params: PageParamV1 = PageParamV1(),
-    ) -> PageV1[AddressRead]:
+        page_params: PageParamDTO = PageParamDTO(),
+    ) -> PageDTO[AddressDTO]:
         async with self.uow as uow:
             items, total = await uow.addresses.search_in_bbox(
                 min_lat, min_lon, max_lat, max_lon, page_params
             )
-            return PageV1(
-                items=[AddressRead.model_validate(item) for item in items],
-                pagination=PaginationV1(
+            return PageDTO(
+                items=[self._to_dto(item) for item in items],
+                pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )

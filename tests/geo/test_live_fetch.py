@@ -6,9 +6,9 @@ from sqlalchemy import select
 
 from geo.bootstrap.coverage import cell_of
 from geo.bootstrap.sources import OverpassSource
+from geo.dto.point import PointDTO
 from geo.models.address import AddressORM
 from geo.models.city import CityORM
-from geo.schema.point import Point
 from geo.service.live_fetch import _guarded_live_fetch, live_fetch
 from geo.uow.address import AddressUOW
 
@@ -90,14 +90,14 @@ def _source(urls: list[str]) -> OverpassSource:
 
 
 # Well outside CITY_BBOXES["moscow"] -- exercises the reverse-geocode path.
-OUTSIDE = Point(lat=59.93, lon=30.31)
+OUTSIDE = PointDTO(lat=59.93, lon=30.31)
 
 
-def _payload_at(point: Point) -> dict:
+def _payload_at(point: PointDTO) -> dict:
     return {"elements": [_node(1, "Невский проспект", "1", point.lat, point.lon)]}
 
 
-def _mirror_at(point: Point) -> FakeMirror:
+def _mirror_at(point: PointDTO) -> FakeMirror:
     return FakeMirror(fallback=_payload_at(point), is_in=IS_IN_PAYLOAD)
 
 
@@ -130,7 +130,7 @@ async def test_guarded_live_fetch_skips_a_covered_cell_but_fetches_an_uncovered_
             cell, OUTSIDE, sessionmaker=sessionmaker_, source=_source(urls)
         )
 
-    elsewhere = Point(lat=OUTSIDE.lat, lon=OUTSIDE.lon + 1.0)
+    elsewhere = PointDTO(lat=OUTSIDE.lat, lon=OUTSIDE.lon + 1.0)
     elsewhere_cell = cell_of(elsewhere.lat, elsewhere.lon)
     mirror = _mirror_at(elsewhere)
     async with serving(mirror) as retry_urls:

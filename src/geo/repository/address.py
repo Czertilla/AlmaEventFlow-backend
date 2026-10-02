@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -12,8 +13,9 @@ from core.database.sqlalchemy.mixins.repositories import (
     UpsertRepositoryMixin,
 )
 from core.dto.pagination import PageParams
+from geo.dto.point import PointDTO
 from geo.models.address import AddressORM as Model
-from geo.schema.point import Point
+from geo.models.spot import spot_element
 from geo.search import search_page, text_match
 
 
@@ -26,15 +28,10 @@ class AddressAlchemyRepo(
     model = Model
 
     @staticmethod
-    def dump_spot(data: dict):
+    def dump_spot(data: dict[str, Any]):
         if "spot" not in data:
             return
-        point = data.pop("spot")
-        data["spot"] = (
-            WKTElement(f"POINT({point['lon']} {point['lat']})", srid=4326)
-            if point
-            else None
-        )
+        data["spot"] = spot_element(data.pop("spot"))
 
     def add_n_return(self, data, options=()):
         self.dump_spot(data)
@@ -64,7 +61,7 @@ class AddressAlchemyRepo(
         *,
         options=None,
         scope: list | None = None,
-        near: Point | None = None,
+        near: PointDTO | None = None,
     ) -> tuple[list[Model], int]:
         match = (
             text_match(filter.search, self.model.name_tsv, self.model.name)
@@ -98,7 +95,7 @@ class AddressAlchemyRepo(
     async def _search_near(
         self,
         filter: Filter,
-        near: Point,
+        near: PointDTO,
         pagination: PageParams,
         *,
         options=None,
