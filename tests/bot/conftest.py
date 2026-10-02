@@ -1,6 +1,6 @@
 import os
 from collections.abc import Sequence
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from sqlalchemy import func, select, text
@@ -37,6 +37,39 @@ async def bot_engine(test_database):
                 )
             )
         await engine.dispose()
+
+
+@pytest.fixture(autouse=True)
+async def link_code(request):
+    from core.dependencies.redis import redis
+    from core.utils.telegram_link import TELEGRAM_LINK_REDIS_PREFIX
+
+    issued: list[str] = []
+
+    async def issue(person_id: UUID | None = None, *, value: str | None = None):
+        code = uuid4().hex
+        stored = value if value is not None else str(person_id)
+        await redis.set(f"{TELEGRAM_LINK_REDIS_PREFIX}{code}", stored, ex=600)
+        issued.append(code)
+        return code
+
+    yield issue
+    if issued:
+        await redis.delete(*[f"{TELEGRAM_LINK_REDIS_PREFIX}{c}" for c in issued])
+    await redis.connection_pool.disconnect()
+
+
+@pytest.fixture(autouse=True)
+def offline_aef_client(monkeypatch):
+    async def no_client(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(
+        "bot.tg.service.account_link.register_notify_client", no_client
+    )
+    monkeypatch.setattr(
+        "bot.tg.service.account_link.register_oauth_link", no_client
+    )
 
 
 @pytest.fixture

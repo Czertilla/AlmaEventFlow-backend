@@ -1,10 +1,7 @@
 from uuid import uuid4
 
-import jwt
 import pytest
 from sqlalchemy.ext.asyncio import async_sessionmaker
-
-from core.config.settings import settings
 
 
 def _uow(bot_engine):
@@ -13,27 +10,9 @@ def _uow(bot_engine):
     return AccountLinkUOW(async_sessionmaker(bot_engine, expire_on_commit=False))
 
 
-def _mint(person_id, *, aud="telegram-link", lifetime=600):
-    return jwt.encode(
-        {"person_id": str(person_id), "aud": aud},
-        settings.USER_SECRET.get_secret_value(),
-        algorithm="HS256",
-    )
-
-
-def _expired(person_id):
-    return jwt.encode(
-        {
-            "person_id": str(person_id),
-            "aud": "telegram-link",
-            "exp": 1,  # 1970-01-01T00:00:01Z, long expired
-        },
-        settings.USER_SECRET.get_secret_value(),
-        algorithm="HS256",
-    )
-
-
-async def test_link_creates_account_and_sets_link(bot_engine, bot_seed):
+async def test_link_creates_account_and_sets_link(
+    bot_engine, bot_seed, link_code
+):
     from bot.model.user import UserORM
     from bot.tg.model.user import TGUserORM
     from bot.tg.service.account_link import AccountLinkService
@@ -43,7 +22,7 @@ async def test_link_creates_account_and_sets_link(bot_engine, bot_seed):
     person_id = uuid4()
 
     result = await AccountLinkService(_uow(bot_engine)).link(
-        tgid, _mint(person_id)
+        tgid, await link_code(person_id)
     )
 
     assert result.id == tgid
@@ -57,7 +36,7 @@ async def test_link_creates_account_and_sets_link(bot_engine, bot_seed):
     assert tg_rows[0].user_id == accounts[0].id
 
 
-async def test_relink_replaces_previous_tgid(bot_engine, bot_seed):
+async def test_relink_replaces_previous_tgid(bot_engine, bot_seed, link_code):
     from bot.model.user import UserORM
     from bot.tg.model.user import TGUserORM
     from bot.tg.service.account_link import AccountLinkService
@@ -68,8 +47,8 @@ async def test_relink_replaces_previous_tgid(bot_engine, bot_seed):
     person_id = uuid4()
     service = AccountLinkService(_uow(bot_engine))
 
-    await service.link(old_tgid, _mint(person_id))
-    await service.link(new_tgid, _mint(person_id))
+    await service.link(old_tgid, await link_code(person_id))
+    await service.link(new_tgid, await link_code(person_id))
 
     accounts = await bot_seed.all(UserORM)
     assert len(accounts) == 1  # same AEF identity, not duplicated
@@ -79,14 +58,14 @@ async def test_relink_replaces_previous_tgid(bot_engine, bot_seed):
     assert tg_rows[old_tgid] is None  # old link cleared
 
 
-async def test_unlink_clears_link(bot_engine, bot_seed):
+async def test_unlink_clears_link(bot_engine, bot_seed, link_code):
     from bot.tg.model.user import TGUserORM
     from bot.tg.service.account_link import AccountLinkService
 
     tgid = 444
     await bot_seed.tg_user(tgid)
     service = AccountLinkService(_uow(bot_engine))
-    await service.link(tgid, _mint(uuid4()))
+    await service.link(tgid, await link_code(uuid4()))
 
     result = await service.unlink(tgid)
 
@@ -103,19 +82,21 @@ async def test_unlink_unknown_tgid_returns_none(bot_engine, bot_seed):
     assert result is None
 
 
-async def test_link_rejects_wrong_audience(bot_engine, bot_seed):
-    from bot.exc.user import InvalidLinkTokenException
+async def test_link_code_can_only_be_used_once(bot_engine, bot_seed, link_code):
+    from bot.exc.user import LinkTokenExpiredException
     from bot.tg.service.account_link import AccountLinkService
 
     tgid = 555
     await bot_seed.tg_user(tgid)
-    bad_token = _mint(uuid4(), aud="invite")
+    service = AccountLinkService(_uow(bot_engine))
+    code = await link_code(uuid4())
+    await service.link(tgid, code)
 
-    with pytest.raises(InvalidLinkTokenException):
-        await AccountLinkService(_uow(bot_engine)).link(tgid, bad_token)
+    with pytest.raises(LinkTokenExpiredException):
+        await service.link(tgid, code)
 
 
-async def test_link_rejects_expired_token(bot_engine, bot_seed):
+async def test_link_rejects_an_unknown_or_expired_code(bot_engine, bot_seed):
     from bot.exc.user import LinkTokenExpiredException
     from bot.tg.service.account_link import AccountLinkService
 
@@ -123,17 +104,18 @@ async def test_link_rejects_expired_token(bot_engine, bot_seed):
     await bot_seed.tg_user(tgid)
 
     with pytest.raises(LinkTokenExpiredException):
-        await AccountLinkService(_uow(bot_engine)).link(
-            tgid, _expired(uuid4())
-        )
+        await AccountLinkService(_uow(bot_engine)).link(tgid, "no-such-code")
 
 
-async def test_link_rejects_garbage_token(bot_engine, bot_seed):
+async def test_link_rejects_a_code_without_a_person_id(
+    bot_engine, bot_seed, link_code
+):
     from bot.exc.user import InvalidLinkTokenException
     from bot.tg.service.account_link import AccountLinkService
 
     tgid = 777
     await bot_seed.tg_user(tgid)
+    code = await link_code(value="not-a-uuid")
 
     with pytest.raises(InvalidLinkTokenException):
-        await AccountLinkService(_uow(bot_engine)).link(tgid, "not-a-jwt")
+        await AccountLinkService(_uow(bot_engine)).link(tgid, code)
