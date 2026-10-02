@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from event.api.v1.schema.event import EventCreate
@@ -18,7 +18,8 @@ class MeParticipationCreate(BaseModel, ToDTOMixinV1):
 
     event_id: UUID
     priority_degree: EventPriorityEnumV1 | None = Field(
-        alias="EventPriorityEnumV1", default=None
+        default=None,
+        validation_alias=AliasChoices("priority_degree", "EventPriorityEnumV1"),
     )
     member_ids: list[UUID] | None = None
 

@@ -75,11 +75,11 @@
   },
   "participation.ParticipationRead": {
     "response": {
-      "EventPriorityEnumV1": null,
       "collective_id": "917d81e8-8c35-5c9a-858a-de655ad27e12",
       "collective_name": "x",
       "event_id": "9eec0aff-19fc-5553-b441-38fd6892052a",
-      "id": "061b6c6b-acc8-51cf-a7c0-8f9c6a54ad66"
+      "id": "061b6c6b-acc8-51cf-a7c0-8f9c6a54ad66",
+      "priority_degree": "hight"
     }
   },
   "reward.RewardRead": {

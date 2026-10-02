@@ -1224,16 +1224,6 @@
       },
       "MeParticipationCreate": {
         "properties": {
-          "EventPriorityEnumV1": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EventPriorityEnumV1"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "event_id": {
             "format": "uuid",
             "title": "Event Id",
@@ -1253,6 +1243,16 @@
               }
             ],
             "title": "Member Ids"
+          },
+          "priority_degree": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventPriorityEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -1636,16 +1636,6 @@
       },
       "ParticipationCreate": {
         "properties": {
-          "EventPriorityEnumV1": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EventPriorityEnumV1"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "collective_id": {
             "format": "uuid",
             "title": "Collective Id",
@@ -1655,6 +1645,16 @@
             "format": "uuid",
             "title": "Event Id",
             "type": "string"
+          },
+          "priority_degree": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventPriorityEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -1666,16 +1666,6 @@
       },
       "ParticipationPatchData": {
         "properties": {
-          "EventPriorityEnumV1": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EventPriorityEnumV1"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "event_id": {
             "anyOf": [
               {
@@ -1687,14 +1677,8 @@
               }
             ],
             "title": "Event Id"
-          }
-        },
-        "title": "ParticipationPatchData",
-        "type": "object"
-      },
-      "ParticipationPutData": {
-        "properties": {
-          "EventPriorityEnumV1": {
+          },
+          "priority_degree": {
             "anyOf": [
               {
                 "$ref": "#/components/schemas/EventPriorityEnumV1"
@@ -1703,11 +1687,27 @@
                 "type": "null"
               }
             ]
-          },
+          }
+        },
+        "title": "ParticipationPatchData",
+        "type": "object"
+      },
+      "ParticipationPutData": {
+        "properties": {
           "event_id": {
             "format": "uuid",
             "title": "Event Id",
             "type": "string"
+          },
+          "priority_degree": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventPriorityEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -1718,16 +1718,6 @@
       },
       "ParticipationRead": {
         "properties": {
-          "EventPriorityEnumV1": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EventPriorityEnumV1"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "collective_id": {
             "format": "uuid",
             "title": "Collective Id",
@@ -1753,6 +1743,16 @@
             "format": "uuid",
             "title": "Id",
             "type": "string"
+          },
+          "priority_degree": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventPriorityEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [

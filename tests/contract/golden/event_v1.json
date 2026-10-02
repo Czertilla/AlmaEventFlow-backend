@@ -1975,11 +1975,11 @@
         }
       },
       "dump": {
-        "EventPriorityEnumV1": "hight",
         "event_id": "0ed5cb8b-d910-5ba0-a3a0-66830e635e0e",
         "member_ids": [
           "c835cb25-13fa-5d5f-ad93-c85febc75720"
-        ]
+        ],
+        "priority_degree": "hight"
       },
       "fields_set": [
         "event_id",
@@ -1987,11 +1987,11 @@
         "priority_degree"
       ],
       "input": {
-        "EventPriorityEnumV1": "hight",
         "event_id": "0ed5cb8b-d910-5ba0-a3a0-66830e635e0e",
         "member_ids": [
           "c835cb25-13fa-5d5f-ad93-c85febc75720"
-        ]
+        ],
+        "priority_degree": "hight"
       }
     },
     "required": {
@@ -2004,9 +2004,9 @@
         }
       },
       "dump": {
-        "EventPriorityEnumV1": null,
         "event_id": "0ed5cb8b-d910-5ba0-a3a0-66830e635e0e",
-        "member_ids": null
+        "member_ids": null,
+        "priority_degree": null
       },
       "fields_set": [
         "event_id"
@@ -2591,9 +2591,9 @@
         }
       },
       "dump": {
-        "EventPriorityEnumV1": "hight",
         "collective_id": "634fe429-98bb-5e4b-90d1-d69778830f29",
-        "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6"
+        "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6",
+        "priority_degree": "hight"
       },
       "fields_set": [
         "collective_id",
@@ -2601,9 +2601,9 @@
         "priority_degree"
       ],
       "input": {
-        "EventPriorityEnumV1": "hight",
         "collective_id": "634fe429-98bb-5e4b-90d1-d69778830f29",
-        "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6"
+        "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6",
+        "priority_degree": "hight"
       }
     },
     "required": {
@@ -2616,9 +2616,9 @@
         }
       },
       "dump": {
-        "EventPriorityEnumV1": null,
         "collective_id": "634fe429-98bb-5e4b-90d1-d69778830f29",
-        "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6"
+        "event_id": "2d82b9a6-c66e-5345-9c0f-4ed2a5d0e6c6",
+        "priority_degree": null
       },
       "fields_set": [
         "collective_id",
@@ -2633,22 +2633,22 @@
   "participation.ParticipationCreateData": {
     "full": {
       "dump": {
-        "EventPriorityEnumV1": "hight",
-        "event_id": "796deed3-4a86-5f3b-80e5-b28d41524ec1"
+        "event_id": "796deed3-4a86-5f3b-80e5-b28d41524ec1",
+        "priority_degree": "hight"
       },
       "fields_set": [
         "event_id",
         "priority_degree"
       ],
       "input": {
-        "EventPriorityEnumV1": "hight",
-        "event_id": "796deed3-4a86-5f3b-80e5-b28d41524ec1"
+        "event_id": "796deed3-4a86-5f3b-80e5-b28d41524ec1",
+        "priority_degree": "hight"
       }
     },
     "required": {
       "dump": {
-        "EventPriorityEnumV1": null,
-        "event_id": "796deed3-4a86-5f3b-80e5-b28d41524ec1"
+        "event_id": "796deed3-4a86-5f3b-80e5-b28d41524ec1",
+        "priority_degree": null
       },
       "fields_set": [
         "event_id"
@@ -2674,9 +2674,9 @@
         }
       },
       "dump": {
-        "EventPriorityEnumV1": "hight",
         "event_id": "6febf617-643c-59e8-8c57-bdc38335c5ff",
-        "id": "0172f0ac-84fc-5421-88b5-21298e3bb904"
+        "id": "0172f0ac-84fc-5421-88b5-21298e3bb904",
+        "priority_degree": "hight"
       },
       "fields_set": [
         "event_id",
@@ -2684,9 +2684,9 @@
         "priority_degree"
       ],
       "input": {
-        "EventPriorityEnumV1": "hight",
         "event_id": "6febf617-643c-59e8-8c57-bdc38335c5ff",
-        "id": "0172f0ac-84fc-5421-88b5-21298e3bb904"
+        "id": "0172f0ac-84fc-5421-88b5-21298e3bb904",
+        "priority_degree": "hight"
       }
     },
     "required": {
@@ -2713,16 +2713,16 @@
   "participation.ParticipationPatchData": {
     "full": {
       "dump": {
-        "EventPriorityEnumV1": "hight",
-        "event_id": "f8a90d29-9ff3-55f6-89ef-77d38ce634fc"
+        "event_id": "f8a90d29-9ff3-55f6-89ef-77d38ce634fc",
+        "priority_degree": "hight"
       },
       "fields_set": [
         "event_id",
         "priority_degree"
       ],
       "input": {
-        "EventPriorityEnumV1": "hight",
-        "event_id": "f8a90d29-9ff3-55f6-89ef-77d38ce634fc"
+        "event_id": "f8a90d29-9ff3-55f6-89ef-77d38ce634fc",
+        "priority_degree": "hight"
       }
     },
     "required": {
@@ -2742,9 +2742,9 @@
         }
       },
       "dump": {
-        "EventPriorityEnumV1": "hight",
         "event_id": "a2453d59-aa42-5081-8017-439ab4f5cd3e",
-        "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477"
+        "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477",
+        "priority_degree": "hight"
       },
       "fields_set": [
         "event_id",
@@ -2752,9 +2752,9 @@
         "priority_degree"
       ],
       "input": {
-        "EventPriorityEnumV1": "hight",
         "event_id": "a2453d59-aa42-5081-8017-439ab4f5cd3e",
-        "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477"
+        "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477",
+        "priority_degree": "hight"
       }
     },
     "required": {
@@ -2767,9 +2767,9 @@
         }
       },
       "dump": {
-        "EventPriorityEnumV1": null,
         "event_id": "a2453d59-aa42-5081-8017-439ab4f5cd3e",
-        "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477"
+        "id": "6e83c451-73fd-5c01-a5e4-d4e4fc928477",
+        "priority_degree": null
       },
       "fields_set": [
         "event_id",
@@ -2784,22 +2784,22 @@
   "participation.ParticipationPutData": {
     "full": {
       "dump": {
-        "EventPriorityEnumV1": "hight",
-        "event_id": "675ebebf-a898-5023-8496-d1a2ef865a39"
+        "event_id": "675ebebf-a898-5023-8496-d1a2ef865a39",
+        "priority_degree": "hight"
       },
       "fields_set": [
         "event_id",
         "priority_degree"
       ],
       "input": {
-        "EventPriorityEnumV1": "hight",
-        "event_id": "675ebebf-a898-5023-8496-d1a2ef865a39"
+        "event_id": "675ebebf-a898-5023-8496-d1a2ef865a39",
+        "priority_degree": "hight"
       }
     },
     "required": {
       "dump": {
-        "EventPriorityEnumV1": null,
-        "event_id": "675ebebf-a898-5023-8496-d1a2ef865a39"
+        "event_id": "675ebebf-a898-5023-8496-d1a2ef865a39",
+        "priority_degree": null
       },
       "fields_set": [
         "event_id"
@@ -2823,11 +2823,11 @@
         }
       },
       "dump": {
-        "EventPriorityEnumV1": "hight",
         "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
         "collective_name": "x",
         "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
-        "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b"
+        "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b",
+        "priority_degree": "hight"
       },
       "fields_set": [
         "collective_id",
@@ -2837,11 +2837,11 @@
         "priority_degree"
       ],
       "input": {
-        "EventPriorityEnumV1": "hight",
         "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
         "collective_name": "x",
         "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
-        "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b"
+        "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b",
+        "priority_degree": "hight"
       }
     },
     "required": {
@@ -2857,11 +2857,11 @@
         }
       },
       "dump": {
-        "EventPriorityEnumV1": null,
         "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
         "collective_name": null,
         "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
-        "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b"
+        "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b",
+        "priority_degree": null
       },
       "fields_set": [
         "collective_id",

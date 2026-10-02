@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
@@ -15,7 +15,8 @@ from event.enum.priority import EventPriorityEnumV1
 class ParticipationCreateData(BaseModel):
     event_id: UUID
     priority_degree: EventPriorityEnumV1 | None = Field(
-        alias="EventPriorityEnumV1", default=None
+        default=None,
+        validation_alias=AliasChoices("priority_degree", "EventPriorityEnumV1"),
     )
 
     model_config = ConfigDict(from_attributes=True)
@@ -34,7 +35,8 @@ class ParticipationRead(FromDTOMixinV1, ParticipationCreate, UUIDMixinV1):
 class ParticipationPatchData(PatchModelV1):
     event_id: UUID | None = None
     priority_degree: EventPriorityEnumV1 | None = Field(
-        alias="EventPriorityEnumV1", default=None
+        default=None,
+        validation_alias=AliasChoices("priority_degree", "EventPriorityEnumV1"),
     )
 
     model_config = ConfigDict(from_attributes=True)
