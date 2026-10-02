@@ -37,14 +37,14 @@ def required_transaction(func):
         def wrapper(self: BaseService[T], *args, **kwargs):
             if not self.uow.is_transacting():
                 raise RequiredTransactionException
-            return func(self, *args, *kwargs)
+            return func(self, *args, **kwargs)
     else:
 
         @wraps(func)
         async def wrapper(self: BaseService[T], *args, **kwargs):
             if not self.uow.is_transacting():
                 raise RequiredTransactionException
-            return await func(self, *args, *kwargs)
+            return await func(self, *args, **kwargs)
 
     return wrapper
 
