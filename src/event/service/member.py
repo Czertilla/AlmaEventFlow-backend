@@ -63,6 +63,8 @@ class MemberService(BaseService[MemberUOW]):
             .options(selectinload(MemberORM.roles))
             .where(MemberORM.id == member_id)
         )
+        if member is None:
+            raise MemberNotExistsException()
         return member
 
     @required_transaction

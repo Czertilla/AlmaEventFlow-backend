@@ -211,15 +211,16 @@ class EventService(BaseService[EventUOW]):
         self, event_id: UUID, event_data: dict, *, flush: bool = False
     ) -> EventORM:
         event = await self.uow.events.update_one(event_id, event_data, flush)
-        if event:
-            event = await self.uow.events.get_by_id(
-                event.id,
-                options=(
-                    selectinload(EventORM.status_rel),
-                    selectinload(EventORM.level_rel),
-                    selectinload(EventORM.type_rel),
-                ),
-            )
+        if event is None:
+            raise EventNotExistsException()
+        event = await self.uow.events.get_by_id(
+            event.id,
+            options=(
+                selectinload(EventORM.status_rel),
+                selectinload(EventORM.level_rel),
+                selectinload(EventORM.type_rel),
+            ),
+        )
         return event
 
     @required_transaction
@@ -266,6 +267,8 @@ class EventService(BaseService[EventUOW]):
     async def read(self, event_id: UUID) -> EventDTO:
         async with self.uow:
             event = await self._read(event_id)
+            if event is None:
+                raise EventNotExistsException()
             return self._orm_to_dto(event)
 
     async def get_templates_for_collective(

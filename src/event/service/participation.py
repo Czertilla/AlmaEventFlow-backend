@@ -15,6 +15,7 @@ from event.dto.participation import (
     ParticipationFilterDTO,
     ParticipationPatchDTO,
 )
+from event.exc.event import ParticipationNotExistsException
 from event.filter.participation import ParticipationFilter
 from event.models.member import MemberORM
 from event.models.participation import ParticipationORM
@@ -67,6 +68,8 @@ class ParticipationService(BaseService[ParticipationUOW]):
         participation = await self.uow.participations.update_one(
             participation_id, participation_data, flush
         )
+        if participation is None:
+            raise ParticipationNotExistsException()
         return participation
 
     @required_transaction
@@ -85,6 +88,8 @@ class ParticipationService(BaseService[ParticipationUOW]):
     async def read(self, participation_id: UUID) -> ParticipationDTO:
         async with self.uow:
             participation = await self._read(participation_id)
+            if participation is None:
+                raise ParticipationNotExistsException()
             return self._to_dto(participation)
 
     async def patch(

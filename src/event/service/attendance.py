@@ -61,6 +61,8 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
         attendance = await self.uow.attendances.update_one(
             attendance_id, attendance_data, flush
         )
+        if attendance is None:
+            raise AttendanceNotExistsException()
         return attendance
 
     @required_transaction

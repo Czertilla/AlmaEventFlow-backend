@@ -41,6 +41,8 @@ class StageService(BaseService[StageUOW]):
         self, stage_id: UUID, stage_data: dict, *, flush: bool = False
     ) -> EventStageORM:
         stage = await self.uow.stages.update_one(stage_id, stage_data, flush)
+        if stage is None:
+            raise StageNotExistsException()
         return stage
 
     @required_transaction

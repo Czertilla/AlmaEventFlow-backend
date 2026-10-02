@@ -18,6 +18,7 @@ from event.dto.reward import (
     RewardPatchDTO,
     RewardPutDTO,
 )
+from event.exc.event import RewardNotExistsException
 from event.filter.reward import RewardFilter
 from event.models.reward import RewardORM
 from event.uow.reward import RewardUOW
@@ -91,7 +92,10 @@ class RewardService(BaseService[RewardUOW]):
         self, reward_id: UUID, reward_data: dict, *, flush: bool = False
     ) -> RewardORM:
         reward_data.pop("file", None)
-        return await self.uow.rewards.update_one(reward_id, reward_data, flush)
+        reward = await self.uow.rewards.update_one(reward_id, reward_data, flush)
+        if reward is None:
+            raise RewardNotExistsException()
+        return reward
 
     @required_transaction
     async def _delete(self, reward_id: UUID) -> None:
@@ -111,6 +115,8 @@ class RewardService(BaseService[RewardUOW]):
     async def read(self, reward_id: UUID) -> RewardDTO:
         async with self.uow:
             reward = await self._read(reward_id)
+            if reward is None:
+                raise RewardNotExistsException()
             file_link = await self._resolve_file_link(reward)
         return await self._to_dto(reward, file_link)
 

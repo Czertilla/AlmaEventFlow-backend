@@ -41,6 +41,8 @@ class RoleService(BaseService[RoleUOW]):
         self, role_id: UUID, role_data: dict, *, flush: bool = False
     ) -> RoleORM:
         role = await self.uow.roles.update_one(role_id, role_data, flush)
+        if role is None:
+            raise RoleNotExistsException()
         return role
 
     @required_transaction

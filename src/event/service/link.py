@@ -41,6 +41,8 @@ class LinkService(BaseService[LinkUOW]):
         self, link_id: UUID, link_data: dict, *, flush: bool = False
     ) -> EventLinkORM:
         link = await self.uow.links.update_one(link_id, link_data, flush)
+        if link is None:
+            raise LinkNotExistsException()
         return link
 
     @required_transaction
