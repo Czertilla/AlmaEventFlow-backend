@@ -1,12 +1,9 @@
-from typing import TYPE_CHECKING
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
 from core.schema.v1.mixin.model import PatchModelV1
-
-if TYPE_CHECKING:
-    from .event import EventRead
+from event.api.v1.schema.event import EventRead
 
 
 class OrganizationCreate(BaseModel):
@@ -19,7 +16,7 @@ class OrganizationCreate(BaseModel):
 
 class OrganizationRead(OrganizationCreate):
     id: UUID
-    events: list["EventRead"] = []
+    events: list[EventRead] = []
 
 
 class OrganizationPatchData(PatchModelV1):

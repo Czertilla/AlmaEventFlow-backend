@@ -2574,10 +2574,74 @@
   },
   "organization.OrganizationRead": {
     "full": {
-      "unusable": "class-not-fully-defined"
+      "dump": {
+        "description": "x",
+        "events": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "description": "x",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "da6db096-d140-571a-979f-70a0911da252",
+            "level": "internal",
+            "location_id": "2a0f13f6-7458-52d7-ba2e-f12b6b005226",
+            "name": "x",
+            "organizer_id": "f1123f6f-8c4c-5c42-ba72-ecb374e27697",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x",
+        "type": "x"
+      },
+      "fields_set": [
+        "description",
+        "events",
+        "id",
+        "name",
+        "type"
+      ],
+      "input": {
+        "description": "x",
+        "events": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "description": "x",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "da6db096-d140-571a-979f-70a0911da252",
+            "level": "internal",
+            "location_id": "2a0f13f6-7458-52d7-ba2e-f12b6b005226",
+            "name": "x",
+            "organizer_id": "f1123f6f-8c4c-5c42-ba72-ecb374e27697",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x",
+        "type": "x"
+      }
     },
     "required": {
-      "unusable": "class-not-fully-defined"
+      "dump": {
+        "description": null,
+        "events": [],
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x",
+        "type": null
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x"
+      }
     }
   },
   "participation.ParticipationCreate": {
