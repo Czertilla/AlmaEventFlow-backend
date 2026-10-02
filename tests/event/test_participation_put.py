@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, cast
 from uuid import uuid4
 
 import pytest
@@ -51,7 +51,7 @@ async def test_put_replaces_the_fields_and_returns_the_participation():
     )
     uow = UoW(row)
 
-    result = await ParticipationService(uow).put(
+    result = await ParticipationService(cast("Any", uow)).put(
         ParticipationPutDTO(
             id=participation_id,
             event_id=event_id,
@@ -72,6 +72,6 @@ async def test_put_replaces_the_fields_and_returns_the_participation():
 
 async def test_put_of_a_missing_participation_raises_not_exists():
     with pytest.raises(ParticipationNotExistsException):
-        await ParticipationService(UoW(None)).put(
+        await ParticipationService(cast("Any", UoW(None))).put(
             ParticipationPutDTO(id=uuid4(), event_id=uuid4())
         )

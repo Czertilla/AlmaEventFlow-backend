@@ -5,7 +5,7 @@ import pytest
 from core.service.base import (
     BaseService,
     RequiredTransactionException,
-    required_transaction,
+    required_transaction,  # pyright: ignore[reportUnknownVariableType]
 )
 
 

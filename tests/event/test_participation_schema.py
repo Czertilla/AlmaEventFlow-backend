@@ -47,9 +47,13 @@ def test_response_exposes_the_priority_as_priority_degree():
 
 
 def test_put_keeps_the_priority_from_the_request_body():
-    body = ParticipationPutData(event_id=uuid4(), priority_degree="low")
+    body = ParticipationPutData(
+        event_id=uuid4(), priority_degree=EventPriorityEnumV1.low
+    )
 
-    dto = ParticipationPut(id=uuid4(), **body.model_dump()).to_dto()
+    dto = ParticipationPut.model_validate(
+        {"id": uuid4(), **body.model_dump()}
+    ).to_dto()
 
     assert dto.priority_degree == EventPriorityEnumV1.low
 
@@ -57,7 +61,9 @@ def test_put_keeps_the_priority_from_the_request_body():
 def test_patch_tracks_an_explicit_null_priority():
     body = ParticipationPatchData.model_validate({"priority_degree": None})
 
-    dto = ParticipationPatch(id=uuid4(), **body.model_dump()).to_dto()
+    dto = ParticipationPatch.model_validate(
+        {"id": uuid4(), **body.model_dump()}
+    ).to_dto()
 
     assert "priority_degree" in dto.fields_set
     assert dto.priority_degree is None

@@ -1,8 +1,12 @@
 from datetime import UTC, date, datetime
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from core.enum.notify import NotificationCategory
-from event.service.notification import _build_requests, is_trigger_status
+from event.service.notification import (
+    StageInfo,
+    _build_requests,
+    is_trigger_status,
+)
 
 
 def test_groups_persons_per_event_with_safe_payload():
@@ -23,6 +27,7 @@ def test_groups_persons_per_event_with_safe_payload():
     assert req_a.category is NotificationCategory.attendance
     assert set(req_a.person_ids) == {p1, p2}
     assert not req_a.user_ids
+    assert req_a.action_url is not None
     assert req_a.action_url.endswith(f"/event/{event_a}")
     assert req_a.data["event_name"] == "Concert"
     assert req_a.data["event_date"] == "2026-05-01"
@@ -42,7 +47,9 @@ def test_payload_excludes_unsafe_fields():
 def test_earliest_stage_adds_its_start_instant_and_timezone():
     event_id = uuid4()
     start = datetime(2026, 5, 1, 9, tzinfo=UTC)
-    stages = {event_id: [("Opening", start, None, "Europe/Moscow", None)]}
+    stages: dict[UUID, list[StageInfo]] = {
+        event_id: [("Opening", start, None, "Europe/Moscow", None)]
+    }
     rows = [(event_id, "Name", date(2026, 5, 1), uuid4())]
 
     request = _build_requests(rows, stages)[0]
