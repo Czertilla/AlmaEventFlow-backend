@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import UTC, date, datetime
 from uuid import uuid4
 
 from core.enum.notify import NotificationCategory
@@ -14,7 +14,7 @@ def test_groups_persons_per_event_with_safe_payload():
         (event_b, "Rehearsal", None, p3),
     ]
 
-    requests = _build_requests(rows)
+    requests = _build_requests(rows, {})
 
     by_event = {req.data["event_id"]: req for req in requests}
     assert set(by_event) == {str(event_a), str(event_b)}
@@ -35,8 +35,20 @@ def test_groups_persons_per_event_with_safe_payload():
 def test_payload_excludes_unsafe_fields():
     event_id = uuid4()
     rows = [(event_id, "Name", date(2026, 1, 1), uuid4())]
-    request = _build_requests(rows)[0]
+    request = _build_requests(rows, {})[0]
     assert set(request.data) <= {"event_id", "event_name", "event_date", "action_url"}
+
+
+def test_earliest_stage_adds_its_start_instant_and_timezone():
+    event_id = uuid4()
+    start = datetime(2026, 5, 1, 9, tzinfo=UTC)
+    stages = {event_id: [("Opening", start, None, "Europe/Moscow", None)]}
+    rows = [(event_id, "Name", date(2026, 5, 1), uuid4())]
+
+    request = _build_requests(rows, stages)[0]
+
+    assert request.data["stage_start_at"] == start.isoformat()
+    assert request.data["stage_timezone"] == "Europe/Moscow"
 
 
 def test_is_trigger_status_default_active():
