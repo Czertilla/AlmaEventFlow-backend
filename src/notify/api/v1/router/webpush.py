@@ -1,18 +1,14 @@
 from fastapi import APIRouter, status
-from pydantic import BaseModel
 
 from core.dependencies.auth import ActiveUserJWTDep
 from core.enum.notify import TransportTypeEnum
 from core.schema.error import ErrorCode, auth_responses, detail_response
+from notify.api.v1.schema.webpush import VapidPublicKey
 from notify.exc import WebPushNotConfiguredException
 from notify.transport import registry
 from notify.transport.webpush import WebPushTransport
 
 router = APIRouter(prefix="/webpush", tags=["notify"])
-
-
-class VapidPublicKey(BaseModel):
-    public_key: str
 
 
 @router.get(

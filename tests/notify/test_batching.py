@@ -2,9 +2,9 @@ from uuid import uuid4
 
 from core.enum.notify import NotificationCategory, TransportTypeEnum
 from notify.config.settings import settings
-from notify.schema.account import AccountRead
-from notify.schema.client import ClientTarget
-from notify.schema.notification import NotificationContent
+from notify.dto.account import AccountDTO
+from notify.dto.client import ClientTargetDTO
+from notify.dto.notification import NotificationContent
 from notify.service.batching import build_outbox_rows, chunked
 from notify.transport.base import DeliveryDraft, DeliveryTarget, PlanContext
 
@@ -26,7 +26,7 @@ def _email_draft() -> DeliveryDraft:
         notification_id=NOTIFICATION_ID,
         user_id=uuid4(),
         content=_content(),
-        account=AccountRead(id=uuid4(), email="user@example.com"),
+        account=AccountDTO(id=uuid4(), email="user@example.com"),
         expires_at=None,
     )
     return DeliveryDraft(delivery_id=uuid4(), ctx=ctx, target=DeliveryTarget())
@@ -40,7 +40,7 @@ def _webpush_draft() -> DeliveryDraft:
         account=None,
         expires_at=None,
     )
-    client = ClientTarget(
+    client = ClientTargetDTO(
         id=uuid4(),
         transport=TransportTypeEnum.webpush,
         endpoint="https://push.example/x",

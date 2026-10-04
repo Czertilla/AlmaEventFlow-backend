@@ -8,8 +8,8 @@ from core.schema.message.notify import (
     TelegramDeliveryBatch,
     TelegramDeliveryItem,
 )
+from notify.dto.notification import NotificationContent
 from notify.exc import TelegramClientInvalidException
-from notify.schema.notification import NotificationContent
 from notify.transport.base import BaseTransport, DeliveryDraft
 
 

@@ -3,10 +3,10 @@ from uuid import UUID
 
 from core.enum.notify import TransportTypeEnum
 from core.service.base import BaseService
-from notify.schema.preference import (
-    PreferenceItem,
-    PreferencesRead,
-    PreferencesUpdate,
+from notify.dto.preference import (
+    PreferenceItemDTO,
+    PreferencesDTO,
+    PreferencesUpdateDTO,
 )
 from notify.transport import registry
 from notify.uow.preference import PreferenceUOW
@@ -19,26 +19,28 @@ class PreferenceService(BaseService[PreferenceUOW]):
     def _default(transport: TransportTypeEnum) -> bool:
         return transport in registry.DEFAULT_ENABLED
 
-    def _resolve(self, stored: dict[TransportTypeEnum, bool]) -> list[PreferenceItem]:
+    def _resolve(
+        self, stored: dict[TransportTypeEnum, bool]
+    ) -> list[PreferenceItemDTO]:
         """Merges stored preferences with defaults across all known transports."""
-        items: list[PreferenceItem] = []
+        items: list[PreferenceItemDTO] = []
         for transport in registry.all_transports():
             ttype = transport.type
             enabled = stored.get(ttype, self._default(ttype))
             if ttype == registry.GUARANTEED:
                 enabled = True
-            items.append(PreferenceItem(transport=ttype, is_enabled=enabled))
+            items.append(PreferenceItemDTO(transport=ttype, is_enabled=enabled))
         return items
 
-    async def get_my(self, user_id: UUID) -> PreferencesRead:
+    async def get_my(self, user_id: UUID) -> PreferencesDTO:
         async with self.uow as uow:
             rows = await uow.preferences.get_by_user(user_id)
             stored = {row.transport: row.is_enabled for row in rows}
-        return PreferencesRead(preferences=self._resolve(stored))
+        return PreferencesDTO(preferences=self._resolve(stored))
 
     async def set_my(
-        self, user_id: UUID, update: PreferencesUpdate
-    ) -> PreferencesRead:
+        self, user_id: UUID, update: PreferencesUpdateDTO
+    ) -> PreferencesDTO:
         desired: dict[TransportTypeEnum, bool] = {
             item.transport: item.is_enabled
             for item in update.preferences
@@ -56,4 +58,4 @@ class PreferenceService(BaseService[PreferenceUOW]):
                     }
                 )
             await uow.commit()
-        return PreferencesRead(preferences=self._resolve(desired))
+        return PreferencesDTO(preferences=self._resolve(desired))

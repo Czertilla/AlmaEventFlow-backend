@@ -9,8 +9,8 @@ from core.schema.error import (
     detail_400,
     entity_not_found_responses,
 )
+from notify.api.v1.schema.client import ClientCreate, ClientRead
 from notify.dependency.client import ClientUOWDep
-from notify.schema.client import ClientCreate, ClientRead
 from notify.service.client import ClientService
 
 router = APIRouter(prefix="/clients", tags=["notify"])
@@ -21,7 +21,10 @@ async def list_my_clients(
     user: ActiveUserJWTDep,
     uow: ClientUOWDep,
 ) -> list[ClientRead]:
-    return await ClientService(uow).list_my(user.id)
+    return [
+        ClientRead.from_dto(client)
+        for client in await ClientService(uow).list_my(user.id)
+    ]
 
 
 @router.post(
@@ -38,7 +41,9 @@ async def register_my_client(
     uow: ClientUOWDep,
 ) -> ClientRead:
     """Registers a delivery endpoint (e.g. a browser web-push subscription)."""
-    return await ClientService(uow).register(user.id, data)
+    return ClientRead.from_dto(
+        await ClientService(uow).register(user.id, data.to_dto())
+    )
 
 
 @router.delete(

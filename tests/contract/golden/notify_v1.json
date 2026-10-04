@@ -1,0 +1,340 @@
+{
+  "client.ClientCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "endpoint": "x",
+          "label": "x",
+          "payload": {
+            "key": "x"
+          },
+          "transport": "email"
+        }
+      },
+      "dump": {
+        "endpoint": "x",
+        "label": "x",
+        "payload": {
+          "key": "x"
+        },
+        "transport": "email"
+      },
+      "fields_set": [
+        "endpoint",
+        "label",
+        "payload",
+        "transport"
+      ],
+      "input": {
+        "endpoint": "x",
+        "label": "x",
+        "payload": {
+          "key": "x"
+        },
+        "transport": "email"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "endpoint": "x",
+          "label": null,
+          "payload": "<generated>",
+          "transport": "webpush"
+        }
+      },
+      "dump": {
+        "endpoint": "x",
+        "label": null,
+        "payload": "<generated>",
+        "transport": "webpush"
+      },
+      "fields_set": [
+        "endpoint"
+      ],
+      "input": {
+        "endpoint": "x"
+      }
+    }
+  },
+  "client.ClientRead": {
+    "full": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "endpoint": "x",
+        "id": "b3bebf04-cc4e-576c-83c5-4a26cb2bc4a7",
+        "is_active": true,
+        "label": "x",
+        "transport": "email"
+      },
+      "fields_set": [
+        "created_at",
+        "endpoint",
+        "id",
+        "is_active",
+        "label",
+        "transport"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "endpoint": "x",
+        "id": "b3bebf04-cc4e-576c-83c5-4a26cb2bc4a7",
+        "is_active": true,
+        "label": "x",
+        "transport": "email"
+      }
+    },
+    "required": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "endpoint": "x",
+        "id": "b3bebf04-cc4e-576c-83c5-4a26cb2bc4a7",
+        "is_active": true,
+        "label": null,
+        "transport": "email"
+      },
+      "fields_set": [
+        "created_at",
+        "endpoint",
+        "id",
+        "is_active",
+        "transport"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "endpoint": "x",
+        "id": "b3bebf04-cc4e-576c-83c5-4a26cb2bc4a7",
+        "is_active": true,
+        "transport": "email"
+      }
+    }
+  },
+  "preference.PreferenceItem": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "is_enabled": true,
+          "transport": "email"
+        }
+      },
+      "dump": {
+        "is_enabled": true,
+        "transport": "email"
+      },
+      "fields_set": [
+        "is_enabled",
+        "transport"
+      ],
+      "input": {
+        "is_enabled": true,
+        "transport": "email"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "is_enabled": true,
+          "transport": "email"
+        }
+      },
+      "dump": {
+        "is_enabled": true,
+        "transport": "email"
+      },
+      "fields_set": [
+        "is_enabled",
+        "transport"
+      ],
+      "input": {
+        "is_enabled": true,
+        "transport": "email"
+      }
+    }
+  },
+  "preference.PreferencesRead": {
+    "full": {
+      "dump": {
+        "preferences": [
+          {
+            "is_enabled": true,
+            "transport": "email"
+          }
+        ]
+      },
+      "fields_set": [
+        "preferences"
+      ],
+      "input": {
+        "preferences": [
+          {
+            "is_enabled": true,
+            "transport": "email"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "preferences": [
+          {
+            "is_enabled": true,
+            "transport": "email"
+          }
+        ]
+      },
+      "fields_set": [
+        "preferences"
+      ],
+      "input": {
+        "preferences": [
+          {
+            "is_enabled": true,
+            "transport": "email"
+          }
+        ]
+      }
+    }
+  },
+  "preference.PreferencesUpdate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "preferences": [
+            {
+              "is_enabled": true,
+              "transport": "email"
+            }
+          ]
+        }
+      },
+      "dump": {
+        "preferences": [
+          {
+            "is_enabled": true,
+            "transport": "email"
+          }
+        ]
+      },
+      "fields_set": [
+        "preferences"
+      ],
+      "input": {
+        "preferences": [
+          {
+            "is_enabled": true,
+            "transport": "email"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "preferences": [
+            {
+              "is_enabled": true,
+              "transport": "email"
+            }
+          ]
+        }
+      },
+      "dump": {
+        "preferences": [
+          {
+            "is_enabled": true,
+            "transport": "email"
+          }
+        ]
+      },
+      "fields_set": [
+        "preferences"
+      ],
+      "input": {
+        "preferences": [
+          {
+            "is_enabled": true,
+            "transport": "email"
+          }
+        ]
+      }
+    }
+  },
+  "transport.TransportInfo": {
+    "full": {
+      "dump": {
+        "available": true,
+        "delegated": true,
+        "label": "x",
+        "requires_client": true,
+        "type": "email"
+      },
+      "fields_set": [
+        "available",
+        "delegated",
+        "label",
+        "requires_client",
+        "type"
+      ],
+      "input": {
+        "available": true,
+        "delegated": true,
+        "label": "x",
+        "requires_client": true,
+        "type": "email"
+      }
+    },
+    "required": {
+      "dump": {
+        "available": true,
+        "delegated": true,
+        "label": "x",
+        "requires_client": true,
+        "type": "email"
+      },
+      "fields_set": [
+        "available",
+        "delegated",
+        "label",
+        "requires_client",
+        "type"
+      ],
+      "input": {
+        "available": true,
+        "delegated": true,
+        "label": "x",
+        "requires_client": true,
+        "type": "email"
+      }
+    }
+  },
+  "webpush.VapidPublicKey": {
+    "full": {
+      "dump": {
+        "public_key": "x"
+      },
+      "fields_set": [
+        "public_key"
+      ],
+      "input": {
+        "public_key": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "public_key": "x"
+      },
+      "fields_set": [
+        "public_key"
+      ],
+      "input": {
+        "public_key": "x"
+      }
+    }
+  }
+}

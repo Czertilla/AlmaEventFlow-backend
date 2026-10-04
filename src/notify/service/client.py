@@ -1,9 +1,10 @@
 from logging import getLogger
 from uuid import UUID
 
+from core.dto.base import dto_from_orm
 from core.service.base import BaseService
+from notify.dto.client import ClientCreateDTO, ClientDTO
 from notify.exc import ClientNotExistsException, TransportNotSupportedException
-from notify.schema.client import ClientCreate, ClientRead
 from notify.transport import registry
 from notify.uow.client import ClientUOW
 
@@ -11,12 +12,12 @@ logger = getLogger(__name__)
 
 
 class ClientService(BaseService[ClientUOW]):
-    async def list_my(self, user_id: UUID) -> list[ClientRead]:
+    async def list_my(self, user_id: UUID) -> list[ClientDTO]:
         async with self.uow as uow:
             rows = await uow.clients.get_by_user(user_id)
-            return [ClientRead.model_validate(row) for row in rows]
+            return [dto_from_orm(row, ClientDTO) for row in rows]
 
-    async def register(self, user_id: UUID, data: ClientCreate) -> ClientRead:
+    async def register(self, user_id: UUID, data: ClientCreateDTO) -> ClientDTO:
         transport = registry.get(data.transport)
         if transport is None:
             raise TransportNotSupportedException()
@@ -34,6 +35,8 @@ class ClientService(BaseService[ClientUOW]):
                         "is_active": True,
                     },
                 )
+                if row is None:
+                    raise ClientNotExistsException()
             else:
                 row = await uow.clients.add_n_return(
                     {
@@ -45,8 +48,9 @@ class ClientService(BaseService[ClientUOW]):
                         "is_active": True,
                     }
                 )
+            result = dto_from_orm(row, ClientDTO)
             await uow.commit()
-        return ClientRead.model_validate(row)
+        return result
 
     async def delete(self, user_id: UUID, client_id: UUID) -> None:
         async with self.uow as uow:

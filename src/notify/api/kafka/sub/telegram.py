@@ -14,8 +14,8 @@ from core.schema.message.notify import (
     SetPreferencesRequest,
 )
 from notify.dependency._uow import UOWDep
-from notify.schema.client import ClientCreate
-from notify.schema.preference import PreferenceItem, PreferencesUpdate
+from notify.dto.client import ClientCreateDTO
+from notify.dto.preference import PreferenceItemDTO, PreferencesUpdateDTO
 from notify.service.client import ClientService
 from notify.service.preference import PreferenceService
 from notify.uow.client import ClientUOW
@@ -34,14 +34,14 @@ async def on_register_client(
     async def _call() -> ClientData:
         client = await ClientService(uow).register(
             request.user_id,
-            ClientCreate(
+            ClientCreateDTO(
                 transport=request.transport,
                 endpoint=request.endpoint,
                 label=request.label,
                 payload=request.payload,
             ),
         )
-        return ClientData.model_validate(client)
+        return ClientData.model_validate(client, from_attributes=True)
 
     return await rpc_respond(_call())
 
@@ -65,7 +65,8 @@ async def on_get_preferences(
         prefs = await PreferenceService(uow).get_my(request.user_id)
         return PreferencesData(
             preferences=[
-                PreferenceItemData.model_validate(p) for p in prefs.preferences
+                PreferenceItemData.model_validate(p, from_attributes=True)
+                for p in prefs.preferences
             ]
         )
 
@@ -77,16 +78,17 @@ async def on_set_preferences(
     request: SetPreferencesRequest, uow=PreferenceUOWDep
 ) -> MQResponse[PreferencesData]:
     async def _call() -> PreferencesData:
-        update = PreferencesUpdate(
+        update = PreferencesUpdateDTO(
             preferences=[
-                PreferenceItem(transport=item.transport, is_enabled=item.is_enabled)
+                PreferenceItemDTO(transport=item.transport, is_enabled=item.is_enabled)
                 for item in request.preferences
             ]
         )
         prefs = await PreferenceService(uow).set_my(request.user_id, update)
         return PreferencesData(
             preferences=[
-                PreferenceItemData.model_validate(p) for p in prefs.preferences
+                PreferenceItemData.model_validate(p, from_attributes=True)
+                for p in prefs.preferences
             ]
         )
 

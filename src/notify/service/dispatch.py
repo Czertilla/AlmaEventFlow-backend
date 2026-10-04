@@ -2,15 +2,16 @@ from collections import defaultdict
 from logging import getLogger
 from uuid import UUID
 
+from core.dto.base import dto_from_orm
 from core.enum.notify import DeliveryStatus, TransportTypeEnum
 from core.schema.message.notify import NotificationRequest
 from core.service.base import BaseService, required_transaction
 from notify.config.settings import settings
+from notify.dto.account import AccountDTO
+from notify.dto.client import ClientTargetDTO
+from notify.dto.notification import NotificationContent
 from notify.models.notification import NotificationORM
 from notify.models.recipient import NotificationRecipientORM
-from notify.schema.account import AccountRead
-from notify.schema.client import ClientTarget
-from notify.schema.notification import NotificationContent
 from notify.service.batching import build_outbox_rows
 from notify.transport import registry
 from notify.transport.base import (
@@ -195,16 +196,16 @@ class NotificationService(BaseService[NotifyUOW]):
         if transport.requires_client:
             rows = await self.uow.clients.get_active(ctx.user_id, transport.type)
             return [
-                DeliveryTarget(client=ClientTarget.model_validate(row))
+                DeliveryTarget(client=dto_from_orm(row, ClientTargetDTO))
                 for row in rows
             ]
         if ctx.account is None or not ctx.account.email:
             return []
         return [DeliveryTarget(client=None)]
 
-    async def _account(self, user_id: UUID) -> AccountRead | None:
+    async def _account(self, user_id: UUID) -> AccountDTO | None:
         row = await self.uow.accounts.get_by_id(user_id)
-        return AccountRead.model_validate(row) if row is not None else None
+        return dto_from_orm(row, AccountDTO) if row is not None else None
 
     async def _resolve_prefs(
         self, user_id: UUID

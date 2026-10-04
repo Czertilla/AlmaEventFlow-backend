@@ -2,8 +2,8 @@ from fastapi import APIRouter
 
 from core.dependencies.auth import ActiveUserJWTDep
 from core.schema.error import auth_responses
+from notify.api.v1.schema.preference import PreferencesRead, PreferencesUpdate
 from notify.dependency.preference import PreferenceUOWDep
-from notify.schema.preference import PreferencesRead, PreferencesUpdate
 from notify.service.preference import PreferenceService
 
 router = APIRouter(prefix="/preferences", tags=["notify"])
@@ -14,7 +14,7 @@ async def get_my_preferences(
     user: ActiveUserJWTDep,
     uow: PreferenceUOWDep,
 ) -> PreferencesRead:
-    return await PreferenceService(uow).get_my(user.id)
+    return PreferencesRead.from_dto(await PreferenceService(uow).get_my(user.id))
 
 
 @router.put("/my", responses={**auth_responses()})
@@ -24,4 +24,6 @@ async def set_my_preferences(
     uow: PreferenceUOWDep,
 ) -> PreferencesRead:
     """Full replace of preferences. Email is forced on (guaranteed transport)."""
-    return await PreferenceService(uow).set_my(user.id, data)
+    return PreferencesRead.from_dto(
+        await PreferenceService(uow).set_my(user.id, data.to_dto())
+    )

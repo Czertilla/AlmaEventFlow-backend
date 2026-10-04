@@ -6,9 +6,9 @@ from uuid import UUID
 
 from core.enum.notify import TransportTypeEnum
 from core.schema.message.core import MQRequest
-from notify.schema.account import AccountRead
-from notify.schema.client import ClientTarget
-from notify.schema.notification import NotificationContent
+from notify.dto.account import AccountDTO
+from notify.dto.client import ClientTargetDTO
+from notify.dto.notification import NotificationContent
 
 
 @dataclass
@@ -19,7 +19,7 @@ class PlanContext:
     notification_id: UUID
     user_id: UUID
     content: NotificationContent
-    account: AccountRead | None
+    account: AccountDTO | None
     expires_at: datetime | None
 
 
@@ -28,7 +28,7 @@ class DeliveryTarget:
     """A single endpoint to deliver to. ``client`` is ``None`` for recipient-
     addressed transports (e.g. email resolves the address from the account)."""
 
-    client: ClientTarget | None = None
+    client: ClientTargetDTO | None = None
 
 
 @dataclass

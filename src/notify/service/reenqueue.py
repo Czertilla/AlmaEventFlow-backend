@@ -2,12 +2,13 @@ from collections import defaultdict
 from logging import getLogger
 from uuid import UUID
 
+from core.dto.base import dto_from_orm
 from core.service.base import BaseService, required_transaction
 from notify.config.settings import settings
+from notify.dto.account import AccountDTO
+from notify.dto.notification import NotificationContent
 from notify.models.delivery import NotificationDeliveryORM
 from notify.models.notification import NotificationORM
-from notify.schema.account import AccountRead
-from notify.schema.notification import NotificationContent
 from notify.service.batching import build_outbox_rows
 from notify.transport import registry
 from notify.transport.base import DeliveryDraft, DeliveryTarget, PlanContext
@@ -68,7 +69,7 @@ class RetryReenqueueService(BaseService[RetryUOW]):
         drafts: dict = defaultdict(list)
         ready: list[UUID] = []
         unresolved: list[UUID] = []
-        accounts: dict[UUID, AccountRead | None] = {}
+        accounts: dict[UUID, AccountDTO | None] = {}
         for delivery in deliveries:
             draft = await self._draft(
                 delivery, notification, content, accounts
@@ -96,7 +97,7 @@ class RetryReenqueueService(BaseService[RetryUOW]):
         delivery: NotificationDeliveryORM,
         notification: NotificationORM,
         content: NotificationContent,
-        accounts: dict[UUID, AccountRead | None],
+        accounts: dict[UUID, AccountDTO | None],
     ) -> DeliveryDraft | None:
         transport = registry.get(delivery.transport)
         if transport is None:
@@ -118,11 +119,11 @@ class RetryReenqueueService(BaseService[RetryUOW]):
         )
 
     async def _account(
-        self, user_id: UUID, cache: dict[UUID, AccountRead | None]
-    ) -> AccountRead | None:
+        self, user_id: UUID, cache: dict[UUID, AccountDTO | None]
+    ) -> AccountDTO | None:
         if user_id not in cache:
             row = await self.uow.accounts.get_by_id(user_id)
             cache[user_id] = (
-                AccountRead.model_validate(row) if row is not None else None
+                dto_from_orm(row, AccountDTO) if row is not None else None
             )
         return cache[user_id]

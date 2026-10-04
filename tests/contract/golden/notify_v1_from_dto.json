@@ -1,0 +1,28 @@
+{
+  "client.ClientRead": {
+    "response": {
+      "created_at": "2026-01-01T10:00:00Z",
+      "endpoint": "x",
+      "id": "ef4b8d8e-c128-535f-9732-09754c02aad2",
+      "is_active": true,
+      "label": "x",
+      "transport": "email"
+    }
+  },
+  "preference.PreferenceItem": {
+    "response": {
+      "is_enabled": true,
+      "transport": "email"
+    }
+  },
+  "preference.PreferencesRead": {
+    "response": {
+      "preferences": [
+        {
+          "is_enabled": true,
+          "transport": "email"
+        }
+      ]
+    }
+  }
+}

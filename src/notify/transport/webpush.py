@@ -13,9 +13,9 @@ from core.enum.mq import NotifyDeliveryQueue
 from core.enum.notify import TransportTypeEnum
 from core.schema.message.notify import WebPushDeliveryBatch
 from notify.config.settings import settings
+from notify.dto.client import ClientTargetDTO
+from notify.dto.notification import NotificationContent
 from notify.exc import WebPushClientInvalidException
-from notify.schema.client import ClientTarget
-from notify.schema.notification import NotificationContent
 from notify.transport.base import DeliveryDraft, DirectTransport
 
 logger = getLogger(__name__)
@@ -96,7 +96,7 @@ class WebPushTransport(DirectTransport):
     async def send(
         self,
         session: aiohttp.ClientSession,
-        client: ClientTarget,
+        client: ClientTargetDTO,
         content: NotificationContent,
     ) -> None:
         try:
@@ -113,7 +113,7 @@ class WebPushTransport(DirectTransport):
                 dead=response.status in _DEAD_STATUSES,
             )
 
-    def _encrypt(self, client: ClientTarget, content: NotificationContent):
+    def _encrypt(self, client: ClientTargetDTO, content: NotificationContent):
         subscription = WebPushSubscription.model_validate(
             {
                 "endpoint": client.endpoint,

@@ -6,15 +6,16 @@ from uuid import UUID
 
 import aiohttp
 
+from core.dto.base import dto_from_orm
 from core.enum.notify import DeliveryStatus, TransportTypeEnum
 from core.schema.message.notify import WebPushDeliveryBatch
 from core.service.base import BaseService, required_transaction
 from notify.config.settings import settings
+from notify.dto.client import ClientTargetDTO
+from notify.dto.notification import NotificationContent
 from notify.models.client import ClientORM
 from notify.models.delivery import NotificationDeliveryORM
 from notify.models.notification import NotificationORM
-from notify.schema.client import ClientTarget
-from notify.schema.notification import NotificationContent
 from notify.service.batching import chunked
 from notify.service.retry import policy
 from notify.transport import registry
@@ -129,7 +130,7 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
             async with semaphore:
                 try:
                     await transport.send(
-                        session, ClientTarget.model_validate(client), content
+                        session, dto_from_orm(client, ClientTargetDTO), content
                     )
                     return None
                 except WebPushDeliveryError as exc:

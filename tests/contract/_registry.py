@@ -5,6 +5,7 @@ SCHEMA_PACKAGES = {
     "event_v1": "event.api.v1.schema",
     "event_v2": "event.api.v2.schema",
     "geo_v1": "geo.api.v1.schema",
+    "notify_v1": "notify.api.v1.schema",
     "org_v1": "org.api.v1.schema",
     "profile_v1": "profile.api.v1.schema",
 }
@@ -48,6 +49,14 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "point.Point": "geo.dto.point:PointDTO",
         },
     ),
+    "notify_v1": (
+        "notify.api.v1.schema",
+        {
+            "client.ClientRead": "notify.dto.client:ClientDTO",
+            "preference.PreferenceItem": "notify.dto.preference:PreferenceItemDTO",
+            "preference.PreferencesRead": "notify.dto.preference:PreferencesDTO",
+        },
+    ),
     "org_v1": (
         "org.api.v1.schema",
         {
@@ -87,6 +96,7 @@ MIGRATED_LAYERS = {
     "org": ("service", "repository", "uow", "dto", "models"),
     "geo": ("service", "repository", "uow", "dto", "models"),
     "profile": ("service", "repository", "uow", "dto", "models"),
+    "notify": ("service", "repository", "uow", "dto", "models"),
 }
 
 FORBIDDEN = {
@@ -105,6 +115,10 @@ FORBIDDEN = {
     ),
     "profile": (
         re.compile(r"^profile\.api\.v\d+"),
+        re.compile(r"^core\.schema\.v\d+"),
+    ),
+    "notify": (
+        re.compile(r"^notify\.api\.v\d+"),
         re.compile(r"^core\.schema\.v\d+"),
     ),
 }
