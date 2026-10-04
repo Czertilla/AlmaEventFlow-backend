@@ -1,12 +1,24 @@
 from datetime import date
+from profile.dto.passport import (
+    NameVariantCreateDTO,
+    NameVariantPatchDataDTO,
+    NameVariantPatchDTO,
+    NameVariantPutDTO,
+    PassportCreateDTO,
+    PassportPatchDTO,
+    PassportPutDTO,
+)
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from core.schema.v1.mixin.model import PatchModelV1, PutUUIDMixinV1, UUIDMixinV1
 
 
-class NameVariantCreate(BaseModel):
+class NameVariantCreate(BaseModel, ToDTOMixinV1):
+    __dto_cls__ = NameVariantCreateDTO
+
     surname: str = Field(max_length=128)
     name: str = Field(max_length=128)
     patronymic: str | None = Field(max_length=128, default=None)
@@ -14,22 +26,26 @@ class NameVariantCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class NameVariantRead(NameVariantCreate, UUIDMixinV1): ...
+class NameVariantRead(FromDTOMixinV1, NameVariantCreate, UUIDMixinV1): ...
 
 
-class NameVariantPatchData(PatchModelV1):
+class NameVariantPatchData(PatchModelV1, ToDTOMixinV1):
+    __dto_cls__ = NameVariantPatchDataDTO
+
     surname: str | None = Field(max_length=128, default=None)
     name: str | None = Field(max_length=128, default=None)
     patronymic: str | None = Field(max_length=128, default=None)
 
 
-class NameVariantPatch(NameVariantPatchData, UUIDMixinV1): ...
+class NameVariantPatch(NameVariantPatchData, UUIDMixinV1, ToDTOMixinV1):
+    __dto_cls__ = NameVariantPatchDTO
 
 
 class NameVariantPutData(NameVariantCreate): ...
 
 
-class NameVariantPut(NameVariantPutData, UUIDMixinV1): ...
+class NameVariantPut(NameVariantPutData, UUIDMixinV1, ToDTOMixinV1):
+    __dto_cls__ = NameVariantPutDTO
 
 
 class PassportItemCreate(BaseModel):
@@ -43,11 +59,13 @@ class PassportItemCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class PassportCreate(PassportItemCreate):
+class PassportCreate(PassportItemCreate, ToDTOMixinV1):
+    __dto_cls__ = PassportCreateDTO
+
     profile_id: UUID
 
 
-class PassportItemRead(BaseModel, UUIDMixinV1):
+class PassportItemRead(FromDTOMixinV1, BaseModel, UUIDMixinV1):
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -64,11 +82,13 @@ class PassportPatchData(PatchModelV1):
     issued_authority: str | None = None
 
 
-class PassportPatch(PassportPatchData, UUIDMixinV1): ...
+class PassportPatch(PassportPatchData, UUIDMixinV1, ToDTOMixinV1):
+    __dto_cls__ = PassportPatchDTO
 
 
 class PassportPutData(PassportItemCreate):
     profile_id: UUID
 
 
-class PassportPut(PassportPutData, PutUUIDMixinV1): ...
+class PassportPut(PassportPutData, PutUUIDMixinV1, ToDTOMixinV1):
+    __dto_cls__ = PassportPutDTO

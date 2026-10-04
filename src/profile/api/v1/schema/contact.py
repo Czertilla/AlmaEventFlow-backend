@@ -1,8 +1,10 @@
+from profile.dto.contact import ContactCreateDTO, ContactPatchDTO, ContactPutDTO
 from profile.enum.contact import ContactType
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from core.schema.v1.mixin.model import PatchModelV1, PutUUIDMixinV1, UUIDMixinV1
 
 
@@ -14,11 +16,13 @@ class ContactItemCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ContactCreate(ContactItemCreate):
+class ContactCreate(ContactItemCreate, ToDTOMixinV1):
+    __dto_cls__ = ContactCreateDTO
+
     person_id: UUID
 
 
-class ContactItemRead(ContactItemCreate, UUIDMixinV1): ...
+class ContactItemRead(FromDTOMixinV1, ContactItemCreate, UUIDMixinV1): ...
 
 
 class ContactRead(ContactItemRead):
@@ -31,7 +35,8 @@ class ContactPatchData(PatchModelV1):
     is_main: bool | None = None
 
 
-class ContactPatch(ContactPatchData, UUIDMixinV1): ...
+class ContactPatch(ContactPatchData, UUIDMixinV1, ToDTOMixinV1):
+    __dto_cls__ = ContactPatchDTO
 
 
 class ContactPutData(ContactCreate): ...
@@ -40,7 +45,8 @@ class ContactPutData(ContactCreate): ...
 class ContactItemPutData(ContactItemCreate): ...
 
 
-class ContactPut(ContactPutData, PutUUIDMixinV1): ...
+class ContactPut(ContactPutData, PutUUIDMixinV1, ToDTOMixinV1):
+    __dto_cls__ = ContactPutDTO
 
 
 class ContactItemPut(ContactItemPutData, PutUUIDMixinV1): ...

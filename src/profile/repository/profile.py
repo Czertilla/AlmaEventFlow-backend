@@ -27,9 +27,16 @@ class ProfileRepo(
     with_passports = selectinload(Model.passports).load_only(PassportORM.id)
     with_diet = joinedload(Model.diet)
     with_person = selectinload(Model.person).selectinload(PersonORM.contacts)
+    with_workplace = selectinload(Model.workplace)
     with_main_contacts = with_loader_criteria(ContactORM, ContactORM.is_main)
 
-    all_options = (with_passports, with_diet, with_person, with_main_contacts)
+    all_options = (
+        with_passports,
+        with_diet,
+        with_person,
+        with_workplace,
+        with_main_contacts,
+    )
 
     async def update_one(
         self,

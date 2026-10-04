@@ -1,3 +1,4 @@
+from profile.models.profile import ProfileORM
 from profile.models.student import (
     StudentDegree,
     StudentGroupORM,
@@ -6,6 +7,8 @@ from profile.models.student import (
     StudentORM as Model,
 )
 from uuid import UUID
+
+from sqlalchemy.orm import selectinload
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -22,6 +25,14 @@ class StudentRepo(
     SearchRepositoryMixin[Model],
 ):
     model = Model
+
+    all_options = (
+        selectinload(Model.person),
+        selectinload(Model.group),
+        selectinload(Model.profile).selectinload(ProfileORM.person),
+        selectinload(Model.profile).joinedload(ProfileORM.diet),
+        selectinload(Model.profile).selectinload(ProfileORM.workplace),
+    )
 
 
 class StudentGroupRepo(

@@ -1,0 +1,167 @@
+{
+  "contact.ContactItemRead": {
+    "response": {
+      "id": "213e5689-3822-5a7d-9fd7-89ca125e4719",
+      "is_main": true,
+      "type": "email",
+      "value": "x"
+    }
+  },
+  "contact.ContactRead": {
+    "response": {
+      "id": "213e5689-3822-5a7d-9fd7-89ca125e4719",
+      "is_main": true,
+      "person_id": "19aeffe0-a70d-55b8-8fe2-41fb385b67e5",
+      "type": "email",
+      "value": "x"
+    }
+  },
+  "diet.DietRead": {
+    "response": {
+      "description": "x",
+      "id": 1,
+      "name": "x"
+    }
+  },
+  "organization.OrganizationRead": {
+    "response": {
+      "acronym": "x",
+      "id": "4eea6733-1b98-57ae-94c1-05689f227108",
+      "name": "x"
+    }
+  },
+  "passport.NameVariantRead": {
+    "response": {
+      "id": "f9c59292-d0e2-5fd8-abba-c40f4d3d81bb",
+      "name": "x",
+      "patronymic": "x",
+      "surname": "x"
+    }
+  },
+  "passport.PassportItemRead": {
+    "response": {
+      "id": "8f82dd88-0c84-57f6-a7dc-b64aec92e2b0"
+    }
+  },
+  "passport.PassportRead": {
+    "response": {
+      "expire_date": "2026-01-01",
+      "id": "8f82dd88-0c84-57f6-a7dc-b64aec92e2b0",
+      "is_foreign": true,
+      "issued_authority": "x",
+      "issued_date": "2026-01-01",
+      "name_variant": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "number": "x",
+      "profile_id": "b079132b-2150-5623-bcc0-34b0871b6da1"
+    }
+  },
+  "person.PersonItemRead": {
+    "response": {
+      "id": "f642bc7c-17d1-5364-adad-89a4994f87ba",
+      "name": "x",
+      "patronymic": "x",
+      "surname": "x"
+    }
+  },
+  "person.PersonRead": {
+    "response": {
+      "id": "f642bc7c-17d1-5364-adad-89a4994f87ba",
+      "name": "x",
+      "patronymic": "x",
+      "surname": "x"
+    }
+  },
+  "profile.ProfileRead": {
+    "response": {
+      "birthdate": "2026-01-01",
+      "created_at": "2026-01-01T10:00:00Z",
+      "diet": {
+        "description": "x",
+        "id": 1,
+        "name": "x"
+      },
+      "diet_id": 1,
+      "edited_at": "2026-01-01T10:00:00Z",
+      "id": "c115aabe-1da3-5649-8ab3-dbf41441a99d",
+      "person": {
+        "id": "9e209332-fa7e-50b3-9b14-adb932faad11",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "workplace": {
+        "acronym": "x",
+        "id": "aaf8da50-0b23-5a2b-881f-0e1af02cbb70",
+        "name": "x"
+      },
+      "workplace_id": "f78c0a8c-6520-5403-9cb2-05da5b8570df"
+    }
+  },
+  "student.StudentDegreeRead": {
+    "response": {
+      "id": 1,
+      "name": "x"
+    }
+  },
+  "student.StudentGroupRead": {
+    "response": {
+      "degree_id": 1,
+      "faculty_id": "1c20e0c0-130e-5291-95ac-0e56f5f7bc1a",
+      "grade": 1,
+      "id": 1,
+      "name": "x"
+    }
+  },
+  "student.StudentRead": {
+    "response": {
+      "faculty_id": "20e10f39-813b-5128-979c-b40024541faa",
+      "group": {
+        "degree_id": 1,
+        "faculty_id": "92098490-ef83-5a8b-9935-55281514c927",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      },
+      "group_id": 1,
+      "id": "6879823a-eaca-5cd4-962d-f8116fedada1",
+      "is_active": true,
+      "is_budget": true,
+      "is_full": true,
+      "person": {
+        "id": "d2c0ca86-b9b4-517d-b28e-486160406a90",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "profile": {
+        "birthdate": "2026-01-01",
+        "created_at": "2026-01-01T10:00:00Z",
+        "diet": {
+          "description": "x",
+          "id": 1,
+          "name": "x"
+        },
+        "diet_id": 1,
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "231f8a2c-1a59-57c3-ad83-a23d6e238c0a",
+        "person": {
+          "id": "27791432-f1f9-5cbd-84d6-a95a7f3c56a5",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "workplace": {
+          "acronym": "x",
+          "id": "9feef5ef-1ed5-537e-b2bd-2f261884cd76",
+          "name": "x"
+        },
+        "workplace_id": "7a7a8e1e-c484-5c9e-b67e-cdac8539e197"
+      },
+      "student_id": "x"
+    }
+  }
+}

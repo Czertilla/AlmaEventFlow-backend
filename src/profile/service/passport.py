@@ -1,41 +1,60 @@
 from logging import getLogger
+from profile.dto.passport import (
+    NameVariantCreateDTO,
+    NameVariantDTO,
+    NameVariantPatchDTO,
+    NameVariantPutDTO,
+    PassportCreateDTO,
+    PassportDTO,
+    PassportFilterDTO,
+    PassportPatchDTO,
+    PassportPutDTO,
+)
 from profile.exc.passport import (
     PassportNotExistsException,
     PassportOwnershipException,
 )
 from profile.filter.passport import PassportFilter
 from profile.models.passport import NameVariantORM, PassportORM
-from profile.schema.passport import (
-    NameVariantCreate,
-    NameVariantPatch,
-    NameVariantPut,
-    NameVariantRead,
-    PassportCreate,
-    PassportItemRead,
-    PassportPatch,
-    PassportPut,
-    PassportRead,
-)
 from profile.uow.passport import PassportUOW
 from profile.uow.profile import ProfilePassportUOW
+from typing import Any
 from uuid import UUID
 
-from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
+from core.dto.base import dto_dict, dto_from_orm
+from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
 
 
 class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
+    @staticmethod
+    def _to_dto(passport: PassportORM) -> PassportDTO:
+        name_variant = passport.name_variant
+        return PassportDTO(
+            id=passport.id,
+            profile_id=passport.profile_id,
+            number=passport.number,
+            expire_date=passport.expire_date,
+            is_foreign=passport.is_foreign,
+            issued_date=passport.issued_date,
+            issued_authority=passport.issued_authority,
+            name_variant=dto_from_orm(name_variant, NameVariantCreateDTO)
+            if name_variant
+            else None,
+        )
+
     @required_transaction
-    async def _create(self, passport_create: PassportCreate) -> PassportORM:
-        passport_data = passport_create.model_dump()
-        name_variant_data = passport_data.pop("name_variant", None)
+    async def _create(self, passport_create: PassportCreateDTO) -> PassportORM:
+        passport_data = dto_dict(passport_create, exclude={"name_variant"})
+        name_variant = passport_create.name_variant
 
         passport = await self.uow.passports.add_n_return(data=passport_data)
 
-        if name_variant_data:
-            name_variant_data["passport_id"] = passport.id
+        if name_variant:
+            name_variant_data = dto_dict(name_variant)
+            name_variant_data["id"] = passport.id
             await self.uow.name_variants.add_n_return(data=name_variant_data)
 
         return passport
@@ -47,7 +66,7 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
             raise PassportOwnershipException()
 
     @required_transaction
-    async def _read(self, passport_id: UUID) -> PassportORM | None:
+    async def _read(self, passport_id: UUID) -> PassportORM:
         passport = await self.uow.passports.get_by_id(passport_id)
         if passport is None:
             raise PassportNotExistsException()
@@ -55,12 +74,16 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
 
     @required_transaction
     async def _ensure_existance(self, passport_id: UUID):
-        if not self.uow.passports.exists_id(passport_id):
+        if not await self.uow.passports.exists_id(passport_id):
             raise PassportNotExistsException()
 
     @required_transaction
     async def _update(
-        self, passport_id: UUID, passport_data: dict, *, flush: bool = False
+        self,
+        passport_id: UUID,
+        passport_data: dict[str, Any],
+        *,
+        flush: bool = False,
     ) -> PassportORM:
         passport = await self.uow.passports.update_one(
             passport_id, passport_data, flush
@@ -70,39 +93,42 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         return passport
 
     @required_transaction
-    async def _upsert(self, passport_put: PassportPut) -> PassportORM:
+    async def _upsert(self, passport_put: PassportPutDTO) -> PassportORM:
         await self._check_ownership(passport_put.id, passport_put.profile_id)
-        return await self.uow.passports.upsert(passport_put.model_dump())
+        passport = await self.uow.passports.upsert(
+            dto_dict(passport_put, exclude={"name_variant"})
+        )
+        if passport is None:
+            raise PassportNotExistsException()
+        return passport
 
     @required_transaction
     async def _delete(self, passport_id: UUID) -> None:
         await self.uow.passports.delete_one(passport_id)
 
-    async def create(self, passport_create: PassportCreate) -> PassportRead:
+    async def create(self, passport_create: PassportCreateDTO) -> PassportDTO:
         async with self.uow as uow:
-            result = PassportRead.model_validate(
-                await self._create(passport_create)
-            )
+            created = await self._create(passport_create)
+            result = self._to_dto(await self._read(created.id))
             await uow.commit()
         return result
 
-    async def read(self, passport_id: UUID) -> PassportRead:
+    async def read(self, passport_id: UUID) -> PassportDTO:
         async with self.uow:
-            return PassportRead.model_validate(await self._read(passport_id))
+            return self._to_dto(await self._read(passport_id))
 
     async def search(
         self,
-        filter: PassportFilter,
-        page_params: PageParamV1 = PageParamV1(),
-    ) -> PageV1[PassportItemRead]:
+        filter: PassportFilterDTO,
+        page_params: PageParamDTO = PageParamDTO(),
+    ) -> PageDTO[PassportDTO]:
         async with self.uow as uow:
-            passports, total = await uow.passports.search(filter, page_params)
-            return PageV1(
-                items=[
-                    PassportItemRead.model_validate(passport)
-                    for passport in passports
-                ],
-                pagination=PaginationV1(
+            passports, total = await uow.passports.search(
+                PassportFilter.from_dto(filter), page_params
+            )
+            return PageDTO(
+                items=[self._to_dto(passport) for passport in passports],
+                pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
@@ -110,39 +136,34 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
     async def search_by_profile(
         self,
         profile_id: UUID,
-        filter: PassportFilter,
-        page_params: PageParamV1 = PageParamV1(),
-    ) -> PageV1[PassportItemRead]:
+        filter: PassportFilterDTO,
+        page_params: PageParamDTO = PageParamDTO(),
+    ) -> PageDTO[PassportDTO]:
         async with self.uow as uow:
             passports, total = await uow.passports.search(
-                filter,
+                PassportFilter.from_dto(filter),
                 page_params,
                 scope=[PassportORM.profile_id == profile_id],
             )
-            return PageV1(
-                items=[
-                    PassportItemRead.model_validate(passport)
-                    for passport in passports
-                ],
-                pagination=PaginationV1(
+            return PageDTO(
+                items=[self._to_dto(passport) for passport in passports],
+                pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
 
-    async def patch(self, passport_patch: PassportPatch) -> PassportRead:
+    async def patch(self, passport_patch: PassportPatchDTO) -> PassportDTO:
         async with self.uow as uow:
-            passport_data = passport_patch.model_dump()
-            result = PassportRead.model_validate(
-                await self._update(passport_data.pop("id"), passport_data)
-            )
+            passport_data = dto_dict(passport_patch, only_set=True, exclude={"id"})
+            updated = await self._update(passport_patch.id, passport_data)
+            result = self._to_dto(await self._read(updated.id))
             await uow.commit()
         return result
 
-    async def put(self, passport_put: PassportPut) -> PassportRead:
+    async def put(self, passport_put: PassportPutDTO) -> PassportDTO:
         async with self.uow as uow:
-            result = PassportRead.model_validate(
-                await self._upsert(passport_put)
-            )
+            upserted = await self._upsert(passport_put)
+            result = self._to_dto(await self._read(upserted.id))
             await uow.commit()
         return result
 
@@ -151,9 +172,7 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
             await self._delete(passport_id)
             await uow.commit()
 
-    async def check_ownership(
-        self, passport_id: UUID, profile_id: UUID
-    ) -> None:
+    async def check_ownership(self, passport_id: UUID, profile_id: UUID) -> None:
         async with self.uow:
             await self._check_ownership(passport_id, profile_id)
 
@@ -163,14 +182,12 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
 
 
 class NameVariantService(BaseService[PassportUOW]):
-    @required_transaction
-    async def _create(self, name_variant: NameVariantPut) -> NameVariantORM:
-        return await self.uow.name_variants.add_n_return(
-            name_variant.model_dump()
-        )
+    @staticmethod
+    def _to_dto(name_variant: NameVariantORM) -> NameVariantDTO:
+        return dto_from_orm(name_variant, NameVariantDTO)
 
     @required_transaction
-    async def _read(self, name_variant_id: UUID) -> NameVariantORM | None:
+    async def _read(self, name_variant_id: UUID) -> NameVariantORM:
         name_variant = await self.uow.name_variants.get_by_id(name_variant_id)
         if name_variant is None:
             raise PassportNotExistsException()
@@ -180,7 +197,7 @@ class NameVariantService(BaseService[PassportUOW]):
     async def _update(
         self,
         name_variant_id: UUID,
-        name_variant_data: dict,
+        name_variant_data: dict[str, Any],
         *,
         flush: bool = False,
     ) -> NameVariantORM:
@@ -192,49 +209,34 @@ class NameVariantService(BaseService[PassportUOW]):
         return name_variant
 
     @required_transaction
-    async def _upsert(self, name_variant_put: NameVariantPut) -> NameVariantORM:
-        return await self.uow.name_variants.upsert(
-            name_variant_put.model_dump()
-        )
+    async def _upsert(self, name_variant_put: NameVariantPutDTO) -> NameVariantORM:
+        name_variant = await self.uow.name_variants.upsert(dto_dict(name_variant_put))
+        if name_variant is None:
+            raise PassportNotExistsException()
+        return name_variant
 
     @required_transaction
     async def _delete(self, name_variant_id: UUID) -> None:
         await self.uow.name_variants.delete_one(name_variant_id)
 
-    async def create(
-        self, name_variant_create: NameVariantCreate, passport_id: UUID
-    ) -> NameVariantRead:
-        async with self.uow as uow:
-            result = NameVariantRead.model_validate(
-                await self._create(name_variant_create, passport_id)
-            )
-            await uow.commit()
-        return result
-
-    async def read(self, name_variant_id: UUID) -> NameVariantRead:
+    async def read(self, name_variant_id: UUID) -> NameVariantDTO:
         async with self.uow:
-            return NameVariantRead.model_validate(
-                await self._read(name_variant_id)
-            )
+            return self._to_dto(await self._read(name_variant_id))
 
-    async def patch(
-        self, name_variant_patch: NameVariantPatch
-    ) -> NameVariantRead:
+    async def patch(self, name_variant_patch: NameVariantPatchDTO) -> NameVariantDTO:
         async with self.uow as uow:
-            name_variant_data = name_variant_patch.model_dump()
-            result = NameVariantRead.model_validate(
-                await self._update(
-                    name_variant_data.pop("id"), name_variant_data
-                )
+            name_variant_data = dto_dict(
+                name_variant_patch, only_set=True, exclude={"id"}
+            )
+            result = self._to_dto(
+                await self._update(name_variant_patch.id, name_variant_data)
             )
             await uow.commit()
         return result
 
-    async def put(self, name_variant_put: NameVariantPut) -> NameVariantRead:
+    async def put(self, name_variant_put: NameVariantPutDTO) -> NameVariantDTO:
         async with self.uow as uow:
-            result = NameVariantRead.model_validate(
-                await self._upsert(name_variant_put)
-            )
+            result = self._to_dto(await self._upsert(name_variant_put))
             await uow.commit()
         return result
 

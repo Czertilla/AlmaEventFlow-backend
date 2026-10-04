@@ -6,6 +6,7 @@ SCHEMA_PACKAGES = {
     "event_v2": "event.api.v2.schema",
     "geo_v1": "geo.api.v1.schema",
     "org_v1": "org.api.v1.schema",
+    "profile_v1": "profile.api.v1.schema",
 }
 
 RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
@@ -56,6 +57,26 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "university.UniversityRead": "org.dto.university:UniversityDTO",
         },
     ),
+    "profile_v1": (
+        "profile.api.v1.schema",
+        {
+            "contact.ContactItemRead": "profile.dto.contact:ContactDTO",
+            "contact.ContactRead": "profile.dto.contact:ContactDTO",
+            "diet.DietRead": "profile.dto.diet:DietDTO",
+            "organization.OrganizationRead": (
+                "profile.dto.organization:OrganizationDTO"
+            ),
+            "passport.NameVariantRead": "profile.dto.passport:NameVariantDTO",
+            "passport.PassportItemRead": "profile.dto.passport:PassportDTO",
+            "passport.PassportRead": "profile.dto.passport:PassportDTO",
+            "person.PersonItemRead": "profile.dto.person:PersonDTO",
+            "person.PersonRead": "profile.dto.person:PersonDTO",
+            "profile.ProfileRead": "profile.dto.profile:ProfileDTO",
+            "student.StudentDegreeRead": "profile.dto.student:StudentDegreeDTO",
+            "student.StudentGroupRead": "profile.dto.student:StudentGroupDTO",
+            "student.StudentRead": "profile.dto.student:StudentDTO",
+        },
+    ),
 }
 
 BUILT_BY_ROUTER = {"event.api.v2.schema": {"calendar.SubscriptionCreated"}}
@@ -65,6 +86,7 @@ MIGRATED_LAYERS = {
     "core": ("dto", "service", "uow", "database"),
     "org": ("service", "repository", "uow", "dto", "models"),
     "geo": ("service", "repository", "uow", "dto", "models"),
+    "profile": ("service", "repository", "uow", "dto", "models"),
 }
 
 FORBIDDEN = {
@@ -79,6 +101,10 @@ FORBIDDEN = {
     ),
     "geo": (
         re.compile(r"^geo\.api\.v\d+"),
+        re.compile(r"^core\.schema\.v\d+"),
+    ),
+    "profile": (
+        re.compile(r"^profile\.api\.v\d+"),
         re.compile(r"^core\.schema\.v\d+"),
     ),
 }

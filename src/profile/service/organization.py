@@ -23,6 +23,4 @@ class OrganizationService(BaseService[OrganizationUOW]):
 
     @required_transaction
     async def _upsert(self, organization: OrganizationData):
-        await self.uow.organizations.upsert(
-            data=self._validate_data(organization)
-        )
+        await self.uow.organizations.upsert(data=self._validate_data(organization))

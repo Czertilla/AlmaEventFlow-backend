@@ -1,10 +1,15 @@
+from profile.dto.passport import PassportFilterDTO
 from profile.models.passport import PassportORM
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 
+from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 
-class PassportFilter(Filter):
+
+class PassportFilter(Filter, FromDTOMixinV1, ToDTOMixinV1):
+    __dto_cls__ = PassportFilterDTO
+
     order_by: list[str] | None = ["expire_date"]
     search: None | str = None
     profile_id: UUID | None = None

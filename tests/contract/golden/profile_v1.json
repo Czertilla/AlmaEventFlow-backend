@@ -1,0 +1,3487 @@
+{
+  "contact.ContactCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "is_main": true,
+          "person_id": "7f994ee5-d8ab-5089-b249-dd06443f2c75",
+          "type": "email",
+          "value": "x"
+        }
+      },
+      "dump": {
+        "is_main": true,
+        "person_id": "7f994ee5-d8ab-5089-b249-dd06443f2c75",
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "is_main",
+        "person_id",
+        "type",
+        "value"
+      ],
+      "input": {
+        "is_main": true,
+        "person_id": "7f994ee5-d8ab-5089-b249-dd06443f2c75",
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "is_main": false,
+          "person_id": "7f994ee5-d8ab-5089-b249-dd06443f2c75",
+          "type": "email",
+          "value": "x"
+        }
+      },
+      "dump": {
+        "is_main": false,
+        "person_id": "7f994ee5-d8ab-5089-b249-dd06443f2c75",
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "person_id",
+        "type",
+        "value"
+      ],
+      "input": {
+        "person_id": "7f994ee5-d8ab-5089-b249-dd06443f2c75",
+        "type": "email",
+        "value": "x"
+      }
+    }
+  },
+  "contact.ContactItemCreate": {
+    "full": {
+      "dump": {
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "is_main",
+        "type",
+        "value"
+      ],
+      "input": {
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "is_main": false,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "type",
+        "value"
+      ],
+      "input": {
+        "type": "email",
+        "value": "x"
+      }
+    }
+  },
+  "contact.ContactItemPut": {
+    "full": {
+      "dump": {
+        "id": "c05246d8-f82f-56fd-9066-63bfb18fd5e6",
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "id",
+        "is_main",
+        "type",
+        "value"
+      ],
+      "input": {
+        "id": "c05246d8-f82f-56fd-9066-63bfb18fd5e6",
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "<generated>",
+        "is_main": false,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "type",
+        "value"
+      ],
+      "input": {
+        "type": "email",
+        "value": "x"
+      }
+    }
+  },
+  "contact.ContactItemPutData": {
+    "full": {
+      "dump": {
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "is_main",
+        "type",
+        "value"
+      ],
+      "input": {
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "is_main": false,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "type",
+        "value"
+      ],
+      "input": {
+        "type": "email",
+        "value": "x"
+      }
+    }
+  },
+  "contact.ContactItemRead": {
+    "full": {
+      "dump": {
+        "id": "0a6b70ae-2d21-5b70-8963-7dc7b1a06cf6",
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "id",
+        "is_main",
+        "type",
+        "value"
+      ],
+      "input": {
+        "id": "0a6b70ae-2d21-5b70-8963-7dc7b1a06cf6",
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "0a6b70ae-2d21-5b70-8963-7dc7b1a06cf6",
+        "is_main": false,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "id",
+        "type",
+        "value"
+      ],
+      "input": {
+        "id": "0a6b70ae-2d21-5b70-8963-7dc7b1a06cf6",
+        "type": "email",
+        "value": "x"
+      }
+    }
+  },
+  "contact.ContactPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id",
+          "is_main",
+          "type",
+          "value"
+        ],
+        "mapped": {
+          "id": "a8c3bd5a-a3b6-5574-9108-24fda5031824",
+          "is_main": true,
+          "type": "email",
+          "value": "x"
+        }
+      },
+      "dump": {
+        "id": "a8c3bd5a-a3b6-5574-9108-24fda5031824",
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "id",
+        "is_main",
+        "type",
+        "value"
+      ],
+      "input": {
+        "id": "a8c3bd5a-a3b6-5574-9108-24fda5031824",
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "a8c3bd5a-a3b6-5574-9108-24fda5031824"
+        }
+      },
+      "dump": {
+        "id": "a8c3bd5a-a3b6-5574-9108-24fda5031824"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "a8c3bd5a-a3b6-5574-9108-24fda5031824"
+      }
+    }
+  },
+  "contact.ContactPatchData": {
+    "full": {
+      "dump": {
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "is_main",
+        "type",
+        "value"
+      ],
+      "input": {
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "contact.ContactPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "f1464ad4-e9a0-58ac-9892-b266ea40487d",
+          "is_main": true,
+          "person_id": "76e30ec0-5029-5121-b515-f0bcbcf43d4c",
+          "type": "email",
+          "value": "x"
+        }
+      },
+      "dump": {
+        "id": "f1464ad4-e9a0-58ac-9892-b266ea40487d",
+        "is_main": true,
+        "person_id": "76e30ec0-5029-5121-b515-f0bcbcf43d4c",
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "id",
+        "is_main",
+        "person_id",
+        "type",
+        "value"
+      ],
+      "input": {
+        "id": "f1464ad4-e9a0-58ac-9892-b266ea40487d",
+        "is_main": true,
+        "person_id": "76e30ec0-5029-5121-b515-f0bcbcf43d4c",
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "<generated>",
+          "is_main": false,
+          "person_id": "76e30ec0-5029-5121-b515-f0bcbcf43d4c",
+          "type": "email",
+          "value": "x"
+        }
+      },
+      "dump": {
+        "id": "<generated>",
+        "is_main": false,
+        "person_id": "76e30ec0-5029-5121-b515-f0bcbcf43d4c",
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "person_id",
+        "type",
+        "value"
+      ],
+      "input": {
+        "person_id": "76e30ec0-5029-5121-b515-f0bcbcf43d4c",
+        "type": "email",
+        "value": "x"
+      }
+    }
+  },
+  "contact.ContactPutData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "is_main": true,
+          "person_id": "2884f6aa-026d-5fba-8a70-808fafe50d72",
+          "type": "email",
+          "value": "x"
+        }
+      },
+      "dump": {
+        "is_main": true,
+        "person_id": "2884f6aa-026d-5fba-8a70-808fafe50d72",
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "is_main",
+        "person_id",
+        "type",
+        "value"
+      ],
+      "input": {
+        "is_main": true,
+        "person_id": "2884f6aa-026d-5fba-8a70-808fafe50d72",
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "is_main": false,
+          "person_id": "2884f6aa-026d-5fba-8a70-808fafe50d72",
+          "type": "email",
+          "value": "x"
+        }
+      },
+      "dump": {
+        "is_main": false,
+        "person_id": "2884f6aa-026d-5fba-8a70-808fafe50d72",
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "person_id",
+        "type",
+        "value"
+      ],
+      "input": {
+        "person_id": "2884f6aa-026d-5fba-8a70-808fafe50d72",
+        "type": "email",
+        "value": "x"
+      }
+    }
+  },
+  "contact.ContactRead": {
+    "full": {
+      "dump": {
+        "id": "1d8c518a-4546-596e-9525-16970ab93e0e",
+        "is_main": true,
+        "person_id": "d1a7466a-3900-50fc-b22a-b01a7d67fc90",
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "id",
+        "is_main",
+        "person_id",
+        "type",
+        "value"
+      ],
+      "input": {
+        "id": "1d8c518a-4546-596e-9525-16970ab93e0e",
+        "is_main": true,
+        "person_id": "d1a7466a-3900-50fc-b22a-b01a7d67fc90",
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "1d8c518a-4546-596e-9525-16970ab93e0e",
+        "is_main": false,
+        "person_id": "d1a7466a-3900-50fc-b22a-b01a7d67fc90",
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "id",
+        "person_id",
+        "type",
+        "value"
+      ],
+      "input": {
+        "id": "1d8c518a-4546-596e-9525-16970ab93e0e",
+        "person_id": "d1a7466a-3900-50fc-b22a-b01a7d67fc90",
+        "type": "email",
+        "value": "x"
+      }
+    }
+  },
+  "diet.DietCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": "x",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "name": "x"
+      },
+      "fields_set": [
+        "description",
+        "name"
+      ],
+      "input": {
+        "description": "x",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": null,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "description": null,
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "diet.DietPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "description",
+          "id",
+          "name"
+        ],
+        "mapped": {
+          "description": "x",
+          "id": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "description",
+        "id",
+        "name"
+      ],
+      "input": {
+        "description": "x",
+        "id": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": 1
+        }
+      },
+      "dump": {
+        "id": 1
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": 1
+      }
+    }
+  },
+  "diet.DietPatchData": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "name": "x"
+      },
+      "fields_set": [
+        "description",
+        "name"
+      ],
+      "input": {
+        "description": "x",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "diet.DietPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": "x",
+          "id": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "description",
+        "id",
+        "name"
+      ],
+      "input": {
+        "description": "x",
+        "id": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": null,
+          "id": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "description": null,
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": 1,
+        "name": "x"
+      }
+    }
+  },
+  "diet.DietPutData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": "x",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "name": "x"
+      },
+      "fields_set": [
+        "description",
+        "name"
+      ],
+      "input": {
+        "description": "x",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "description": null,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "description": null,
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "diet.DietRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "description": "x",
+          "name": "x"
+        }
+      },
+      "dump": {
+        "description": "x",
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "description",
+        "id",
+        "name"
+      ],
+      "input": {
+        "description": "x",
+        "id": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "description": null,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "description": null,
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": 1,
+        "name": "x"
+      }
+    }
+  },
+  "organization.OrganizationCreate": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "name": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "name"
+      ],
+      "input": {
+        "acronym": "x",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "organization.OrganizationPatch": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "id": "06c15207-0183-551c-990e-a86d01a200d5",
+        "name": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "id",
+        "name"
+      ],
+      "input": {
+        "acronym": "x",
+        "id": "06c15207-0183-551c-990e-a86d01a200d5",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "06c15207-0183-551c-990e-a86d01a200d5"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "06c15207-0183-551c-990e-a86d01a200d5"
+      }
+    }
+  },
+  "organization.OrganizationPatchData": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "name": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "name"
+      ],
+      "input": {
+        "acronym": "x",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "organization.OrganizationPut": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "id",
+        "name"
+      ],
+      "input": {
+        "acronym": "x",
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
+        "name": "x"
+      }
+    }
+  },
+  "organization.OrganizationPutData": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "name": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "name"
+      ],
+      "input": {
+        "acronym": "x",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "organization.OrganizationRead": {
+    "full": {
+      "dump": {
+        "acronym": "x",
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x"
+      },
+      "fields_set": [
+        "acronym",
+        "id",
+        "name"
+      ],
+      "input": {
+        "acronym": "x",
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "acronym": null,
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
+        "name": "x"
+      }
+    }
+  },
+  "passport.NameVariantCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "name": "x",
+          "patronymic": null,
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "passport.NameVariantPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id",
+          "name",
+          "patronymic",
+          "surname"
+        ],
+        "mapped": {
+          "id": "830724b8-a6c2-5822-8c41-6b972f3a1763",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "id": "830724b8-a6c2-5822-8c41-6b972f3a1763",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "830724b8-a6c2-5822-8c41-6b972f3a1763",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "830724b8-a6c2-5822-8c41-6b972f3a1763"
+        }
+      },
+      "dump": {
+        "id": "830724b8-a6c2-5822-8c41-6b972f3a1763"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "830724b8-a6c2-5822-8c41-6b972f3a1763"
+      }
+    }
+  },
+  "passport.NameVariantPatchData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "name",
+          "patronymic",
+          "surname"
+        ],
+        "mapped": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [],
+        "mapped": {}
+      },
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "passport.NameVariantPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "fe707e15-817b-50af-b0ff-e930d3adef73",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "id": "fe707e15-817b-50af-b0ff-e930d3adef73",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "fe707e15-817b-50af-b0ff-e930d3adef73",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "fe707e15-817b-50af-b0ff-e930d3adef73",
+          "name": "x",
+          "patronymic": null,
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "id": "fe707e15-817b-50af-b0ff-e930d3adef73",
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "surname"
+      ],
+      "input": {
+        "id": "fe707e15-817b-50af-b0ff-e930d3adef73",
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "passport.NameVariantPutData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "name": "x",
+          "patronymic": null,
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "passport.NameVariantRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "id": "205d825c-e39a-524d-9747-5cde03815be2",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "205d825c-e39a-524d-9747-5cde03815be2",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "name": "x",
+          "patronymic": null,
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "id": "205d825c-e39a-524d-9747-5cde03815be2",
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "surname"
+      ],
+      "input": {
+        "id": "205d825c-e39a-524d-9747-5cde03815be2",
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "passport.PassportCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "expire_date": "2026-01-01",
+          "is_foreign": true,
+          "issued_authority": "x",
+          "issued_date": "2026-01-01",
+          "name_variant": {
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "number": "x",
+          "profile_id": "67fe8394-ac00-507d-afd4-f8aa87024e3f"
+        }
+      },
+      "dump": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x",
+        "profile_id": "67fe8394-ac00-507d-afd4-f8aa87024e3f"
+      },
+      "fields_set": [
+        "expire_date",
+        "is_foreign",
+        "issued_authority",
+        "issued_date",
+        "name_variant",
+        "number",
+        "profile_id"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x",
+        "profile_id": "67fe8394-ac00-507d-afd4-f8aa87024e3f"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "expire_date": "2026-01-01",
+          "is_foreign": true,
+          "issued_authority": null,
+          "issued_date": null,
+          "name_variant": null,
+          "number": "x",
+          "profile_id": "67fe8394-ac00-507d-afd4-f8aa87024e3f"
+        }
+      },
+      "dump": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": null,
+        "issued_date": null,
+        "name_variant": null,
+        "number": "x",
+        "profile_id": "67fe8394-ac00-507d-afd4-f8aa87024e3f"
+      },
+      "fields_set": [
+        "expire_date",
+        "is_foreign",
+        "number",
+        "profile_id"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "number": "x",
+        "profile_id": "67fe8394-ac00-507d-afd4-f8aa87024e3f"
+      }
+    }
+  },
+  "passport.PassportItemCreate": {
+    "full": {
+      "dump": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x"
+      },
+      "fields_set": [
+        "expire_date",
+        "is_foreign",
+        "issued_authority",
+        "issued_date",
+        "name_variant",
+        "number"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": null,
+        "issued_date": null,
+        "name_variant": null,
+        "number": "x"
+      },
+      "fields_set": [
+        "expire_date",
+        "is_foreign",
+        "number"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "number": "x"
+      }
+    }
+  },
+  "passport.PassportItemRead": {
+    "full": {
+      "dump": {
+        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202"
+      }
+    }
+  },
+  "passport.PassportPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "expire_date",
+          "id",
+          "is_foreign",
+          "issued_authority",
+          "issued_date",
+          "name_variant",
+          "number"
+        ],
+        "mapped": {
+          "expire_date": "2026-01-01",
+          "id": "06b2c554-9608-5c0f-80ea-3f77e31a4eca",
+          "is_foreign": true,
+          "issued_authority": "x",
+          "issued_date": "2026-01-01",
+          "name_variant": {
+            "fields_set": [
+              "name",
+              "patronymic",
+              "surname"
+            ],
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "number": "x"
+        }
+      },
+      "dump": {
+        "expire_date": "2026-01-01",
+        "id": "06b2c554-9608-5c0f-80ea-3f77e31a4eca",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x"
+      },
+      "fields_set": [
+        "expire_date",
+        "id",
+        "is_foreign",
+        "issued_authority",
+        "issued_date",
+        "name_variant",
+        "number"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "id": "06b2c554-9608-5c0f-80ea-3f77e31a4eca",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "06b2c554-9608-5c0f-80ea-3f77e31a4eca"
+        }
+      },
+      "dump": {
+        "id": "06b2c554-9608-5c0f-80ea-3f77e31a4eca"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "06b2c554-9608-5c0f-80ea-3f77e31a4eca"
+      }
+    }
+  },
+  "passport.PassportPatchData": {
+    "full": {
+      "dump": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x"
+      },
+      "fields_set": [
+        "expire_date",
+        "is_foreign",
+        "issued_authority",
+        "issued_date",
+        "name_variant",
+        "number"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "passport.PassportPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "expire_date": "2026-01-01",
+          "id": "fc3533b8-66f3-55c0-b450-d918bfdb9fac",
+          "is_foreign": true,
+          "issued_authority": "x",
+          "issued_date": "2026-01-01",
+          "name_variant": {
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "number": "x",
+          "profile_id": "68df4368-9b0f-5d5d-b932-6b75b74a8480"
+        }
+      },
+      "dump": {
+        "expire_date": "2026-01-01",
+        "id": "fc3533b8-66f3-55c0-b450-d918bfdb9fac",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x",
+        "profile_id": "68df4368-9b0f-5d5d-b932-6b75b74a8480"
+      },
+      "fields_set": [
+        "expire_date",
+        "id",
+        "is_foreign",
+        "issued_authority",
+        "issued_date",
+        "name_variant",
+        "number",
+        "profile_id"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "id": "fc3533b8-66f3-55c0-b450-d918bfdb9fac",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x",
+        "profile_id": "68df4368-9b0f-5d5d-b932-6b75b74a8480"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "expire_date": "2026-01-01",
+          "id": "<generated>",
+          "is_foreign": true,
+          "issued_authority": null,
+          "issued_date": null,
+          "name_variant": null,
+          "number": "x",
+          "profile_id": "68df4368-9b0f-5d5d-b932-6b75b74a8480"
+        }
+      },
+      "dump": {
+        "expire_date": "2026-01-01",
+        "id": "<generated>",
+        "is_foreign": true,
+        "issued_authority": null,
+        "issued_date": null,
+        "name_variant": null,
+        "number": "x",
+        "profile_id": "68df4368-9b0f-5d5d-b932-6b75b74a8480"
+      },
+      "fields_set": [
+        "expire_date",
+        "is_foreign",
+        "number",
+        "profile_id"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "number": "x",
+        "profile_id": "68df4368-9b0f-5d5d-b932-6b75b74a8480"
+      }
+    }
+  },
+  "passport.PassportPutData": {
+    "full": {
+      "dump": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x",
+        "profile_id": "b3914b5c-93ba-5bc8-ab98-79ee9d1c7123"
+      },
+      "fields_set": [
+        "expire_date",
+        "is_foreign",
+        "issued_authority",
+        "issued_date",
+        "name_variant",
+        "number",
+        "profile_id"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x",
+        "profile_id": "b3914b5c-93ba-5bc8-ab98-79ee9d1c7123"
+      }
+    },
+    "required": {
+      "dump": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "issued_authority": null,
+        "issued_date": null,
+        "name_variant": null,
+        "number": "x",
+        "profile_id": "b3914b5c-93ba-5bc8-ab98-79ee9d1c7123"
+      },
+      "fields_set": [
+        "expire_date",
+        "is_foreign",
+        "number",
+        "profile_id"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "number": "x",
+        "profile_id": "b3914b5c-93ba-5bc8-ab98-79ee9d1c7123"
+      }
+    }
+  },
+  "passport.PassportRead": {
+    "full": {
+      "dump": {
+        "expire_date": "2026-01-01",
+        "id": "d11d6e7f-2ec1-5bf7-ba4c-e7a09d47f8be",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x",
+        "profile_id": "aedce5de-2c18-5431-80fd-eef7f1a35095"
+      },
+      "fields_set": [
+        "expire_date",
+        "id",
+        "is_foreign",
+        "issued_authority",
+        "issued_date",
+        "name_variant",
+        "number",
+        "profile_id"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "id": "d11d6e7f-2ec1-5bf7-ba4c-e7a09d47f8be",
+        "is_foreign": true,
+        "issued_authority": "x",
+        "issued_date": "2026-01-01",
+        "name_variant": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "number": "x",
+        "profile_id": "aedce5de-2c18-5431-80fd-eef7f1a35095"
+      }
+    },
+    "required": {
+      "dump": {
+        "expire_date": "2026-01-01",
+        "id": "d11d6e7f-2ec1-5bf7-ba4c-e7a09d47f8be",
+        "is_foreign": true,
+        "issued_authority": null,
+        "issued_date": null,
+        "name_variant": null,
+        "number": "x",
+        "profile_id": "aedce5de-2c18-5431-80fd-eef7f1a35095"
+      },
+      "fields_set": [
+        "expire_date",
+        "id",
+        "is_foreign",
+        "number",
+        "profile_id"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "id": "d11d6e7f-2ec1-5bf7-ba4c-e7a09d47f8be",
+        "is_foreign": true,
+        "number": "x",
+        "profile_id": "aedce5de-2c18-5431-80fd-eef7f1a35095"
+      }
+    }
+  },
+  "person.PersonBase": {
+    "full": {
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "name": "x",
+          "patronymic": null,
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonItemRead": {
+    "full": {
+      "dump": {
+        "id": "32949139-b77c-5bcb-aff9-7422bb1071cd",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "32949139-b77c-5bcb-aff9-7422bb1071cd",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "32949139-b77c-5bcb-aff9-7422bb1071cd",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "32949139-b77c-5bcb-aff9-7422bb1071cd",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id",
+          "name",
+          "patronymic",
+          "surname"
+        ],
+        "mapped": {
+          "id": "9c9550c2-e894-5242-b589-8dfe123a1904",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "id": "9c9550c2-e894-5242-b589-8dfe123a1904",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "9c9550c2-e894-5242-b589-8dfe123a1904",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "9c9550c2-e894-5242-b589-8dfe123a1904"
+        }
+      },
+      "dump": {
+        "id": "9c9550c2-e894-5242-b589-8dfe123a1904"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "9c9550c2-e894-5242-b589-8dfe123a1904"
+      }
+    }
+  },
+  "person.PersonPatchData": {
+    "full": {
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "person.PersonPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "2882fb16-368e-5107-a9f4-3381a189e99c",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "id": "2882fb16-368e-5107-a9f4-3381a189e99c",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "2882fb16-368e-5107-a9f4-3381a189e99c",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "2882fb16-368e-5107-a9f4-3381a189e99c",
+          "name": "x",
+          "patronymic": null,
+          "surname": "x"
+        }
+      },
+      "dump": {
+        "id": "2882fb16-368e-5107-a9f4-3381a189e99c",
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "surname"
+      ],
+      "input": {
+        "id": "2882fb16-368e-5107-a9f4-3381a189e99c",
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonPutData": {
+    "full": {
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x",
+        "patronymic": null,
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonRead": {
+    "full": {
+      "dump": {
+        "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "profile.ProfileBase": {
+    "full": {
+      "dump": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "id": "9f708e72-5486-5ddd-937e-b9895ae32873",
+        "workplace_id": "b3944168-336a-5ad7-b633-b91086a89aa5"
+      },
+      "fields_set": [
+        "birthdate",
+        "diet_id",
+        "id",
+        "workplace_id"
+      ],
+      "input": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "id": "9f708e72-5486-5ddd-937e-b9895ae32873",
+        "workplace_id": "b3944168-336a-5ad7-b633-b91086a89aa5"
+      }
+    },
+    "required": {
+      "dump": {
+        "birthdate": null,
+        "diet_id": null,
+        "id": "9f708e72-5486-5ddd-937e-b9895ae32873",
+        "workplace_id": null
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "9f708e72-5486-5ddd-937e-b9895ae32873"
+      }
+    }
+  },
+  "profile.ProfileCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "birthdate": "2026-01-01",
+          "diet_id": 1,
+          "id": "fcabe1f0-a26d-5ff5-a5f5-61a3587c7072",
+          "workplace_id": "bfd1e97a-b2d0-5fb2-8a36-a2a1b07ccc70"
+        }
+      },
+      "dump": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "id": "fcabe1f0-a26d-5ff5-a5f5-61a3587c7072",
+        "workplace_id": "bfd1e97a-b2d0-5fb2-8a36-a2a1b07ccc70"
+      },
+      "fields_set": [
+        "birthdate",
+        "diet_id",
+        "id",
+        "workplace_id"
+      ],
+      "input": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "id": "fcabe1f0-a26d-5ff5-a5f5-61a3587c7072",
+        "workplace_id": "bfd1e97a-b2d0-5fb2-8a36-a2a1b07ccc70"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "birthdate": null,
+          "diet_id": null,
+          "id": "fcabe1f0-a26d-5ff5-a5f5-61a3587c7072",
+          "workplace_id": null
+        }
+      },
+      "dump": {
+        "birthdate": null,
+        "diet_id": null,
+        "id": "fcabe1f0-a26d-5ff5-a5f5-61a3587c7072",
+        "workplace_id": null
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "fcabe1f0-a26d-5ff5-a5f5-61a3587c7072"
+      }
+    }
+  },
+  "profile.ProfilePatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "birthdate",
+          "diet_id",
+          "id",
+          "workplace_id"
+        ],
+        "mapped": {
+          "birthdate": "2026-01-01",
+          "diet_id": 1,
+          "id": "d98e7d23-6c61-5ea2-b3f3-11e10ac2429b",
+          "workplace_id": "22e94c43-93b2-557f-ab54-244c30a480ef"
+        }
+      },
+      "dump": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "id": "d98e7d23-6c61-5ea2-b3f3-11e10ac2429b",
+        "workplace_id": "22e94c43-93b2-557f-ab54-244c30a480ef"
+      },
+      "fields_set": [
+        "birthdate",
+        "diet_id",
+        "id",
+        "workplace_id"
+      ],
+      "input": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "id": "d98e7d23-6c61-5ea2-b3f3-11e10ac2429b",
+        "workplace_id": "22e94c43-93b2-557f-ab54-244c30a480ef"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "d98e7d23-6c61-5ea2-b3f3-11e10ac2429b"
+        }
+      },
+      "dump": {
+        "id": "d98e7d23-6c61-5ea2-b3f3-11e10ac2429b"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "d98e7d23-6c61-5ea2-b3f3-11e10ac2429b"
+      }
+    }
+  },
+  "profile.ProfilePatchData": {
+    "full": {
+      "dump": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "workplace_id": "6b578247-66e8-5bb9-ba34-06a8527ce1af"
+      },
+      "fields_set": [
+        "birthdate",
+        "diet_id",
+        "workplace_id"
+      ],
+      "input": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "workplace_id": "6b578247-66e8-5bb9-ba34-06a8527ce1af"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "profile.ProfilePut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "birthdate": "2026-01-01",
+          "diet_id": 1,
+          "id": "2d3242d4-9a03-5ca2-9796-d5dab2982f99",
+          "workplace_id": "32832b7a-e65b-5808-9bf7-4491ca2c79a8"
+        }
+      },
+      "dump": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "id": "2d3242d4-9a03-5ca2-9796-d5dab2982f99",
+        "workplace_id": "32832b7a-e65b-5808-9bf7-4491ca2c79a8"
+      },
+      "fields_set": [
+        "birthdate",
+        "diet_id",
+        "id",
+        "workplace_id"
+      ],
+      "input": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "id": "2d3242d4-9a03-5ca2-9796-d5dab2982f99",
+        "workplace_id": "32832b7a-e65b-5808-9bf7-4491ca2c79a8"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "birthdate": null,
+          "diet_id": null,
+          "id": "2d3242d4-9a03-5ca2-9796-d5dab2982f99",
+          "workplace_id": null
+        }
+      },
+      "dump": {
+        "birthdate": null,
+        "diet_id": null,
+        "id": "2d3242d4-9a03-5ca2-9796-d5dab2982f99",
+        "workplace_id": null
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "2d3242d4-9a03-5ca2-9796-d5dab2982f99"
+      }
+    }
+  },
+  "profile.ProfilePutData": {
+    "full": {
+      "dump": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "id": "3f016088-0be9-54d6-be93-f6511c6da853",
+        "workplace_id": "768a212a-4447-5d44-ae07-fb4a04b32a5b"
+      },
+      "fields_set": [
+        "birthdate",
+        "diet_id",
+        "id",
+        "workplace_id"
+      ],
+      "input": {
+        "birthdate": "2026-01-01",
+        "diet_id": 1,
+        "id": "3f016088-0be9-54d6-be93-f6511c6da853",
+        "workplace_id": "768a212a-4447-5d44-ae07-fb4a04b32a5b"
+      }
+    },
+    "required": {
+      "dump": {
+        "birthdate": null,
+        "diet_id": null,
+        "id": "3f016088-0be9-54d6-be93-f6511c6da853",
+        "workplace_id": null
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "3f016088-0be9-54d6-be93-f6511c6da853"
+      }
+    }
+  },
+  "profile.ProfileRead": {
+    "full": {
+      "dump": {
+        "birthdate": "2026-01-01",
+        "created_at": "2026-01-01T10:00:00Z",
+        "diet": {
+          "description": "x",
+          "id": 1,
+          "name": "x"
+        },
+        "diet_id": 1,
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "32fed62e-d253-5994-8b8c-47de3321c666",
+        "person": {
+          "id": "b13ee9c6-aadf-5dec-9dd1-002df28034da",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "workplace": {
+          "acronym": "x",
+          "id": "94ef5eb1-086f-5876-bc03-565117e70265",
+          "name": "x"
+        },
+        "workplace_id": "dd801618-0f78-5264-98f4-08a9ee89b232"
+      },
+      "fields_set": [
+        "birthdate",
+        "created_at",
+        "diet",
+        "diet_id",
+        "edited_at",
+        "id",
+        "person",
+        "workplace",
+        "workplace_id"
+      ],
+      "input": {
+        "birthdate": "2026-01-01",
+        "created_at": "2026-01-01T10:00:00Z",
+        "diet": {
+          "description": "x",
+          "id": 1,
+          "name": "x"
+        },
+        "diet_id": 1,
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "32fed62e-d253-5994-8b8c-47de3321c666",
+        "person": {
+          "id": "b13ee9c6-aadf-5dec-9dd1-002df28034da",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "workplace": {
+          "acronym": "x",
+          "id": "94ef5eb1-086f-5876-bc03-565117e70265",
+          "name": "x"
+        },
+        "workplace_id": "dd801618-0f78-5264-98f4-08a9ee89b232"
+      }
+    },
+    "required": {
+      "dump": {
+        "birthdate": null,
+        "created_at": "2026-01-01T10:00:00Z",
+        "diet": null,
+        "diet_id": null,
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "32fed62e-d253-5994-8b8c-47de3321c666",
+        "person": null,
+        "workplace": null,
+        "workplace_id": null
+      },
+      "fields_set": [
+        "created_at",
+        "edited_at",
+        "id"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "32fed62e-d253-5994-8b8c-47de3321c666"
+      }
+    }
+  },
+  "student.StudentBase": {
+    "full": {
+      "dump": {
+        "faculty_id": "d3f6905d-b5a5-5344-bd83-cba416a650e7",
+        "group_id": 1,
+        "id": "96d8fe1d-4cdc-5bbf-84b4-7a0c66bc059a",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "faculty_id",
+        "group_id",
+        "id",
+        "is_active",
+        "is_budget",
+        "is_full",
+        "student_id"
+      ],
+      "input": {
+        "faculty_id": "d3f6905d-b5a5-5344-bd83-cba416a650e7",
+        "group_id": 1,
+        "id": "96d8fe1d-4cdc-5bbf-84b4-7a0c66bc059a",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "faculty_id": null,
+        "group_id": 1,
+        "id": "96d8fe1d-4cdc-5bbf-84b4-7a0c66bc059a",
+        "is_active": true,
+        "is_budget": null,
+        "is_full": null,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "group_id",
+        "id",
+        "student_id"
+      ],
+      "input": {
+        "group_id": 1,
+        "id": "96d8fe1d-4cdc-5bbf-84b4-7a0c66bc059a",
+        "student_id": "x"
+      }
+    }
+  },
+  "student.StudentCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "faculty_id": "698b2a39-3b1b-51f8-b18d-529c1f41dff2",
+          "group_id": 1,
+          "id": "33bc6f91-63df-505a-8218-6429dd3f901d",
+          "is_active": true,
+          "is_budget": true,
+          "is_full": true,
+          "student_id": "x"
+        }
+      },
+      "dump": {
+        "faculty_id": "698b2a39-3b1b-51f8-b18d-529c1f41dff2",
+        "group_id": 1,
+        "id": "33bc6f91-63df-505a-8218-6429dd3f901d",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "faculty_id",
+        "group_id",
+        "id",
+        "is_active",
+        "is_budget",
+        "is_full",
+        "student_id"
+      ],
+      "input": {
+        "faculty_id": "698b2a39-3b1b-51f8-b18d-529c1f41dff2",
+        "group_id": 1,
+        "id": "33bc6f91-63df-505a-8218-6429dd3f901d",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "faculty_id": null,
+          "group_id": 1,
+          "id": "33bc6f91-63df-505a-8218-6429dd3f901d",
+          "is_active": true,
+          "is_budget": null,
+          "is_full": null,
+          "student_id": "x"
+        }
+      },
+      "dump": {
+        "faculty_id": null,
+        "group_id": 1,
+        "id": "33bc6f91-63df-505a-8218-6429dd3f901d",
+        "is_active": true,
+        "is_budget": null,
+        "is_full": null,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "group_id",
+        "id",
+        "student_id"
+      ],
+      "input": {
+        "group_id": 1,
+        "id": "33bc6f91-63df-505a-8218-6429dd3f901d",
+        "student_id": "x"
+      }
+    }
+  },
+  "student.StudentDegreeCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "name": "x"
+        }
+      },
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "name": "x"
+        }
+      },
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "student.StudentDegreePatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id",
+          "name"
+        ],
+        "mapped": {
+          "id": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": 1
+        }
+      },
+      "dump": {
+        "id": 1
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": 1
+      }
+    }
+  },
+  "student.StudentDegreePatchData": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "student.StudentDegreePut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": 1,
+        "name": "x"
+      }
+    }
+  },
+  "student.StudentDegreePutData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "name": "x"
+        }
+      },
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "name": "x"
+        }
+      },
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "student.StudentDegreeRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "name": "x"
+        }
+      },
+      "dump": {
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "name": "x"
+        }
+      },
+      "dump": {
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "name"
+      ],
+      "input": {
+        "id": 1,
+        "name": "x"
+      }
+    }
+  },
+  "student.StudentGroupCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "degree_id": 1,
+          "faculty_id": "2805436e-887d-57ba-a150-018029015c83",
+          "grade": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "2805436e-887d-57ba-a150-018029015c83",
+        "grade": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "2805436e-887d-57ba-a150-018029015c83",
+        "grade": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "degree_id": 1,
+          "faculty_id": "2805436e-887d-57ba-a150-018029015c83",
+          "grade": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "2805436e-887d-57ba-a150-018029015c83",
+        "grade": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "2805436e-887d-57ba-a150-018029015c83",
+        "grade": 1,
+        "name": "x"
+      }
+    }
+  },
+  "student.StudentGroupPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "degree_id",
+          "faculty_id",
+          "grade",
+          "id",
+          "name"
+        ],
+        "mapped": {
+          "degree_id": 1,
+          "faculty_id": "6e6d9c89-c682-5b18-9b2e-9e5c231a15ef",
+          "grade": 1,
+          "id": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "6e6d9c89-c682-5b18-9b2e-9e5c231a15ef",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "id",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "6e6d9c89-c682-5b18-9b2e-9e5c231a15ef",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": 1
+        }
+      },
+      "dump": {
+        "id": 1
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": 1
+      }
+    }
+  },
+  "student.StudentGroupPatchData": {
+    "full": {
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "650b255f-bef6-5f6b-bfb3-892b27c77b86",
+        "grade": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "650b255f-bef6-5f6b-bfb3-892b27c77b86",
+        "grade": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "student.StudentGroupPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "degree_id": 1,
+          "faculty_id": "8f7a33be-6ad0-58b1-a35a-30f11426425a",
+          "grade": 1,
+          "id": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "8f7a33be-6ad0-58b1-a35a-30f11426425a",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "id",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "8f7a33be-6ad0-58b1-a35a-30f11426425a",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "degree_id": 1,
+          "faculty_id": "8f7a33be-6ad0-58b1-a35a-30f11426425a",
+          "grade": 1,
+          "id": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "8f7a33be-6ad0-58b1-a35a-30f11426425a",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "id",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "8f7a33be-6ad0-58b1-a35a-30f11426425a",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      }
+    }
+  },
+  "student.StudentGroupPutData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "degree_id": 1,
+          "faculty_id": "7e90df30-0b1a-595f-bf48-b74e43fe2139",
+          "grade": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "7e90df30-0b1a-595f-bf48-b74e43fe2139",
+        "grade": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "7e90df30-0b1a-595f-bf48-b74e43fe2139",
+        "grade": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "degree_id": 1,
+          "faculty_id": "7e90df30-0b1a-595f-bf48-b74e43fe2139",
+          "grade": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "7e90df30-0b1a-595f-bf48-b74e43fe2139",
+        "grade": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "7e90df30-0b1a-595f-bf48-b74e43fe2139",
+        "grade": 1,
+        "name": "x"
+      }
+    }
+  },
+  "student.StudentGroupRead": {
+    "full": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "degree_id": 1,
+          "faculty_id": "3bae5f06-efe0-5320-a7a6-e7552fe21a2d",
+          "grade": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "3bae5f06-efe0-5320-a7a6-e7552fe21a2d",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "id",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "3bae5f06-efe0-5320-a7a6-e7552fe21a2d",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "id"
+        ],
+        "mapped": {
+          "degree_id": 1,
+          "faculty_id": "3bae5f06-efe0-5320-a7a6-e7552fe21a2d",
+          "grade": 1,
+          "name": "x"
+        }
+      },
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "3bae5f06-efe0-5320-a7a6-e7552fe21a2d",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "id",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "3bae5f06-efe0-5320-a7a6-e7552fe21a2d",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      }
+    }
+  },
+  "student.StudentPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "faculty_id",
+          "group_id",
+          "id",
+          "is_active",
+          "is_budget",
+          "is_full",
+          "student_id"
+        ],
+        "mapped": {
+          "faculty_id": "429d3723-cdee-500d-ac9d-da98ee5a4037",
+          "group_id": 1,
+          "id": "5322c0cf-91d6-57ed-a4e3-2cde037eb926",
+          "is_active": true,
+          "is_budget": true,
+          "is_full": true,
+          "student_id": "x"
+        }
+      },
+      "dump": {
+        "faculty_id": "429d3723-cdee-500d-ac9d-da98ee5a4037",
+        "group_id": 1,
+        "id": "5322c0cf-91d6-57ed-a4e3-2cde037eb926",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "faculty_id",
+        "group_id",
+        "id",
+        "is_active",
+        "is_budget",
+        "is_full",
+        "student_id"
+      ],
+      "input": {
+        "faculty_id": "429d3723-cdee-500d-ac9d-da98ee5a4037",
+        "group_id": 1,
+        "id": "5322c0cf-91d6-57ed-a4e3-2cde037eb926",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "5322c0cf-91d6-57ed-a4e3-2cde037eb926"
+        }
+      },
+      "dump": {
+        "id": "5322c0cf-91d6-57ed-a4e3-2cde037eb926"
+      },
+      "fields_set": [
+        "id"
+      ],
+      "input": {
+        "id": "5322c0cf-91d6-57ed-a4e3-2cde037eb926"
+      }
+    }
+  },
+  "student.StudentPatchData": {
+    "full": {
+      "dump": {
+        "faculty_id": "173de8d2-81f5-50f8-a605-d1c40ed273b3",
+        "group_id": 1,
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "faculty_id",
+        "group_id",
+        "is_active",
+        "is_budget",
+        "is_full",
+        "student_id"
+      ],
+      "input": {
+        "faculty_id": "173de8d2-81f5-50f8-a605-d1c40ed273b3",
+        "group_id": 1,
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      }
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "student.StudentPut": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "faculty_id": "e6f7e03f-9f17-5fde-a4f7-83d49d063828",
+          "group_id": 1,
+          "id": "aace74d6-5bfa-58dc-abd1-c1518523b3f4",
+          "is_active": true,
+          "is_budget": true,
+          "is_full": true,
+          "student_id": "x"
+        }
+      },
+      "dump": {
+        "faculty_id": "e6f7e03f-9f17-5fde-a4f7-83d49d063828",
+        "group_id": 1,
+        "id": "aace74d6-5bfa-58dc-abd1-c1518523b3f4",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "faculty_id",
+        "group_id",
+        "id",
+        "is_active",
+        "is_budget",
+        "is_full",
+        "student_id"
+      ],
+      "input": {
+        "faculty_id": "e6f7e03f-9f17-5fde-a4f7-83d49d063828",
+        "group_id": 1,
+        "id": "aace74d6-5bfa-58dc-abd1-c1518523b3f4",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "faculty_id": null,
+          "group_id": 1,
+          "id": "aace74d6-5bfa-58dc-abd1-c1518523b3f4",
+          "is_active": true,
+          "is_budget": null,
+          "is_full": null,
+          "student_id": "x"
+        }
+      },
+      "dump": {
+        "faculty_id": null,
+        "group_id": 1,
+        "id": "aace74d6-5bfa-58dc-abd1-c1518523b3f4",
+        "is_active": true,
+        "is_budget": null,
+        "is_full": null,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "group_id",
+        "id",
+        "student_id"
+      ],
+      "input": {
+        "group_id": 1,
+        "id": "aace74d6-5bfa-58dc-abd1-c1518523b3f4",
+        "student_id": "x"
+      }
+    }
+  },
+  "student.StudentPutData": {
+    "full": {
+      "dump": {
+        "faculty_id": "65bd80f1-a01a-50f4-9962-d8c15fd5e98d",
+        "group_id": 1,
+        "id": "1daf2dcd-bd73-51b8-8806-7c832ee36d17",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "faculty_id",
+        "group_id",
+        "id",
+        "is_active",
+        "is_budget",
+        "is_full",
+        "student_id"
+      ],
+      "input": {
+        "faculty_id": "65bd80f1-a01a-50f4-9962-d8c15fd5e98d",
+        "group_id": 1,
+        "id": "1daf2dcd-bd73-51b8-8806-7c832ee36d17",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "faculty_id": null,
+        "group_id": 1,
+        "id": "1daf2dcd-bd73-51b8-8806-7c832ee36d17",
+        "is_active": true,
+        "is_budget": null,
+        "is_full": null,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "group_id",
+        "id",
+        "student_id"
+      ],
+      "input": {
+        "group_id": 1,
+        "id": "1daf2dcd-bd73-51b8-8806-7c832ee36d17",
+        "student_id": "x"
+      }
+    }
+  },
+  "student.StudentRead": {
+    "full": {
+      "dump": {
+        "faculty_id": "f3b10d28-2181-58c1-97dd-ca78aecf4c46",
+        "group": {
+          "degree_id": 1,
+          "faculty_id": "7467282a-d804-56f1-9488-bf6aa3ec11f8",
+          "grade": 1,
+          "id": 1,
+          "name": "x"
+        },
+        "group_id": 1,
+        "id": "70bd9d10-ecab-5033-8757-c94bc6114959",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "person": {
+          "id": "fd636ca8-39cc-5c21-acdf-464f76b5010e",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "profile": {
+          "birthdate": "2026-01-01",
+          "created_at": "2026-01-01T10:00:00Z",
+          "diet": {
+            "description": "x",
+            "id": 1,
+            "name": "x"
+          },
+          "diet_id": 1,
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "e4850596-f9e1-58fa-bbaf-9f2d3a93a45f",
+          "person": {
+            "id": "eab13c7b-f97b-5952-b9eb-b3d020fbdc04",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "workplace": {
+            "acronym": "x",
+            "id": "7c9cdb5e-4fde-5ea6-ad9e-a28bee7fa564",
+            "name": "x"
+          },
+          "workplace_id": "cd698b94-429e-57d2-9eb0-dc30a58dccfb"
+        },
+        "student_id": "x"
+      },
+      "fields_set": [
+        "faculty_id",
+        "group",
+        "group_id",
+        "id",
+        "is_active",
+        "is_budget",
+        "is_full",
+        "person",
+        "profile",
+        "student_id"
+      ],
+      "input": {
+        "faculty_id": "f3b10d28-2181-58c1-97dd-ca78aecf4c46",
+        "group": {
+          "degree_id": 1,
+          "faculty_id": "7467282a-d804-56f1-9488-bf6aa3ec11f8",
+          "grade": 1,
+          "id": 1,
+          "name": "x"
+        },
+        "group_id": 1,
+        "id": "70bd9d10-ecab-5033-8757-c94bc6114959",
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "person": {
+          "id": "fd636ca8-39cc-5c21-acdf-464f76b5010e",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "profile": {
+          "birthdate": "2026-01-01",
+          "created_at": "2026-01-01T10:00:00Z",
+          "diet": {
+            "description": "x",
+            "id": 1,
+            "name": "x"
+          },
+          "diet_id": 1,
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "e4850596-f9e1-58fa-bbaf-9f2d3a93a45f",
+          "person": {
+            "id": "eab13c7b-f97b-5952-b9eb-b3d020fbdc04",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "workplace": {
+            "acronym": "x",
+            "id": "7c9cdb5e-4fde-5ea6-ad9e-a28bee7fa564",
+            "name": "x"
+          },
+          "workplace_id": "cd698b94-429e-57d2-9eb0-dc30a58dccfb"
+        },
+        "student_id": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "faculty_id": null,
+        "group": null,
+        "group_id": 1,
+        "id": "70bd9d10-ecab-5033-8757-c94bc6114959",
+        "is_active": true,
+        "is_budget": null,
+        "is_full": null,
+        "person": null,
+        "profile": null,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "group_id",
+        "id",
+        "student_id"
+      ],
+      "input": {
+        "group_id": 1,
+        "id": "70bd9d10-ecab-5033-8757-c94bc6114959",
+        "student_id": "x"
+      }
+    }
+  }
+}

@@ -1,0 +1,273 @@
+from logging import getLogger
+from profile.api.v1.schema.passport import (
+    NameVariantPatch,
+    NameVariantPatchData,
+    NameVariantPut,
+    NameVariantPutData,
+    NameVariantRead,
+    PassportCreate,
+    PassportItemCreate,
+    PassportItemRead,
+    PassportPatch,
+    PassportPatchData,
+    PassportPut,
+    PassportPutData,
+    PassportRead,
+)
+from profile.dependency.passport import PassportUOWDep
+from profile.dependency.profile import ProfilePassportUOWDep
+from profile.exc.user import NonPersonalUserException
+from profile.filter.passport import PassportFilter
+from profile.service.passport import NameVariantService, PassportService
+from profile.service.profile import ProfileService
+from uuid import UUID
+
+from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
+
+from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
+from core.schema.error import (
+    ErrorCode,
+    auth_responses,
+    detail_400,
+    entity_not_found_responses,
+)
+from core.schema.v1.pagination import PageParamV1, PageV1
+
+router = APIRouter(prefix="/passports", tags=["passport"])
+
+logger = getLogger(__name__)
+
+
+@router.post(
+    "/my",
+    responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
+)
+async def get_my_passports(
+    user: UserJWTDep,
+    uow: ProfilePassportUOWDep,
+    filter: PassportFilter = FilterDepends(PassportFilter),
+    page_params: PageParamV1 = Depends(PageParamV1),
+) -> PageV1[PassportItemRead]:
+    if user.person_id is None:
+        raise NonPersonalUserException()
+    await ProfileService(uow).ensure_existance(user.person_id)
+    return PageV1[PassportItemRead].from_dto(
+        await PassportService(uow).search_by_profile(
+            user.person_id, filter.to_dto(), page_params.to_dto()
+        )
+    )
+
+
+@router.post(
+    "/my/new",
+    responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
+)
+async def create_my_passport(
+    passport_data: PassportCreate, user: UserJWTDep, uow: ProfilePassportUOWDep
+) -> PassportRead:
+    if user.person_id is None:
+        raise NonPersonalUserException()
+    await ProfileService(uow).ensure_existance(user.person_id)
+    return PassportRead.from_dto(
+        await PassportService(uow).create(passport_data.to_dto())
+    )
+
+
+@router.put(
+    "/my/{passport_id}",
+    responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
+)
+async def put_my_passport(
+    passport_id: UUID,
+    passport_data: PassportItemCreate,
+    user: UserJWTDep,
+    uow: ProfilePassportUOWDep,
+) -> PassportRead:
+    if user.person_id is None:
+        raise NonPersonalUserException()
+    await (service := ProfileService(uow)).ensure_existance(user.person_id)
+    return PassportRead.from_dto(
+        await service.put(
+            PassportPut(
+                id=passport_id,
+                profile_id=user.person_id,
+                **passport_data.model_dump(),
+            ).to_dto()
+        )
+    )
+
+
+@router.patch(
+    "/my/{passport_id}",
+    responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
+)
+async def patch_my_passport(
+    passport_id: UUID,
+    passport_data: PassportPatchData,
+    user: UserJWTDep,
+    uow: ProfilePassportUOWDep,
+) -> PassportRead:
+    if user.person_id is None:
+        raise NonPersonalUserException()
+    await ProfileService(uow).ensure_existance(user.person_id)
+    await (service := PassportService(uow)).check_ownership(passport_id, user.person_id)
+    return PassportRead.from_dto(
+        await service.patch(
+            PassportPatch(
+                person_id=user.person_id, **passport_data.model_dump(exclude_unset=True)
+            ).to_dto()
+        )
+    )
+
+
+@router.delete(
+    "/my/{passport_id}",
+    responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
+)
+async def delete_my_passport(
+    passport_id: UUID,
+    passport_data: PassportPatchData,
+    user: UserJWTDep,
+    uow: ProfilePassportUOWDep,
+) -> PassportRead:
+    if user.person_id is None:
+        raise NonPersonalUserException()
+    await ProfileService(uow).ensure_existance(user.person_id)
+    await (service := PassportService(uow)).check_ownership(passport_id, user.person_id)
+    return PassportRead.from_dto(
+        await service.patch(
+            PassportPatch(
+                person_id=user.person_id, **passport_data.model_dump(exclude_unset=True)
+            ).to_dto()
+        )
+    )
+
+
+@router.get("", responses={**auth_responses()})
+async def get_passports(
+    user: SuperUserJWTDep,
+    uow: PassportUOWDep,
+    filter: PassportFilter = FilterDepends(PassportFilter),
+    page_params: PageParamV1 = Depends(PageParamV1),
+) -> PageV1[PassportItemRead]:
+    return PageV1[PassportItemRead].from_dto(
+        await PassportService(uow).search(filter.to_dto(), page_params.to_dto())
+    )
+
+
+@router.post(
+    "/{passport_id}",
+    responses={**auth_responses(), **entity_not_found_responses("passport")},
+)
+async def get_passport(
+    passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
+) -> PassportRead:
+    await ProfileService(uow).ensure_existance(user.person_id)
+    return PassportRead.from_dto(await PassportService(uow).read(passport_id))
+
+
+@router.put(
+    "/{passport_id}",
+    responses={**auth_responses(), **entity_not_found_responses("passport")},
+)
+async def put_passport(
+    passport_id: UUID,
+    passport: PassportPutData,
+    user: SuperUserJWTDep,
+    uow: PassportUOWDep,
+) -> PassportRead:
+    return PassportRead.from_dto(
+        await PassportService(uow).put(
+            PassportPut(id=passport_id, **passport.model_dump()).to_dto()
+        )
+    )
+
+
+@router.patch(
+    "/{passport_id}",
+    responses={**auth_responses(), **entity_not_found_responses("passport")},
+)
+async def patch_passport(
+    passport_id: UUID,
+    passport: PassportPatchData,
+    user: SuperUserJWTDep,
+    uow: PassportUOWDep,
+) -> PassportRead:
+    return PassportRead.from_dto(
+        await PassportService(uow).patch(
+            PassportPatch(
+                id=passport_id, **passport.model_dump(exclude_unset=True)
+            ).to_dto()
+        )
+    )
+
+
+@router.delete(
+    "/{passport_id}",
+    responses={**auth_responses(), **entity_not_found_responses("passport")},
+)
+async def delete_passport(
+    passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
+) -> None:
+    await PassportService(uow).delete(passport_id)
+
+
+@router.post(
+    "/{passport_id}/name-variant",
+    responses={**auth_responses(), **entity_not_found_responses("passport")},
+)
+async def get_name_variant(
+    passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
+) -> NameVariantRead | None:
+    await PassportService(uow).ensure_existance(passport_id)
+    return NameVariantRead.from_dto(await NameVariantService(uow).read(passport_id))
+
+
+@router.put(
+    "/{passport_id}/name-variant",
+    responses={**auth_responses(), **entity_not_found_responses("passport")},
+)
+async def put_name_variant(
+    passport_id: UUID,
+    name_variant_data: NameVariantPutData,
+    user: SuperUserJWTDep,
+    uow: PassportUOWDep,
+) -> NameVariantRead:
+    await PassportService(uow).ensure_existance(passport_id)
+    return NameVariantRead.from_dto(
+        await NameVariantService(uow).put(
+            NameVariantPut(id=passport_id, **name_variant_data.model_dump()).to_dto()
+        )
+    )
+
+
+@router.patch(
+    "/{passport_id}/name-variant",
+    responses={**auth_responses(), **entity_not_found_responses("passport")},
+)
+async def patch_name_variant(
+    passport_id: UUID,
+    name_variant_data: NameVariantPatchData,
+    user: SuperUserJWTDep,
+    uow: PassportUOWDep,
+) -> NameVariantRead:
+    await PassportService(uow).ensure_existance(passport_id)
+    return NameVariantRead.from_dto(
+        await NameVariantService(uow).patch(
+            NameVariantPatch(
+                id=passport_id, **name_variant_data.model_dump(exclude_unset=True)
+            ).to_dto()
+        )
+    )
+
+
+@router.delete(
+    "/{passport_id}/name-variant",
+    responses={**auth_responses(), **entity_not_found_responses("passport")},
+)
+async def delete_name_variant(
+    passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
+) -> None:
+    await PassportService(uow).ensure_existance(passport_id)
+    await NameVariantService(uow).delete(passport_id)

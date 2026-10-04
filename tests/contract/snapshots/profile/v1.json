@@ -8521,9 +8521,8 @@
             "name": "degree_id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Degree Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -8627,9 +8626,8 @@
             "name": "degree_id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Degree Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -8735,9 +8733,8 @@
             "name": "degree_id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Degree Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -8853,9 +8850,8 @@
             "name": "degree_id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Degree Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -9247,9 +9243,8 @@
             "name": "group_id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Group Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -9353,9 +9348,8 @@
             "name": "group_id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Group Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -9461,9 +9455,8 @@
             "name": "group_id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Group Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -9579,9 +9572,8 @@
             "name": "group_id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Group Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],

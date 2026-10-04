@@ -1,117 +1,142 @@
 from logging import getLogger
+from profile.dto.person import PersonDTO
+from profile.dto.student import (
+    StudentCreateDTO,
+    StudentDegreeCreateDTO,
+    StudentDegreeDTO,
+    StudentDegreeFilterDTO,
+    StudentDegreePatchDTO,
+    StudentDegreePutDTO,
+    StudentDTO,
+    StudentFilterDTO,
+    StudentGroupCreateDTO,
+    StudentGroupDTO,
+    StudentGroupFilterDTO,
+    StudentGroupPatchDTO,
+    StudentGroupPutDTO,
+    StudentPatchDTO,
+    StudentPutDTO,
+)
 from profile.exc.student import StudentNotExistsException
 from profile.filter.student import (
     StudentDegreeFilter,
     StudentFilter,
     StudentGroupFilter,
 )
-from profile.models.student import StudentORM
-from profile.schema.student import (
-    StudentCreate,
-    StudentDegreeCreate,
-    StudentDegreePatch,
-    StudentDegreePut,
-    StudentDegreeRead,
-    StudentGroupCreate,
-    StudentGroupPatch,
-    StudentGroupPut,
-    StudentGroupRead,
-    StudentPatch,
-    StudentPut,
-    StudentRead,
-)
+from profile.models.student import StudentDegree, StudentGroupORM, StudentORM
+from profile.service.profile import profile_to_dto
 from profile.uow.student import StudentUOW
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy.orm import selectinload
-
-from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
+from core.dto.base import dto_dict, dto_from_orm
+from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
 
 
+def _group_to_dto(group: StudentGroupORM) -> StudentGroupDTO:
+    return dto_from_orm(group, StudentGroupDTO)
+
+
 class StudentService(BaseService[StudentUOW]):
-    @required_transaction
-    async def _create(self, student_create: StudentCreate) -> StudentORM:
-        return await self.uow.students.add_n_return(
-            data=student_create.model_dump()
+    @staticmethod
+    def _to_dto(student: StudentORM) -> StudentDTO:
+        person = student.person
+        profile = student.profile
+        group = student.group
+        return StudentDTO(
+            id=student.id,
+            student_id=student.student_id,
+            faculty_id=student.faculty_id,
+            group_id=student.group_id,
+            is_budget=student.is_budget,
+            is_full=student.is_full,
+            is_active=student.is_active,
+            person=dto_from_orm(person, PersonDTO) if person else None,
+            profile=profile_to_dto(profile) if profile else None,
+            group=_group_to_dto(group) if group else None,
         )
 
     @required_transaction
-    async def _read(self, student_id: UUID) -> StudentORM | None:
-        student = await self.uow.students.get_by_id(student_id)
+    async def _create(self, student_create: StudentCreateDTO) -> StudentORM:
+        return await self.uow.students.add_n_return(data=dto_dict(student_create))
+
+    @required_transaction
+    async def _read(self, student_id: UUID) -> StudentORM:
+        student = await self.uow.students.get_by_id(
+            student_id, self.uow.students.all_options
+        )
         if student is None:
             raise StudentNotExistsException()
         return student
 
     @required_transaction
     async def _update(
-        self, student_id: UUID, student_data: dict, *, flush: bool = False
+        self,
+        student_id: UUID,
+        student_data: dict[str, Any],
+        *,
+        flush: bool = False,
     ) -> StudentORM:
-        student = await self.uow.students.update_one(
-            student_id, student_data, flush
-        )
+        student = await self.uow.students.update_one(student_id, student_data, flush)
         if student is None:
             raise StudentNotExistsException()
         return student
 
     @required_transaction
-    async def _upsert(self, student_put: StudentPut) -> StudentORM:
-        return await self.uow.students.upsert(student_put.model_dump())
+    async def _upsert(self, student_put: StudentPutDTO) -> StudentORM:
+        student = await self.uow.students.upsert(dto_dict(student_put))
+        if student is None:
+            raise StudentNotExistsException()
+        return student
 
     @required_transaction
     async def _delete(self, student_id: UUID) -> None:
         await self.uow.students.delete_one(student_id)
 
-    async def create(self, student_create: StudentCreate) -> StudentRead:
+    async def create(self, student_create: StudentCreateDTO) -> StudentDTO:
         async with self.uow as uow:
-            result = StudentRead.model_validate(
-                await self._create(student_create)
-            )
+            created = await self._create(student_create)
+            result = self._to_dto(await self._read(created.id))
             await uow.commit()
         return result
 
-    async def read(self, student_id: UUID) -> StudentRead:
+    async def read(self, student_id: UUID) -> StudentDTO:
         async with self.uow:
-            return StudentRead.model_validate(await self._read(student_id))
+            return self._to_dto(await self._read(student_id))
 
     async def search(
-        self, filter: StudentFilter, page_params: PageParamV1 = PageParamV1()
-    ) -> PageV1[StudentRead]:
+        self,
+        filter: StudentFilterDTO,
+        page_params: PageParamDTO = PageParamDTO(),
+    ) -> PageDTO[StudentDTO]:
         async with self.uow as uow:
             students, total = await uow.students.search(
-                filter,
+                StudentFilter.from_dto(filter),
                 page_params,
-                options=(
-                    selectinload(StudentORM.person),
-                    selectinload(StudentORM.profile),
-                    selectinload(StudentORM.group),
-                ),
+                options=uow.students.all_options,
             )
-            return PageV1(
-                items=[
-                    StudentRead.model_validate(student) for student in students
-                ],
-                pagination=PaginationV1(
+            return PageDTO(
+                items=[self._to_dto(student) for student in students],
+                pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
 
-    async def patch(self, student_patch: StudentPatch) -> StudentRead:
+    async def patch(self, student_patch: StudentPatchDTO) -> StudentDTO:
         async with self.uow as uow:
-            student_data = student_patch.model_dump()
-            result = StudentRead.model_validate(
-                await self._update(student_data.pop("id"), student_data)
-            )
+            student_data = dto_dict(student_patch, only_set=True, exclude={"id"})
+            updated = await self._update(student_patch.id, student_data)
+            result = self._to_dto(await self._read(updated.id))
             await uow.commit()
         return result
 
-    async def put(self, student_put: StudentPut) -> StudentRead:
+    async def put(self, student_put: StudentPutDTO) -> StudentDTO:
         async with self.uow as uow:
-            result = StudentRead.model_validate(
-                await self._upsert(student_put)
-            )
+            upserted = await self._upsert(student_put)
+            result = self._to_dto(await self._read(upserted.id))
             await uow.commit()
         return result
 
@@ -122,14 +147,16 @@ class StudentService(BaseService[StudentUOW]):
 
 
 class StudentDegreeService(BaseService[StudentUOW]):
-    @required_transaction
-    async def _create(self, degree_create: StudentDegreeCreate) -> StudentORM:
-        return await self.uow.student_degrees.add_n_return(
-            data=degree_create.model_dump()
-        )
+    @staticmethod
+    def _to_dto(degree: StudentDegree) -> StudentDegreeDTO:
+        return dto_from_orm(degree, StudentDegreeDTO)
 
     @required_transaction
-    async def _read(self, degree_id: UUID) -> StudentORM | None:
+    async def _create(self, degree_create: StudentDegreeCreateDTO) -> StudentDegree:
+        return await self.uow.student_degrees.add_n_return(data=dto_dict(degree_create))
+
+    @required_transaction
+    async def _read(self, degree_id: int) -> StudentDegree:
         degree = await self.uow.student_degrees.get_by_id(degree_id)
         if degree is None:
             raise StudentNotExistsException()
@@ -137,8 +164,12 @@ class StudentDegreeService(BaseService[StudentUOW]):
 
     @required_transaction
     async def _update(
-        self, degree_id: UUID, degree_data: dict, *, flush: bool = False
-    ) -> StudentORM:
+        self,
+        degree_id: int,
+        degree_data: dict[str, Any],
+        *,
+        flush: bool = False,
+    ) -> StudentDegree:
         degree = await self.uow.student_degrees.update_one(
             degree_id, degree_data, flush
         )
@@ -147,76 +178,72 @@ class StudentDegreeService(BaseService[StudentUOW]):
         return degree
 
     @required_transaction
-    async def _upsert(self, degree_put: StudentDegreePut) -> StudentORM:
-        return await self.uow.student_degrees.upsert(degree_put.model_dump())
+    async def _upsert(self, degree_put: StudentDegreePutDTO) -> StudentDegree:
+        degree = await self.uow.student_degrees.upsert(dto_dict(degree_put))
+        if degree is None:
+            raise StudentNotExistsException()
+        return degree
 
     @required_transaction
-    async def _delete(self, degree_id: UUID) -> None:
+    async def _delete(self, degree_id: int) -> None:
         await self.uow.student_degrees.delete_one(degree_id)
 
-    async def create(self, degree_create: StudentDegreeCreate) -> StudentDegreeRead:
+    async def create(self, degree_create: StudentDegreeCreateDTO) -> StudentDegreeDTO:
         async with self.uow as uow:
-            result = StudentDegreeRead.model_validate(
-                await self._create(degree_create)
-            )
+            result = self._to_dto(await self._create(degree_create))
             await uow.commit()
         return result
 
-    async def read(self, degree_id: UUID) -> StudentDegreeRead:
+    async def read(self, degree_id: int) -> StudentDegreeDTO:
         async with self.uow:
-            return StudentDegreeRead.model_validate(await self._read(degree_id))
+            return self._to_dto(await self._read(degree_id))
 
     async def search(
         self,
-        filter: StudentDegreeFilter,
-        page_params: PageParamV1 = PageParamV1(),
-    ) -> PageV1[StudentDegreeRead]:
+        filter: StudentDegreeFilterDTO,
+        page_params: PageParamDTO = PageParamDTO(),
+    ) -> PageDTO[StudentDegreeDTO]:
         async with self.uow as uow:
             degrees, total = await uow.student_degrees.search(
-                filter, page_params
+                StudentDegreeFilter.from_dto(filter), page_params
             )
-            return PageV1(
-                items=[
-                    StudentDegreeRead.model_validate(degree)
-                    for degree in degrees
-                ],
-                pagination=PaginationV1(
+            return PageDTO(
+                items=[self._to_dto(degree) for degree in degrees],
+                pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
 
-    async def patch(self, degree_patch: StudentDegreePatch) -> StudentDegreeRead:
+    async def patch(self, degree_patch: StudentDegreePatchDTO) -> StudentDegreeDTO:
         async with self.uow as uow:
-            degree_data = degree_patch.model_dump()
-            result = StudentDegreeRead.model_validate(
-                await self._update(degree_data.pop("id"), degree_data)
-            )
+            degree_data = dto_dict(degree_patch, only_set=True, exclude={"id"})
+            result = self._to_dto(await self._update(degree_patch.id, degree_data))
             await uow.commit()
         return result
 
-    async def put(self, degree_put: StudentDegreePut) -> StudentDegreeRead:
+    async def put(self, degree_put: StudentDegreePutDTO) -> StudentDegreeDTO:
         async with self.uow as uow:
-            result = StudentDegreeRead.model_validate(
-                await self._upsert(degree_put)
-            )
+            result = self._to_dto(await self._upsert(degree_put))
             await uow.commit()
         return result
 
-    async def delete(self, degree_id: UUID) -> None:
+    async def delete(self, degree_id: int) -> None:
         async with self.uow as uow:
             await self._delete(degree_id)
             await uow.commit()
 
 
 class StudentGroupService(BaseService[StudentUOW]):
-    @required_transaction
-    async def _create(self, group_create: StudentGroupCreate) -> StudentORM:
-        return await self.uow.student_groups.add_n_return(
-            data=group_create.model_dump()
-        )
+    @staticmethod
+    def _to_dto(group: StudentGroupORM) -> StudentGroupDTO:
+        return _group_to_dto(group)
 
     @required_transaction
-    async def _read(self, group_id: UUID) -> StudentORM | None:
+    async def _create(self, group_create: StudentGroupCreateDTO) -> StudentGroupORM:
+        return await self.uow.student_groups.add_n_return(data=dto_dict(group_create))
+
+    @required_transaction
+    async def _read(self, group_id: int) -> StudentGroupORM:
         group = await self.uow.student_groups.get_by_id(group_id)
         if group is None:
             raise StudentNotExistsException()
@@ -224,71 +251,68 @@ class StudentGroupService(BaseService[StudentUOW]):
 
     @required_transaction
     async def _update(
-        self, group_id: UUID, group_data: dict, *, flush: bool = False
-    ) -> StudentORM:
-        group = await self.uow.student_groups.update_one(
-            group_id, group_data, flush
-        )
+        self,
+        group_id: int,
+        group_data: dict[str, Any],
+        *,
+        flush: bool = False,
+    ) -> StudentGroupORM:
+        group = await self.uow.student_groups.update_one(group_id, group_data, flush)
         if group is None:
             raise StudentNotExistsException()
         return group
 
     @required_transaction
-    async def _upsert(self, group_put: StudentGroupPut) -> StudentORM:
-        return await self.uow.student_groups.upsert(group_put.model_dump())
+    async def _upsert(self, group_put: StudentGroupPutDTO) -> StudentGroupORM:
+        group = await self.uow.student_groups.upsert(dto_dict(group_put))
+        if group is None:
+            raise StudentNotExistsException()
+        return group
 
     @required_transaction
-    async def _delete(self, group_id: UUID) -> None:
+    async def _delete(self, group_id: int) -> None:
         await self.uow.student_groups.delete_one(group_id)
 
-    async def create(self, group_create: StudentGroupCreate) -> StudentGroupRead:
+    async def create(self, group_create: StudentGroupCreateDTO) -> StudentGroupDTO:
         async with self.uow as uow:
-            result = StudentGroupRead.model_validate(
-                await self._create(group_create)
-            )
+            result = self._to_dto(await self._create(group_create))
             await uow.commit()
         return result
 
-    async def read(self, group_id: UUID) -> StudentGroupRead:
+    async def read(self, group_id: int) -> StudentGroupDTO:
         async with self.uow:
-            return StudentGroupRead.model_validate(await self._read(group_id))
+            return self._to_dto(await self._read(group_id))
 
     async def search(
         self,
-        filter: StudentGroupFilter,
-        page_params: PageParamV1 = PageParamV1(),
-    ) -> PageV1[StudentGroupRead]:
+        filter: StudentGroupFilterDTO,
+        page_params: PageParamDTO = PageParamDTO(),
+    ) -> PageDTO[StudentGroupDTO]:
         async with self.uow as uow:
             groups, total = await uow.student_groups.search(
-                filter, page_params
+                StudentGroupFilter.from_dto(filter), page_params
             )
-            return PageV1(
-                items=[
-                    StudentGroupRead.model_validate(group) for group in groups
-                ],
-                pagination=PaginationV1(
+            return PageDTO(
+                items=[self._to_dto(group) for group in groups],
+                pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
 
-    async def patch(self, group_patch: StudentGroupPatch) -> StudentGroupRead:
+    async def patch(self, group_patch: StudentGroupPatchDTO) -> StudentGroupDTO:
         async with self.uow as uow:
-            group_data = group_patch.model_dump()
-            result = StudentGroupRead.model_validate(
-                await self._update(group_data.pop("id"), group_data)
-            )
+            group_data = dto_dict(group_patch, only_set=True, exclude={"id"})
+            result = self._to_dto(await self._update(group_patch.id, group_data))
             await uow.commit()
         return result
 
-    async def put(self, group_put: StudentGroupPut) -> StudentGroupRead:
+    async def put(self, group_put: StudentGroupPutDTO) -> StudentGroupDTO:
         async with self.uow as uow:
-            result = StudentGroupRead.model_validate(
-                await self._upsert(group_put)
-            )
+            result = self._to_dto(await self._upsert(group_put))
             await uow.commit()
         return result
 
-    async def delete(self, group_id: UUID) -> None:
+    async def delete(self, group_id: int) -> None:
         async with self.uow as uow:
             await self._delete(group_id)
             await uow.commit()

@@ -4,39 +4,50 @@ from profile.api.kafka.pub.person import (
     on_person_deleted,
     on_person_updated,
 )
+from profile.dto.person import (
+    PersonCreateDTO,
+    PersonDTO,
+    PersonFilterDTO,
+    PersonPatchDTO,
+    PersonPutDTO,
+)
 from profile.exc.person import PersonNotExistsException
 from profile.filter.person import PersonFilter
 from profile.models.person import PersonORM
-from profile.schema.person import (
-    PersonCreate,
-    PersonItemRead,
-    PersonPatch,
-    PersonPut,
-    PersonRead,
-)
 from profile.uow.person import PersonUOW
+from typing import Any
 from uuid import UUID
 
-from core.schema.v1.pagination import PageParamV1, PageV1, PaginationV1
+from core.dto.base import dto_dict, dto_from_orm
+from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
+from core.schema.message.profile import PersonData
 from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
 
 
 class PersonService(BaseService[PersonUOW]):
+    @staticmethod
+    def _to_dto(person: PersonORM) -> PersonDTO:
+        return dto_from_orm(person, PersonDTO)
+
+    @staticmethod
+    def _event(person: PersonDTO) -> PersonData:
+        return PersonData(**dto_dict(person))
+
     @required_transaction
-    async def _create(self, person_create: PersonCreate) -> PersonORM:
-        return await self.uow.persons.add_n_return(person_create.model_dump())
+    async def _create(self, person_create: PersonCreateDTO) -> PersonORM:
+        return await self.uow.persons.add_n_return(dto_dict(person_create))
 
     @required_transaction
     async def _ensure_existance(self, person_id: UUID):
-        if not self.uow.persons.exists_id(person_id):
+        if not await self.uow.persons.exists_id(person_id):
             raise PersonNotExistsException()
 
     @required_transaction
     async def _read(
         self, person_id: UUID, with_main_contacts: bool = False
-    ) -> PersonORM | None:
+    ) -> PersonORM:
         person = (
             await self.uow.persons.get_with_contacts(person_id)
             if with_main_contacts
@@ -48,65 +59,68 @@ class PersonService(BaseService[PersonUOW]):
 
     @required_transaction
     async def _update(
-        self, person_id: UUID, person_data: dict, *, flush: bool = False
+        self,
+        person_id: UUID,
+        person_data: dict[str, Any],
+        *,
+        flush: bool = False,
     ) -> PersonORM:
-        person = await self.uow.persons.update_one(
-            person_id, person_data, flush
-        )
+        person = await self.uow.persons.update_one(person_id, person_data, flush)
         if person is None:
             raise PersonNotExistsException()
         return person
 
     @required_transaction
-    async def _upsert(self, person_put: PersonPut) -> PersonORM:
-        person = await self.uow.persons.upsert(person_put.model_dump())
+    async def _upsert(self, person_put: PersonPutDTO) -> PersonORM:
+        person = await self.uow.persons.upsert(dto_dict(person_put))
+        if person is None:
+            raise PersonNotExistsException()
         return person
 
     @required_transaction
     async def _delete(self, person_id: UUID) -> None:
         await self.uow.persons.delete_one(person_id)
 
-    async def create(self, person_create: PersonCreate) -> PersonRead:
+    async def create(self, person_create: PersonCreateDTO) -> PersonDTO:
         async with self.uow as uow:
-            person = await self._create(person_create)
-            result = PersonRead.model_validate(person)
+            result = self._to_dto(await self._create(person_create))
             await uow.commit()
-        await on_person_created([person])
+        await on_person_created([self._event(result)])
         return result
 
-    async def read(self, person_id: UUID) -> PersonRead:
+    async def read(self, person_id: UUID) -> PersonDTO:
         async with self.uow:
-            return PersonRead.model_validate(await self._read(person_id, True))
+            return self._to_dto(await self._read(person_id, True))
 
     async def search(
-        self, filter: PersonFilter, page_params: PageParamV1 = PageParamV1()
-    ) -> PageV1[PersonItemRead]:
+        self,
+        filter: PersonFilterDTO,
+        page_params: PageParamDTO = PageParamDTO(),
+    ) -> PageDTO[PersonDTO]:
         async with self.uow as uow:
-            persons, total = await uow.persons.search(filter, page_params)
-            return PageV1(
-                items=[
-                    PersonItemRead.model_validate(person) for person in persons
-                ],
-                pagination=PaginationV1(
+            persons, total = await uow.persons.search(
+                PersonFilter.from_dto(filter), page_params
+            )
+            return PageDTO(
+                items=[self._to_dto(person) for person in persons],
+                pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
 
-    async def patch(self, person_patch: PersonPatch) -> PersonRead:
+    async def patch(self, person_patch: PersonPatchDTO) -> PersonDTO:
         async with self.uow as uow:
-            person_data = person_patch.model_dump()
-            person = await self._update(person_data.pop("id"), person_data)
-            result = PersonRead.model_validate(person)
+            person_data = dto_dict(person_patch, only_set=True, exclude={"id"})
+            result = self._to_dto(await self._update(person_patch.id, person_data))
             await uow.commit()
-        await on_person_updated([person])
+        await on_person_updated([self._event(result)])
         return result
 
-    async def put(self, person_put: PersonPut) -> PersonRead:
+    async def put(self, person_put: PersonPutDTO) -> PersonDTO:
         async with self.uow as uow:
-            person = await self._upsert(person_put)
-            result = PersonRead.model_validate(person)
+            result = self._to_dto(await self._upsert(person_put))
             await uow.commit()
-        await on_person_updated([person])
+        await on_person_updated([self._event(result)])
         return result
 
     async def delete(self, person_id: UUID) -> None:

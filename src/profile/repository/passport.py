@@ -1,5 +1,6 @@
 from profile.models.passport import NameVariantORM
 from profile.models.passport import PassportORM as Model
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import delete
@@ -23,9 +24,14 @@ class PassportRepo(
 
     with_name_variant = joinedload(Model.name_variant)
 
-    async def search(self, filter, pagination, *, options=None):
+    async def search(
+        self, filter, pagination, *, options=None, scope: list[Any] | None = None
+    ):
         return await super().search(
-            filter, pagination, options=options or (self.with_name_variant,)
+            filter,
+            pagination,
+            options=options or (self.with_name_variant,),
+            scope=scope,
         )
 
     async def add_n_return(self, data, options=(with_name_variant,)):

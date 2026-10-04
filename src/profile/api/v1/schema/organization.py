@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 
+from core.schema.v1.mixin.dto import FromDTOMixinV1
 from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
 
 
@@ -10,7 +11,7 @@ class OrganizationCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class OrganizationRead(OrganizationCreate, UUIDMixinV1): ...
+class OrganizationRead(FromDTOMixinV1, OrganizationCreate, UUIDMixinV1): ...
 
 
 class OrganizationPatchData(PatchModelV1):
