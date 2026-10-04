@@ -396,6 +396,8 @@
   "user.UserRead": {
     "full": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "email": "user@example.com",
         "id": "44d6b9e4-4d19-53f5-8a58-0e8f35c03e1e",
         "is_active": true,
@@ -405,6 +407,8 @@
         "username": "x"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "email",
         "id",
         "is_active",
@@ -414,6 +418,8 @@
         "username"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "email": "user@example.com",
         "id": "44d6b9e4-4d19-53f5-8a58-0e8f35c03e1e",
         "is_active": true,
@@ -425,6 +431,8 @@
     },
     "required": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "email": "user@example.com",
         "id": "44d6b9e4-4d19-53f5-8a58-0e8f35c03e1e",
         "is_active": true,
@@ -434,12 +442,16 @@
         "username": "x"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "email",
         "id",
         "person_id",
         "username"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "email": "user@example.com",
         "id": "44d6b9e4-4d19-53f5-8a58-0e8f35c03e1e",
         "person_id": "894da755-eb20-5731-8f5d-cdee88ae8298",
@@ -501,9 +513,7 @@
     "required": {
       "dto": {
         "dropped": [],
-        "fields_set": [
-          "username"
-        ],
+        "fields_set": [],
         "mapped": {
           "current_password": null,
           "email": null,
@@ -511,7 +521,7 @@
           "is_superuser": null,
           "is_verified": null,
           "password": null,
-          "username": "x"
+          "username": null
         }
       },
       "dump": {
@@ -521,14 +531,10 @@
         "is_superuser": null,
         "is_verified": null,
         "password": null,
-        "username": "x"
+        "username": null
       },
-      "fields_set": [
-        "username"
-      ],
-      "input": {
-        "username": "x"
-      }
+      "fields_set": [],
+      "input": {}
     }
   }
 }

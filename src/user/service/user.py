@@ -98,6 +98,8 @@ class UserService(BaseService[UserUOW]):
             is_superuser=user.is_superuser,
             is_verified=user.is_verified,
             person_id=user.person_id,
+            created_at=user.created_at,
+            edited_at=user.edited_at,
             oauth_accounts=[
                 dto_from_orm(account, OAuthAccountDTO)
                 for account in user.oauth_accounts

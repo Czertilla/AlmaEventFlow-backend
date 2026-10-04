@@ -34,9 +34,10 @@ async def check_username(
     )
 
 
-@router.get("")
+@router.get("", responses={**auth_responses()})
 async def get_many(
     uow: Annotated[UserUOW, Depends(get_user_uow)],
+    user: SuperUserJWTDep,
     filter: UserFilter = FilterDepends(UserFilter),
     page_param: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[UserRead]:

@@ -24,6 +24,8 @@
   },
   "user.UserRead": {
     "response": {
+      "created_at": "2026-01-01T10:00:00Z",
+      "edited_at": "2026-01-01T10:00:00Z",
       "email": "user@example.com",
       "id": "59c14079-c24d-5387-8e40-4f07dc5e00da",
       "is_active": true,

@@ -4,6 +4,7 @@ from fastapi_users import schemas
 from pydantic import BaseModel, ConfigDict
 
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
+from core.schema.v1.mixin.model import TimestampMixinV1
 from user.dto.user import UserCreateDTO, UserUpdateDTO
 
 
@@ -23,8 +24,13 @@ class CreateUpdateUserModel(schemas.CreateUpdateDictModel):
         )
 
 
-class UserRead(FromDTOMixinV1, CreateUpdateUserModel, schemas.BaseUser[uuid.UUID]):
-    username: str
+class UserRead(
+    FromDTOMixinV1,
+    CreateUpdateUserModel,
+    schemas.BaseUser[uuid.UUID],
+    TimestampMixinV1,
+):
+    username: str | None
     person_id: uuid.UUID | None
 
     model_config = ConfigDict(from_attributes=True)
@@ -40,7 +46,7 @@ class UserCreate(CreateUpdateUserModel, schemas.BaseUserCreate, ToDTOMixinV1):
 class UserUpdate(CreateUpdateUserModel, schemas.BaseUserUpdate, ToDTOMixinV1):
     __dto_cls__ = UserUpdateDTO
 
-    username: str
+    username: str | None = None
     current_password: str | None = None
 
 

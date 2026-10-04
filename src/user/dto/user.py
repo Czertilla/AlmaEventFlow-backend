@@ -1,7 +1,8 @@
+import datetime
 from dataclasses import dataclass, field
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin
+from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,6 +25,8 @@ class UserDTO:
     is_superuser: bool
     is_verified: bool
     person_id: UUID | None
+    created_at: datetime.datetime
+    edited_at: datetime.datetime | None
     oauth_accounts: list[OAuthAccountDTO] = field(default_factory=list)
 
 
@@ -61,6 +64,11 @@ class OAuthLoginDTO:
 
 
 @dataclass(frozen=True, slots=True)
-class UserFilterDTO:
+class UserFilterDTO(TimestampFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
+    is_active: bool | None = None
+    is_verified: bool | None = None
+    is_superuser: bool | None = None
+    person_id: UUID | None = None
+    person_id__isnull: bool | None = None

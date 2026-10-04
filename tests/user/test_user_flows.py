@@ -443,19 +443,69 @@ async def test_check_username_reports_existence(
     assert free.json() == {"username": "zed", "exists": False}
 
 
-async def test_users_are_searched_with_pagination(
-    client: httpx.AsyncClient,
+async def test_users_are_searched_with_pagination_and_filters(
+    client: httpx.AsyncClient, user_engine: AsyncEngine
 ) -> None:
-    await _register(client, "ann@example.com", "ann")
+    admin = await _verified_session(client, user_engine, superuser=True)
     await _register(client, "bob@example.com", "bob")
 
-    everyone = await client.get("/user/v1/users", params={"limit": 1})
-    found = await client.get("/user/v1/users", params={"search": "bob"})
+    everyone = await client.get("/user/v1/users", params={"limit": 1}, headers=admin)
+    found = await client.get("/user/v1/users", params={"search": "bob"}, headers=admin)
+    verified = await client.get(
+        "/user/v1/users", params={"is_verified": True}, headers=admin
+    )
+    newest = await client.get(
+        "/user/v1/users", params={"order_by": "-created_at"}, headers=admin
+    )
+    rejected = await client.get(
+        "/user/v1/users", params={"order_by": "hashed_password"}, headers=admin
+    )
 
     assert everyone.status_code == 200, everyone.text
     assert everyone.json()["pagination"]["total"] == 2
     assert len(everyone.json()["items"]) == 1
     assert [u["username"] for u in found.json()["items"]] == ["bob"]
+    assert [u["username"] for u in verified.json()["items"]] == ["ann"]
+    assert [u["username"] for u in newest.json()["items"]] == ["bob", "ann"]
+    assert newest.json()["items"][0]["created_at"]
+    assert rejected.status_code == 422
+
+
+async def test_the_user_list_is_for_superusers_only(
+    client: httpx.AsyncClient, user_engine: AsyncEngine
+) -> None:
+    headers = await _verified_session(client, user_engine)
+
+    anonymous = await client.get("/user/v1/users")
+    member = await client.get("/user/v1/users", headers=headers)
+
+    assert anonymous.status_code == 401
+    assert member.status_code == 403
+
+
+async def test_a_self_service_patch_needs_no_username(
+    client: httpx.AsyncClient, user_engine: AsyncEngine
+) -> None:
+    headers = await _verified_session(client, user_engine)
+
+    response = await client.patch(
+        "/user/v1/users/me", json={"email": "ann@new.example.com"}, headers=headers
+    )
+
+    assert response.status_code == 200, response.text
+    assert response.json()["username"] == "ann"
+    assert response.json()["edited_at"] is not None
+
+
+async def test_account_reads_expose_their_timestamps(
+    client: httpx.AsyncClient, user_engine: AsyncEngine
+) -> None:
+    headers = await _verified_session(client, user_engine)
+
+    response = await client.get("/user/v1/users/me", headers=headers)
+
+    assert response.json()["created_at"]
+    assert "edited_at" in response.json()
 
 
 async def test_the_users_router_reads_and_edits_any_account_as_a_superuser(
@@ -854,3 +904,22 @@ async def test_associate_callback_adds_a_google_account_to_the_caller(
     assert response.json()["id"] == me["id"]
     assert await _count(user_engine, "oauth_account") == 1
     assert await _count(user_engine, '"user"') == 1
+
+
+async def test_an_oauth_account_without_a_username_can_still_be_read(
+    client: httpx.AsyncClient,
+    user_engine: AsyncEngine,
+    google: dict[str, object],
+) -> None:
+    google["name"] = None
+    login = await client.get(
+        "/user/v1/auth/google/callback",
+        params={"code": "c", "state": _oauth_state(client)},
+    )
+
+    me = await client.get("/user/v1/users/me", headers=_bearer(login))
+
+    assert login.status_code == 200, login.text
+    assert me.status_code == 200, me.text
+    assert me.json()["username"] is None
+    assert me.json()["is_verified"] is True
