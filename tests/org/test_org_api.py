@@ -129,3 +129,19 @@ async def test_faculties_are_filtered_by_university(api: httpx.AsyncClient) -> N
     assert [f["name"] for f in mine.json()["items"]] == ["Math"]
     assert mine.json()["items"][0]["created_at"]
     assert [f["name"] for f in unattached.json()["items"]] == ["Free"]
+
+
+async def test_timestamp_filters_accept_plain_dates(api: httpx.AsyncClient) -> None:
+    await api.post(f"{BASE}/universities", json={"name": "MSU"}, headers=ADMIN)
+
+    since = await api.get(
+        f"{BASE}/universities", params={"created_at__gte": "2020-01-01"}, headers=USER
+    )
+    until = await api.get(
+        f"{BASE}/universities", params={"created_at__lte": "2020-01-01"}, headers=USER
+    )
+
+    assert since.status_code == 200, since.text
+    assert since.json()["pagination"]["total"] == 1
+    assert until.status_code == 200, until.text
+    assert until.json()["pagination"]["total"] == 0
