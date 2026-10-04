@@ -116,7 +116,8 @@ Every HTTP service follows this: `event`, `org`, `geo`, `profile`, `notify`, `bo
   and `edited_at__isnull`, `RelatedSearchFilter` extends `search` over one related row with an
   `EXISTS`. A sort key that is not a model column (event `status`/`level`/`type`, ordered by the
   lookup id) is mapped in the filter's own `sort()`. Every filter field must exist on its
-  `…FilterDTO`.
+  `…FilterDTO`. Routers import `FilterDepends` from `core.filter.depends`, not from
+  `fastapi_filter`: the original drops field descriptions from the OpenAPI schema.
 - Detail reads carry `created_at`/`edited_at` (`TimestampMixinV1`) wherever the ORM row has
   `TimestampMixin`. The mixin sets `eager_defaults`, so a flushed row already has its computed
   `edited_at`; the columns have no server default, so a raw SQL insert must pass `created_at`. Each
