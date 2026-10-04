@@ -2,6 +2,8 @@ from datetime import date
 from typing import Any
 from uuid import UUID
 
+from sqlalchemy import asc, desc
+
 from core.filter.ordered import OrderedFilter
 from core.filter.timestamps import TimestampFilterMixin
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
@@ -28,6 +30,13 @@ RELATION_FILTERS = (
     "participant_id",
     "participant_id__in",
 )
+
+
+LOOKUP_ORDER = {
+    "status": EventORM.status_id,
+    "level": EventORM.level_id,
+    "type": EventORM.type_id,
+}
 
 
 class EventFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1):
@@ -57,7 +66,27 @@ class EventFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixi
     class Constants(OrderedFilter.Constants):
         model = EventORM
         search_model_fields = ["name", "description"]
-        order_fields = ("date", "name", "format", "created_at", "edited_at")
+        order_fields = (
+            "date",
+            "name",
+            "status",
+            "level",
+            "type",
+            "format",
+            "created_at",
+            "edited_at",
+        )
+
+    def sort(self, query: Any) -> Any:
+        entries: list[str] = self.ordering_values or []
+        for entry in entries:
+            name = entry.lstrip("+-")
+            column = LOOKUP_ORDER.get(name)
+            if column is None:
+                column = getattr(EventORM, name)
+            direction = desc if entry.startswith("-") else asc
+            query = query.order_by(direction(column))
+        return query
 
     def filter(self, query: Any) -> Any:
         given = {name: getattr(self, name) for name in RELATION_FILTERS}

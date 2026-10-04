@@ -149,6 +149,29 @@ async def test_events_are_filtered_and_sorted(api: httpx.AsyncClient) -> None:
     assert rejected.status_code == 422
 
 
+async def test_events_sort_by_lookup_rank(api: httpx.AsyncClient) -> None:
+    await _event(api, "Alpha", level="regional")
+    beta = await _event(api, "Beta", level="international", date="2026-03-01")
+    await _event(api, "Gamma", level="internal")
+    await _event(api, "Delta")
+    activated = await api.patch(
+        f"{BASE}/events/{beta['id']}", json={"status": "active"}, headers=ADMIN
+    )
+
+    async def names(order_by: str) -> list[str]:
+        response = await api.get(
+            f"{BASE}/events", params={"order_by": order_by}, headers=USER
+        )
+        assert response.status_code == 200, response.text
+        return [e["name"] for e in response.json()["items"]]
+
+    assert activated.status_code == 200, activated.text
+    assert await names("-status,name") == ["Beta", "Alpha", "Delta", "Gamma"]
+    assert await names("status,name") == ["Alpha", "Delta", "Gamma", "Beta"]
+    assert await names("level") == ["Gamma", "Alpha", "Beta", "Delta"]
+    assert await names("-level,name") == ["Delta", "Beta", "Alpha", "Gamma"]
+
+
 async def test_event_writes_are_for_superusers(api: httpx.AsyncClient) -> None:
     response = await api.post(f"{BASE}/events", json={"name": "Nope"}, headers=USER)
 
