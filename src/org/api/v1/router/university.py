@@ -89,7 +89,7 @@ async def patch_university(
     return UniversityRead.from_dto(
         await UniversityService(uow).patch(
             UniversityPatch.model_validate(
-                {"id": university_id, **university.model_dump(exclude_unset=True)}
+                {"id": university_id, **university.model_dump()}
             ).to_dto()
         )
     )

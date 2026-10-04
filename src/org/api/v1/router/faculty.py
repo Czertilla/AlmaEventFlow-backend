@@ -87,7 +87,7 @@ async def patch_faculty(
     return FacultyRead.from_dto(
         await FacultyService(uow).patch(
             FacultyPatch.model_validate(
-                {"id": faculty_id, **faculty.model_dump(exclude_unset=True)}
+                {"id": faculty_id, **faculty.model_dump()}
             ).to_dto()
         )
     )

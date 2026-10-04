@@ -89,7 +89,7 @@ async def patch_collective(
     return CollectiveRead.from_dto(
         await CollectiveService(uow).patch(
             CollectivePatch.model_validate(
-                {"id": collective_id, **collective.model_dump(exclude_unset=True)}
+                {"id": collective_id, **collective.model_dump()}
             ).to_dto()
         )
     )
