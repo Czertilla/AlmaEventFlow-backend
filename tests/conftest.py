@@ -26,6 +26,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 import pytest
+import user.utils.rsa  # noqa: F401  # pyright: ignore[reportUnusedImport]
 
 COMPOSE_FILE = ROOT / "docker-compose.test.yml"
 SERVICE_DATABASES = ("user", "profile", "org", "event", "geo", "notify", "bot")
