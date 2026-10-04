@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, computed_field, model_validator
 
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
-from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
+from core.schema.v1.mixin.model import PatchModelV1, TimestampMixinV1, UUIDMixinV1
 from geo.api.v1.schema.city import CityCascadeCreate
 from geo.api.v1.schema.point import Point
 from geo.dto.address import (
@@ -48,7 +48,7 @@ class AddressCreate(AddressBase, ToDTOMixinV1):
     __dto_cls__ = AddressCreateDTO
 
 
-class AddressRead(FromDTOMixinV1, AddressBase, UUIDMixinV1):
+class AddressRead(FromDTOMixinV1, AddressBase, UUIDMixinV1, TimestampMixinV1):
     name: str
     source: str | None = None
 
@@ -87,4 +87,3 @@ class AddressCascadeCreate(AddressFields):
 
     city: CityCascadeCreate
     spot: Point | None = None
-

@@ -54,6 +54,8 @@ class LocationService(BaseService[LocationUOW]):
             address_id=location.address_id,
             spot=point_from_geometry(location.spot),
             address=address_to_dto(address) if address else None,
+            created_at=location.created_at,
+            edited_at=location.edited_at,
         )
 
     @required_transaction

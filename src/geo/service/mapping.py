@@ -11,4 +11,6 @@ def address_to_dto(address: AddressORM) -> AddressDTO:
         spot=point_from_geometry(address.spot),
         parsed=address.parsed,
         source=address.source,
+        created_at=address.created_at,
+        edited_at=address.edited_at,
     )

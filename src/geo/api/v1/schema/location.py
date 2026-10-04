@@ -10,13 +10,15 @@ from pydantic import (
 )
 
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
-from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
+from core.schema.v1.mixin.model import PatchModelV1, TimestampMixinV1, UUIDMixinV1
 from geo.api.v1.schema.address import AddressRead
 from geo.api.v1.schema.point import Point
 from geo.dto.location import LocationCreateDTO, LocationPatchDTO, LocationPutDTO
 
 
-def _check_address_or_spot(address_id: UUID | None, spot: object, name: str | None) -> None:
+def _check_address_or_spot(
+    address_id: UUID | None, spot: object, name: str | None
+) -> None:
     if address_id is None and spot is None:
         raise ValueError("a location needs at least one of address_id or spot")
     if address_id is not None and spot is not None and name is None:
@@ -30,13 +32,15 @@ def _blank_to_none(value: str | None) -> str | None:
     return value.strip() or None if value else None
 
 
-class LocationBase(BaseModel):
+class LocationFields(BaseModel):
     name: str | None = Field(max_length=512, default=None)
     address_id: UUID | None = None
     spot: Point | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
+
+class LocationBase(LocationFields):
     _normalize_name = field_validator("name")(_blank_to_none)
 
     @model_validator(mode="after")
@@ -49,7 +53,7 @@ class LocationCreate(LocationBase, ToDTOMixinV1):
     __dto_cls__ = LocationCreateDTO
 
 
-class LocationRead(FromDTOMixinV1, LocationBase, UUIDMixinV1):
+class LocationRead(FromDTOMixinV1, LocationFields, UUIDMixinV1, TimestampMixinV1):
     address: AddressRead | None = None
     """Populated when the repository eager-loads the relationship (see
     ``LocationService.read``/``search``) -- lets ``map_uri`` below resolve

@@ -1,3 +1,4 @@
+import datetime
 from uuid import uuid4
 
 import pytest
@@ -59,6 +60,9 @@ def test_location_requires_address_or_spot():
         LocationCreate(name="Точка")
 
 
+NOW = datetime.datetime(2026, 1, 1, tzinfo=datetime.UTC)
+
+
 def test_location_combining_address_and_spot_requires_a_name():
     with pytest.raises(ValidationError):
         LocationCreate(address_id=uuid4(), spot={"lat": 55.75, "lon": 37.6})
@@ -81,6 +85,8 @@ def test_address_response_exposes_a_geo_uri_for_its_spot():
         spot=PointDTO(lat=55.75, lon=37.6),
         parsed=None,
         source=None,
+        created_at=NOW,
+        edited_at=None,
     )
 
     assert AddressRead.from_dto(dto).map_uri == "geo:55.75,37.6"
@@ -94,6 +100,8 @@ def test_location_response_falls_back_to_its_address_for_map_uri_and_name():
         spot=PointDTO(lat=55.75, lon=37.6),
         parsed=None,
         source=None,
+        created_at=NOW,
+        edited_at=None,
     )
     dto = LocationDTO(
         id=uuid4(),
@@ -101,6 +109,8 @@ def test_location_response_falls_back_to_its_address_for_map_uri_and_name():
         address_id=address.id,
         spot=None,
         address=address,
+        created_at=NOW,
+        edited_at=None,
     )
 
     location = LocationRead.from_dto(dto)

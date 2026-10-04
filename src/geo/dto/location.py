@@ -1,7 +1,8 @@
+import datetime
 from dataclasses import dataclass
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin
+from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
 from geo.dto.address import AddressDTO
 from geo.dto.point import PointDTO
 
@@ -36,11 +37,15 @@ class LocationDTO:
     address_id: UUID | None
     spot: PointDTO | None
     address: AddressDTO | None
+    created_at: datetime.datetime
+    edited_at: datetime.datetime | None
 
 
 @dataclass(frozen=True, slots=True)
-class LocationFilterDTO:
+class LocationFilterDTO(TimestampFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
     address_id: UUID | None = None
+    address_id__in: list[UUID] | None = None
     name__isnull: bool | None = None
+    spot__isnull: bool | None = None

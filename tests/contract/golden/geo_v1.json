@@ -531,6 +531,8 @@
     "full": {
       "dump": {
         "city_id": 1,
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "f82a50e3-9891-5bc9-b48a-f1d1abb15ece",
         "map_uri": "geo:1.5,1.5",
         "name": "x",
@@ -549,6 +551,8 @@
       },
       "fields_set": [
         "city_id",
+        "created_at",
+        "edited_at",
         "id",
         "name",
         "parsed",
@@ -557,6 +561,8 @@
       ],
       "input": {
         "city_id": 1,
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "f82a50e3-9891-5bc9-b48a-f1d1abb15ece",
         "name": "x",
         "parsed": {
@@ -576,6 +582,8 @@
     "required": {
       "dump": {
         "city_id": 1,
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "f82a50e3-9891-5bc9-b48a-f1d1abb15ece",
         "map_uri": null,
         "name": "x",
@@ -585,11 +593,15 @@
       },
       "fields_set": [
         "city_id",
+        "created_at",
+        "edited_at",
         "id",
         "name"
       ],
       "input": {
         "city_id": 1,
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "f82a50e3-9891-5bc9-b48a-f1d1abb15ece",
         "name": "x"
       }
@@ -781,6 +793,40 @@
       "error": [
         ":value_error"
       ],
+      "input": {}
+    }
+  },
+  "location.LocationFields": {
+    "full": {
+      "dump": {
+        "address_id": "8b272cd1-7ab2-510c-b2cf-475a91f406b0",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "address_id",
+        "name",
+        "spot"
+      ],
+      "input": {
+        "address_id": "8b272cd1-7ab2-510c-b2cf-475a91f406b0",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "dump": {
+        "address_id": null,
+        "name": null,
+        "spot": null
+      },
+      "fields_set": [],
       "input": {}
     }
   },
@@ -992,6 +1038,8 @@
       "dump": {
         "address": {
           "city_id": 1,
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
           "id": "aae3fdff-e6dc-5e7a-99b0-90711c68a84d",
           "map_uri": "geo:1.5,1.5",
           "name": "x",
@@ -1009,7 +1057,9 @@
           }
         },
         "address_id": "8493471e-ebd5-57a2-b339-b1631c90e9ee",
+        "created_at": "2026-01-01T10:00:00Z",
         "display_name": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f",
         "map_uri": "geo:1.5,1.5",
         "name": "x",
@@ -1021,6 +1071,8 @@
       "fields_set": [
         "address",
         "address_id",
+        "created_at",
+        "edited_at",
         "id",
         "name",
         "spot"
@@ -1028,6 +1080,8 @@
       "input": {
         "address": {
           "city_id": 1,
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
           "id": "aae3fdff-e6dc-5e7a-99b0-90711c68a84d",
           "name": "x",
           "parsed": {
@@ -1044,6 +1098,8 @@
           }
         },
         "address_id": "8493471e-ebd5-57a2-b339-b1631c90e9ee",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f",
         "name": "x",
         "spot": {
@@ -1053,10 +1109,25 @@
       }
     },
     "required": {
-      "error": [
-        ":value_error"
+      "dump": {
+        "address": null,
+        "address_id": null,
+        "created_at": "2026-01-01T10:00:00Z",
+        "display_name": null,
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f",
+        "map_uri": null,
+        "name": null,
+        "spot": null
+      },
+      "fields_set": [
+        "created_at",
+        "edited_at",
+        "id"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "cb97aa25-172a-5ef9-a2f3-a5308409528f"
       }
     }
@@ -1068,6 +1139,8 @@
           "items": [
             {
               "city_id": 1,
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
               "id": "eceb725a-be1d-5d8d-8602-29d074b835a3",
               "map_uri": "geo:1.5,1.5",
               "name": "x",
@@ -1096,6 +1169,8 @@
             {
               "address": {
                 "city_id": 1,
+                "created_at": "2026-01-01T10:00:00Z",
+                "edited_at": "2026-01-01T10:00:00Z",
                 "id": "2c233829-62f4-5a59-859a-e0216edfff0f",
                 "map_uri": "geo:1.5,1.5",
                 "name": "x",
@@ -1113,7 +1188,9 @@
                 }
               },
               "address_id": "294e76ce-893b-5e46-9476-201b660f3fc7",
+              "created_at": "2026-01-01T10:00:00Z",
               "display_name": "x",
+              "edited_at": "2026-01-01T10:00:00Z",
               "id": "6e57ae83-8955-5152-91c6-0528c8f26d3f",
               "map_uri": "geo:1.5,1.5",
               "name": "x",
@@ -1139,6 +1216,8 @@
           "items": [
             {
               "city_id": 1,
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
               "id": "eceb725a-be1d-5d8d-8602-29d074b835a3",
               "name": "x",
               "parsed": {
@@ -1166,6 +1245,8 @@
             {
               "address": {
                 "city_id": 1,
+                "created_at": "2026-01-01T10:00:00Z",
+                "edited_at": "2026-01-01T10:00:00Z",
                 "id": "2c233829-62f4-5a59-859a-e0216edfff0f",
                 "name": "x",
                 "parsed": {
@@ -1182,6 +1263,8 @@
                 }
               },
               "address_id": "294e76ce-893b-5e46-9476-201b660f3fc7",
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
               "id": "6e57ae83-8955-5152-91c6-0528c8f26d3f",
               "name": "x",
               "spot": {
@@ -1199,14 +1282,59 @@
       }
     },
     "required": {
-      "error": [
-        "locations.items.0:value_error"
+      "dump": {
+        "addresses": {
+          "items": [
+            {
+              "city_id": 1,
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
+              "id": "eceb725a-be1d-5d8d-8602-29d074b835a3",
+              "map_uri": null,
+              "name": "x",
+              "parsed": null,
+              "source": null,
+              "spot": null
+            }
+          ],
+          "pagination": {
+            "limit": 10,
+            "page": 0,
+            "total": 1
+          }
+        },
+        "locations": {
+          "items": [
+            {
+              "address": null,
+              "address_id": null,
+              "created_at": "2026-01-01T10:00:00Z",
+              "display_name": null,
+              "edited_at": "2026-01-01T10:00:00Z",
+              "id": "6e57ae83-8955-5152-91c6-0528c8f26d3f",
+              "map_uri": null,
+              "name": null,
+              "spot": null
+            }
+          ],
+          "pagination": {
+            "limit": 10,
+            "page": 0,
+            "total": 1
+          }
+        }
+      },
+      "fields_set": [
+        "addresses",
+        "locations"
       ],
       "input": {
         "addresses": {
           "items": [
             {
               "city_id": 1,
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
               "id": "eceb725a-be1d-5d8d-8602-29d074b835a3",
               "name": "x"
             }
@@ -1218,6 +1346,8 @@
         "locations": {
           "items": [
             {
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
               "id": "6e57ae83-8955-5152-91c6-0528c8f26d3f"
             }
           ],

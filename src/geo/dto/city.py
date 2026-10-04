@@ -21,3 +21,4 @@ class CityFilterDTO:
     order_by: list[str] | None = None
     search: str | None = None
     region_id: int | None = None
+    region_id__in: list[int] | None = None
