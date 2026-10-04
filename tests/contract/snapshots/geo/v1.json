@@ -995,6 +995,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -1008,6 +1009,7 @@
                 }
               ],
               "default": "name",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -1830,6 +1832,7 @@
         "operationId": "get_cities_geo_v1_cities_get",
         "parameters": [
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -1843,6 +1846,7 @@
                 }
               ],
               "default": "name",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name.",
               "title": "Order By"
             }
           },
@@ -2220,6 +2224,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -2233,6 +2238,7 @@
                 }
               ],
               "default": "name",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, created_at, edited_at.",
               "title": "Order By"
             }
           },

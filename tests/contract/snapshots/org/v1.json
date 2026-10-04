@@ -1265,6 +1265,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, acronym, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -1278,6 +1279,7 @@
                 }
               ],
               "default": "name",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, acronym, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -2113,6 +2115,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, acronym, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -2126,6 +2129,7 @@
                 }
               ],
               "default": "name",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, acronym, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -2961,6 +2965,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, acronym, type, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -2974,6 +2979,7 @@
                 }
               ],
               "default": "name",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, acronym, type, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -3692,6 +3698,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, acronym, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -3705,6 +3712,7 @@
                 }
               ],
               "default": "name",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, acronym, created_at, edited_at.",
               "title": "Order By"
             }
           },

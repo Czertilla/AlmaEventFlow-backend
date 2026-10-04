@@ -3,11 +3,11 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile
-from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.dependencies.redis import RedisDep
 from core.dependencies.s3 import S3Dep
+from core.filter.depends import FilterDepends
 from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.v1.pagination import PageParamV1, PageV1
 from event.api.v1.schema.reward import (

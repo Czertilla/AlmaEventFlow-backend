@@ -25,9 +25,9 @@ from profile.service.person import PersonService
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
-from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import ActiveUserJWTDep, SuperUserJWTDep, UserJWTDep
+from core.filter.depends import FilterDepends
 from core.schema.error import (
     ErrorCode,
     auth_responses,

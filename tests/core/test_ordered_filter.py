@@ -1,6 +1,10 @@
+from typing import Annotated, Any
+
 import pytest
+from fastapi import FastAPI
 from pydantic import ValidationError
 
+from core.filter.depends import FilterDepends
 from core.filter.ordered import OrderedFilter
 from user.models.user import UserORM
 
@@ -38,3 +42,19 @@ def test_the_allowed_fields_are_documented_on_the_parameter() -> None:
 
     assert description is not None
     assert "created_at, username" in description
+
+
+def test_the_allowed_fields_reach_the_openapi_schema() -> None:
+    app = FastAPI()
+
+    @app.get("/items")
+    async def items(  # pyright: ignore[reportUnusedFunction]
+        _: Annotated[SampleFilter, FilterDepends(SampleFilter)],
+    ) -> None: ...
+
+    parameters: list[dict[str, Any]] = app.openapi()["paths"]["/items"]["get"][
+        "parameters"
+    ]
+    order_by = next(item for item in parameters if item["name"] == "order_by")
+
+    assert "created_at, username" in order_by["description"]

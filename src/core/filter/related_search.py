@@ -6,9 +6,7 @@ from core.filter.ordered import OrderedFilter
 
 
 class RelatedSearchFilter(OrderedFilter):
-    """``search`` matches the model's own ``search_model_fields`` and the
-    ``search_related`` columns of the single related row ``search_relation``
-    points at, without joining it (the sort may already have)."""
+    """``search`` also matches ``search_related`` columns of one related row."""
 
     search: str | None = None
 

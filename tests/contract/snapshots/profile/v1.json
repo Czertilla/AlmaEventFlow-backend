@@ -2149,6 +2149,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: type, value, is_main, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -2162,6 +2163,7 @@
                 }
               ],
               "default": "type,value",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: type, value, is_main, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -2537,6 +2539,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: type, value, is_main, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -2550,6 +2553,7 @@
                 }
               ],
               "default": "type,value",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: type, value, is_main, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -3641,6 +3645,7 @@
         "operationId": "get_many_profile_v1_diets_get",
         "parameters": [
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -3654,6 +3659,7 @@
                 }
               ],
               "default": "name",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name.",
               "title": "Order By"
             }
           },
@@ -4386,6 +4392,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: expire_date, issued_date, number, is_foreign, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -4399,6 +4406,7 @@
                 }
               ],
               "default": "expire_date",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: expire_date, issued_date, number, is_foreign, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -4706,6 +4714,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: expire_date, issued_date, number, is_foreign, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -4719,6 +4728,7 @@
                 }
               ],
               "default": "expire_date",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: expire_date, issued_date, number, is_foreign, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -6564,6 +6574,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: surname, name, patronymic, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -6577,6 +6588,7 @@
                 }
               ],
               "default": "surname,name,patronymic",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: surname, name, patronymic, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -7619,6 +7631,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: type, value, is_main, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -7632,6 +7645,7 @@
                 }
               ],
               "default": "type,value",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: type, value, is_main, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -8004,6 +8018,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: birthdate, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -8017,6 +8032,7 @@
                 }
               ],
               "default": "created_at",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: birthdate, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -9178,6 +9194,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: student_id, is_active, is_budget, is_full, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -9191,6 +9208,7 @@
                 }
               ],
               "default": "student_id",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: student_id, is_active, is_budget, is_full, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -9496,6 +9514,7 @@
         "operationId": "get_student_degrees_profile_v1_students_degrees_get",
         "parameters": [
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -9509,6 +9528,7 @@
                 }
               ],
               "default": "name",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name.",
               "title": "Order By"
             }
           },
@@ -10169,6 +10189,7 @@
         "operationId": "get_student_groups_profile_v1_students_groups_get",
         "parameters": [
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, grade.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -10182,6 +10203,7 @@
                 }
               ],
               "default": "name",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: name, grade.",
               "title": "Order By"
             }
           },

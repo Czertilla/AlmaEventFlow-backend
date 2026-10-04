@@ -2,9 +2,9 @@ from logging import getLogger
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
-from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import UserJWTDep
+from core.filter.depends import FilterDepends
 from core.schema.error import auth_responses
 from core.schema.user import UserJWT
 from core.schema.v1.pagination import PageParamV1, PageV1

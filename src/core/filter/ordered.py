@@ -1,7 +1,8 @@
 from typing import Any, ClassVar
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import ValidationInfo, field_validator
+from pydantic import Field, ValidationInfo, field_validator
+from pydantic.fields import FieldInfo
 
 ORDER_HELP = (
     "Comma-separated fields, prefix a field with `-` for descending order. "
@@ -10,9 +11,7 @@ ORDER_HELP = (
 
 
 class OrderedFilter(Filter):
-    """A ``Filter`` that sorts only by the fields its ``Constants.order_fields``
-    names, instead of any attribute of the model, and lists them in the
-    ``order_by`` parameter's description."""
+    """Sorts only by ``Constants.order_fields`` and documents them on ``order_by``."""
 
     class Constants(Filter.Constants):
         order_fields: ClassVar[tuple[str, ...]] = ()
@@ -21,13 +20,20 @@ class OrderedFilter(Filter):
     def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:
         super().__pydantic_init_subclass__(**kwargs)
         allowed = cls.Constants.order_fields
-        field = cls.model_fields.get(cls.Constants.ordering_field_name)
-        if allowed and field is not None:
-            field.description = ORDER_HELP.format(fields=", ".join(allowed))
+        name = cls.Constants.ordering_field_name
+        field = cls.model_fields.get(name)
+        if allowed and field is not None and field.annotation is not None:
+            cls.model_fields[name] = FieldInfo.from_annotated_attribute(
+                field.annotation,
+                Field(
+                    default=field.default,
+                    description=ORDER_HELP.format(fields=", ".join(allowed)),
+                ),
+            )
             cls.model_rebuild(force=True)
 
     @field_validator("*", mode="before", check_fields=False)
-    def validate_order_by(cls, value: Any, field: ValidationInfo) -> Any:
+    def validate_order_by(cls, value: Any, field: ValidationInfo) -> Any:  # noqa: N805
         if field.field_name != cls.Constants.ordering_field_name:
             return value
         if not value:

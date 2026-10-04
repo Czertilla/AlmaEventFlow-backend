@@ -1761,6 +1761,7 @@
             }
           },
           {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: username, email, is_active, is_verified, is_superuser, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -1774,6 +1775,7 @@
                 }
               ],
               "default": "created_at",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: username, email, is_active, is_verified, is_superuser, created_at, edited_at.",
               "title": "Order By"
             }
           },
