@@ -110,6 +110,18 @@ Every HTTP service follows this: `event`, `org`, `geo`, `profile`, `notify`, `bo
   `PageV1[Read].from_dto(page_dto)`, page query `page_param.to_dto()`.
 - `Filter` classes (fastapi-filter) stay ORM-bound in `<service>/filter/`; the service takes a
   `…FilterDTO` and rebuilds the `Filter` with `Filter.from_dto` right before the repository call.
+- List endpoints sort and filter through `core/filter/`: `OrderedFilter` accepts only the fields in
+  `Constants.order_fields` (anything else is a 422, and the allowed fields are listed in the
+  `order_by` description), `TimestampFilterMixin` adds `created_at__gte/lte`, `edited_at__gte/lte`
+  and `edited_at__isnull`, `RelatedSearchFilter` extends `search` over one related row with an
+  `EXISTS`. A sort key that is not a model column (event `status`/`level`/`type`, ordered by the
+  lookup id) is mapped in the filter's own `sort()`. Every filter field must exist on its
+  `…FilterDTO`.
+- Detail reads carry `created_at`/`edited_at` (`TimestampMixinV1`) wherever the ORM row has
+  `TimestampMixin`. The mixin sets `eager_defaults`, so a flushed row already has its computed
+  `edited_at`; the columns have no server default, so a raw SQL insert must pass `created_at`. Each
+  service's `ModuleBase` carries the `BasePreference` type map, which makes `datetime` a
+  `timestamptz` — without it a tz-aware filter value fails in asyncpg.
 - `PatchModelV1.model_dump()` already drops unset fields; never pass `exclude_unset` to it (it
   raises). PATCH handlers build `…Patch(id=..., **body.model_dump())` and `to_dto()` it.
 - SQLAlchemy async cannot lazy-load: a service converting an ORM row to a DTO must hold every
@@ -142,10 +154,13 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
 - `test_service_layer_does_not_depend_on_api_schemas` — AST scan: the layers listed in
   `MIGRATED_LAYERS` never import `<service>.api` or `core.schema.v<N>`. Add a service there when
   it is migrated.
-- Router behaviour is not covered by the OpenAPI snapshot, so each service also has handler- or
-  HTTP-level tests next to its service tests (`tests/org/test_router_patch.py`,
-  `tests/profile/test_router_handlers.py`, `tests/user/test_user_flows.py`). Write one for every
-  new PATCH/PUT conversion.
+- Router behaviour is not covered by the OpenAPI snapshot, so each service also has
+  `tests/<service>/test_<service>_api.py` (real JWTs and the real routers through
+  `tests/support/http.py`: `api_client`, `principal`, `bound_sessionmaker`) and
+  `test_<service>_filters.py` (`exercise_filter` runs every filter field against the database,
+  `assert_dto_parity` and `assert_ordering_documented` guard the filter↔DTO and `order_by`
+  contracts). Add an API test for every new endpoint or PATCH/PUT conversion. Test module
+  basenames must be unique across `tests/`, hence the service prefix.
 - A service-layer change (new DTO field with a default, refactored service, renamed internals)
   must leave every contract test green **without regenerating anything** — if one fails, the
   change leaked into the API. Renaming or removing a DTO field a schema reads, or adding a
@@ -168,6 +183,8 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   (see the calendar-subscription feature: new tables only, FKs added wherever the referenced table
   lives in the same DB, `ondelete="NO ACTION"`/`"SET NULL"` as appropriate, no FK across a service
   boundary — a projected/foreign id column stays a raw UUID).
+- Do not run `ruff format` or `ruff check --select I --fix` over a package: the code is not
+  format-clean, and it rewrites files unrelated to the change. Edit only the lines you change.
 - **No explanatory comment blocks.** Do not narrate the reasoning behind a change, the bug it
   fixes, or alternatives you considered — that belongs in the commit message or chat response, not
   the file. Default to zero comments. If something is genuinely non-obvious, one short line (not a
@@ -208,7 +225,7 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   something to silently "clean up" as a drive-by in an unrelated change. `[tool.basedpyright]` sets `typeCheckingMode = "strict"` — `basedpyright` (a pyright
   fork; replaced plain `pyright` specifically for this feature) supports a baseline file,
   `.basedpyright/baseline.json`, that grandfathers every finding that existed when it was
-  generated (currently ~4000, covering the whole repo — `src/`, `tests/`, `migrations/`,
+  generated (currently ~3800, covering the whole repo — `src/`, `tests/`, `migrations/`,
   `scripts/` — matching the bare `uv run basedpyright` command's own default scope, not just
   `src/`), so a clean `uv run basedpyright` run means **zero new findings**, not zero findings
   ever. Consequences for how you work:
