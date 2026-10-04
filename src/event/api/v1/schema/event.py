@@ -37,7 +37,7 @@ class EventPatchData(PatchModelV1):
     description: str | None = Field(max_length=1024, default=None)
     location_id: UUID | None = None
     organizer_id: UUID | None = None
-    status: EventStatusEnumV1 = EventStatusEnumV1.draft
+    status: EventStatusEnumV1 | None = None
     level: EventLevelEnumV1 | None = None
     type: EventTypeEnumV1 | None = None
     format: EventFormatEnumV1 | None = None

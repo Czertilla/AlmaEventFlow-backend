@@ -9,7 +9,10 @@ from uuid import NAMESPACE_URL, UUID, uuid5
 from _examples import FIELD_OVERRIDES
 
 _NONE_TYPE = type(None)
-DTO_FIELD_OVERRIDES = FIELD_OVERRIDES | {"email": "user@example.com"}
+DTO_FIELD_OVERRIDES = FIELD_OVERRIDES | {
+    "email": "user@example.com",
+    "file_link": "https://example.com/x",
+}
 
 
 def _substitute(tp: Any, mapping: dict[Any, Any]) -> Any:

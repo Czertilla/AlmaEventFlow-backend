@@ -4,7 +4,7 @@ from fastapi import UploadFile
 from pydantic import BaseModel, ConfigDict, HttpUrl
 
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
-from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
+from core.schema.v1.mixin.model import PatchModelV1, TimestampMixinV1, UUIDMixinV1
 from event.dto.reward import RewardCreateDTO, RewardPatchDTO, RewardPutDTO
 
 
@@ -22,8 +22,8 @@ class RewardCreate(RewardCreateData, ToDTOMixinV1):
     file: UploadFile | None = None
 
 
-class RewardRead(FromDTOMixinV1, RewardCreateData, UUIDMixinV1):
-    participation_id: UUID
+class RewardRead(FromDTOMixinV1, RewardCreateData, UUIDMixinV1, TimestampMixinV1):
+    participation_id: UUID | None
     file_link: HttpUrl | None = None
 
 

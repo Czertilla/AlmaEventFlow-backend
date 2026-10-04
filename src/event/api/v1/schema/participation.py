@@ -3,7 +3,7 @@ from uuid import UUID
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
-from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
+from core.schema.v1.mixin.model import PatchModelV1, TimestampMixinV1, UUIDMixinV1
 from event.dto.participation import (
     ParticipationCreateDTO,
     ParticipationPatchDTO,
@@ -28,7 +28,9 @@ class ParticipationCreate(ParticipationCreateData, ToDTOMixinV1):
     collective_id: UUID
 
 
-class ParticipationRead(FromDTOMixinV1, ParticipationCreate, UUIDMixinV1):
+class ParticipationRead(
+    FromDTOMixinV1, ParticipationCreate, UUIDMixinV1, TimestampMixinV1
+):
     collective_name: str | None = None
 
 

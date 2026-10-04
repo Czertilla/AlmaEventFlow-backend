@@ -1,9 +1,10 @@
+import datetime
 from dataclasses import dataclass
 from uuid import UUID
 
 from fastapi import UploadFile
 
-from core.dto.base import FieldsSetDTOMixin
+from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,13 +33,20 @@ class RewardPutDTO:
 @dataclass(frozen=True, slots=True)
 class RewardDTO:
     id: UUID
-    participation_id: UUID
+    participation_id: UUID | None
     name: str
     degree: int | None
+    created_at: datetime.datetime
+    edited_at: datetime.datetime | None
     file_link: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
-class RewardFilterDTO:
+class RewardFilterDTO(TimestampFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
+    participation_id: UUID | None = None
+    participation_id__in: list[UUID] | None = None
+    degree: int | None = None
+    degree__in: list[int] | None = None
+    degree__isnull: bool | None = None

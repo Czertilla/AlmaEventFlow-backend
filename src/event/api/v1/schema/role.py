@@ -3,7 +3,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
-from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
+from core.schema.v1.mixin.model import PatchModelV1, TimestampMixinV1, UUIDMixinV1
 from event.dto.role import RoleCreateDTO, RolePatchDTO, RolePutDTO
 
 
@@ -23,7 +23,7 @@ class RolePreview(FromDTOMixinV1, RoleCreateData, UUIDMixinV1):
     model_config = ConfigDict(from_attributes=True, extra="ignore")
 
 
-class RoleRead(FromDTOMixinV1, RoleCreate, UUIDMixinV1): ...
+class RoleRead(FromDTOMixinV1, RoleCreate, UUIDMixinV1, TimestampMixinV1): ...
 
 
 class RolePatchData(PatchModelV1):

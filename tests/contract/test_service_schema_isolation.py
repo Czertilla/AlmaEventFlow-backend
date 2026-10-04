@@ -39,6 +39,22 @@ def test_service_dtos_render_through_the_response_schemas(
     )
 
 
+@pytest.mark.parametrize("name", RESPONSES)
+def test_every_sample_dto_is_accepted_by_its_response_schema(
+    name: str, behavior: dict[str, dict[str, Any]]
+) -> None:
+    rendered = behavior["responses"][name]["rendered"]
+
+    assert {key: record for key, record in rendered.items() if "error" in record} == {}
+
+
+@pytest.mark.parametrize("name", RESPONSES)
+def test_response_schemas_accept_every_value_the_dto_allows(
+    name: str, behavior: dict[str, dict[str, Any]]
+) -> None:
+    assert behavior["responses"][name]["rejected"] == {}
+
+
 def _imports(path: Path) -> list[str]:
     module = ".".join(path.relative_to(SRC).with_suffix("").parts)
     package_parts = module.split(".")[:-1]

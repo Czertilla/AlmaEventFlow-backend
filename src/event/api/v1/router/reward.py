@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi_filter import FilterDepends
 
 from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
@@ -11,9 +12,7 @@ from core.schema.error import auth_responses, entity_not_found_responses
 from core.schema.v1.pagination import PageParamV1, PageV1
 from event.api.v1.schema.reward import (
     RewardCreate,
-    RewardCreateData,
     RewardPatch,
-    RewardPatchData,
     RewardPut,
     RewardPutData,
     RewardRead,
@@ -42,16 +41,17 @@ async def get_rewards(
 @router.post("", responses={**auth_responses()})
 async def create_reward(
     user: SuperUserJWTDep,
-    participation_id: UUID,
     uow: RewardUOWDep,
     redis: RedisDep,
     s3: S3Dep,
-    file: UploadFile,
-    reward: RewardCreateData = Depends(),
+    participation_id: Annotated[UUID, Form()],
+    name: Annotated[str, Form(max_length=128)],
+    degree: Annotated[int | None, Form()] = None,
+    file: Annotated[UploadFile | None, File()] = None,
 ) -> RewardRead:
     result = await RewardService(uow, redis, s3).create(
         RewardCreate(
-            file=file, participation_id=participation_id, **reward.model_dump()
+            file=file, participation_id=participation_id, name=name, degree=degree
         ).to_dto()
     )
     return RewardRead.from_dto(result)
@@ -68,9 +68,7 @@ async def get_reward(
     s3: S3Dep,
     uow: RewardUOWDep,
 ) -> RewardRead:
-    return RewardRead.from_dto(
-        await RewardService(uow, redis, s3).read(reward_id)
-    )
+    return RewardRead.from_dto(await RewardService(uow, redis, s3).read(reward_id))
 
 
 @router.put(
@@ -99,13 +97,19 @@ async def patch_reward(
     reward_id: UUID,
     user: SuperUserJWTDep,
     uow: RewardUOWDep,
-    file: UploadFile,
     redis: RedisDep,
     s3: S3Dep,
-    reward: RewardPatchData = Depends(),
+    name: Annotated[str | None, Form(max_length=128)] = None,
+    degree: Annotated[int | None, Form()] = None,
+    file: Annotated[UploadFile | None, File()] = None,
 ) -> RewardRead:
+    given = {
+        key: value
+        for key, value in {"name": name, "degree": degree, "file": file}.items()
+        if value is not None
+    }
     result = await RewardService(uow, redis, s3).patch(
-        RewardPatch(id=reward_id, **reward.model_dump()).to_dto()
+        RewardPatch.model_validate({"id": reward_id, **given}).to_dto()
     )
     return RewardRead.from_dto(result)
 

@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.core import Base
-from core.database.sqlalchemy.mixins.models import UUIDMixin
+from core.database.sqlalchemy.mixins.models import TimestampMixin, UUIDMixin
 
 from ._base import ModuleBase
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from .member import MemberORM
 
 
-class RoleORM(ModuleBase, Base, UUIDMixin):
+class RoleORM(ModuleBase, Base, UUIDMixin, TimestampMixin):
     __tablename__ = "role"
 
     collective_id: Mapped[UUID] = mapped_column(

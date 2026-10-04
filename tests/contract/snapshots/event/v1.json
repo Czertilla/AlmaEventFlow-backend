@@ -265,20 +265,17 @@
       },
       "Body_create_reward_event_v1_rewards_post": {
         "properties": {
-          "file": {
-            "contentMediaType": "application/octet-stream",
-            "title": "File",
-            "type": "string"
-          }
-        },
-        "required": [
-          "file"
-        ],
-        "title": "Body_create_reward_event_v1_rewards_post",
-        "type": "object"
-      },
-      "Body_patch_reward_event_v1_rewards__reward_id__patch": {
-        "properties": {
+          "degree": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Degree"
+          },
           "file": {
             "anyOf": [
               {
@@ -290,6 +287,61 @@
               }
             ],
             "title": "File"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "participation_id": {
+            "format": "uuid",
+            "title": "Participation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "participation_id",
+          "name"
+        ],
+        "title": "Body_create_reward_event_v1_rewards_post",
+        "type": "object"
+      },
+      "Body_patch_reward_event_v1_rewards__reward_id__patch": {
+        "properties": {
+          "degree": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Degree"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
           }
         },
         "title": "Body_patch_reward_event_v1_rewards__reward_id__patch",
@@ -520,8 +572,14 @@
             "title": "Organizer Id"
           },
           "status": {
-            "$ref": "#/components/schemas/EventStatusEnumV1",
-            "default": "draft"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventStatusEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "type": {
             "anyOf": [
@@ -836,13 +894,12 @@
           "type": {
             "anyOf": [
               {
-                "type": "string"
+                "$ref": "#/components/schemas/EventLinkTypeEnumV1"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Type"
+            ]
           },
           "url": {
             "anyOf": [
@@ -889,6 +946,11 @@
       },
       "LinkRead": {
         "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
           "description": {
             "anyOf": [
               {
@@ -899,6 +961,18 @@
               }
             ],
             "title": "Description"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
           },
           "event_id": {
             "format": "uuid",
@@ -919,6 +993,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "url",
           "type",
@@ -1386,6 +1462,23 @@
             "title": "Collective Id",
             "type": "string"
           },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
@@ -1410,6 +1503,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "person_id",
           "roles",
@@ -1734,6 +1829,23 @@
             ],
             "title": "Collective Name"
           },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "event_id": {
             "format": "uuid",
             "title": "Event Id",
@@ -1756,6 +1868,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "event_id",
           "collective_id"
@@ -1789,6 +1903,11 @@
       },
       "RewardRead": {
         "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
           "degree": {
             "anyOf": [
               {
@@ -1799,6 +1918,18 @@
               }
             ],
             "title": "Degree"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
           },
           "file_link": {
             "anyOf": [
@@ -1824,12 +1955,21 @@
             "type": "string"
           },
           "participation_id": {
-            "format": "uuid",
-            "title": "Participation Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participation Id"
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "name",
           "participation_id"
@@ -1912,6 +2052,23 @@
             "title": "Collective Id",
             "type": "string"
           },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
@@ -1923,6 +2080,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "name",
           "collective_id"
@@ -2168,6 +2327,11 @@
       },
       "StageRead": {
         "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
           "description": {
             "anyOf": [
               {
@@ -2179,6 +2343,18 @@
               }
             ],
             "title": "Description"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
           },
           "end_at": {
             "anyOf": [
@@ -2225,6 +2401,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "name",
           "start_at",
@@ -2280,6 +2458,90 @@
       "get": {
         "operationId": "get_attendances_event_v1_attendances_get",
         "parameters": [
+          {
+            "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
           {
             "in": "query",
             "name": "order_by",
@@ -2348,22 +2610,6 @@
           },
           {
             "in": "query",
-            "name": "edited_at__isnull",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Edited At  Isnull"
-            }
-          },
-          {
-            "in": "query",
             "name": "member_id",
             "required": false,
             "schema": {
@@ -2377,6 +2623,54 @@
                 }
               ],
               "title": "Member Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "member_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Member Id  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_attended",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Attended"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_verified",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Verified"
             }
           },
           {
@@ -3013,6 +3307,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -3058,6 +3436,22 @@
                 }
               ],
               "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status  In"
             }
           },
           {
@@ -3144,6 +3538,22 @@
           },
           {
             "in": "query",
+            "name": "date__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "level__in",
             "required": false,
             "schema": {
@@ -3221,6 +3631,88 @@
                 }
               ],
               "title": "Participant Id  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "organizer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Organizer Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "organizer_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Organizer Id  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "location_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Location Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "location_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Location Id  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "location_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Location Id  Isnull"
             }
           },
           {
@@ -3874,6 +4366,90 @@
           },
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -3919,6 +4495,90 @@
                 }
               ],
               "title": "Event Id  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End At  Isnull"
             }
           },
           {
@@ -4043,6 +4703,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -4054,7 +4798,7 @@
                   "type": "null"
                 }
               ],
-              "default": "type,name",
+              "default": "type,description",
               "title": "Order By"
             }
           },
@@ -4072,6 +4816,71 @@
                 }
               ],
               "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "event_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Event Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "event_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Event Id  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/EventLinkTypeEnumV1"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type  In"
             }
           },
           {
@@ -5518,6 +6327,106 @@
           },
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -5545,6 +6454,22 @@
           },
           {
             "in": "query",
+            "name": "collective_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Collective Id  In"
+            }
+          },
+          {
+            "in": "query",
             "name": "person_id",
             "required": false,
             "schema": {
@@ -5558,6 +6483,22 @@
                 }
               ],
               "title": "Person Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "person_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Person Id  In"
             }
           },
           {
@@ -6390,6 +7331,90 @@
           },
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -6419,6 +7444,22 @@
                 }
               ],
               "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "collective_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Collective Id  In"
             }
           },
           {
@@ -7496,6 +8537,106 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -7540,6 +8681,22 @@
           },
           {
             "in": "query",
+            "name": "collective_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Collective Id  In"
+            }
+          },
+          {
+            "in": "query",
             "name": "person_id",
             "required": false,
             "schema": {
@@ -7553,6 +8710,22 @@
                 }
               ],
               "title": "Person Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "person_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Person Id  In"
             }
           },
           {
@@ -8189,6 +9362,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -8239,6 +9496,23 @@
           },
           {
             "in": "query",
+            "name": "event_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Event Id"
+            }
+          },
+          {
+            "in": "query",
             "name": "event_id__in",
             "required": false,
             "schema": {
@@ -8251,6 +9525,54 @@
                 }
               ],
               "title": "Event Id  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "priority_degree",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/EventPriorityEnumV1"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority Degree"
+            }
+          },
+          {
+            "in": "query",
+            "name": "priority_degree__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority Degree  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "priority_degree__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority Degree  Isnull"
             }
           },
           {
@@ -8887,6 +10209,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -8916,6 +10322,87 @@
                 }
               ],
               "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "participation_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Participation Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "participation_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Participation Id  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "degree",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Degree"
+            }
+          },
+          {
+            "in": "query",
+            "name": "degree__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Degree  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "degree__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Degree  Isnull"
             }
           },
           {
@@ -9020,16 +10507,6 @@
         "parameters": [
           {
             "in": "query",
-            "name": "participation_id",
-            "required": true,
-            "schema": {
-              "format": "uuid",
-              "title": "Participation Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
             "name": "endpoint_url",
             "required": false,
             "schema": {
@@ -9066,31 +10543,6 @@
               "default": "test",
               "title": "Secret Key",
               "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "name",
-            "required": true,
-            "schema": {
-              "title": "Name",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "degree",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Degree"
             }
           }
         ],
@@ -9522,38 +10974,6 @@
               "title": "Secret Key",
               "type": "string"
             }
-          },
-          {
-            "in": "query",
-            "name": "name",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Name"
-            }
-          },
-          {
-            "in": "query",
-            "name": "degree",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Degree"
-            }
           }
         ],
         "requestBody": {
@@ -9563,8 +10983,7 @@
                 "$ref": "#/components/schemas/Body_patch_reward_event_v1_rewards__reward_id__patch"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -9821,6 +11240,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -9867,6 +11370,22 @@
                 }
               ],
               "title": "Collective Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "collective_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Collective Id  In"
             }
           },
           {
@@ -10503,6 +12022,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -10565,6 +12168,90 @@
                 }
               ],
               "title": "Event Id  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End At  Isnull"
             }
           },
           {

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin
+from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,10 +51,12 @@ class AttendanceDTO:
 
 
 @dataclass(frozen=True, slots=True)
-class AttendanceFilterDTO:
+class AttendanceFilterDTO(TimestampFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
     participation_id: UUID | None = None
     participation_id__in: list[UUID] | None = None
-    edited_at__isnull: bool | None = None
     member_id: UUID | None = None
+    member_id__in: list[UUID] | None = None
+    is_attended: bool | None = None
+    is_verified: bool | None = None

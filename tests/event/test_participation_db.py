@@ -43,8 +43,8 @@ async def _seed(engine: AsyncEngine) -> tuple[UUID, UUID, UUID]:
         await conn.execute(
             text(
                 "INSERT INTO participation "
-                "(id, collective_id, event_id, priority_degree) "
-                "VALUES (:id, :collective, :event, 'low')"
+                "(id, collective_id, event_id, priority_degree, created_at) "
+                "VALUES (:id, :collective, :event, 'low', now())"
             ),
             {"id": participation_id, "collective": collective_id, "event": event_id},
         )

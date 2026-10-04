@@ -1,3 +1,4 @@
+import datetime
 from uuid import uuid4
 
 import pytest
@@ -38,6 +39,8 @@ def test_response_exposes_the_priority_as_priority_degree():
         event_id=uuid4(),
         collective_id=uuid4(),
         priority_degree=EventPriorityEnumV1.hight,
+        created_at=datetime.datetime(2026, 1, 1, tzinfo=datetime.UTC),
+        edited_at=None,
     )
 
     dumped = ParticipationRead.from_dto(dto).model_dump(mode="json")
@@ -51,9 +54,7 @@ def test_put_keeps_the_priority_from_the_request_body():
         event_id=uuid4(), priority_degree=EventPriorityEnumV1.low
     )
 
-    dto = ParticipationPut.model_validate(
-        {"id": uuid4(), **body.model_dump()}
-    ).to_dto()
+    dto = ParticipationPut.model_validate({"id": uuid4(), **body.model_dump()}).to_dto()
 
     assert dto.priority_degree == EventPriorityEnumV1.low
 

@@ -1,8 +1,9 @@
 from datetime import date
+from typing import Any
 from uuid import UUID
 
-from fastapi_filter.contrib.sqlalchemy import Filter
-
+from core.filter.ordered import OrderedFilter
+from core.filter.timestamps import TimestampFilterMixin
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from event.dto.event import EventFilterDTO
 from event.enum.format import EventFormatEnumV1
@@ -17,80 +18,95 @@ from event.models.event import (
 )
 from event.models.participation import ParticipationORM
 
+RELATION_FILTERS = (
+    "status",
+    "status__in",
+    "level",
+    "level__in",
+    "type",
+    "type__in",
+    "participant_id",
+    "participant_id__in",
+)
 
-class EventFilter(Filter, FromDTOMixinV1, ToDTOMixinV1):
+
+class EventFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1):
     __dto_cls__ = EventFilterDTO
 
     order_by: list[str] | None = ["date"]
     search: None | str = None
     status: None | EventStatusEnumV1 = None
+    status__in: None | list[EventStatusEnumV1] = None
     level: None | EventLevelEnumV1 = None
     type: None | EventTypeEnumV1 = None
     format: None | EventFormatEnumV1 = None
     date__gte: None | date = None
     date__lte: None | date = None
-
+    date__isnull: None | bool = None
     level__in: None | list[EventLevelEnumV1] = None
     type__in: None | list[EventTypeEnumV1] = None
     format__in: None | list[EventFormatEnumV1] = None
-
     participant_id: None | UUID = None
     participant_id__in: None | list[UUID] = None
+    organizer_id: None | UUID = None
+    organizer_id__in: None | list[UUID] = None
+    location_id: None | UUID = None
+    location_id__in: None | list[UUID] = None
+    location_id__isnull: None | bool = None
 
-    class Constants(Filter.Constants):
+    class Constants(OrderedFilter.Constants):
         model = EventORM
         search_model_fields = ["name", "description"]
+        order_fields = ("date", "name", "format", "created_at", "edited_at")
 
-    def filter(self, query):
-        orig_status = self.status
-        orig_level = self.level
-        orig_type = self.type
-        orig_format = self.format
-        orig_participant = self.participant_id
-        orig_participant_in = self.participant_id__in
-
-        if orig_status is not None:
+    def filter(self, query: Any) -> Any:
+        given = {name: getattr(self, name) for name in RELATION_FILTERS}
+        if given["status"] is not None:
             query = query.join(EventORM.status_rel).filter(
-                EventStatusORM.name == orig_status.value
+                EventStatusORM.name == given["status"].value
             )
-
-        if orig_level is not None:
+        if given["status__in"]:
+            query = query.where(
+                EventORM.status_rel.has(
+                    EventStatusORM.name.in_([s.value for s in given["status__in"]])
+                )
+            )
+        if given["level"] is not None:
             query = query.join(EventORM.level_rel).filter(
-                EventLevelORM.name == orig_level.value
+                EventLevelORM.name == given["level"].value
             )
-
-        if orig_type is not None:
+        if given["level__in"]:
+            query = query.where(
+                EventORM.level_rel.has(
+                    EventLevelORM.name.in_([v.value for v in given["level__in"]])
+                )
+            )
+        if given["type"] is not None:
             query = query.join(EventORM.type_rel).filter(
-                EventTypeORM.name == orig_type.value
+                EventTypeORM.name == given["type"].value
             )
-
-        if orig_participant is not None:
+        if given["type__in"]:
             query = query.where(
-                EventORM.participations.any(
-                    ParticipationORM.collective_id == orig_participant
+                EventORM.type_rel.has(
+                    EventTypeORM.name.in_([v.value for v in given["type__in"]])
                 )
             )
-
-        if orig_participant_in:
+        if given["participant_id"] is not None:
             query = query.where(
                 EventORM.participations.any(
-                    ParticipationORM.collective_id.in_(orig_participant_in)
+                    ParticipationORM.collective_id == given["participant_id"]
                 )
             )
-
-        self.status = None
-        self.level = None
-        self.type = None
-        self.format = None
-        self.participant_id = None
-        self.participant_id__in = None
-
+        if given["participant_id__in"]:
+            query = query.where(
+                EventORM.participations.any(
+                    ParticipationORM.collective_id.in_(given["participant_id__in"])
+                )
+            )
+        for name in RELATION_FILTERS:
+            setattr(self, name, None)
         try:
-            return super().filter(query)
+            return super().filter(query)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
         finally:
-            self.status = orig_status
-            self.level = orig_level
-            self.type = orig_type
-            self.format = orig_format
-            self.participant_id = orig_participant
-            self.participant_id__in = orig_participant_in
+            for name, value in given.items():
+                setattr(self, name, value)

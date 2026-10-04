@@ -1,21 +1,18 @@
-from typing import Self
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 
-from core.dto.base import dto_dict
-from core.schema.v1.mixin.dto import ToDTOMixinV1
+from core.filter.related_search import RelatedSearchFilter
+from core.filter.timestamps import TimestampFilterMixin
+from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from event.dto.member import MemberFilterDTO
 from event.models.member import MemberORM
+from event.models.person import PersonORM
 
 
-class MemberFilter(Filter, ToDTOMixinV1):
-    """``order_by``'s default uses dotted join paths (``person__surname``)
-    that this class's own ``sort()`` override resolves by hand -- fastapi-filter's
-    ordering validator accepts them unvalidated as a default but rejects them
-    as explicit input, so reconstruction uses ``model_construct`` (trusted,
-    already-validated data) instead of the generic ``FromDTOMixin``."""
-
+class MemberFilter(
+    RelatedSearchFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1
+):
     __dto_cls__ = MemberFilterDTO
 
     order_by: list[str] | None = [
@@ -23,17 +20,25 @@ class MemberFilter(Filter, ToDTOMixinV1):
         "person__name",
         "person__patronymic",
     ]
+    search: str | None = None
     is_active: bool = True
     collective_id: UUID | None = None
+    collective_id__in: list[UUID] | None = None
     person_id: UUID | None = None
+    person_id__in: list[UUID] | None = None
 
-    class Constants(Filter.Constants):
+    class Constants(RelatedSearchFilter.Constants):
         model = MemberORM
-
-    @classmethod
-    def from_dto(cls, dto: MemberFilterDTO) -> Self:
-        # model_construct: the order_by validator rejects dotted join paths as input
-        return cls.model_construct(**dto_dict(dto))
+        search_relation = MemberORM.person
+        search_related = (PersonORM.surname, PersonORM.name, PersonORM.patronymic)
+        order_fields = (
+            "person__surname",
+            "person__name",
+            "person__patronymic",
+            "is_active",
+            "created_at",
+            "edited_at",
+        )
 
     def sort(self, query):
         if not self.ordering_values:

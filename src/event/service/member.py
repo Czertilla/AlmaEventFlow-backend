@@ -37,6 +37,8 @@ class MemberService(BaseService[MemberUOW]):
                 RolePreviewDTO(id=role.id, name=role.name)
                 for role in member.roles
             ],
+            created_at=member.created_at,
+            edited_at=member.edited_at,
         )
 
     @required_transaction

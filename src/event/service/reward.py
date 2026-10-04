@@ -68,6 +68,8 @@ class RewardService(BaseService[RewardUOW]):
             participation_id=reward.participation_id,
             name=reward.name,
             degree=reward.degree,
+            created_at=reward.created_at,
+            edited_at=reward.edited_at,
             file_link=file_link,
         )
 

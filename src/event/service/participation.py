@@ -37,6 +37,8 @@ class ParticipationService(BaseService[ParticipationUOW]):
             event_id=participation.event_id,
             collective_id=participation.collective_id,
             priority_degree=participation.priority_degree,
+            created_at=participation.created_at,
+            edited_at=participation.edited_at,
             collective_name=collective.name if collective is not None else None,
         )
 

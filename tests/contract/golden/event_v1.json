@@ -1268,14 +1268,14 @@
         "mapped": {
           "description": "x",
           "id": "edb0cf96-9220-576c-bae6-0f1703ed46f7",
-          "type": "x",
+          "type": "reward",
           "url": "x"
         }
       },
       "dump": {
         "description": "x",
         "id": "edb0cf96-9220-576c-bae6-0f1703ed46f7",
-        "type": "x",
+        "type": "reward",
         "url": "x"
       },
       "fields_set": [
@@ -1287,7 +1287,7 @@
       "input": {
         "description": "x",
         "id": "edb0cf96-9220-576c-bae6-0f1703ed46f7",
-        "type": "x",
+        "type": "reward",
         "url": "x"
       }
     },
@@ -1316,7 +1316,7 @@
     "full": {
       "dump": {
         "description": "x",
-        "type": "x",
+        "type": "reward",
         "url": "x"
       },
       "fields_set": [
@@ -1326,7 +1326,7 @@
       ],
       "input": {
         "description": "x",
-        "type": "x",
+        "type": "reward",
         "url": "x"
       }
     },
@@ -1432,6 +1432,8 @@
     "full": {
       "dto": {
         "dropped": [
+          "created_at",
+          "edited_at",
           "id"
         ],
         "mapped": {
@@ -1442,21 +1444,27 @@
         }
       },
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
         "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
         "event_id": "1f70e60f-30c1-5c2c-afad-2543bba4e22a",
         "id": "75df302f-e97d-5850-8e05-4f8948262bad",
         "type": "reward",
         "url": "x"
       },
       "fields_set": [
+        "created_at",
         "description",
+        "edited_at",
         "event_id",
         "id",
         "type",
         "url"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
         "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
         "event_id": "1f70e60f-30c1-5c2c-afad-2543bba4e22a",
         "id": "75df302f-e97d-5850-8e05-4f8948262bad",
         "type": "reward",
@@ -1466,6 +1474,8 @@
     "required": {
       "dto": {
         "dropped": [
+          "created_at",
+          "edited_at",
           "id"
         ],
         "mapped": {
@@ -1476,19 +1486,25 @@
         }
       },
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
         "description": null,
+        "edited_at": "2026-01-01T10:00:00Z",
         "event_id": "1f70e60f-30c1-5c2c-afad-2543bba4e22a",
         "id": "75df302f-e97d-5850-8e05-4f8948262bad",
         "type": "reward",
         "url": "x"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "event_id",
         "id",
         "type",
         "url"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "event_id": "1f70e60f-30c1-5c2c-afad-2543bba4e22a",
         "id": "75df302f-e97d-5850-8e05-4f8948262bad",
         "type": "reward",
@@ -2319,6 +2335,8 @@
     "full": {
       "dto": {
         "dropped": [
+          "created_at",
+          "edited_at",
           "id"
         ],
         "mapped": {
@@ -2335,6 +2353,8 @@
       },
       "dump": {
         "collective_id": "d0edd0aa-426f-551f-bd5f-abfb648f4707",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "9a90f096-d6be-5ef9-b897-499b33f7c66d",
         "is_active": true,
         "person_id": "c9e7ec23-6b46-574e-b406-889bc4d33a1f",
@@ -2347,6 +2367,8 @@
       },
       "fields_set": [
         "collective_id",
+        "created_at",
+        "edited_at",
         "id",
         "is_active",
         "person_id",
@@ -2354,6 +2376,8 @@
       ],
       "input": {
         "collective_id": "d0edd0aa-426f-551f-bd5f-abfb648f4707",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "9a90f096-d6be-5ef9-b897-499b33f7c66d",
         "is_active": true,
         "person_id": "c9e7ec23-6b46-574e-b406-889bc4d33a1f",
@@ -2368,6 +2392,8 @@
     "required": {
       "dto": {
         "dropped": [
+          "created_at",
+          "edited_at",
           "id"
         ],
         "mapped": {
@@ -2384,6 +2410,8 @@
       },
       "dump": {
         "collective_id": "d0edd0aa-426f-551f-bd5f-abfb648f4707",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "9a90f096-d6be-5ef9-b897-499b33f7c66d",
         "is_active": true,
         "person_id": "c9e7ec23-6b46-574e-b406-889bc4d33a1f",
@@ -2396,12 +2424,16 @@
       },
       "fields_set": [
         "collective_id",
+        "created_at",
+        "edited_at",
         "id",
         "person_id",
         "roles"
       ],
       "input": {
         "collective_id": "d0edd0aa-426f-551f-bd5f-abfb648f4707",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "9a90f096-d6be-5ef9-b897-499b33f7c66d",
         "person_id": "c9e7ec23-6b46-574e-b406-889bc4d33a1f",
         "roles": [
@@ -2878,6 +2910,8 @@
       "dto": {
         "dropped": [
           "collective_name",
+          "created_at",
+          "edited_at",
           "id"
         ],
         "mapped": {
@@ -2889,6 +2923,8 @@
       "dump": {
         "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
         "collective_name": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
         "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b",
         "priority_degree": "hight"
@@ -2896,6 +2932,8 @@
       "fields_set": [
         "collective_id",
         "collective_name",
+        "created_at",
+        "edited_at",
         "event_id",
         "id",
         "priority_degree"
@@ -2903,6 +2941,8 @@
       "input": {
         "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
         "collective_name": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
         "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b",
         "priority_degree": "hight"
@@ -2912,6 +2952,8 @@
       "dto": {
         "dropped": [
           "collective_name",
+          "created_at",
+          "edited_at",
           "id"
         ],
         "mapped": {
@@ -2923,17 +2965,23 @@
       "dump": {
         "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
         "collective_name": null,
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
         "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b",
         "priority_degree": null
       },
       "fields_set": [
         "collective_id",
+        "created_at",
+        "edited_at",
         "event_id",
         "id"
       ],
       "input": {
         "collective_id": "ec2bb81b-05d9-5660-b1a5-78529710cb1c",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "event_id": "6edc0918-f380-5393-a35d-4700ed06baeb",
         "id": "a05fd462-339f-5cad-bed4-a9bc521bb78b"
       }
@@ -3136,21 +3184,27 @@
   "reward.RewardRead": {
     "full": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
         "degree": 1,
+        "edited_at": "2026-01-01T10:00:00Z",
         "file_link": "https://example.com/x",
         "id": "cc499cd8-9b7b-535c-bd71-c9ec11990af0",
         "name": "x",
         "participation_id": "e4b53d86-1673-570a-83ed-bc6a45f5b743"
       },
       "fields_set": [
+        "created_at",
         "degree",
+        "edited_at",
         "file_link",
         "id",
         "name",
         "participation_id"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
         "degree": 1,
+        "edited_at": "2026-01-01T10:00:00Z",
         "file_link": "https://example.com/x",
         "id": "cc499cd8-9b7b-535c-bd71-c9ec11990af0",
         "name": "x",
@@ -3159,18 +3213,24 @@
     },
     "required": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
         "degree": null,
+        "edited_at": "2026-01-01T10:00:00Z",
         "file_link": null,
         "id": "cc499cd8-9b7b-535c-bd71-c9ec11990af0",
         "name": "x",
         "participation_id": "e4b53d86-1673-570a-83ed-bc6a45f5b743"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "id",
         "name",
         "participation_id"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "cc499cd8-9b7b-535c-bd71-c9ec11990af0",
         "name": "x",
         "participation_id": "e4b53d86-1673-570a-83ed-bc6a45f5b743"
@@ -3412,6 +3472,8 @@
     "full": {
       "dto": {
         "dropped": [
+          "created_at",
+          "edited_at",
           "id"
         ],
         "mapped": {
@@ -3421,16 +3483,22 @@
       },
       "dump": {
         "collective_id": "39790c99-7000-5f9d-8b44-5f5edbb4b86d",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "47aaf428-79e2-542a-b05d-6ff4791f0bb8",
         "name": "x"
       },
       "fields_set": [
         "collective_id",
+        "created_at",
+        "edited_at",
         "id",
         "name"
       ],
       "input": {
         "collective_id": "39790c99-7000-5f9d-8b44-5f5edbb4b86d",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "47aaf428-79e2-542a-b05d-6ff4791f0bb8",
         "name": "x"
       }
@@ -3438,6 +3506,8 @@
     "required": {
       "dto": {
         "dropped": [
+          "created_at",
+          "edited_at",
           "id"
         ],
         "mapped": {
@@ -3447,16 +3517,22 @@
       },
       "dump": {
         "collective_id": "39790c99-7000-5f9d-8b44-5f5edbb4b86d",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "47aaf428-79e2-542a-b05d-6ff4791f0bb8",
         "name": "x"
       },
       "fields_set": [
         "collective_id",
+        "created_at",
+        "edited_at",
         "id",
         "name"
       ],
       "input": {
         "collective_id": "39790c99-7000-5f9d-8b44-5f5edbb4b86d",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "47aaf428-79e2-542a-b05d-6ff4791f0bb8",
         "name": "x"
       }
@@ -3577,6 +3653,48 @@
           "timezone": null
         }
       },
+      "dump": {
+        "description": null,
+        "end_at": null,
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": null
+      },
+      "fields_set": [
+        "name",
+        "start_at"
+      ],
+      "input": {
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z"
+      }
+    }
+  },
+  "stage.StageFields": {
+    "full": {
+      "dump": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      },
+      "fields_set": [
+        "description",
+        "end_at",
+        "name",
+        "start_at",
+        "timezone"
+      ],
+      "input": {
+        "description": "x",
+        "end_at": "2026-01-01T10:00:00Z",
+        "name": "x",
+        "start_at": "2026-01-01T10:00:00Z",
+        "timezone": "Europe/Moscow"
+      }
+    },
+    "required": {
       "dump": {
         "description": null,
         "end_at": null,
@@ -3825,21 +3943,10 @@
   },
   "stage.StageRead": {
     "full": {
-      "dto": {
-        "dropped": [
-          "id"
-        ],
-        "mapped": {
-          "description": "x",
-          "end_at": "2026-01-01T10:00:00+00:00",
-          "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
-          "name": "x",
-          "start_at": "2026-01-01T10:00:00+00:00",
-          "timezone": "Europe/Moscow"
-        }
-      },
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
         "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
         "end_at": "2026-01-01T10:00:00Z",
         "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
         "id": "0afc80b6-f1cf-54f4-b26b-0b2eba4a6163",
@@ -3848,7 +3955,9 @@
         "timezone": "Europe/Moscow"
       },
       "fields_set": [
+        "created_at",
         "description",
+        "edited_at",
         "end_at",
         "event_id",
         "id",
@@ -3857,7 +3966,9 @@
         "timezone"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
         "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
         "end_at": "2026-01-01T10:00:00Z",
         "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
         "id": "0afc80b6-f1cf-54f4-b26b-0b2eba4a6163",
@@ -3867,21 +3978,10 @@
       }
     },
     "required": {
-      "dto": {
-        "dropped": [
-          "id"
-        ],
-        "mapped": {
-          "description": null,
-          "end_at": null,
-          "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
-          "name": "x",
-          "start_at": "2026-01-01T10:00:00+00:00",
-          "timezone": null
-        }
-      },
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
         "description": null,
+        "edited_at": "2026-01-01T10:00:00Z",
         "end_at": null,
         "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
         "id": "0afc80b6-f1cf-54f4-b26b-0b2eba4a6163",
@@ -3890,12 +3990,16 @@
         "timezone": null
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "event_id",
         "id",
         "name",
         "start_at"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "event_id": "4e3b20c1-9337-5a03-849f-eaffec0facbb",
         "id": "0afc80b6-f1cf-54f4-b26b-0b2eba4a6163",
         "name": "x",

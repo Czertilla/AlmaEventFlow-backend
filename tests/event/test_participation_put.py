@@ -1,3 +1,4 @@
+import datetime
 from types import SimpleNamespace
 from typing import Any, cast
 from uuid import uuid4
@@ -50,6 +51,8 @@ async def test_put_replaces_the_fields_and_returns_the_participation():
         event_id=event_id,
         collective_id=collective_id,
         priority_degree=EventPriorityEnumV1.low,
+        created_at=datetime.datetime(2026, 1, 1, tzinfo=datetime.UTC),
+        edited_at=None,
         collective=None,
     )
     uow = UoW(row)

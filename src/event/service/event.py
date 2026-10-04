@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 from logging import getLogger
 from uuid import UUID
 
@@ -54,6 +55,19 @@ from event.service.stage import StageService
 from event.uow.event import EventUOW
 
 logger = getLogger(__name__)
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class EventSnapshot:
+    status: str | None
+    name: str | None
+    date: datetime.date | None
+
+    @classmethod
+    def of(cls, event: EventORM | None) -> "EventSnapshot | None":
+        if event is None:
+            return None
+        return cls(status=event.status, name=event.name, date=event.date)
 
 
 class EventService(BaseService[EventUOW]):
@@ -213,6 +227,9 @@ class EventService(BaseService[EventUOW]):
         event = await self.uow.events.update_one(event_id, event_data, flush)
         if event is None:
             raise EventNotExistsException()
+        self.uow.events.session.expire(
+            event, ["status_rel", "level_rel", "type_rel"]
+        )
         event = await self.uow.events.get_by_id(
             event.id,
             options=(
@@ -235,7 +252,7 @@ class EventService(BaseService[EventUOW]):
         await notify_collective_chats(self.uow, event_ids=[event_id])
 
     async def _publish_activation(
-        self, old: EventORM | None, event: EventORM
+        self, old: EventSnapshot | None, event: EventORM
     ) -> None:
         """Notifies attendees on a transition into a trigger status (the
         original 'mark your attendance' ping), and again on a later material
@@ -315,7 +332,7 @@ class EventService(BaseService[EventUOW]):
     async def patch(self, event_patch: EventPatchDTO) -> EventDTO:
         async with self.uow as uow:
             await self._validate_patch_active_date(event_patch)
-            old = await self._read(event_patch.id)
+            old = EventSnapshot.of(await self._read(event_patch.id))
             event_data = dto_dict(
                 event_patch, only_set=True, exclude={"status", "level", "type"}
             )
@@ -346,7 +363,7 @@ class EventService(BaseService[EventUOW]):
     async def put(self, event_put: EventPutDTO) -> EventDTO:
         async with self.uow as uow:
             self._ensure_active_has_date(event_put.status, event_put.date)
-            old = await self._read(event_put.id)
+            old = EventSnapshot.of(await self._read(event_put.id))
             event_data = dto_dict(
                 event_put, exclude={"id", "status", "level", "type"}
             )
@@ -500,7 +517,7 @@ class EventService(BaseService[EventUOW]):
                 collective_id, event_put.id
             )
             self._ensure_active_has_date(event_put.status, event_put.date)
-            old = await self._read(event_put.id)
+            old = EventSnapshot.of(await self._read(event_put.id))
 
             event_data = dto_dict(
                 event_put, exclude={"id", "status", "level", "type"}
@@ -534,7 +551,7 @@ class EventService(BaseService[EventUOW]):
                 collective_id, event_patch.id
             )
             await self._validate_patch_active_date(event_patch)
-            old = await self._read(event_patch.id)
+            old = EventSnapshot.of(await self._read(event_patch.id))
 
             event_data = dto_dict(
                 event_patch, only_set=True, exclude={"status", "level", "type"}

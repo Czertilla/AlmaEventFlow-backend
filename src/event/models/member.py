@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.core import Base
-from core.database.sqlalchemy.mixins.models import UUIDMixin
+from core.database.sqlalchemy.mixins.models import TimestampMixin, UUIDMixin
 
 from ._base import ModuleBase
 
@@ -26,7 +26,7 @@ class MemberRoleAssociation(ModuleBase, Base):
     )
 
 
-class MemberORM(ModuleBase, Base, UUIDMixin):
+class MemberORM(ModuleBase, Base, UUIDMixin, TimestampMixin):
     __tablename__ = "member"
     __table_args__ = (UniqueConstraint("person_id", "collective_id"),)
 

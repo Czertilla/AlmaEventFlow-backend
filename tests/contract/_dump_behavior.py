@@ -1,6 +1,9 @@
+import dataclasses
 import importlib
 import json
 import sys
+import types
+import typing
 from pathlib import Path
 from typing import Any, cast
 
@@ -20,14 +23,45 @@ def _load(reference: str) -> type:
     return getattr(importlib.import_module(module), name)
 
 
+def _nullable_fields(dto_cls: type) -> list[str]:
+    hints = typing.get_type_hints(dto_cls)
+    names: list[str] = []
+    for f in dataclasses.fields(dto_cls):
+        hint = hints[f.name]
+        origin = typing.get_origin(hint)
+        if origin in (typing.Union, types.UnionType) and type(None) in typing.get_args(
+            hint
+        ):
+            names.append(f.name)
+    return names
+
+
+def _rejected_nulls(model: type, dto_cls: type) -> list[str]:
+    failures: list[str] = []
+    base = dto_example(dto_cls)
+    for name in _nullable_fields(dto_cls):
+        variant = dataclasses.replace(base, **{name: None})
+        try:
+            cast("Any", model).from_dto(variant)
+        except ValidationError as exc:
+            codes = sorted({f"{'.'.join(str(p) for p in err['loc'])}" for err in exc.errors()})
+            failures.append(f"{name}:{','.join(codes)}")
+    return failures
+
+
 def _responses(package: str, pairs: dict[str, str]) -> dict[str, Any]:
     models = schema_models(package)
     converting = sorted(
         key for key, model in models.items() if issubclass(model, FromDTOMixinV1)
     )
     rendered: dict[str, Any] = {}
+    rejected: dict[str, list[str]] = {}
     for key, reference in pairs.items():
-        dto = dto_example(_load(reference))
+        dto_cls = _load(reference)
+        failures = _rejected_nulls(models[key], dto_cls)
+        if failures:
+            rejected[key] = failures
+        dto = dto_example(dto_cls)
         record: dict[str, Any] = {}
         try:
             response: BaseModel = cast("Any", models[key]).from_dto(dto)
@@ -39,7 +73,7 @@ def _responses(package: str, pairs: dict[str, str]) -> dict[str, Any]:
         else:
             record["response"] = response.model_dump(mode="json", by_alias=True)
         rendered[key] = record
-    return {"converting": converting, "rendered": rendered}
+    return {"converting": converting, "rendered": rendered, "rejected": rejected}
 
 
 def main() -> None:
