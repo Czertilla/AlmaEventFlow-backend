@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from dataclasses import fields as dataclass_fields
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -35,3 +36,12 @@ def dto_from_orm[T: DataclassInstance](orm: object, dto_cls: type[T]) -> T:
             if f.name != "fields_set"
         }
     )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class TimestampFilterDTOMixin:
+    created_at__gte: datetime | None = None
+    created_at__lte: datetime | None = None
+    edited_at__gte: datetime | None = None
+    edited_at__lte: datetime | None = None
+    edited_at__isnull: bool | None = None
