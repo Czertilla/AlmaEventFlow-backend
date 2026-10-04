@@ -54,8 +54,6 @@ class CollectiveService(BaseService[CollectiveUOW]):
         self,
         collective_id: UUID,
         collective_data: dict[str, Any],
-        *,
-        flush: bool = False,
     ) -> CollectiveORM:
         # merge() on a transient partial instance would null out unpatched columns
         collective = await self.uow.collectives.get_by_id(collective_id)
@@ -63,8 +61,7 @@ class CollectiveService(BaseService[CollectiveUOW]):
             raise CollectiveNotExistsException()
         for key, value in collective_data.items():
             setattr(collective, key, value)
-        if flush:
-            await self.uow.session.flush()
+        await self.uow.session.flush()
         return collective
 
     @required_transaction

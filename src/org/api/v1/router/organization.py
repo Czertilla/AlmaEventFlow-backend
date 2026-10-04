@@ -10,7 +10,7 @@ from core.schema.v1.pagination import PageParamV1, PageV1
 from org.api.v1.schema.organization import (
     OrganizationCreate,
     OrganizationPatch,
-    OrganizationPut,
+    OrganizationPatchData,
     OrganizationRead,
 )
 from org.dependency.organization import OrganizationUOWDep
@@ -57,33 +57,22 @@ async def create_organization(
     )
 
 
-@router.put(
-    "/{organization_id}",
-    responses={**auth_responses(), **entity_not_found_responses("organization")},
-)
-async def put_organization(
-    organization_id: UUID,
-    organization: OrganizationPut,
-    user: SuperUserJWTDep,
-    uow: OrganizationUOWDep,
-) -> OrganizationRead:
-    return OrganizationRead.from_dto(
-        await OrganizationService(uow).put(organization.to_dto())
-    )
-
-
 @router.patch(
     "/{organization_id}",
     responses={**auth_responses(), **entity_not_found_responses("organization")},
 )
 async def patch_organization(
     organization_id: UUID,
-    organization: OrganizationPatch,
+    organization: OrganizationPatchData,
     user: SuperUserJWTDep,
     uow: OrganizationUOWDep,
 ) -> OrganizationRead:
     return OrganizationRead.from_dto(
-        await OrganizationService(uow).patch(organization.to_dto())
+        await OrganizationService(uow).patch(
+            OrganizationPatch.model_validate(
+                {"id": organization_id, **organization.model_dump()}
+            ).to_dto()
+        )
     )
 
 

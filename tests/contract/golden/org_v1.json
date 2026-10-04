@@ -309,6 +309,8 @@
       "dump": {
         "acronym": "x",
         "address_id": "85224242-0c64-5879-8864-d4a4b200ea82",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
         "name": "x",
         "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056",
@@ -318,6 +320,8 @@
       "fields_set": [
         "acronym",
         "address_id",
+        "created_at",
+        "edited_at",
         "id",
         "name",
         "principal_id",
@@ -327,6 +331,8 @@
       "input": {
         "acronym": "x",
         "address_id": "85224242-0c64-5879-8864-d4a4b200ea82",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
         "name": "x",
         "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056",
@@ -338,6 +344,8 @@
       "dump": {
         "acronym": null,
         "address_id": null,
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
         "name": "x",
         "principal_id": null,
@@ -345,10 +353,14 @@
         "university_id": null
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "id",
         "name"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
         "name": "x"
       }
@@ -664,6 +676,8 @@
       "dump": {
         "acronym": "x",
         "address_id": "93be6dd6-f4b0-58f8-a95f-c258fc578f9d",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "563e6e27-3610-5bdf-93e2-56d7bb0e6481",
         "name": "x",
         "principal_id": "0703e532-107d-5a8b-ad51-fafce3272609",
@@ -673,6 +687,8 @@
       "fields_set": [
         "acronym",
         "address_id",
+        "created_at",
+        "edited_at",
         "id",
         "name",
         "principal_id",
@@ -682,6 +698,8 @@
       "input": {
         "acronym": "x",
         "address_id": "93be6dd6-f4b0-58f8-a95f-c258fc578f9d",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "563e6e27-3610-5bdf-93e2-56d7bb0e6481",
         "name": "x",
         "principal_id": "0703e532-107d-5a8b-ad51-fafce3272609",
@@ -693,6 +711,8 @@
       "dump": {
         "acronym": null,
         "address_id": null,
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "563e6e27-3610-5bdf-93e2-56d7bb0e6481",
         "name": "x",
         "principal_id": null,
@@ -700,10 +720,14 @@
         "university_id": null
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "id",
         "name"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "563e6e27-3610-5bdf-93e2-56d7bb0e6481",
         "name": "x"
       }
@@ -715,22 +739,19 @@
         "acronym": "x",
         "address_id": "8fb922ce-aae4-54fc-81ca-14d4e6f23ea0",
         "name": "x",
-        "principal_id": "a0b8f100-2c02-54f2-9646-b9578c1c00b0",
-        "type": "x"
+        "principal_id": "a0b8f100-2c02-54f2-9646-b9578c1c00b0"
       },
       "fields_set": [
         "acronym",
         "address_id",
         "name",
-        "principal_id",
-        "type"
+        "principal_id"
       ],
       "input": {
         "acronym": "x",
         "address_id": "8fb922ce-aae4-54fc-81ca-14d4e6f23ea0",
         "name": "x",
-        "principal_id": "a0b8f100-2c02-54f2-9646-b9578c1c00b0",
-        "type": "x"
+        "principal_id": "a0b8f100-2c02-54f2-9646-b9578c1c00b0"
       }
     },
     "required": {
@@ -738,16 +759,13 @@
         "acronym": null,
         "address_id": null,
         "name": "x",
-        "principal_id": null,
-        "type": "x"
+        "principal_id": null
       },
       "fields_set": [
-        "name",
-        "type"
+        "name"
       ],
       "input": {
-        "name": "x",
-        "type": "x"
+        "name": "x"
       }
     }
   },
@@ -759,30 +777,26 @@
           "acronym": "x",
           "address_id": "b7808a69-fc66-5d89-b228-2bb43e08ee9b",
           "name": "x",
-          "principal_id": "4debadcb-18d0-5aa5-ad66-3b2420337ef8",
-          "type": "x"
+          "principal_id": "4debadcb-18d0-5aa5-ad66-3b2420337ef8"
         }
       },
       "dump": {
         "acronym": "x",
         "address_id": "b7808a69-fc66-5d89-b228-2bb43e08ee9b",
         "name": "x",
-        "principal_id": "4debadcb-18d0-5aa5-ad66-3b2420337ef8",
-        "type": "x"
+        "principal_id": "4debadcb-18d0-5aa5-ad66-3b2420337ef8"
       },
       "fields_set": [
         "acronym",
         "address_id",
         "name",
-        "principal_id",
-        "type"
+        "principal_id"
       ],
       "input": {
         "acronym": "x",
         "address_id": "b7808a69-fc66-5d89-b228-2bb43e08ee9b",
         "name": "x",
-        "principal_id": "4debadcb-18d0-5aa5-ad66-3b2420337ef8",
-        "type": "x"
+        "principal_id": "4debadcb-18d0-5aa5-ad66-3b2420337ef8"
       }
     },
     "required": {
@@ -792,24 +806,20 @@
           "acronym": null,
           "address_id": null,
           "name": "x",
-          "principal_id": null,
-          "type": "x"
+          "principal_id": null
         }
       },
       "dump": {
         "acronym": null,
         "address_id": null,
         "name": "x",
-        "principal_id": null,
-        "type": "x"
+        "principal_id": null
       },
       "fields_set": [
-        "name",
-        "type"
+        "name"
       ],
       "input": {
-        "name": "x",
-        "type": "x"
+        "name": "x"
       }
     }
   },
@@ -822,16 +832,14 @@
           "address_id",
           "id",
           "name",
-          "principal_id",
-          "type"
+          "principal_id"
         ],
         "mapped": {
           "acronym": "x",
           "address_id": "813bc04a-8806-5e0e-b3a3-14029a3340dd",
           "id": "06c15207-0183-551c-990e-a86d01a200d5",
           "name": "x",
-          "principal_id": "ab829f63-8ff4-5915-b861-550da9ae5aa0",
-          "type": "x"
+          "principal_id": "ab829f63-8ff4-5915-b861-550da9ae5aa0"
         }
       },
       "dump": {
@@ -839,24 +847,21 @@
         "address_id": "813bc04a-8806-5e0e-b3a3-14029a3340dd",
         "id": "06c15207-0183-551c-990e-a86d01a200d5",
         "name": "x",
-        "principal_id": "ab829f63-8ff4-5915-b861-550da9ae5aa0",
-        "type": "x"
+        "principal_id": "ab829f63-8ff4-5915-b861-550da9ae5aa0"
       },
       "fields_set": [
         "acronym",
         "address_id",
         "id",
         "name",
-        "principal_id",
-        "type"
+        "principal_id"
       ],
       "input": {
         "acronym": "x",
         "address_id": "813bc04a-8806-5e0e-b3a3-14029a3340dd",
         "id": "06c15207-0183-551c-990e-a86d01a200d5",
         "name": "x",
-        "principal_id": "ab829f63-8ff4-5915-b861-550da9ae5aa0",
-        "type": "x"
+        "principal_id": "ab829f63-8ff4-5915-b861-550da9ae5aa0"
       }
     },
     "required": {
@@ -886,22 +891,19 @@
         "acronym": "x",
         "address_id": "f0f7b845-b889-5c84-ba89-4ed5a77b68db",
         "name": "x",
-        "principal_id": "b243da63-33b4-5ef8-b79a-3b222e8589cf",
-        "type": "x"
+        "principal_id": "b243da63-33b4-5ef8-b79a-3b222e8589cf"
       },
       "fields_set": [
         "acronym",
         "address_id",
         "name",
-        "principal_id",
-        "type"
+        "principal_id"
       ],
       "input": {
         "acronym": "x",
         "address_id": "f0f7b845-b889-5c84-ba89-4ed5a77b68db",
         "name": "x",
-        "principal_id": "b243da63-33b4-5ef8-b79a-3b222e8589cf",
-        "type": "x"
+        "principal_id": "b243da63-33b4-5ef8-b79a-3b222e8589cf"
       }
     },
     "required": {
@@ -916,7 +918,7 @@
         "acronym": "x",
         "id": "6a17a15a-f212-50fa-afb8-cf223c1f72a8",
         "name": "x",
-        "type": "x"
+        "type": "organization"
       },
       "fields_set": [
         "acronym",
@@ -928,7 +930,7 @@
         "acronym": "x",
         "id": "6a17a15a-f212-50fa-afb8-cf223c1f72a8",
         "name": "x",
-        "type": "x"
+        "type": "organization"
       }
     },
     "required": {
@@ -936,7 +938,7 @@
         "acronym": null,
         "id": "6a17a15a-f212-50fa-afb8-cf223c1f72a8",
         "name": "x",
-        "type": "x"
+        "type": "organization"
       },
       "fields_set": [
         "id",
@@ -946,119 +948,7 @@
       "input": {
         "id": "6a17a15a-f212-50fa-afb8-cf223c1f72a8",
         "name": "x",
-        "type": "x"
-      }
-    }
-  },
-  "organization.OrganizationPut": {
-    "full": {
-      "dto": {
-        "dropped": [],
-        "mapped": {
-          "acronym": "x",
-          "address_id": "06a6f495-37a4-568a-86d5-90f989db55ef",
-          "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
-          "name": "x",
-          "principal_id": "f9dcc9bc-f39b-55a5-947b-c4f3b72fa194",
-          "type": "x"
-        }
-      },
-      "dump": {
-        "acronym": "x",
-        "address_id": "06a6f495-37a4-568a-86d5-90f989db55ef",
-        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
-        "name": "x",
-        "principal_id": "f9dcc9bc-f39b-55a5-947b-c4f3b72fa194",
-        "type": "x"
-      },
-      "fields_set": [
-        "acronym",
-        "address_id",
-        "id",
-        "name",
-        "principal_id",
-        "type"
-      ],
-      "input": {
-        "acronym": "x",
-        "address_id": "06a6f495-37a4-568a-86d5-90f989db55ef",
-        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
-        "name": "x",
-        "principal_id": "f9dcc9bc-f39b-55a5-947b-c4f3b72fa194",
-        "type": "x"
-      }
-    },
-    "required": {
-      "dto": {
-        "dropped": [],
-        "mapped": {
-          "acronym": null,
-          "address_id": null,
-          "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
-          "name": "x",
-          "principal_id": null,
-          "type": "x"
-        }
-      },
-      "dump": {
-        "acronym": null,
-        "address_id": null,
-        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
-        "name": "x",
-        "principal_id": null,
-        "type": "x"
-      },
-      "fields_set": [
-        "id",
-        "name",
-        "type"
-      ],
-      "input": {
-        "id": "d5f7013f-2e95-5294-ac1c-257a1fd56ad8",
-        "name": "x",
-        "type": "x"
-      }
-    }
-  },
-  "organization.OrganizationPutData": {
-    "full": {
-      "dump": {
-        "acronym": "x",
-        "address_id": "e0656fe7-8031-5c8a-b983-dc9eca34316f",
-        "name": "x",
-        "principal_id": "ea9d8d6b-2c09-501c-9d93-0ff188ebffac",
-        "type": "x"
-      },
-      "fields_set": [
-        "acronym",
-        "address_id",
-        "name",
-        "principal_id",
-        "type"
-      ],
-      "input": {
-        "acronym": "x",
-        "address_id": "e0656fe7-8031-5c8a-b983-dc9eca34316f",
-        "name": "x",
-        "principal_id": "ea9d8d6b-2c09-501c-9d93-0ff188ebffac",
-        "type": "x"
-      }
-    },
-    "required": {
-      "dump": {
-        "acronym": null,
-        "address_id": null,
-        "name": "x",
-        "principal_id": null,
-        "type": "x"
-      },
-      "fields_set": [
-        "name",
-        "type"
-      ],
-      "input": {
-        "name": "x",
-        "type": "x"
+        "type": "organization"
       }
     }
   },
@@ -1067,14 +957,18 @@
       "dump": {
         "acronym": "x",
         "address_id": "ab6fe0ba-e2e6-555d-b4bb-76c2938d6367",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
         "name": "x",
         "principal_id": "ce141cc4-5291-5c59-9ad4-de69aa231830",
-        "type": "x"
+        "type": "organization"
       },
       "fields_set": [
         "acronym",
         "address_id",
+        "created_at",
+        "edited_at",
         "id",
         "name",
         "principal_id",
@@ -1083,30 +977,38 @@
       "input": {
         "acronym": "x",
         "address_id": "ab6fe0ba-e2e6-555d-b4bb-76c2938d6367",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
         "name": "x",
         "principal_id": "ce141cc4-5291-5c59-9ad4-de69aa231830",
-        "type": "x"
+        "type": "organization"
       }
     },
     "required": {
       "dump": {
         "acronym": null,
         "address_id": null,
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
         "name": "x",
         "principal_id": null,
-        "type": "x"
+        "type": "organization"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "id",
         "name",
         "type"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "abb2bd58-3957-54dc-8f09-5bf9785c3037",
         "name": "x",
-        "type": "x"
+        "type": "organization"
       }
     }
   },
@@ -1641,6 +1543,8 @@
       "dump": {
         "acronym": "x",
         "address_id": "18356002-3540-5d64-bc5a-029cf971de1c",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "7ff736a5-fa0d-58a0-8b12-de1ceb3d8254",
         "name": "x",
         "principal_id": "2c4b1a2b-f4ee-57d1-af91-9c2eb20b2069",
@@ -1649,6 +1553,8 @@
       "fields_set": [
         "acronym",
         "address_id",
+        "created_at",
+        "edited_at",
         "id",
         "name",
         "principal_id",
@@ -1657,6 +1563,8 @@
       "input": {
         "acronym": "x",
         "address_id": "18356002-3540-5d64-bc5a-029cf971de1c",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "7ff736a5-fa0d-58a0-8b12-de1ceb3d8254",
         "name": "x",
         "principal_id": "2c4b1a2b-f4ee-57d1-af91-9c2eb20b2069",
@@ -1667,16 +1575,22 @@
       "dump": {
         "acronym": null,
         "address_id": null,
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "7ff736a5-fa0d-58a0-8b12-de1ceb3d8254",
         "name": "x",
         "principal_id": null,
         "type": "university"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "id",
         "name"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "7ff736a5-fa0d-58a0-8b12-de1ceb3d8254",
         "name": "x"
       }

@@ -19,4 +19,5 @@ class UniversityORM(OrganizationORM):
 
     __mapper_args__ = {
         "polymorphic_identity": "university",
+        "eager_defaults": True,
     }

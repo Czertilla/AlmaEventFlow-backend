@@ -217,6 +217,23 @@
             ],
             "title": "Address Id"
           },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
@@ -258,6 +275,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "name"
         ],
@@ -503,6 +522,23 @@
             ],
             "title": "Address Id"
           },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
@@ -544,6 +580,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "name"
         ],
@@ -605,20 +643,15 @@
               }
             ],
             "title": "Principal Id"
-          },
-          "type": {
-            "title": "Type",
-            "type": "string"
           }
         },
         "required": [
-          "type",
           "name"
         ],
         "title": "OrganizationCreate",
         "type": "object"
       },
-      "OrganizationPatch": {
+      "OrganizationPatchData": {
         "properties": {
           "acronym": {
             "anyOf": [
@@ -643,11 +676,6 @@
               }
             ],
             "title": "Address Id"
-          },
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
           },
           "name": {
             "anyOf": [
@@ -672,84 +700,9 @@
               }
             ],
             "title": "Principal Id"
-          },
-          "type": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Type"
           }
         },
-        "required": [
-          "id"
-        ],
-        "title": "OrganizationPatch",
-        "type": "object"
-      },
-      "OrganizationPut": {
-        "properties": {
-          "acronym": {
-            "anyOf": [
-              {
-                "maxLength": 16,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Acronym"
-          },
-          "address_id": {
-            "anyOf": [
-              {
-                "format": "uuid",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Address Id"
-          },
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "name": {
-            "maxLength": 128,
-            "title": "Name",
-            "type": "string"
-          },
-          "principal_id": {
-            "anyOf": [
-              {
-                "format": "uuid",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Principal Id"
-          },
-          "type": {
-            "title": "Type",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "name"
-        ],
-        "title": "OrganizationPut",
+        "title": "OrganizationPatchData",
         "type": "object"
       },
       "OrganizationRead": {
@@ -778,6 +731,23 @@
             ],
             "title": "Address Id"
           },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
@@ -801,17 +771,28 @@
             "title": "Principal Id"
           },
           "type": {
-            "title": "Type",
-            "type": "string"
+            "$ref": "#/components/schemas/OrganizationTypeEnum"
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
-          "type",
-          "name"
+          "name",
+          "type"
         ],
         "title": "OrganizationRead",
         "type": "object"
+      },
+      "OrganizationTypeEnum": {
+        "enum": [
+          "organization",
+          "university",
+          "faculty",
+          "collective"
+        ],
+        "title": "OrganizationTypeEnum",
+        "type": "string"
       },
       "PageV1_CollectiveRead_": {
         "properties": {
@@ -1098,6 +1079,23 @@
             ],
             "title": "Address Id"
           },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
@@ -1127,6 +1125,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "name"
         ],
@@ -1182,6 +1182,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -1215,6 +1299,72 @@
           },
           {
             "in": "query",
+            "name": "principal_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Principal Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "principal_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Principal Id  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "address_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Address Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "address_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Address Id  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "university_id",
             "required": false,
             "schema": {
@@ -1228,6 +1378,22 @@
                 }
               ],
               "title": "University Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "university_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "University Id  Isnull"
             }
           },
           {
@@ -1864,6 +2030,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -1893,6 +2143,105 @@
                 }
               ],
               "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "principal_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Principal Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "principal_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Principal Id  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "address_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Address Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "address_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Address Id  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "university_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "University Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "university_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "University Id  Isnull"
             }
           },
           {
@@ -2529,6 +2878,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -2567,7 +3000,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "$ref": "#/components/schemas/OrganizationTypeEnum"
                 },
                 {
                   "type": "null"
@@ -2590,6 +3023,72 @@
                 }
               ],
               "title": "Type  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "principal_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Principal Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "principal_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Principal Id  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "address_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Address Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "address_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Address Id  Isnull"
             }
           },
           {
@@ -3005,7 +3504,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OrganizationPatch"
+                "$ref": "#/components/schemas/OrganizationPatchData"
               }
             }
           },
@@ -3102,128 +3601,96 @@
         "tags": [
           "organization"
         ]
-      },
-      "put": {
-        "operationId": "put_organization_org_v1_organizations__organization_id__put",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "organization_id",
-            "required": true,
-            "schema": {
-              "format": "uuid",
-              "title": "Organization Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OrganizationPut"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrganizationRead"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "INVALID_AUTHENTICATION_CREDENTIALS": {
-                    "summary": "Token decode failed",
-                    "value": {
-                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
-                    }
-                  },
-                  "NOT_AUTHENTICATED": {
-                    "summary": "Missing or invalid authentication token",
-                    "value": {
-                      "detail": "NOT_AUTHENTICATED"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Missing or invalid authentication token"
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "FORBIDDEN": {
-                    "summary": "Not superuser or not verified",
-                    "value": {
-                      "detail": "FORBIDDEN"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Insufficient permissions"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "ORGANIZATION_NOT_FOUND": {
-                    "summary": "ORGANIZATION_NOT_FOUND",
-                    "value": {
-                      "detail": "ORGANIZATION_NOT_FOUND"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "ORGANIZATION_NOT_FOUND"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Put Organization",
-        "tags": [
-          "organization"
-        ]
       }
     },
     "/org/v1/universities": {
       "get": {
         "operationId": "list_universities_org_v1_universities_get",
         "parameters": [
+          {
+            "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
           {
             "in": "query",
             "name": "order_by",
@@ -3255,6 +3722,72 @@
                 }
               ],
               "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "principal_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Principal Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "principal_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Principal Id  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "address_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Address Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "address_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Address Id  Isnull"
             }
           },
           {

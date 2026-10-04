@@ -3,6 +3,8 @@
     "response": {
       "acronym": "x",
       "address_id": "7e85546d-f0b9-5c35-95fd-519d38ce8853",
+      "created_at": "2026-01-01T10:00:00Z",
+      "edited_at": "2026-01-01T10:00:00Z",
       "id": "ad03e811-0a63-5743-81c7-4858dd5d03d6",
       "name": "x",
       "principal_id": "17a51bc7-6457-574c-b929-5df23f398ceb",
@@ -14,6 +16,8 @@
     "response": {
       "acronym": "x",
       "address_id": "589a2754-5974-5f67-907f-d1354f2523f9",
+      "created_at": "2026-01-01T10:00:00Z",
+      "edited_at": "2026-01-01T10:00:00Z",
       "id": "c808f94b-09cb-5de6-9c17-fdc05bae5f75",
       "name": "x",
       "principal_id": "4e6a1599-4ca0-5668-9350-7dabe97ce4a6",
@@ -25,16 +29,20 @@
     "response": {
       "acronym": "x",
       "address_id": "81ff006f-7ceb-5ac5-8678-60b80688d5b0",
+      "created_at": "2026-01-01T10:00:00Z",
+      "edited_at": "2026-01-01T10:00:00Z",
       "id": "4eea6733-1b98-57ae-94c1-05689f227108",
       "name": "x",
       "principal_id": "9a8a5433-fe0d-5cc1-b954-28f8f5d9564f",
-      "type": "x"
+      "type": "organization"
     }
   },
   "university.UniversityRead": {
     "response": {
       "acronym": "x",
       "address_id": "824878c8-40c6-5e79-979e-832967e346a6",
+      "created_at": "2026-01-01T10:00:00Z",
+      "edited_at": "2026-01-01T10:00:00Z",
       "id": "6304a779-7f5a-5100-8b50-4ee8933249df",
       "name": "x",
       "principal_id": "de0d9ad5-102f-574f-88f0-1078543fba93",

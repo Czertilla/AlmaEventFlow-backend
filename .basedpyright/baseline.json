@@ -19332,14 +19332,6 @@
                     "endColumn": 8,
                     "lineCount": 1
                 }
-            },
-            {
-                "code": "reportIncompatibleVariableOverride",
-                "range": {
-                    "startColumn": 4,
-                    "endColumn": 8,
-                    "lineCount": 1
-                }
             }
         ],
         "./src/org/api/v1/schema/person.py": [
@@ -19702,8 +19694,8 @@
             {
                 "code": "reportOptionalMemberAccess",
                 "range": {
-                    "startColumn": 35,
-                    "endColumn": 40,
+                    "startColumn": 31,
+                    "endColumn": 36,
                     "lineCount": 1
                 }
             },
@@ -19878,8 +19870,8 @@
             {
                 "code": "reportOptionalMemberAccess",
                 "range": {
-                    "startColumn": 35,
-                    "endColumn": 40,
+                    "startColumn": 31,
+                    "endColumn": 36,
                     "lineCount": 1
                 }
             },
@@ -19930,14 +19922,6 @@
                 "range": {
                     "startColumn": 29,
                     "endColumn": 61,
-                    "lineCount": 1
-                }
-            },
-            {
-                "code": "reportReturnType",
-                "range": {
-                    "startColumn": 15,
-                    "endColumn": 78,
                     "lineCount": 1
                 }
             },
@@ -19996,8 +19980,8 @@
             {
                 "code": "reportOptionalMemberAccess",
                 "range": {
-                    "startColumn": 35,
-                    "endColumn": 40,
+                    "startColumn": 31,
+                    "endColumn": 36,
                     "lineCount": 1
                 }
             },

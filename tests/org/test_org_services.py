@@ -22,7 +22,6 @@ from org.dto.organization import (
     OrganizationCreateDTO,
     OrganizationFilterDTO,
     OrganizationPatchDTO,
-    OrganizationPutDTO,
 )
 from org.dto.university import (
     UniversityCreateDTO,
@@ -49,7 +48,7 @@ class Case:
     service: type[Any]
     uow: type[Any]
     create_dto: type[Any]
-    put_dto: type[Any]
+    put_dto: type[Any] | None
     patch_dto: type[Any]
     filter_dto: type[Any]
     missing: type[Exception]
@@ -60,6 +59,7 @@ class Case:
         return self.create_dto(name=name, acronym="CC", **self.extra)
 
     def put(self, id: UUID, name: str) -> Any:
+        assert self.put_dto is not None
         return self.put_dto(id=id, name=name, acronym="PP", **self.extra)
 
     def patch(self, id: UUID, **changes: Any) -> Any:
@@ -101,12 +101,11 @@ CASES = {
         OrganizationService,
         OrganizationUOW,
         OrganizationCreateDTO,
-        OrganizationPutDTO,
+        None,
         OrganizationPatchDTO,
         OrganizationFilterDTO,
         OrganizationNotExistsException,
         "organization",
-        {"type": "organization"},
     ),
 }
 
@@ -155,8 +154,9 @@ async def test_crud_round_trip(
     assert cleared.name == "Second"
     assert published[-1][0] == "updated"
 
-    replaced = await service.put(case.put(created.id, "Third"))
-    assert (replaced.id, replaced.name) == (created.id, "Third")
+    if case.put_dto is not None:
+        replaced = await service.put(case.put(created.id, "Third"))
+        assert (replaced.id, replaced.name) == (created.id, "Third")
 
     await service.create(case.create("Other"))
     page = await service.search(case.filter_dto(), PageParamDTO(page=0, limit=1))

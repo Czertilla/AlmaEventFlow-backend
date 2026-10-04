@@ -22,4 +22,5 @@ class CollectiveORM(OrganizationORM):
 
     __mapper_args__ = {
         "polymorphic_identity": "collective",
+        "eager_defaults": True,
     }

@@ -54,8 +54,6 @@ class FacultyService(BaseService[FacultyUOW]):
         self,
         faculty_id: UUID,
         faculty_data: dict[str, Any],
-        *,
-        flush: bool = False,
     ) -> FacultyORM:
         # merge() on a transient partial instance would null out unpatched columns
         faculty = await self.uow.faculties.get_by_id(faculty_id)
@@ -63,8 +61,7 @@ class FacultyService(BaseService[FacultyUOW]):
             raise FacultyNotExistsException()
         for key, value in faculty_data.items():
             setattr(faculty, key, value)
-        if flush:
-            await self.uow.session.flush()
+        await self.uow.session.flush()
         return faculty
 
     @required_transaction

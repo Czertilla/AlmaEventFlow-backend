@@ -2,7 +2,7 @@ from logging import getLogger
 from typing import Any
 from uuid import UUID
 
-from core.dto.base import dto_dict, dto_from_orm
+from core.dto.base import dto_dict
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.schema.message.org import OrganizationData
 from core.service.base import BaseService, required_transaction
@@ -16,8 +16,8 @@ from org.dto.organization import (
     OrganizationDTO,
     OrganizationFilterDTO,
     OrganizationPatchDTO,
-    OrganizationPutDTO,
 )
+from org.enum.organization import OrganizationTypeEnum
 from org.exc.organization import OrganizationNotExistsException
 from org.filter.organization import OrganizationFilter
 from org.models.organization import OrganizationORM
@@ -29,7 +29,16 @@ logger = getLogger(__name__)
 class OrganizationService(BaseService[OrganizationUOW]):
     @staticmethod
     def _to_dto(organization: OrganizationORM) -> OrganizationDTO:
-        return dto_from_orm(organization, OrganizationDTO)
+        return OrganizationDTO(
+            id=organization.id,
+            type=OrganizationTypeEnum(organization.type),
+            name=organization.name,
+            acronym=organization.acronym,
+            principal_id=organization.principal_id,
+            address_id=organization.address_id,
+            created_at=organization.created_at,
+            edited_at=organization.edited_at,
+        )
 
     @staticmethod
     def _event(organization: OrganizationDTO) -> OrganizationData:
@@ -40,7 +49,10 @@ class OrganizationService(BaseService[OrganizationUOW]):
         self, organization_create: OrganizationCreateDTO
     ) -> OrganizationORM:
         return await self.uow.organizations.add_n_return(
-            data=dto_dict(organization_create)
+            data={
+                **dto_dict(organization_create),
+                "type": OrganizationTypeEnum.organization,
+            }
         )
 
     @required_transaction
@@ -64,10 +76,6 @@ class OrganizationService(BaseService[OrganizationUOW]):
         if organization is None:
             raise OrganizationNotExistsException()
         return organization
-
-    @required_transaction
-    async def _upsert(self, organization_put: OrganizationPutDTO) -> OrganizationORM:
-        return await self.uow.organizations.upsert(dto_dict(organization_put))
 
     @required_transaction
     async def _delete(self, organization_id: UUID) -> None:
@@ -94,13 +102,6 @@ class OrganizationService(BaseService[OrganizationUOW]):
             result = self._to_dto(
                 await self._update(organization_patch.id, organization_data)
             )
-            await uow.commit()
-        await on_organization_updated([self._event(result)])
-        return result
-
-    async def put(self, organization_put: OrganizationPutDTO) -> OrganizationDTO:
-        async with self.uow as uow:
-            result = self._to_dto(await self._upsert(organization_put))
             await uow.commit()
         await on_organization_updated([self._event(result)])
         return result

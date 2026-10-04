@@ -54,8 +54,6 @@ class UniversityService(BaseService[UniversityUOW]):
         self,
         university_id: UUID,
         university_data: dict[str, Any],
-        *,
-        flush: bool = False,
     ) -> UniversityORM:
         # merge() on a transient partial instance would null out unpatched columns
         university = await self.uow.universities.get_by_id(university_id)
@@ -63,8 +61,7 @@ class UniversityService(BaseService[UniversityUOW]):
             raise UniversityNotExistsException()
         for key, value in university_data.items():
             setattr(university, key, value)
-        if flush:
-            await self.uow.session.flush()
+        await self.uow.session.flush()
         return university
 
     @required_transaction

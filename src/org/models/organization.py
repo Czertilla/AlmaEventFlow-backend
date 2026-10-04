@@ -32,4 +32,5 @@ class OrganizationORM(ModuleBase, Base, TimestampMixin):
     __mapper_args__ = {
         "polymorphic_identity": "organization",
         "polymorphic_on": "type",
+        "eager_defaults": True,
     }
