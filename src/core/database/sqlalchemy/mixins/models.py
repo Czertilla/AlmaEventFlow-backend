@@ -8,6 +8,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 class TimestampMixin:
+    __mapper_args__ = {"eager_defaults": True}
+
     @declared_attr
     def created_at(cls) -> Mapped[datetime]:  # noqa: N805
         return mapped_column(default=func.now())

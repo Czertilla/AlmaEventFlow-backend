@@ -7,7 +7,8 @@ from core.filter.ordered import OrderedFilter
 
 class RelatedSearchFilter(OrderedFilter):
     """``search`` matches the model's own ``search_model_fields`` and the
-    ``search_related`` columns of the joined ``search_relation``."""
+    ``search_related`` columns of the single related row ``search_relation``
+    points at, without joining it (the sort may already have)."""
 
     search: str | None = None
 
@@ -23,12 +24,12 @@ class RelatedSearchFilter(OrderedFilter):
                 getattr(self.Constants.model, name).ilike(pattern)
                 for name in getattr(self.Constants, "search_model_fields", [])
             ]
-            related = [
-                column.ilike(pattern) for column in self.Constants.search_related
-            ]
-            query = query.join(self.Constants.search_relation).where(
-                or_(*own, *related)
+            related = self.Constants.search_relation.has(
+                or_(
+                    *[column.ilike(pattern) for column in self.Constants.search_related]
+                )
             )
+            query = query.where(or_(*own, related))
         self.search = None
         try:
             return super().filter(query)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]

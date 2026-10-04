@@ -1,7 +1,7 @@
-from typing import Any, ClassVar, Self
+from typing import Any, ClassVar
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import model_validator
+from pydantic import ValidationInfo, field_validator
 
 ORDER_HELP = (
     "Comma-separated fields, prefix a field with `-` for descending order. "
@@ -26,17 +26,23 @@ class OrderedFilter(Filter):
             field.description = ORDER_HELP.format(fields=", ".join(allowed))
             cls.model_rebuild(force=True)
 
-    @model_validator(mode="after")
-    def _check_order_fields(self) -> Self:
-        allowed = self.Constants.order_fields
-        if not allowed:
-            return self
-        entries: list[str] = self.ordering_values or []
+    @field_validator("*", mode="before", check_fields=False)
+    def validate_order_by(cls, value: Any, field: ValidationInfo) -> Any:
+        if field.field_name != cls.Constants.ordering_field_name:
+            return value
+        if not value:
+            return None
+        allowed = cls.Constants.order_fields
+        seen: set[str] = set()
+        entries: list[str] = value
         for entry in entries:
             name = entry.lstrip("+-")
-            if name not in allowed:
+            if allowed and name not in allowed:
                 raise ValueError(
                     f"{name} is not an allowed ordering field, "
                     f"use one of: {', '.join(allowed)}."
                 )
-        return self
+            if name in seen:
+                raise ValueError(f"{name} appears more than once in the ordering.")
+            seen.add(name)
+        return value
