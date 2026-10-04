@@ -102,9 +102,7 @@ async def patch_student(
 ) -> StudentRead:
     return StudentRead.from_dto(
         await StudentService(uow).patch(
-            StudentPatch(
-                id=student_id, **student.model_dump(exclude_unset=True)
-            ).to_dto()
+            StudentPatch(id=student_id, **student.model_dump()).to_dto()
         )
     )
 
@@ -183,9 +181,7 @@ async def patch_student_degree(
 ) -> StudentDegreeRead:
     return StudentDegreeRead.from_dto(
         await StudentDegreeService(uow).patch(
-            StudentDegreePatch(
-                id=degree_id, **degree.model_dump(exclude_unset=True)
-            ).to_dto()
+            StudentDegreePatch(id=degree_id, **degree.model_dump()).to_dto()
         )
     )
 
@@ -264,9 +260,7 @@ async def patch_student_group(
 ) -> StudentGroupRead:
     return StudentGroupRead.from_dto(
         await StudentGroupService(uow).patch(
-            StudentGroupPatch(
-                id=group_id, **group.model_dump(exclude_unset=True)
-            ).to_dto()
+            StudentGroupPatch(id=group_id, **group.model_dump()).to_dto()
         )
     )
 

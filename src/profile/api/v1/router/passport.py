@@ -115,7 +115,7 @@ async def patch_my_passport(
     return PassportRead.from_dto(
         await service.patch(
             PassportPatch(
-                person_id=user.person_id, **passport_data.model_dump(exclude_unset=True)
+                person_id=user.person_id, **passport_data.model_dump()
             ).to_dto()
         )
     )
@@ -138,7 +138,7 @@ async def delete_my_passport(
     return PassportRead.from_dto(
         await service.patch(
             PassportPatch(
-                person_id=user.person_id, **passport_data.model_dump(exclude_unset=True)
+                person_id=user.person_id, **passport_data.model_dump()
             ).to_dto()
         )
     )
@@ -196,9 +196,7 @@ async def patch_passport(
 ) -> PassportRead:
     return PassportRead.from_dto(
         await PassportService(uow).patch(
-            PassportPatch(
-                id=passport_id, **passport.model_dump(exclude_unset=True)
-            ).to_dto()
+            PassportPatch(id=passport_id, **passport.model_dump()).to_dto()
         )
     )
 
@@ -255,9 +253,7 @@ async def patch_name_variant(
     await PassportService(uow).ensure_existance(passport_id)
     return NameVariantRead.from_dto(
         await NameVariantService(uow).patch(
-            NameVariantPatch(
-                id=passport_id, **name_variant_data.model_dump(exclude_unset=True)
-            ).to_dto()
+            NameVariantPatch(id=passport_id, **name_variant_data.model_dump()).to_dto()
         )
     )
 

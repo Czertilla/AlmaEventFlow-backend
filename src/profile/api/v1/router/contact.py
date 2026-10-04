@@ -100,7 +100,7 @@ async def patch_my_contact(
     if user.person_id is None:
         raise NonPersonalUserException()
     await (service := ContactService(uow)).check_ownership(contact_id, user.person_id)
-    contact = ContactPatch(id=contact_id, **contact_data.model_dump(exclude_unset=True))
+    contact = ContactPatch(id=contact_id, **contact_data.model_dump())
     return ContactRead.from_dto(await service.patch(contact.to_dto()))
 
 

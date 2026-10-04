@@ -90,9 +90,7 @@ async def patch_my_person(
         raise NonPersonalUserException()
     return PersonRead.from_dto(
         await PersonService(uow).patch(
-            PersonPatch(
-                id=user.person_id, **person_data.model_dump(exclude_unset=True)
-            ).to_dto()
+            PersonPatch(id=user.person_id, **person_data.model_dump()).to_dto()
         )
     )
 
@@ -141,7 +139,7 @@ async def patch_person(
 ) -> PersonRead:
     return PersonRead.from_dto(
         await PersonService(uow).patch(
-            PersonPatch(id=person_id, **person.model_dump(exclude_unset=True)).to_dto()
+            PersonPatch(id=person_id, **person.model_dump()).to_dto()
         )
     )
 

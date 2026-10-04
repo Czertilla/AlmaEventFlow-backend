@@ -122,9 +122,7 @@ async def patch_profile(
 ) -> ProfileRead:
     return ProfileRead.from_dto(
         await ProfileService(uow).patch(
-            ProfilePatch(
-                id=profile_id, **profile.model_dump(exclude_unset=True)
-            ).to_dto()
+            ProfilePatch(id=profile_id, **profile.model_dump()).to_dto()
         )
     )
 
