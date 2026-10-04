@@ -2,7 +2,15 @@ from datetime import datetime
 from logging import Logger, getLogger
 from typing import Any, Generic, TypeVar
 
-from sqlalchemy import Result, SQLColumnExpression, exists, func, insert, select
+from sqlalchemy import (
+    Executable,
+    Result,
+    SQLColumnExpression,
+    exists,
+    func,
+    insert,
+    select,
+)
 from sqlalchemy.orm import DeclarativeBase, Session
 from sqlalchemy.types import DateTime
 
@@ -51,7 +59,7 @@ class SQLAlchemyRepository(Generic[Model], AbstractRepository):
         super().__init__()
         self.session: Session = session
 
-    async def execute(self, stmt, flush: bool = False) -> Result:
+    async def execute(self, stmt: Executable, flush: bool = False) -> Result[Any]:
         self.logger.debug(str(stmt))
         result: Result = await self.session.execute(statement=stmt)
         if flush:

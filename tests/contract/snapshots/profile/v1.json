@@ -53,6 +53,29 @@
         "title": "ContactItemCreate",
         "type": "object"
       },
+      "ContactItemPutData": {
+        "properties": {
+          "is_main": {
+            "default": false,
+            "title": "Is Main",
+            "type": "boolean"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "value": {
+            "maxLength": 256,
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "title": "ContactItemPutData",
+        "type": "object"
+      },
       "ContactItemRead": {
         "properties": {
           "id": {
@@ -152,6 +175,23 @@
       },
       "ContactRead": {
         "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
@@ -177,6 +217,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "type",
           "value",
@@ -222,7 +264,7 @@
         "title": "DietCreate",
         "type": "object"
       },
-      "DietPatch": {
+      "DietPatchData": {
         "properties": {
           "description": {
             "anyOf": [
@@ -235,10 +277,6 @@
               }
             ],
             "title": "Description"
-          },
-          "id": {
-            "title": "Id",
-            "type": "integer"
           },
           "name": {
             "anyOf": [
@@ -253,13 +291,10 @@
             "title": "Name"
           }
         },
-        "required": [
-          "id"
-        ],
-        "title": "DietPatch",
+        "title": "DietPatchData",
         "type": "object"
       },
-      "DietPut": {
+      "DietPutData": {
         "properties": {
           "description": {
             "anyOf": [
@@ -273,10 +308,6 @@
             ],
             "title": "Description"
           },
-          "id": {
-            "title": "Id",
-            "type": "integer"
-          },
           "name": {
             "maxLength": 128,
             "title": "Name",
@@ -284,10 +315,9 @@
           }
         },
         "required": [
-          "id",
           "name"
         ],
-        "title": "DietPut",
+        "title": "DietPutData",
         "type": "object"
       },
       "DietRead": {
@@ -718,70 +748,6 @@
         "title": "PaginationV1",
         "type": "object"
       },
-      "PassportCreate": {
-        "properties": {
-          "expire_date": {
-            "format": "date",
-            "title": "Expire Date",
-            "type": "string"
-          },
-          "is_foreign": {
-            "title": "Is Foreign",
-            "type": "boolean"
-          },
-          "issued_authority": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Issued Authority"
-          },
-          "issued_date": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Issued Date"
-          },
-          "name_variant": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/NameVariantCreate"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "number": {
-            "maxLength": 32,
-            "title": "Number",
-            "type": "string"
-          },
-          "profile_id": {
-            "format": "uuid",
-            "title": "Profile Id",
-            "type": "string"
-          }
-        },
-        "required": [
-          "number",
-          "expire_date",
-          "is_foreign",
-          "profile_id"
-        ],
-        "title": "PassportCreate",
-        "type": "object"
-      },
       "PassportItemCreate": {
         "properties": {
           "expire_date": {
@@ -842,14 +808,31 @@
       },
       "PassportItemRead": {
         "properties": {
+          "expire_date": {
+            "format": "date",
+            "title": "Expire Date",
+            "type": "string"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
             "type": "string"
+          },
+          "is_foreign": {
+            "title": "Is Foreign",
+            "type": "boolean"
+          },
+          "number": {
+            "maxLength": 32,
+            "title": "Number",
+            "type": "string"
           }
         },
         "required": [
-          "id"
+          "id",
+          "number",
+          "expire_date",
+          "is_foreign"
         ],
         "title": "PassportItemRead",
         "type": "object"
@@ -994,6 +977,23 @@
       },
       "PassportRead": {
         "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "expire_date": {
             "format": "date",
             "title": "Expire Date",
@@ -1053,6 +1053,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "number",
           "expire_date",
@@ -1209,6 +1211,23 @@
       },
       "PersonRead": {
         "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
@@ -1238,6 +1257,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "surname",
           "name",
@@ -1295,55 +1316,6 @@
         "title": "ProfileCreate",
         "type": "object"
       },
-      "ProfilePatch": {
-        "properties": {
-          "birthdate": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Birthdate"
-          },
-          "diet_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Diet Id"
-          },
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "workplace_id": {
-            "anyOf": [
-              {
-                "format": "uuid",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Workplace Id"
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "title": "ProfilePatch",
-        "type": "object"
-      },
       "ProfilePatchData": {
         "properties": {
           "birthdate": {
@@ -1385,55 +1357,6 @@
         "title": "ProfilePatchData",
         "type": "object"
       },
-      "ProfilePut": {
-        "properties": {
-          "birthdate": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Birthdate"
-          },
-          "diet_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Diet Id"
-          },
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "workplace_id": {
-            "anyOf": [
-              {
-                "format": "uuid",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Workplace Id"
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "title": "ProfilePut",
-        "type": "object"
-      },
       "ProfilePutData": {
         "properties": {
           "birthdate": {
@@ -1459,11 +1382,6 @@
             ],
             "title": "Diet Id"
           },
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
           "workplace_id": {
             "anyOf": [
               {
@@ -1477,9 +1395,6 @@
             "title": "Workplace Id"
           }
         },
-        "required": [
-          "id"
-        ],
         "title": "ProfilePutData",
         "type": "object"
       },
@@ -1949,11 +1864,6 @@
             "title": "Group Id",
             "type": "integer"
           },
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
           "is_active": {
             "default": true,
             "title": "Is Active",
@@ -1988,7 +1898,6 @@
           }
         },
         "required": [
-          "id",
           "student_id",
           "group_id"
         ],
@@ -1997,6 +1906,23 @@
       },
       "StudentRead": {
         "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "faculty_id": {
             "anyOf": [
               {
@@ -2082,6 +2008,8 @@
           }
         },
         "required": [
+          "created_at",
+          "edited_at",
           "id",
           "student_id",
           "group_id"
@@ -2138,6 +2066,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -2184,6 +2196,54 @@
                 }
               ],
               "title": "Person Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ContactType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_main",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Main"
             }
           },
           {
@@ -2394,6 +2454,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -2440,6 +2584,54 @@
                 }
               ],
               "title": "Person Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ContactType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_main",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Main"
             }
           },
           {
@@ -2901,7 +3093,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ContactPutData"
+                "$ref": "#/components/schemas/ContactItemPutData"
               }
             }
           },
@@ -3223,57 +3415,18 @@
               "title": "Id",
               "type": "string"
             }
-          },
-          {
-            "in": "query",
-            "name": "type",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/ContactType"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Type"
-            }
-          },
-          {
-            "in": "query",
-            "name": "value",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "maxLength": 256,
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Value"
-            }
-          },
-          {
-            "in": "query",
-            "name": "is_main",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Is Main"
-            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactPatchData"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "content": {
@@ -3378,46 +3531,18 @@
               "title": "Id",
               "type": "string"
             }
-          },
-          {
-            "in": "query",
-            "name": "type",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/ContactType"
-            }
-          },
-          {
-            "in": "query",
-            "name": "value",
-            "required": true,
-            "schema": {
-              "maxLength": 256,
-              "title": "Value",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "is_main",
-            "required": false,
-            "schema": {
-              "default": false,
-              "title": "Is Main",
-              "type": "boolean"
-            }
-          },
-          {
-            "in": "query",
-            "name": "person_id",
-            "required": true,
-            "schema": {
-              "format": "uuid",
-              "title": "Person Id",
-              "type": "string"
-            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactPutData"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "content": {
@@ -3741,9 +3866,8 @@
             "name": "id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -3845,9 +3969,8 @@
             "name": "id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -3951,9 +4074,8 @@
             "name": "id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -3961,7 +4083,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DietPatch"
+                "$ref": "#/components/schemas/DietPatchData"
               }
             }
           },
@@ -4067,9 +4189,8 @@
             "name": "id",
             "required": true,
             "schema": {
-              "format": "uuid",
               "title": "Id",
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -4077,7 +4198,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DietPut"
+                "$ref": "#/components/schemas/DietPutData"
               }
             }
           },
@@ -4182,6 +4303,90 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -4228,6 +4433,90 @@
                 }
               ],
               "title": "Profile Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_foreign",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Foreign"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expire_date__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Expire Date  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expire_date__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Expire Date  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "issued_date__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Issued Date  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "issued_date__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Issued Date  Lte"
             }
           },
           {
@@ -4329,9 +4618,93 @@
       }
     },
     "/profile/v1/passports/my": {
-      "post": {
-        "operationId": "get_my_passports_profile_v1_passports_my_post",
+      "get": {
+        "operationId": "get_my_passports_profile_v1_passports_my_get",
         "parameters": [
+          {
+            "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
           {
             "in": "query",
             "name": "order_by",
@@ -4380,6 +4753,90 @@
                 }
               ],
               "title": "Profile Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_foreign",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Foreign"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expire_date__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Expire Date  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expire_date__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Expire Date  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "issued_date__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Issued Date  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "issued_date__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Issued Date  Lte"
             }
           },
           {
@@ -4496,16 +4953,14 @@
         "tags": [
           "passport"
         ]
-      }
-    },
-    "/profile/v1/passports/my/new": {
+      },
       "post": {
-        "operationId": "create_my_passport_profile_v1_passports_my_new_post",
+        "operationId": "create_my_passport_profile_v1_passports_my_post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PassportCreate"
+                "$ref": "#/components/schemas/PassportItemCreate"
               }
             }
           },
@@ -4619,16 +5074,128 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PassportPatchData"
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
               }
-            }
+            },
+            "description": "Successful Response"
           },
-          "required": true
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ATTACHED_PERSON_REQUIRED": {
+                    "summary": "ATTACHED_PERSON_REQUIRED",
+                    "value": {
+                      "detail": "ATTACHED_PERSON_REQUIRED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ATTACHED_PERSON_REQUIRED"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PASSPORT_NOT_FOUND": {
+                    "summary": "PASSPORT_NOT_FOUND",
+                    "value": {
+                      "detail": "PASSPORT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PASSPORT_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete My Passport",
+        "tags": [
+          "passport"
+        ]
+      },
+      "get": {
+        "operationId": "get_my_passport_profile_v1_passports_my__passport_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "passport_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Passport Id",
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -4700,6 +5267,24 @@
             },
             "description": "Insufficient permissions"
           },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PASSPORT_NOT_FOUND": {
+                    "summary": "PASSPORT_NOT_FOUND",
+                    "value": {
+                      "detail": "PASSPORT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PASSPORT_NOT_FOUND"
+          },
           "422": {
             "content": {
               "application/json": {
@@ -4716,7 +5301,7 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Delete My Passport",
+        "summary": "Get My Passport",
         "tags": [
           "passport"
         ]
@@ -4815,6 +5400,24 @@
               }
             },
             "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PASSPORT_NOT_FOUND": {
+                    "summary": "PASSPORT_NOT_FOUND",
+                    "value": {
+                      "detail": "PASSPORT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PASSPORT_NOT_FOUND"
           },
           "422": {
             "content": {
@@ -4931,6 +5534,24 @@
               }
             },
             "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PASSPORT_NOT_FOUND": {
+                    "summary": "PASSPORT_NOT_FOUND",
+                    "value": {
+                      "detail": "PASSPORT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PASSPORT_NOT_FOUND"
           },
           "422": {
             "content": {
@@ -5059,6 +5680,112 @@
           "passport"
         ]
       },
+      "get": {
+        "operationId": "get_passport_profile_v1_passports__passport_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "passport_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Passport Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassportRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PASSPORT_NOT_FOUND": {
+                    "summary": "PASSPORT_NOT_FOUND",
+                    "value": {
+                      "detail": "PASSPORT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PASSPORT_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Passport",
+        "tags": [
+          "passport"
+        ]
+      },
       "patch": {
         "operationId": "patch_passport_profile_v1_passports__passport_id__patch",
         "parameters": [
@@ -5171,112 +5898,6 @@
           }
         ],
         "summary": "Patch Passport",
-        "tags": [
-          "passport"
-        ]
-      },
-      "post": {
-        "operationId": "get_passport_profile_v1_passports__passport_id__post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "passport_id",
-            "required": true,
-            "schema": {
-              "format": "uuid",
-              "title": "Passport Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PassportRead"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "INVALID_AUTHENTICATION_CREDENTIALS": {
-                    "summary": "Token decode failed",
-                    "value": {
-                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
-                    }
-                  },
-                  "NOT_AUTHENTICATED": {
-                    "summary": "Missing or invalid authentication token",
-                    "value": {
-                      "detail": "NOT_AUTHENTICATED"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Missing or invalid authentication token"
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "FORBIDDEN": {
-                    "summary": "Not superuser or not verified",
-                    "value": {
-                      "detail": "FORBIDDEN"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Insufficient permissions"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "PASSPORT_NOT_FOUND": {
-                    "summary": "PASSPORT_NOT_FOUND",
-                    "value": {
-                      "detail": "PASSPORT_NOT_FOUND"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "PASSPORT_NOT_FOUND"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get Passport",
         "tags": [
           "passport"
         ]
@@ -5503,6 +6124,118 @@
           "passport"
         ]
       },
+      "get": {
+        "operationId": "get_name_variant_profile_v1_passports__passport_id__name_variant_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "passport_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Passport Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NameVariantRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NAME_VARIANT_NOT_FOUND": {
+                    "summary": "NAME_VARIANT_NOT_FOUND",
+                    "value": {
+                      "detail": "NAME_VARIANT_NOT_FOUND"
+                    }
+                  },
+                  "PASSPORT_NOT_FOUND": {
+                    "summary": "PASSPORT_NOT_FOUND",
+                    "value": {
+                      "detail": "PASSPORT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Passport or its name variant does not exist"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Name Variant",
+        "tags": [
+          "passport"
+        ]
+      },
       "patch": {
         "operationId": "patch_name_variant_profile_v1_passports__passport_id__name_variant_patch",
         "parameters": [
@@ -5584,6 +6317,12 @@
             "content": {
               "application/json": {
                 "examples": {
+                  "NAME_VARIANT_NOT_FOUND": {
+                    "summary": "NAME_VARIANT_NOT_FOUND",
+                    "value": {
+                      "detail": "NAME_VARIANT_NOT_FOUND"
+                    }
+                  },
                   "PASSPORT_NOT_FOUND": {
                     "summary": "PASSPORT_NOT_FOUND",
                     "value": {
@@ -5596,7 +6335,7 @@
                 }
               }
             },
-            "description": "PASSPORT_NOT_FOUND"
+            "description": "Passport or its name variant does not exist"
           },
           "422": {
             "content": {
@@ -5615,120 +6354,6 @@
           }
         ],
         "summary": "Patch Name Variant",
-        "tags": [
-          "passport"
-        ]
-      },
-      "post": {
-        "operationId": "get_name_variant_profile_v1_passports__passport_id__name_variant_post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "passport_id",
-            "required": true,
-            "schema": {
-              "format": "uuid",
-              "title": "Passport Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/NameVariantRead"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ],
-                  "title": "Response Get Name Variant Profile V1 Passports  Passport Id  Name Variant Post"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "INVALID_AUTHENTICATION_CREDENTIALS": {
-                    "summary": "Token decode failed",
-                    "value": {
-                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
-                    }
-                  },
-                  "NOT_AUTHENTICATED": {
-                    "summary": "Missing or invalid authentication token",
-                    "value": {
-                      "detail": "NOT_AUTHENTICATED"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Missing or invalid authentication token"
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "FORBIDDEN": {
-                    "summary": "Not superuser or not verified",
-                    "value": {
-                      "detail": "FORBIDDEN"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Insufficient permissions"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "PASSPORT_NOT_FOUND": {
-                    "summary": "PASSPORT_NOT_FOUND",
-                    "value": {
-                      "detail": "PASSPORT_NOT_FOUND"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "PASSPORT_NOT_FOUND"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get Name Variant",
         "tags": [
           "passport"
         ]
@@ -5854,6 +6479,90 @@
       "get": {
         "operationId": "search_person_profile_v1_persons_get",
         "parameters": [
+          {
+            "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
           {
             "in": "query",
             "name": "order_by",
@@ -6827,6 +7536,90 @@
           },
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -6856,6 +7649,54 @@
                 }
               ],
               "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ContactType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_main",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Main"
             }
           },
           {
@@ -7064,6 +7905,106 @@
         "parameters": [
           {
             "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
             "name": "order_by",
             "required": false,
             "schema": {
@@ -7081,7 +8022,106 @@
           },
           {
             "in": "query",
-            "name": "search",
+            "name": "birthdate__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Birthdate  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "birthdate__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Birthdate  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "birthdate__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Birthdate  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "workplace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workplace Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "workplace_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workplace Id  Isnull"
+            }
+          },
+          {
+            "in": "query",
+            "name": "diet_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Diet Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "diet_id__in",
             "required": false,
             "schema": {
               "anyOf": [
@@ -7092,7 +8132,23 @@
                   "type": "null"
                 }
               ],
-              "title": "Search"
+              "title": "Diet Id  In"
+            }
+          },
+          {
+            "in": "query",
+            "name": "diet_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Diet Id  Isnull"
             }
           },
           {
@@ -7370,7 +8426,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProfilePatch"
+                "$ref": "#/components/schemas/ProfilePatchData"
               }
             }
           },
@@ -7474,7 +8530,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProfilePut"
+                "$ref": "#/components/schemas/ProfilePutData"
               }
             }
           },
@@ -8023,19 +9079,86 @@
         "parameters": [
           {
             "in": "query",
-            "name": "order_by",
+            "name": "created_at__gte",
             "required": false,
             "schema": {
               "anyOf": [
                 {
+                  "format": "date-time",
                   "type": "string"
                 },
                 {
                   "type": "null"
                 }
               ],
-              "default": "student_id",
-              "title": "Order By"
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edited_at__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edited At  Isnull"
             }
           },
           {
@@ -8056,6 +9179,23 @@
           },
           {
             "in": "query",
+            "name": "order_by",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "student_id",
+              "title": "Order By"
+            }
+          },
+          {
+            "in": "query",
             "name": "group_id",
             "required": false,
             "schema": {
@@ -8068,6 +9208,22 @@
                 }
               ],
               "title": "Group Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "group_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Group Id  In"
             }
           },
           {
@@ -8089,6 +9245,22 @@
           },
           {
             "in": "query",
+            "name": "faculty_id__isnull",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Faculty Id  Isnull"
+            }
+          },
+          {
+            "in": "query",
             "name": "is_active",
             "required": false,
             "schema": {
@@ -8101,6 +9273,38 @@
                 }
               ],
               "title": "Is Active"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_budget",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Budget"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_full",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Full"
             }
           },
           {
@@ -9015,6 +10219,22 @@
           },
           {
             "in": "query",
+            "name": "degree_id__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Degree Id  In"
+            }
+          },
+          {
+            "in": "query",
             "name": "faculty_id",
             "required": false,
             "schema": {
@@ -9044,6 +10264,22 @@
                 }
               ],
               "title": "Grade"
+            }
+          },
+          {
+            "in": "query",
+            "name": "grade__in",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Grade  In"
             }
           },
           {

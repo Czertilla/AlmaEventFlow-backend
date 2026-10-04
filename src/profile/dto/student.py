@@ -1,9 +1,10 @@
+import datetime
 from dataclasses import dataclass
 from profile.dto.person import PersonDTO
 from profile.dto.profile import ProfileDTO
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin
+from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
 
 
 @dataclass(frozen=True, slots=True)
@@ -75,8 +76,10 @@ class StudentGroupFilterDTO:
     order_by: list[str] | None = None
     search: str | None = None
     degree_id: int | None = None
+    degree_id__in: list[int] | None = None
     faculty_id: UUID | None = None
     grade: int | None = None
+    grade__in: list[int] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -121,15 +124,21 @@ class StudentDTO:
     is_budget: bool | None
     is_full: bool | None
     is_active: bool
+    created_at: datetime.datetime
+    edited_at: datetime.datetime | None
     person: PersonDTO | None
     profile: ProfileDTO | None
     group: StudentGroupDTO | None
 
 
 @dataclass(frozen=True, slots=True)
-class StudentFilterDTO:
+class StudentFilterDTO(TimestampFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
     group_id: int | None = None
+    group_id__in: list[int] | None = None
     faculty_id: UUID | None = None
+    faculty_id__isnull: bool | None = None
     is_active: bool | None = None
+    is_budget: bool | None = None
+    is_full: bool | None = None

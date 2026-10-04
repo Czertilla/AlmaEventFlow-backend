@@ -5,7 +5,7 @@ from profile.dto.organization import OrganizationDTO
 from profile.dto.person import PersonDTO
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin
+from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,6 +46,14 @@ class ProfileDTO:
 
 
 @dataclass(frozen=True, slots=True)
-class ProfileFilterDTO:
+class ProfileFilterDTO(TimestampFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
+    birthdate__gte: datetime.date | None = None
+    birthdate__lte: datetime.date | None = None
+    birthdate__isnull: bool | None = None
+    workplace_id: UUID | None = None
+    workplace_id__isnull: bool | None = None
+    diet_id: int | None = None
+    diet_id__in: list[int] | None = None
+    diet_id__isnull: bool | None = None

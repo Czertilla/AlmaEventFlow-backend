@@ -64,11 +64,17 @@ async def create_profile(
     responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
 )
 async def put_my_profile(
-    profile: ProfilePut, user: UserJWTDep, uow: ProfileUOWDep
+    profile: ProfilePutData, user: UserJWTDep, uow: ProfileUOWDep
 ) -> ProfileRead:
     if user.person_id is None:
         raise NonPersonalUserException()
-    return ProfileRead.from_dto(await ProfileService(uow).put(profile.to_dto()))
+    return ProfileRead.from_dto(
+        await ProfileService(uow).put(
+            ProfilePut.model_validate(
+                {"id": user.person_id, **profile.model_dump()}
+            ).to_dto()
+        )
+    )
 
 
 @router.patch(
@@ -76,11 +82,17 @@ async def put_my_profile(
     responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
 )
 async def patch_my_profile(
-    profile: ProfilePatch, user: UserJWTDep, uow: ProfileUOWDep
+    profile: ProfilePatchData, user: UserJWTDep, uow: ProfileUOWDep
 ) -> ProfileRead:
     if user.person_id is None:
         raise NonPersonalUserException()
-    return ProfileRead.from_dto(await ProfileService(uow).patch(profile.to_dto()))
+    return ProfileRead.from_dto(
+        await ProfileService(uow).patch(
+            ProfilePatch.model_validate(
+                {"id": user.person_id, **profile.model_dump()}
+            ).to_dto()
+        )
+    )
 
 
 @router.get(
@@ -105,7 +117,9 @@ async def put_profile(
 ) -> ProfileRead:
     return ProfileRead.from_dto(
         await ProfileService(uow).put(
-            ProfilePut(id=profile_id, **profile.model_dump()).to_dto()
+            ProfilePut.model_validate(
+                {"id": profile_id, **profile.model_dump()}
+            ).to_dto()
         )
     )
 
@@ -122,7 +136,9 @@ async def patch_profile(
 ) -> ProfileRead:
     return ProfileRead.from_dto(
         await ProfileService(uow).patch(
-            ProfilePatch(id=profile_id, **profile.model_dump()).to_dto()
+            ProfilePatch.model_validate(
+                {"id": profile_id, **profile.model_dump()}
+            ).to_dto()
         )
     )
 

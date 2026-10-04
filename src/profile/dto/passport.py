@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin
+from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,10 +87,17 @@ class PassportDTO:
     issued_date: datetime.date | None
     issued_authority: str | None
     name_variant: NameVariantCreateDTO | None
+    created_at: datetime.datetime
+    edited_at: datetime.datetime | None
 
 
 @dataclass(frozen=True, slots=True)
-class PassportFilterDTO:
+class PassportFilterDTO(TimestampFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
     profile_id: UUID | None = None
+    is_foreign: bool | None = None
+    expire_date__gte: datetime.date | None = None
+    expire_date__lte: datetime.date | None = None
+    issued_date__gte: datetime.date | None = None
+    issued_date__lte: datetime.date | None = None

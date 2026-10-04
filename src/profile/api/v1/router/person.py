@@ -1,4 +1,5 @@
 from logging import getLogger
+from profile.api.v1.access import ensure_self_or_superuser
 from profile.api.v1.schema.contact import (
     ContactCreate,
     ContactItemCreate,
@@ -165,6 +166,7 @@ async def get_person_contacts(
     filter: ContactFilter = FilterDepends(ContactFilter),
     page_params: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[ContactItemRead]:
+    ensure_self_or_superuser(user, person_id)
     return PageV1[ContactItemRead].from_dto(
         await ContactService(uow).search_by_person(
             person_id, filter.to_dto(), page_params.to_dto()

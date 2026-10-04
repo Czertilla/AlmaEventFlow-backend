@@ -1,7 +1,9 @@
 from logging import getLogger
+from profile.api.v1.access import ensure_self_or_superuser
 from profile.api.v1.schema.contact import (
     ContactCreate,
     ContactItemCreate,
+    ContactItemPutData,
     ContactItemRead,
     ContactPatch,
     ContactPatchData,
@@ -75,7 +77,7 @@ async def create_my_contact(
 )
 async def put_my_contact(
     contact_id: UUID,
-    contact_data: ContactPutData,
+    contact_data: ContactItemPutData,
     user: UserJWTDep,
     uow: ContactUOWDep,
 ) -> ContactRead:
@@ -100,7 +102,9 @@ async def patch_my_contact(
     if user.person_id is None:
         raise NonPersonalUserException()
     await (service := ContactService(uow)).check_ownership(contact_id, user.person_id)
-    contact = ContactPatch(id=contact_id, **contact_data.model_dump())
+    contact = ContactPatch.model_validate(
+        {"id": contact_id, **contact_data.model_dump()}
+    )
     return ContactRead.from_dto(await service.patch(contact.to_dto()))
 
 
@@ -137,17 +141,20 @@ async def get_contact(
     user: UserJWTDep,
     id: UUID,
 ) -> ContactRead:
-    return ContactRead.from_dto(await ContactService(uow).read(id))
+    contact = await ContactService(uow).read(id)
+    ensure_self_or_superuser(user, contact.person_id)
+    return ContactRead.from_dto(contact)
 
 
 @router.post(
     "", responses={**auth_responses(), **entity_not_found_responses("contact")}
 )
 async def create_contact(
-    uow: ContactUOWDep,
+    uow: PersonContactUOWDep,
     user: UserJWTDep,
     contact_data: ContactCreate,
 ) -> ContactRead:
+    ensure_self_or_superuser(user, contact_data.person_id)
     return ContactRead.from_dto(await ContactService(uow).create(contact_data.to_dto()))
 
 
@@ -155,22 +162,32 @@ async def create_contact(
     "/{id}", responses={**auth_responses(), **entity_not_found_responses("contact")}
 )
 async def put_contact(
+    id: UUID,
+    contact: ContactPutData,
     user: SuperUserJWTDep,
     uow: ContactUOWDep,
-    contact=Depends(ContactPut),
 ) -> ContactRead:
-    return ContactRead.from_dto(await ContactService(uow).put(contact.to_dto()))
+    return ContactRead.from_dto(
+        await ContactService(uow).put(
+            ContactPut.model_validate({"id": id, **contact.model_dump()}).to_dto()
+        )
+    )
 
 
 @router.patch(
     "/{id}", responses={**auth_responses(), **entity_not_found_responses("contact")}
 )
 async def patch_contact(
+    id: UUID,
+    contact: ContactPatchData,
     user: SuperUserJWTDep,
     uow: ContactUOWDep,
-    contact=Depends(ContactPatch),
 ) -> ContactRead:
-    return ContactRead.from_dto(await ContactService(uow).patch(contact.to_dto()))
+    return ContactRead.from_dto(
+        await ContactService(uow).patch(
+            ContactPatch.model_validate({"id": id, **contact.model_dump()}).to_dto()
+        )
+    )
 
 
 @router.delete(

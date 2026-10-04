@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncGenerator, Generator
 from contextlib import asynccontextmanager, contextmanager
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -16,11 +16,12 @@ Maker = async_sessionmaker[AsyncSession]
 
 
 @contextmanager
-def bound_sessionmaker(sessionmaker: Maker) -> Iterator[None]:
-    original = UOWDep.__call__
+def bound_sessionmaker(sessionmaker: Maker) -> Generator[None]:
+    original: Any = vars(UOWDep)["__call__"]
 
     def make(self: UOWDep, sessionmaker_: Any = None) -> Any:
-        return self.uow_cls(sessionmaker)
+        factory: Any = self.uow_cls
+        return factory(sessionmaker)
 
     UOWDep.__call__ = make  # pyright: ignore[reportAttributeAccessIssue]
     try:
@@ -30,9 +31,9 @@ def bound_sessionmaker(sessionmaker: Maker) -> Iterator[None]:
 
 
 def mint_token(user: UserJWT) -> str:
-    from core.dependencies.auth import SuperUserJWTDep
+    from core.utils.jwt import create_jwt_auth
 
-    auth = SuperUserJWTDep.__metadata__[0].dependency
+    auth = create_jwt_auth(superuser=True)
     key: str = auth.secret
     if auth.algorithm == "RS256":
         from user.utils.rsa import get_private_key_pem
@@ -70,7 +71,7 @@ def principal(
 @asynccontextmanager
 async def api_client(
     app: FastAPI, sessionmaker: Maker
-) -> AsyncIterator[httpx.AsyncClient]:
+) -> AsyncGenerator[httpx.AsyncClient]:
     transport = httpx.ASGITransport(app=app)
     with bound_sessionmaker(sessionmaker):
         async with httpx.AsyncClient(

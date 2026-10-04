@@ -14,15 +14,19 @@ class SampleFilter(OrderedFilter):
 
 
 def test_allowed_fields_are_accepted_with_either_direction() -> None:
-    assert SampleFilter(order_by="-created_at,username").order_by == [
+    assert SampleFilter.model_validate(
+        {"order_by": "-created_at,username"}
+    ).order_by == [
         "-created_at",
         "username",
     ]
 
 
-def test_fields_outside_the_allowlist_are_rejected_even_when_the_model_has_them() -> None:
+def test_fields_outside_the_allowlist_are_rejected_even_when_the_model_has_them() -> (
+    None
+):
     with pytest.raises(ValidationError, match="not an allowed ordering field"):
-        SampleFilter(order_by="hashed_password")
+        SampleFilter.model_validate({"order_by": "hashed_password"})
 
 
 def test_the_default_ordering_is_valid() -> None:

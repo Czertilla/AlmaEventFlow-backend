@@ -33,7 +33,12 @@ class PersonService(BaseService[PersonUOW]):
 
     @staticmethod
     def _event(person: PersonDTO) -> PersonData:
-        return PersonData(**dto_dict(person))
+        return PersonData(
+            id=person.id,
+            surname=person.surname,
+            name=person.name,
+            patronymic=person.patronymic,
+        )
 
     @required_transaction
     async def _create(self, person_create: PersonCreateDTO) -> PersonORM:

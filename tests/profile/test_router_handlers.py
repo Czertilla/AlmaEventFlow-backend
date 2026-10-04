@@ -4,7 +4,7 @@ from profile.api.v1.router.passport import patch_name_variant, patch_passport
 from profile.api.v1.router.person import patch_person, put_person
 from profile.api.v1.router.profile import patch_profile
 from profile.api.v1.router.student import patch_student_degree, put_student_degree
-from profile.api.v1.schema.contact import ContactPatch
+from profile.api.v1.schema.contact import ContactPatchData
 from profile.api.v1.schema.passport import NameVariantPatchData, PassportPatchData
 from profile.api.v1.schema.person import PersonPatchData, PersonPutData
 from profile.api.v1.schema.profile import ProfilePatchData
@@ -94,9 +94,10 @@ async def test_contact_handler_patches_only_the_sent_fields(
     )
 
     patched = await patch_contact(
+        contact.id,
+        ContactPatchData(is_main=True),
         user=ADMIN,
         uow=ContactUOW(profile_sessionmaker),
-        contact=ContactPatch.model_validate({"id": contact.id, "is_main": True}),
     )
 
     assert patched.is_main is True

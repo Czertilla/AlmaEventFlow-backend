@@ -31,7 +31,8 @@ class OrderedFilter(Filter):
         allowed = self.Constants.order_fields
         if not allowed:
             return self
-        for entry in self.ordering_values or []:
+        entries: list[str] = self.ordering_values or []
+        for entry in entries:
             name = entry.lstrip("+-")
             if name not in allowed:
                 raise ValueError(

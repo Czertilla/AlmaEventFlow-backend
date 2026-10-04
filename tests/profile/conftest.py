@@ -2,6 +2,7 @@ import os
 from collections.abc import AsyncIterator
 from typing import Any
 
+import httpx
 import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
@@ -10,6 +11,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from support.http import api_client
 
 _PUBLISHERS = (
     "on_person_created",
@@ -57,3 +59,14 @@ def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, Any]]:
     for name in _PUBLISHERS:
         monkeypatch.setattr(f"profile.service.person.{name}", recorder(name))
     return events
+
+
+@pytest.fixture
+async def api(
+    profile_sessionmaker: async_sessionmaker[AsyncSession],
+    published: list[tuple[str, Any]],
+) -> AsyncIterator[httpx.AsyncClient]:
+    from profile.app.app import app
+
+    async with api_client(app, profile_sessionmaker) as client:
+        yield client

@@ -11,6 +11,7 @@ from profile.dto.passport import (
     PassportPutDTO,
 )
 from profile.exc.passport import (
+    NameVariantNotExistsException,
     PassportNotExistsException,
     PassportOwnershipException,
 )
@@ -43,6 +44,8 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
             name_variant=dto_from_orm(name_variant, NameVariantCreateDTO)
             if name_variant
             else None,
+            created_at=passport.created_at,
+            edited_at=passport.edited_at,
         )
 
     @required_transaction
@@ -190,7 +193,7 @@ class NameVariantService(BaseService[PassportUOW]):
     async def _read(self, name_variant_id: UUID) -> NameVariantORM:
         name_variant = await self.uow.name_variants.get_by_id(name_variant_id)
         if name_variant is None:
-            raise PassportNotExistsException()
+            raise NameVariantNotExistsException()
         return name_variant
 
     @required_transaction
@@ -205,14 +208,14 @@ class NameVariantService(BaseService[PassportUOW]):
             name_variant_id, name_variant_data, flush
         )
         if name_variant is None:
-            raise PassportNotExistsException()
+            raise NameVariantNotExistsException()
         return name_variant
 
     @required_transaction
     async def _upsert(self, name_variant_put: NameVariantPutDTO) -> NameVariantORM:
         name_variant = await self.uow.name_variants.upsert(dto_dict(name_variant_put))
         if name_variant is None:
-            raise PassportNotExistsException()
+            raise NameVariantNotExistsException()
         return name_variant
 
     @required_transaction

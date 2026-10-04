@@ -17,7 +17,11 @@ from profile.dto.student import (
     StudentPatchDTO,
     StudentPutDTO,
 )
-from profile.exc.student import StudentNotExistsException
+from profile.exc.profile import ProfileNotExistsException
+from profile.exc.student import (
+    StudentAlreadyExistsException,
+    StudentNotExistsException,
+)
 from profile.filter.student import (
     StudentDegreeFilter,
     StudentFilter,
@@ -54,14 +58,25 @@ class StudentService(BaseService[StudentUOW]):
             is_budget=student.is_budget,
             is_full=student.is_full,
             is_active=student.is_active,
+            created_at=student.created_at,
+            edited_at=student.edited_at,
             person=dto_from_orm(person, PersonDTO) if person else None,
             profile=profile_to_dto(profile) if profile else None,
             group=_group_to_dto(group) if group else None,
         )
 
     @required_transaction
-    async def _create(self, student_create: StudentCreateDTO) -> StudentORM:
-        return await self.uow.students.add_n_return(data=dto_dict(student_create))
+    async def _ensure_profile(self, profile_id: UUID) -> None:
+        if not await self.uow.profiles.exists_id(profile_id):
+            raise ProfileNotExistsException()
+
+    @required_transaction
+    async def _create(self, student_create: StudentCreateDTO) -> UUID:
+        await self._ensure_profile(student_create.id)
+        if await self.uow.students.exists_id(student_create.id):
+            raise StudentAlreadyExistsException()
+        await self.uow.students.enroll(dto_dict(student_create))
+        return student_create.id
 
     @required_transaction
     async def _read(self, student_id: UUID) -> StudentORM:
@@ -73,33 +88,25 @@ class StudentService(BaseService[StudentUOW]):
         return student
 
     @required_transaction
-    async def _update(
-        self,
-        student_id: UUID,
-        student_data: dict[str, Any],
-        *,
-        flush: bool = False,
-    ) -> StudentORM:
-        student = await self.uow.students.update_one(student_id, student_data, flush)
-        if student is None:
+    async def _update(self, student_id: UUID, student_data: dict[str, Any]) -> UUID:
+        if not await self.uow.students.update_enrollment(student_id, student_data):
             raise StudentNotExistsException()
-        return student
+        return student_id
 
     @required_transaction
-    async def _upsert(self, student_put: StudentPutDTO) -> StudentORM:
-        student = await self.uow.students.upsert(dto_dict(student_put))
-        if student is None:
-            raise StudentNotExistsException()
-        return student
+    async def _upsert(self, student_put: StudentPutDTO) -> UUID:
+        await self._ensure_profile(student_put.id)
+        await self.uow.students.enroll_or_update(dto_dict(student_put))
+        return student_put.id
 
     @required_transaction
     async def _delete(self, student_id: UUID) -> None:
-        await self.uow.students.delete_one(student_id)
+        await self.uow.students.unenroll(student_id)
 
     async def create(self, student_create: StudentCreateDTO) -> StudentDTO:
         async with self.uow as uow:
-            created = await self._create(student_create)
-            result = self._to_dto(await self._read(created.id))
+            created_id = await self._create(student_create)
+            result = self._to_dto(await self._read(created_id))
             await uow.commit()
         return result
 
@@ -128,15 +135,15 @@ class StudentService(BaseService[StudentUOW]):
     async def patch(self, student_patch: StudentPatchDTO) -> StudentDTO:
         async with self.uow as uow:
             student_data = dto_dict(student_patch, only_set=True, exclude={"id"})
-            updated = await self._update(student_patch.id, student_data)
-            result = self._to_dto(await self._read(updated.id))
+            updated_id = await self._update(student_patch.id, student_data)
+            result = self._to_dto(await self._read(updated_id))
             await uow.commit()
         return result
 
     async def put(self, student_put: StudentPutDTO) -> StudentDTO:
         async with self.uow as uow:
-            upserted = await self._upsert(student_put)
-            result = self._to_dto(await self._read(upserted.id))
+            upserted_id = await self._upsert(student_put)
+            result = self._to_dto(await self._read(upserted_id))
             await uow.commit()
         return result
 

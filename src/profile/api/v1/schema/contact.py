@@ -5,7 +5,12 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
-from core.schema.v1.mixin.model import PatchModelV1, PutUUIDMixinV1, UUIDMixinV1
+from core.schema.v1.mixin.model import (
+    PatchModelV1,
+    PutUUIDMixinV1,
+    TimestampMixinV1,
+    UUIDMixinV1,
+)
 
 
 class ContactItemCreate(BaseModel):
@@ -25,7 +30,7 @@ class ContactCreate(ContactItemCreate, ToDTOMixinV1):
 class ContactItemRead(FromDTOMixinV1, ContactItemCreate, UUIDMixinV1): ...
 
 
-class ContactRead(ContactItemRead):
+class ContactRead(ContactItemRead, TimestampMixinV1):
     person_id: UUID
 
 

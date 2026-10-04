@@ -16,7 +16,12 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
-from core.schema.v1.mixin.model import IDMixinV1, PatchModelV1, UUIDMixinV1
+from core.schema.v1.mixin.model import (
+    IDMixinV1,
+    PatchModelV1,
+    TimestampMixinV1,
+    UUIDMixinV1,
+)
 
 
 class StudentDegreeCreate(BaseModel, ToDTOMixinV1):
@@ -77,7 +82,7 @@ class StudentGroupPut(StudentGroupPutData, IDMixinV1, ToDTOMixinV1):
     __dto_cls__ = StudentGroupPutDTO
 
 
-class StudentBase(BaseModel, UUIDMixinV1):
+class StudentBase(BaseModel):
     student_id: str = Field(max_length=64)
     faculty_id: UUID | None = None
     group_id: int
@@ -88,11 +93,11 @@ class StudentBase(BaseModel, UUIDMixinV1):
     model_config = ConfigDict(from_attributes=True)
 
 
-class StudentCreate(StudentBase, ToDTOMixinV1):
+class StudentCreate(StudentBase, UUIDMixinV1, ToDTOMixinV1):
     __dto_cls__ = StudentCreateDTO
 
 
-class StudentRead(FromDTOMixinV1, StudentBase):
+class StudentRead(FromDTOMixinV1, StudentBase, UUIDMixinV1, TimestampMixinV1):
     person: PersonRead | None = None
     profile: ProfileRead | None = None
     group: StudentGroupRead | None = None

@@ -2,13 +2,14 @@ from logging import getLogger
 from profile.api.v1.schema.diet import (
     DietCreate,
     DietPatch,
+    DietPatchData,
     DietPut,
+    DietPutData,
     DietRead,
 )
 from profile.dependency.diet import DietUOWDep
 from profile.filter.diet import DietFilter
 from profile.service.diet import DietService
-from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from fastapi_filter import FilterDepends
@@ -37,7 +38,7 @@ async def get_many(
 @router.get(
     "/{id}", responses={**auth_responses(), **entity_not_found_responses("diet")}
 )
-async def get_diet(id: UUID, user: UserJWTDep, uow: DietUOWDep) -> DietRead:
+async def get_diet(id: int, user: UserJWTDep, uow: DietUOWDep) -> DietRead:
     return DietRead.from_dto(await DietService(uow).read(id))
 
 
@@ -52,22 +53,30 @@ async def create_diet(
     "/{id}", responses={**auth_responses(), **entity_not_found_responses("diet")}
 )
 async def put_diet(
-    id: UUID, diet: DietPut, user: SuperUserJWTDep, uow: DietUOWDep
+    id: int, diet: DietPutData, user: SuperUserJWTDep, uow: DietUOWDep
 ) -> DietRead:
-    return DietRead.from_dto(await DietService(uow).put(diet.to_dto()))
+    return DietRead.from_dto(
+        await DietService(uow).put(
+            DietPut.model_validate({"id": id, **diet.model_dump()}).to_dto()
+        )
+    )
 
 
 @router.patch(
     "/{id}", responses={**auth_responses(), **entity_not_found_responses("diet")}
 )
 async def patch_diet(
-    id: UUID, diet: DietPatch, user: SuperUserJWTDep, uow: DietUOWDep
+    id: int, diet: DietPatchData, user: SuperUserJWTDep, uow: DietUOWDep
 ) -> DietRead:
-    return DietRead.from_dto(await DietService(uow).patch(diet.to_dto()))
+    return DietRead.from_dto(
+        await DietService(uow).patch(
+            DietPatch.model_validate({"id": id, **diet.model_dump()}).to_dto()
+        )
+    )
 
 
 @router.delete(
     "/{id}", responses={**auth_responses(), **entity_not_found_responses("diet")}
 )
-async def delete_diet(id: UUID, user: SuperUserJWTDep, uow: DietUOWDep) -> None:
+async def delete_diet(id: int, user: SuperUserJWTDep, uow: DietUOWDep) -> None:
     await DietService(uow).delete(id)

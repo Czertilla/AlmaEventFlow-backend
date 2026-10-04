@@ -2,9 +2,8 @@ from profile.dto.person import PersonCreateDTO, PersonPatchDTO, PersonPutDTO
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from core.database.sqlalchemy.mixins.models import TimestampMixin
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
-from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
+from core.schema.v1.mixin.model import PatchModelV1, TimestampMixinV1, UUIDMixinV1
 
 
 class PersonBase(BaseModel):
@@ -23,7 +22,7 @@ class PersonItemRead(FromDTOMixinV1, PersonBase, UUIDMixinV1):
     patronymic: str | None = Field(max_length=128)
 
 
-class PersonRead(PersonItemRead, TimestampMixin): ...
+class PersonRead(PersonItemRead, TimestampMixinV1): ...
 
 
 class PersonPatchData(PersonBase, PatchModelV1):

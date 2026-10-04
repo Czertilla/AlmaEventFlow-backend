@@ -409,6 +409,8 @@
   "contact.ContactRead": {
     "full": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "1d8c518a-4546-596e-9525-16970ab93e0e",
         "is_main": true,
         "person_id": "d1a7466a-3900-50fc-b22a-b01a7d67fc90",
@@ -416,6 +418,8 @@
         "value": "x"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "id",
         "is_main",
         "person_id",
@@ -423,6 +427,8 @@
         "value"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "1d8c518a-4546-596e-9525-16970ab93e0e",
         "is_main": true,
         "person_id": "d1a7466a-3900-50fc-b22a-b01a7d67fc90",
@@ -432,6 +438,8 @@
     },
     "required": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "1d8c518a-4546-596e-9525-16970ab93e0e",
         "is_main": false,
         "person_id": "d1a7466a-3900-50fc-b22a-b01a7d67fc90",
@@ -439,12 +447,16 @@
         "value": "x"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "id",
         "person_id",
         "type",
         "value"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "1d8c518a-4546-596e-9525-16970ab93e0e",
         "person_id": "d1a7466a-3900-50fc-b22a-b01a7d67fc90",
         "type": "email",
@@ -1293,6 +1305,42 @@
       }
     }
   },
+  "passport.PassportItemBase": {
+    "full": {
+      "dump": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "number": "x"
+      },
+      "fields_set": [
+        "expire_date",
+        "is_foreign",
+        "number"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "number": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "number": "x"
+      },
+      "fields_set": [
+        "expire_date",
+        "is_foreign",
+        "number"
+      ],
+      "input": {
+        "expire_date": "2026-01-01",
+        "is_foreign": true,
+        "number": "x"
+      }
+    }
+  },
   "passport.PassportItemCreate": {
     "full": {
       "dump": {
@@ -1352,24 +1400,42 @@
   "passport.PassportItemRead": {
     "full": {
       "dump": {
-        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202"
+        "expire_date": "2026-01-01",
+        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202",
+        "is_foreign": true,
+        "number": "x"
       },
       "fields_set": [
-        "id"
+        "expire_date",
+        "id",
+        "is_foreign",
+        "number"
       ],
       "input": {
-        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202"
+        "expire_date": "2026-01-01",
+        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202",
+        "is_foreign": true,
+        "number": "x"
       }
     },
     "required": {
       "dump": {
-        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202"
+        "expire_date": "2026-01-01",
+        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202",
+        "is_foreign": true,
+        "number": "x"
       },
       "fields_set": [
-        "id"
+        "expire_date",
+        "id",
+        "is_foreign",
+        "number"
       ],
       "input": {
-        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202"
+        "expire_date": "2026-01-01",
+        "id": "5218fba9-aac6-56cc-841d-0ccb98c0d202",
+        "is_foreign": true,
+        "number": "x"
       }
     }
   },
@@ -1664,6 +1730,8 @@
   "passport.PassportRead": {
     "full": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "expire_date": "2026-01-01",
         "id": "d11d6e7f-2ec1-5bf7-ba4c-e7a09d47f8be",
         "is_foreign": true,
@@ -1678,6 +1746,8 @@
         "profile_id": "aedce5de-2c18-5431-80fd-eef7f1a35095"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "expire_date",
         "id",
         "is_foreign",
@@ -1688,6 +1758,8 @@
         "profile_id"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "expire_date": "2026-01-01",
         "id": "d11d6e7f-2ec1-5bf7-ba4c-e7a09d47f8be",
         "is_foreign": true,
@@ -1704,6 +1776,8 @@
     },
     "required": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "expire_date": "2026-01-01",
         "id": "d11d6e7f-2ec1-5bf7-ba4c-e7a09d47f8be",
         "is_foreign": true,
@@ -1714,6 +1788,8 @@
         "profile_id": "aedce5de-2c18-5431-80fd-eef7f1a35095"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "expire_date",
         "id",
         "is_foreign",
@@ -1721,6 +1797,8 @@
         "profile_id"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "expire_date": "2026-01-01",
         "id": "d11d6e7f-2ec1-5bf7-ba4c-e7a09d47f8be",
         "is_foreign": true,
@@ -2031,18 +2109,24 @@
   "person.PersonRead": {
     "full": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
         "name": "x",
         "patronymic": "x",
         "surname": "x"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "id",
         "name",
         "patronymic",
         "surname"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
         "name": "x",
         "patronymic": "x",
@@ -2051,18 +2135,24 @@
     },
     "required": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
         "name": "x",
         "patronymic": "x",
         "surname": "x"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "id",
         "name",
         "patronymic",
         "surname"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "id": "1aff919f-4daa-5dc5-a654-e48a20d85026",
         "name": "x",
         "patronymic": "x",
@@ -2075,19 +2165,16 @@
       "dump": {
         "birthdate": "2026-01-01",
         "diet_id": 1,
-        "id": "9f708e72-5486-5ddd-937e-b9895ae32873",
         "workplace_id": "b3944168-336a-5ad7-b633-b91086a89aa5"
       },
       "fields_set": [
         "birthdate",
         "diet_id",
-        "id",
         "workplace_id"
       ],
       "input": {
         "birthdate": "2026-01-01",
         "diet_id": 1,
-        "id": "9f708e72-5486-5ddd-937e-b9895ae32873",
         "workplace_id": "b3944168-336a-5ad7-b633-b91086a89aa5"
       }
     },
@@ -2095,15 +2182,10 @@
       "dump": {
         "birthdate": null,
         "diet_id": null,
-        "id": "9f708e72-5486-5ddd-937e-b9895ae32873",
         "workplace_id": null
       },
-      "fields_set": [
-        "id"
-      ],
-      "input": {
-        "id": "9f708e72-5486-5ddd-937e-b9895ae32873"
-      }
+      "fields_set": [],
+      "input": {}
     }
   },
   "profile.ProfileCreate": {
@@ -2300,19 +2382,16 @@
       "dump": {
         "birthdate": "2026-01-01",
         "diet_id": 1,
-        "id": "3f016088-0be9-54d6-be93-f6511c6da853",
         "workplace_id": "768a212a-4447-5d44-ae07-fb4a04b32a5b"
       },
       "fields_set": [
         "birthdate",
         "diet_id",
-        "id",
         "workplace_id"
       ],
       "input": {
         "birthdate": "2026-01-01",
         "diet_id": 1,
-        "id": "3f016088-0be9-54d6-be93-f6511c6da853",
         "workplace_id": "768a212a-4447-5d44-ae07-fb4a04b32a5b"
       }
     },
@@ -2320,15 +2399,10 @@
       "dump": {
         "birthdate": null,
         "diet_id": null,
-        "id": "3f016088-0be9-54d6-be93-f6511c6da853",
         "workplace_id": null
       },
-      "fields_set": [
-        "id"
-      ],
-      "input": {
-        "id": "3f016088-0be9-54d6-be93-f6511c6da853"
-      }
+      "fields_set": [],
+      "input": {}
     }
   },
   "profile.ProfileRead": {
@@ -2345,6 +2419,8 @@
         "edited_at": "2026-01-01T10:00:00Z",
         "id": "32fed62e-d253-5994-8b8c-47de3321c666",
         "person": {
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
           "id": "b13ee9c6-aadf-5dec-9dd1-002df28034da",
           "name": "x",
           "patronymic": "x",
@@ -2380,6 +2456,8 @@
         "edited_at": "2026-01-01T10:00:00Z",
         "id": "32fed62e-d253-5994-8b8c-47de3321c666",
         "person": {
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
           "id": "b13ee9c6-aadf-5dec-9dd1-002df28034da",
           "name": "x",
           "patronymic": "x",
@@ -2422,7 +2500,6 @@
       "dump": {
         "faculty_id": "d3f6905d-b5a5-5344-bd83-cba416a650e7",
         "group_id": 1,
-        "id": "96d8fe1d-4cdc-5bbf-84b4-7a0c66bc059a",
         "is_active": true,
         "is_budget": true,
         "is_full": true,
@@ -2431,7 +2508,6 @@
       "fields_set": [
         "faculty_id",
         "group_id",
-        "id",
         "is_active",
         "is_budget",
         "is_full",
@@ -2440,7 +2516,6 @@
       "input": {
         "faculty_id": "d3f6905d-b5a5-5344-bd83-cba416a650e7",
         "group_id": 1,
-        "id": "96d8fe1d-4cdc-5bbf-84b4-7a0c66bc059a",
         "is_active": true,
         "is_budget": true,
         "is_full": true,
@@ -2451,7 +2526,6 @@
       "dump": {
         "faculty_id": null,
         "group_id": 1,
-        "id": "96d8fe1d-4cdc-5bbf-84b4-7a0c66bc059a",
         "is_active": true,
         "is_budget": null,
         "is_full": null,
@@ -2459,12 +2533,10 @@
       },
       "fields_set": [
         "group_id",
-        "id",
         "student_id"
       ],
       "input": {
         "group_id": 1,
-        "id": "96d8fe1d-4cdc-5bbf-84b4-7a0c66bc059a",
         "student_id": "x"
       }
     }
@@ -3305,7 +3377,6 @@
       "dump": {
         "faculty_id": "65bd80f1-a01a-50f4-9962-d8c15fd5e98d",
         "group_id": 1,
-        "id": "1daf2dcd-bd73-51b8-8806-7c832ee36d17",
         "is_active": true,
         "is_budget": true,
         "is_full": true,
@@ -3314,7 +3385,6 @@
       "fields_set": [
         "faculty_id",
         "group_id",
-        "id",
         "is_active",
         "is_budget",
         "is_full",
@@ -3323,7 +3393,6 @@
       "input": {
         "faculty_id": "65bd80f1-a01a-50f4-9962-d8c15fd5e98d",
         "group_id": 1,
-        "id": "1daf2dcd-bd73-51b8-8806-7c832ee36d17",
         "is_active": true,
         "is_budget": true,
         "is_full": true,
@@ -3334,7 +3403,6 @@
       "dump": {
         "faculty_id": null,
         "group_id": 1,
-        "id": "1daf2dcd-bd73-51b8-8806-7c832ee36d17",
         "is_active": true,
         "is_budget": null,
         "is_full": null,
@@ -3342,12 +3410,10 @@
       },
       "fields_set": [
         "group_id",
-        "id",
         "student_id"
       ],
       "input": {
         "group_id": 1,
-        "id": "1daf2dcd-bd73-51b8-8806-7c832ee36d17",
         "student_id": "x"
       }
     }
@@ -3355,6 +3421,8 @@
   "student.StudentRead": {
     "full": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "faculty_id": "f3b10d28-2181-58c1-97dd-ca78aecf4c46",
         "group": {
           "degree_id": 1,
@@ -3369,6 +3437,8 @@
         "is_budget": true,
         "is_full": true,
         "person": {
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
           "id": "fd636ca8-39cc-5c21-acdf-464f76b5010e",
           "name": "x",
           "patronymic": "x",
@@ -3386,6 +3456,8 @@
           "edited_at": "2026-01-01T10:00:00Z",
           "id": "e4850596-f9e1-58fa-bbaf-9f2d3a93a45f",
           "person": {
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
             "id": "eab13c7b-f97b-5952-b9eb-b3d020fbdc04",
             "name": "x",
             "patronymic": "x",
@@ -3401,6 +3473,8 @@
         "student_id": "x"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "faculty_id",
         "group",
         "group_id",
@@ -3413,6 +3487,8 @@
         "student_id"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "faculty_id": "f3b10d28-2181-58c1-97dd-ca78aecf4c46",
         "group": {
           "degree_id": 1,
@@ -3427,6 +3503,8 @@
         "is_budget": true,
         "is_full": true,
         "person": {
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
           "id": "fd636ca8-39cc-5c21-acdf-464f76b5010e",
           "name": "x",
           "patronymic": "x",
@@ -3444,6 +3522,8 @@
           "edited_at": "2026-01-01T10:00:00Z",
           "id": "e4850596-f9e1-58fa-bbaf-9f2d3a93a45f",
           "person": {
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
             "id": "eab13c7b-f97b-5952-b9eb-b3d020fbdc04",
             "name": "x",
             "patronymic": "x",
@@ -3461,6 +3541,8 @@
     },
     "required": {
       "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "faculty_id": null,
         "group": null,
         "group_id": 1,
@@ -3473,11 +3555,15 @@
         "student_id": "x"
       },
       "fields_set": [
+        "created_at",
+        "edited_at",
         "group_id",
         "id",
         "student_id"
       ],
       "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
         "group_id": 1,
         "id": "70bd9d10-ecab-5033-8757-c94bc6114959",
         "student_id": "x"

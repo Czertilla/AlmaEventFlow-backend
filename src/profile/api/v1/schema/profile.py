@@ -11,7 +11,7 @@ from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from core.schema.v1.mixin.model import PatchModelV1, TimestampMixinV1, UUIDMixinV1
 
 
-class ProfileBase(BaseModel, UUIDMixinV1):
+class ProfileBase(BaseModel):
     birthdate: date | None = None
     workplace_id: UUID | None = None
     diet_id: int | None = None
@@ -19,7 +19,7 @@ class ProfileBase(BaseModel, UUIDMixinV1):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ProfileCreate(ProfileBase, ToDTOMixinV1):
+class ProfileCreate(ProfileBase, UUIDMixinV1, ToDTOMixinV1):
     __dto_cls__ = ProfileCreateDTO
 
 

@@ -4,13 +4,10 @@ import typing
 from datetime import UTC, date, datetime
 from enum import Enum
 from typing import Any
-from uuid import uuid4
+from uuid import UUID, uuid4
 
-from fastapi_filter.contrib.sqlalchemy import Filter
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from core.filter.ordered import OrderedFilter
 
 
 def sample(annotation: Any) -> Any:
@@ -32,13 +29,13 @@ def sample(annotation: Any) -> Any:
         return datetime(2026, 1, 1, tzinfo=UTC)
     if isinstance(annotation, type) and issubclass(annotation, Enum):
         return next(iter(annotation))
-    if getattr(annotation, "__name__", "") == "UUID":
+    if annotation is UUID:
         return uuid4()
     raise TypeError(f"no sample for {annotation!r}")
 
 
-def filter_cases(filter_cls: type[Filter]) -> list[Filter]:
-    cases: list[Filter] = [filter_cls()]
+def filter_cases(filter_cls: Any) -> list[Any]:
+    cases: list[Any] = [filter_cls()]
     ordering = filter_cls.Constants.ordering_field_name
     allowed: tuple[str, ...] = getattr(filter_cls.Constants, "order_fields", ())
     for entry in allowed:
@@ -51,7 +48,7 @@ def filter_cases(filter_cls: type[Filter]) -> list[Filter]:
 
 
 async def exercise_filter(
-    sessionmaker: async_sessionmaker[AsyncSession], filter_cls: type[Filter]
+    sessionmaker: async_sessionmaker[AsyncSession], filter_cls: Any
 ) -> None:
     model = filter_cls.Constants.model
     async with sessionmaker() as session:
@@ -60,18 +57,18 @@ async def exercise_filter(
             await session.execute(statement.limit(1))
 
 
-def dto_field_names(filter_cls: type[Filter]) -> set[str]:
-    return {f.name for f in dataclasses.fields(filter_cls.__dto_cls__)}  # pyright: ignore[reportAttributeAccessIssue]
+def dto_field_names(filter_cls: Any) -> set[str]:
+    return {f.name for f in dataclasses.fields(filter_cls.__dto_cls__)}
 
 
-def assert_dto_parity(filter_cls: type[Filter]) -> None:
+def assert_dto_parity(filter_cls: Any) -> None:
     assert set(filter_cls.model_fields) == dto_field_names(filter_cls), (
-        f"{filter_cls.__name__} and {filter_cls.__dto_cls__.__name__} "  # pyright: ignore[reportAttributeAccessIssue]
+        f"{filter_cls.__name__} and {filter_cls.__dto_cls__.__name__} "
         "expose different fields"
     )
 
 
-def assert_ordering_documented(filter_cls: type[OrderedFilter]) -> None:
+def assert_ordering_documented(filter_cls: Any) -> None:
     field = filter_cls.model_fields[filter_cls.Constants.ordering_field_name]
     assert field.description is not None
     for entry in filter_cls.Constants.order_fields:

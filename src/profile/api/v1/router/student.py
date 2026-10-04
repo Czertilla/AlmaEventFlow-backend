@@ -68,7 +68,7 @@ async def get_student(
 
 @router.post("", responses={**auth_responses()})
 async def create_student(
-    student: StudentCreate, user: UserJWTDep, uow: StudentUOWDep
+    student: StudentCreate, user: SuperUserJWTDep, uow: StudentUOWDep
 ) -> StudentRead:
     return StudentRead.from_dto(await StudentService(uow).create(student.to_dto()))
 

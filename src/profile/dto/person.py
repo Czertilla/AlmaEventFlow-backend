@@ -1,7 +1,8 @@
+import datetime
 from dataclasses import dataclass
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin
+from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,9 +34,11 @@ class PersonDTO:
     surname: str
     name: str
     patronymic: str | None
+    created_at: datetime.datetime
+    edited_at: datetime.datetime | None
 
 
 @dataclass(frozen=True, slots=True)
-class PersonFilterDTO:
+class PersonFilterDTO(TimestampFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
