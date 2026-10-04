@@ -97,6 +97,7 @@ MIGRATED_LAYERS = {
     "geo": ("service", "repository", "uow", "dto", "models"),
     "profile": ("service", "repository", "uow", "dto", "models"),
     "notify": ("service", "repository", "uow", "dto", "models"),
+    "bot": ("service", "repository", "uow", "dto", "models"),
 }
 
 FORBIDDEN = {
@@ -119,6 +120,10 @@ FORBIDDEN = {
     ),
     "notify": (
         re.compile(r"^notify\.api\.v\d+"),
+        re.compile(r"^core\.schema\.v\d+"),
+    ),
+    "bot": (
+        re.compile(r"^bot\.api\.v\d+"),
         re.compile(r"^core\.schema\.v\d+"),
     ),
 }

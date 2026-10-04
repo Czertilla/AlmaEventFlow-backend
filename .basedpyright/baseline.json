@@ -1148,24 +1148,6 @@
                 }
             }
         ],
-        "./src/bot/service/user.py": [
-            {
-                "code": "reportUnknownMemberType",
-                "range": {
-                    "startColumn": 26,
-                    "endColumn": 53,
-                    "lineCount": 1
-                }
-            },
-            {
-                "code": "reportUnknownMemberType",
-                "range": {
-                    "startColumn": 26,
-                    "endColumn": 50,
-                    "lineCount": 1
-                }
-            }
-        ],
         "./src/bot/tg/api/filter/roles.py": [
             {
                 "code": "reportIncompatibleMethodOverride",
