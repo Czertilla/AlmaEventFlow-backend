@@ -75,6 +75,9 @@ user = [
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "C4", "RUF", "ASYNC", "N"]
 
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["core.dto.pagination.PageParamDTO"]
+
 [tool.basedpyright]
 typeCheckingMode = "strict"
 executionEnvironments = [
