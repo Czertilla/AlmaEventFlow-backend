@@ -1,5 +1,8 @@
+from uuid import uuid4
+
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from core.schema.user import UserJWT
 from org.api.v1.router.collective import patch_collective, put_collective
 from org.api.v1.router.faculty import patch_faculty
 from org.api.v1.router.university import patch_university, put_university
@@ -17,6 +20,7 @@ from org.uow.faculty import FacultyUOW
 from org.uow.university import UniversityUOW
 
 Maker = async_sessionmaker[AsyncSession]
+ADMIN = UserJWT(id=uuid4(), is_active=True, is_verified=True, is_superuser=True)
 
 
 async def test_university_handlers_patch_only_the_sent_fields_and_put_replaces(
@@ -29,13 +33,13 @@ async def test_university_handlers_patch_only_the_sent_fields_and_put_replaces(
     patched = await patch_university(
         created.id,
         UniversityPatchData(name="MSU-2"),
-        user=None,
+        user=ADMIN,
         uow=UniversityUOW(org_sessionmaker),
     )
     replaced = await put_university(
         created.id,
         UniversityPutData(name="SPbU"),
-        user=None,
+        user=ADMIN,
         uow=UniversityUOW(org_sessionmaker),
     )
 
@@ -53,13 +57,13 @@ async def test_collective_handlers_patch_only_the_sent_fields_and_put_replaces(
     patched = await patch_collective(
         created.id,
         CollectivePatchData(name="Chess club"),
-        user=None,
+        user=ADMIN,
         uow=CollectiveUOW(org_sessionmaker),
     )
     replaced = await put_collective(
         created.id,
         CollectivePutData(name="Go club"),
-        user=None,
+        user=ADMIN,
         uow=CollectiveUOW(org_sessionmaker),
     )
 
@@ -77,7 +81,7 @@ async def test_faculty_handler_patches_only_the_sent_fields(
     patched = await patch_faculty(
         created.id,
         FacultyPatchData(name="Mathematics"),
-        user=None,
+        user=ADMIN,
         uow=FacultyUOW(org_sessionmaker),
     )
 

@@ -23,15 +23,20 @@ from profile.service.passport import PassportService
 from profile.service.person import PersonService
 from profile.service.profile import ProfileService
 from profile.service.student import StudentDegreeService
+from profile.uow.contact import ContactUOW
 from profile.uow.passport import PassportUOW
 from profile.uow.person import PersonContactUOW, PersonUOW
-from profile.uow.profile import ProfileExtendedUOW, ProfilePassportUOW
+from profile.uow.profile import ProfileExtendedUOW, ProfilePassportUOW, ProfileUOW
 from profile.uow.student import StudentUOW
 from typing import Any
+from uuid import uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from core.schema.user import UserJWT
+
 Maker = async_sessionmaker[AsyncSession]
+ADMIN = UserJWT(id=uuid4(), is_active=True, is_verified=True, is_superuser=True)
 
 
 async def test_person_handlers_patch_only_the_sent_fields_and_put_replaces(
@@ -44,13 +49,13 @@ async def test_person_handlers_patch_only_the_sent_fields_and_put_replaces(
     patched = await patch_person(
         created.id,
         PersonPatchData(name="Petr"),
-        user=None,
+        user=ADMIN,
         uow=PersonUOW(profile_sessionmaker),
     )
     replaced = await put_person(
         created.id,
         PersonPutData(surname="Sidorov", name="Sidor"),
-        user=None,
+        user=ADMIN,
         uow=PersonUOW(profile_sessionmaker),
     )
 
@@ -71,8 +76,8 @@ async def test_profile_handler_patches_only_the_sent_fields(
     patched = await patch_profile(
         person.id,
         ProfilePatchData(),
-        user=None,
-        uow=ProfileExtendedUOW(profile_sessionmaker),
+        user=ADMIN,
+        uow=ProfileUOW(profile_sessionmaker),
     )
 
     assert patched.birthdate == datetime.date(2000, 1, 2)
@@ -89,9 +94,9 @@ async def test_contact_handler_patches_only_the_sent_fields(
     )
 
     patched = await patch_contact(
-        user=None,
-        uow=PersonContactUOW(profile_sessionmaker),
-        contact=ContactPatch(id=contact.id, is_main=True),
+        user=ADMIN,
+        uow=ContactUOW(profile_sessionmaker),
+        contact=ContactPatch.model_validate({"id": contact.id, "is_main": True}),
     )
 
     assert patched.is_main is True
@@ -120,13 +125,13 @@ async def test_passport_handlers_patch_only_the_sent_fields(
     patched = await patch_passport(
         passport.id,
         PassportPatchData(number="9999"),
-        user=None,
+        user=ADMIN,
         uow=PassportUOW(profile_sessionmaker),
     )
     renamed = await patch_name_variant(
         passport.id,
         NameVariantPatchData(name="Maria"),
-        user=None,
+        user=ADMIN,
         uow=PassportUOW(profile_sessionmaker),
     )
 
@@ -145,13 +150,13 @@ async def test_student_degree_handlers_take_an_integer_id(
     patched = await patch_student_degree(
         degree.id,
         StudentDegreePatchData(name="Master"),
-        user=None,
+        user=ADMIN,
         uow=StudentUOW(profile_sessionmaker),
     )
     replaced = await put_student_degree(
         degree.id,
         StudentDegreePutData(name="PhD"),
-        user=None,
+        user=ADMIN,
         uow=StudentUOW(profile_sessionmaker),
     )
 
