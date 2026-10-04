@@ -9,6 +9,7 @@ from uuid import NAMESPACE_URL, UUID, uuid5
 from _examples import FIELD_OVERRIDES
 
 _NONE_TYPE = type(None)
+DTO_FIELD_OVERRIDES = FIELD_OVERRIDES | {"email": "user@example.com"}
 
 
 def _substitute(tp: Any, mapping: dict[Any, Any]) -> Any:
@@ -68,7 +69,7 @@ def value_for(tp: Any, path: str) -> Any:
         if cls is float:
             return 1.5
         if cls is str:
-            return FIELD_OVERRIDES.get(path.rsplit(".", 1)[-1], "x")
+            return DTO_FIELD_OVERRIDES.get(path.rsplit(".", 1)[-1], "x")
         if cls is datetime.datetime:
             return datetime.datetime(2026, 1, 1, 10, tzinfo=datetime.UTC)
         if cls is datetime.date:

@@ -12,7 +12,7 @@ from core.schema.message.user import (
     UserIdResponse,
 )
 from user.exceptions.user import UserNotFound
-from user.services.user import UserService
+from user.service.user import UserService
 from user.uow.user import UserUOW
 
 router = KafkaRouter()

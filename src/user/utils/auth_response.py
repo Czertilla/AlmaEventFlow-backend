@@ -1,39 +1,41 @@
-from fastapi import Request
-from fastapi.responses import JSONResponse
-from fastapi_users import models
+from uuid import UUID
 
-from user.services.auth import get_jwt_strategy
-from user.services.user import UserService
+from fastapi import Request, Response
+from fastapi.responses import JSONResponse
+
+from user.dto.user import UserDTO
+from user.service.user import UserService
 from user.utils.cookie import set_refresh_cookie, set_session_cookie
+from user.utils.jwt import AccessStrategy
 from user.utils.request import extract_device_info, extract_ip
 
 
-async def finish_login(
-    request: Request, user: models.UP, user_service: UserService
-) -> JSONResponse:
-    """Issues an access token plus a fresh session/refresh-token pair for an
-    already-authenticated ``user``. Shared by every login path (password,
-    Telegram widget, ...) so cookie handling and the login notification stay
-    in one place."""
-    strategy = get_jwt_strategy()
-    access_token = await strategy.write_token(user)
-
+async def start_session(
+    request: Request,
+    response: Response,
+    user_id: UUID,
+    user_service: UserService,
+) -> None:
     device_info = extract_device_info(request)
-    ip_address = extract_ip(request)
+    tokens = await user_service.open_session(
+        user_id, device_info=device_info, ip_address=extract_ip(request)
+    )
+    set_refresh_cookie(response, tokens.refresh_token)
+    set_session_cookie(response, tokens.session_id)
+    await user_service.announce_login(user_id, device_info)
 
-    async with user_service.uow:
-        raw_refresh, _, _, session_id = await user_service._create_session(
-            user.id, device_info=device_info, ip_address=ip_address
-        )
-        response = JSONResponse(
-            content={
-                "access_token": access_token,
-                "token_type": "bearer",
-            }
-        )
-        set_refresh_cookie(response, raw_refresh)
-        set_session_cookie(response, session_id)
-        response._refresh_token_created = True
-        await user_service.on_after_login(user, request, response)
-        await user_service.uow.commit()
+
+async def finish_login(
+    request: Request,
+    user: UserDTO,
+    user_service: UserService,
+    strategy: AccessStrategy,
+) -> JSONResponse:
+    response = JSONResponse(
+        content={
+            "access_token": await strategy.write_token(user),
+            "token_type": "bearer",
+        }
+    )
+    await start_session(request, response, user.id, user_service)
     return response

@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -22,9 +21,7 @@ def get_verify_router(
     async def verify(
         request: Request,
         token: str,
-        user_manager: BaseUserManager[models.UP, models.ID] = Depends(
-            get_user_manager
-        ),
+        user_manager: BaseUserManager[models.UP, models.ID] = Depends(get_user_manager),
     ) -> HTMLResponse:
         try:
             await user_manager.verify(token, request)

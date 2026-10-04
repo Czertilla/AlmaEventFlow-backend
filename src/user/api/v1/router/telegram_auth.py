@@ -4,11 +4,12 @@ from fastapi import APIRouter, Depends, Request
 
 from core.schema.error import ErrorCode, auth_responses, detail_400, detail_404
 from core.utils.exc.http import VancedHTTPException
+from user.api.auth import get_jwt_strategy
+from user.api.v1.schema.telegram import TelegramWidgetAuth
 from user.config.settings import settings
 from user.dependencies.user import get_user_service
 from user.exceptions.user import TelegramAccountNotLinked
-from user.schemas.user import TelegramWidgetAuth
-from user.services.user import UserService
+from user.service.user import UserService
 from user.utils.auth_response import finish_login
 from user.utils.telegram_auth import verify_telegram_widget_payload
 
@@ -47,4 +48,4 @@ async def login_with_telegram(
         raise VancedHTTPException(
             status_code=400, detail=ErrorCode.LOGIN_BAD_CREDENTIALS
         )
-    return await finish_login(request, user, user_service)
+    return await finish_login(request, user, user_service, get_jwt_strategy())

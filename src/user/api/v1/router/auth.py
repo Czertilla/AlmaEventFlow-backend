@@ -7,10 +7,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from core.schema.error import ErrorCode, ErrorModel
 from core.utils.exc.http import VancedHTTPException
+from user.api.auth import get_jwt_strategy
 from user.config.settings import settings
 from user.dependencies.user import get_user_service
-from user.services.auth import get_jwt_strategy
-from user.services.user import UserService
+from user.service.user import UserService
 from user.utils.auth_response import finish_login
 from user.utils.cookie import (
     set_refresh_cookie,
@@ -49,12 +49,12 @@ async def login(
     credentials: OAuth2PasswordRequestForm = Depends(),
     user_service: UserService = Depends(get_user_service),
 ) -> dict[str, Any]:
-    user = await user_service.authenticate(credentials)
+    user = await user_service.authenticate(credentials.username, credentials.password)
     if user is None or not user.is_active:
         raise VancedHTTPException(
             status_code=400, detail=ErrorCode.LOGIN_BAD_CREDENTIALS
         )
-    return await finish_login(request, user, user_service)
+    return await finish_login(request, user, user_service, get_jwt_strategy())
 
 
 @router.post(
@@ -99,9 +99,7 @@ async def refresh(
         raise VancedHTTPException(
             status_code=401, detail=ErrorCode.INVALID_REFRESH_TOKEN
         )
-    new_raw_refresh, _, user_id, session_id = result
-
-    user = await user_service.get(user_id)
+    user = await user_service.get(result.user_id)
 
     strategy = get_jwt_strategy()
     access_token = await strategy.write_token(user)
@@ -113,8 +111,8 @@ async def refresh(
         }
     )
 
-    set_refresh_cookie(response, new_raw_refresh)
-    set_session_cookie(response, session_id)
+    set_refresh_cookie(response, result.refresh_token)
+    set_session_cookie(response, result.session_id)
     return response
 
 

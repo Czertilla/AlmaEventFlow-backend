@@ -5,11 +5,11 @@ from fastapi import APIRouter, Depends, Request, status
 
 from core.dependencies.auth import UserJWTDep
 from core.schema.error import auth_responses
+from user.api.v1.schema.session import SessionRead
 from user.config.settings import settings
 from user.dependencies.user import get_user_service
 from user.exceptions.user import SessionNotFound
-from user.schemas.user import SessionRead
-from user.services.user import UserService
+from user.service.user import UserService
 
 logger = getLogger(__name__)
 
@@ -36,9 +36,8 @@ async def list_my_sessions(
     user_service: UserService = Depends(get_user_service),
 ) -> list[SessionRead]:
     """Lists the current user's active sessions, flagging the one in use."""
-    return await user_service.list_sessions(
-        user.id, _current_session_id(request)
-    )
+    sessions = await user_service.list_sessions(user.id, _current_session_id(request))
+    return [SessionRead.from_dto(session) for session in sessions]
 
 
 @router.delete(
@@ -52,9 +51,7 @@ async def revoke_other_sessions(
     user_service: UserService = Depends(get_user_service),
 ) -> None:
     """Revokes every session of the current user except the one in use."""
-    await user_service.revoke_other_sessions(
-        user.id, _current_session_id(request)
-    )
+    await user_service.revoke_other_sessions(user.id, _current_session_id(request))
 
 
 @router.delete(

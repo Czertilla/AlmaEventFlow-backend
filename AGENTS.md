@@ -90,8 +90,8 @@ Across `src/*/service/*.py`:
 
 ## API layer, DTOs and schema versioning
 
-Migrated so far: `event` (pilot). Other services still use a flat `schema/` and pass pydantic
-models into services; migrate one service at a time, copying `event`'s shape.
+Every HTTP service follows this: `event`, `org`, `geo`, `profile`, `notify`, `bot` and `user`
+(`mail` has no HTTP API). A new service copies the shape of `org` (simple CRUD) or `event`.
 
 - A service's HTTP API lives in `<service>/api/v<N>/router/` + `<service>/api/v<N>/schema/`
   (horizontal split, same as everywhere else — not per-entity packages, so schemas can import
@@ -110,11 +110,23 @@ models into services; migrate one service at a time, copying `event`'s shape.
   `PageV1[Read].from_dto(page_dto)`, page query `page_param.to_dto()`.
 - `Filter` classes (fastapi-filter) stay ORM-bound in `<service>/filter/`; the service takes a
   `…FilterDTO` and rebuilds the `Filter` with `Filter.from_dto` right before the repository call.
+- `PatchModelV1.model_dump()` already drops unset fields; never pass `exclude_unset` to it (it
+  raises). PATCH handlers build `…Patch(id=..., **body.model_dump())` and `to_dto()` it.
+- SQLAlchemy async cannot lazy-load: a service converting an ORM row to a DTO must hold every
+  relationship it reads (eager options on the repository, or re-read the row with `_read` after
+  `add_n_return`/`update_one`/`upsert`). Convert to the DTO before `commit()` — the monolith
+  session maker expires attributes on commit.
+- `user` is the exception to "services know nothing about the API library": `UserService` is
+  DTO-only and library-free, and `user/api/manager.py` (`UserManager`, a fastapi-users
+  `BaseUserManager`) is the adapter. It turns fastapi-users schemas into DTOs, calls the service
+  and maps the domain exceptions in `user/exceptions/account.py` back to fastapi-users' ones. Cookies
+  and `Request`/`Response` handling live in `user/utils/auth_response.py` and the routers, never in
+  the service.
 
 ### Contract tests (`tests/contract/`)
 
 They pin the API of every released version and the isolation between the service layer and the
-schemas. No DB or Docker needed; `uv run pytest tests/contract` takes ~75s (each service's OpenAPI
+schemas. No DB or Docker needed; `uv run pytest tests/contract` takes ~2min (each service's OpenAPI
 is generated in its own subprocess with a pinned env, so a local `.env` cannot change a snapshot).
 
 - `snapshots/<service>/<vN>.json` — the OpenAPI paths and reachable components of each service
@@ -130,6 +142,10 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
 - `test_service_layer_does_not_depend_on_api_schemas` — AST scan: the layers listed in
   `MIGRATED_LAYERS` never import `<service>.api` or `core.schema.v<N>`. Add a service there when
   it is migrated.
+- Router behaviour is not covered by the OpenAPI snapshot, so each service also has handler- or
+  HTTP-level tests next to its service tests (`tests/org/test_router_patch.py`,
+  `tests/profile/test_router_handlers.py`, `tests/user/test_user_flows.py`). Write one for every
+  new PATCH/PUT conversion.
 - A service-layer change (new DTO field with a default, refactored service, renamed internals)
   must leave every contract test green **without regenerating anything** — if one fails, the
   change leaked into the API. Renaming or removing a DTO field a schema reads, or adding a
@@ -188,11 +204,11 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   `tests/contract` do not). New tests should not need a database unless they exercise SQL.
 - **Lint/type-check are strict by config, not by current codebase state.** `[tool.ruff.lint]`
   selects `E, F, I, UP, B, SIM, C4, RUF, ASYNC, N` (not just the bare `E, F, I` this repo started
-  with); a full run has ~423 pre-existing, non-auto-fixable findings that are accepted debt, not
+  with); a full run has ~300 pre-existing, non-auto-fixable findings that are accepted debt, not
   something to silently "clean up" as a drive-by in an unrelated change. `[tool.basedpyright]` sets `typeCheckingMode = "strict"` — `basedpyright` (a pyright
   fork; replaced plain `pyright` specifically for this feature) supports a baseline file,
   `.basedpyright/baseline.json`, that grandfathers every finding that existed when it was
-  generated (currently ~4600, covering the whole repo — `src/`, `tests/`, `migrations/`,
+  generated (currently ~4000, covering the whole repo — `src/`, `tests/`, `migrations/`,
   `scripts/` — matching the bare `uv run basedpyright` command's own default scope, not just
   `src/`), so a clean `uv run basedpyright` run means **zero new findings**, not zero findings
   ever. Consequences for how you work:

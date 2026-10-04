@@ -24,7 +24,7 @@ class GoogleOAuth2(Base):
                 raise GetProfileError(response=response)
 
             return cast(dict[str, Any], response.json())
-        
+
     async def get_id_email(self, token: str) -> tuple[str, str | None]:
         try:
             profile = await self.get_profile(token)

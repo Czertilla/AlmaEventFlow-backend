@@ -12,17 +12,12 @@ from core.schema.error import (
     error_response,
 )
 from core.schema.v1.pagination import PageParamV1, PageV1
+from user.api.v1.schema.check import CheckResponse
+from user.api.v1.schema.invite import InviteTokenCreate, InviteTokenRead
+from user.api.v1.schema.user import LinkInviteData, PersonLinkRequest, UserRead
 from user.dependencies.user import get_user_uow
 from user.filter.user import UserFilter
-from user.schemas.user import (
-    CheckResponse,
-    InviteTokenCreate,
-    InviteTokenRead,
-    LinkInviteData,
-    PersonLinkRequest,
-    UserRead,
-)
-from user.services.user import UserService
+from user.service.user import UserService
 from user.uow.user import UserUOW
 
 router = APIRouter(prefix="/v1/users", tags=["users"])
@@ -45,7 +40,9 @@ async def get_many(
     filter: UserFilter = FilterDepends(UserFilter),
     page_param: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[UserRead]:
-    return await UserService(uow).search(filter, page_param)
+    return PageV1[UserRead].from_dto(
+        await UserService(uow).search(filter.to_dto(), page_param.to_dto())
+    )
 
 
 @router.post(
@@ -59,7 +56,9 @@ async def create_invite_token(
     user: SuperUserJWTDep,
     invite_data: InviteTokenCreate,
 ) -> InviteTokenRead:
-    return await UserService(uow).create_invite_token(invite_data)
+    return InviteTokenRead.from_dto(
+        await UserService(uow).create_invite_token(invite_data.to_dto())
+    )
 
 
 @router.patch(
@@ -86,7 +85,9 @@ async def link_person(
     """Admin-only: attaches an existing profile person to an existing
     account, for cases the invite-token flow doesn't cover (account created
     first, or re-linking to a different person)."""
-    return await UserService(uow).admin_link_person(user_id, payload.person_id)
+    return UserRead.from_dto(
+        await UserService(uow).admin_link_person(user_id, payload.person_id)
+    )
 
 
 @router.post(
@@ -112,4 +113,4 @@ async def link_invite(
 ) -> UserRead:
     """Self-service: an already-authenticated user opening an invite link
     confirms attaching that invite's person to their own account."""
-    return await UserService(uow).link_invite(user.id, payload.token)
+    return UserRead.from_dto(await UserService(uow).link_invite(user.id, payload.token))

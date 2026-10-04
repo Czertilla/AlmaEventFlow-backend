@@ -8,6 +8,7 @@ SCHEMA_PACKAGES = {
     "notify_v1": "notify.api.v1.schema",
     "org_v1": "org.api.v1.schema",
     "profile_v1": "profile.api.v1.schema",
+    "user_v1": "user.api.v1.schema",
 }
 
 RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
@@ -86,6 +87,17 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "student.StudentRead": "profile.dto.student:StudentDTO",
         },
     ),
+    "user_v1": (
+        "user.api.v1.schema",
+        {
+            "invite.InviteTokenRead": "user.dto.invite:InviteTokenDTO",
+            "session.SessionRead": "user.dto.session:SessionDTO",
+            "telegram.TelegramLinkTokenRead": (
+                "user.dto.telegram:TelegramLinkTokenDTO"
+            ),
+            "user.UserRead": "user.dto.user:UserDTO",
+        },
+    ),
 }
 
 BUILT_BY_ROUTER = {"event.api.v2.schema": {"calendar.SubscriptionCreated"}}
@@ -98,6 +110,7 @@ MIGRATED_LAYERS = {
     "profile": ("service", "repository", "uow", "dto", "models"),
     "notify": ("service", "repository", "uow", "dto", "models"),
     "bot": ("service", "repository", "uow", "dto", "models"),
+    "user": ("service", "repository", "repositories", "uow", "dto", "models"),
 }
 
 FORBIDDEN = {
@@ -124,6 +137,10 @@ FORBIDDEN = {
     ),
     "bot": (
         re.compile(r"^bot\.api\.v\d+"),
+        re.compile(r"^core\.schema\.v\d+"),
+    ),
+    "user": (
+        re.compile(r"^user\.api(\.|$)"),
         re.compile(r"^core\.schema\.v\d+"),
     ),
 }

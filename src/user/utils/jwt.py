@@ -1,8 +1,8 @@
+from typing import Any
 from uuid import UUID
 
 from fastapi_users.authentication import JWTStrategy as Base
 from fastapi_users.jwt import generate_jwt
-from fastapi_users.models import UP
 
 from user.utils.rsa import get_private_key_pem, get_public_key_pem
 
@@ -24,7 +24,7 @@ class AccessStrategy(Base):
             public_key=public_key or get_public_key_pem(),
         )
 
-    async def write_token(self, user: UP) -> str:
+    async def write_token(self, user: Any) -> str:
         data = {
             "sub": str(user.id),
             "aud": self.token_audience,

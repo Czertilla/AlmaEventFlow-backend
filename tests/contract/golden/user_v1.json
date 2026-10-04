@@ -1,0 +1,534 @@
+{
+  "check.CheckResponse": {
+    "full": {
+      "dump": {
+        "exists": true,
+        "username": "x"
+      },
+      "fields_set": [
+        "exists",
+        "username"
+      ],
+      "input": {
+        "exists": true,
+        "username": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "exists": true,
+        "username": "x"
+      },
+      "fields_set": [
+        "exists",
+        "username"
+      ],
+      "input": {
+        "exists": true,
+        "username": "x"
+      }
+    }
+  },
+  "invite.InviteTokenCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "expires_in": 1,
+          "person_id": "6d51fe19-9bb1-5468-8949-ab934b7874e6"
+        }
+      },
+      "dump": {
+        "expires_in": 1,
+        "person_id": "6d51fe19-9bb1-5468-8949-ab934b7874e6"
+      },
+      "fields_set": [
+        "expires_in",
+        "person_id"
+      ],
+      "input": {
+        "expires_in": 1,
+        "person_id": "6d51fe19-9bb1-5468-8949-ab934b7874e6"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "expires_in": null,
+          "person_id": "6d51fe19-9bb1-5468-8949-ab934b7874e6"
+        }
+      },
+      "dump": {
+        "expires_in": null,
+        "person_id": "6d51fe19-9bb1-5468-8949-ab934b7874e6"
+      },
+      "fields_set": [
+        "person_id"
+      ],
+      "input": {
+        "person_id": "6d51fe19-9bb1-5468-8949-ab934b7874e6"
+      }
+    }
+  },
+  "invite.InviteTokenRead": {
+    "full": {
+      "dump": {
+        "expires_at": 1,
+        "token": "x"
+      },
+      "fields_set": [
+        "expires_at",
+        "token"
+      ],
+      "input": {
+        "expires_at": 1,
+        "token": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "expires_at": 1,
+        "token": "x"
+      },
+      "fields_set": [
+        "expires_at",
+        "token"
+      ],
+      "input": {
+        "expires_at": 1,
+        "token": "x"
+      }
+    }
+  },
+  "session.SessionRead": {
+    "full": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "device_info": "x",
+        "id": "38b14a15-375f-5f70-be3a-004ac47b3dfe",
+        "ip_address": "x",
+        "is_current": true,
+        "last_used_at": "2026-01-01T10:00:00Z"
+      },
+      "fields_set": [
+        "created_at",
+        "device_info",
+        "id",
+        "ip_address",
+        "is_current",
+        "last_used_at"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "device_info": "x",
+        "id": "38b14a15-375f-5f70-be3a-004ac47b3dfe",
+        "ip_address": "x",
+        "is_current": true,
+        "last_used_at": "2026-01-01T10:00:00Z"
+      }
+    },
+    "required": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "device_info": "x",
+        "id": "38b14a15-375f-5f70-be3a-004ac47b3dfe",
+        "ip_address": "x",
+        "is_current": false,
+        "last_used_at": "2026-01-01T10:00:00Z"
+      },
+      "fields_set": [
+        "created_at",
+        "device_info",
+        "id",
+        "ip_address",
+        "last_used_at"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "device_info": "x",
+        "id": "38b14a15-375f-5f70-be3a-004ac47b3dfe",
+        "ip_address": "x",
+        "last_used_at": "2026-01-01T10:00:00Z"
+      }
+    }
+  },
+  "telegram.TelegramLinkTokenRead": {
+    "full": {
+      "dump": {
+        "deep_link": "x",
+        "expires_at": 1,
+        "token": "x"
+      },
+      "fields_set": [
+        "deep_link",
+        "expires_at",
+        "token"
+      ],
+      "input": {
+        "deep_link": "x",
+        "expires_at": 1,
+        "token": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "deep_link": "x",
+        "expires_at": 1,
+        "token": "x"
+      },
+      "fields_set": [
+        "deep_link",
+        "expires_at",
+        "token"
+      ],
+      "input": {
+        "deep_link": "x",
+        "expires_at": 1,
+        "token": "x"
+      }
+    }
+  },
+  "telegram.TelegramWidgetAuth": {
+    "full": {
+      "dump": {
+        "auth_date": 1,
+        "first_name": "x",
+        "hash": "x",
+        "id": 1,
+        "last_name": "x",
+        "photo_url": "x",
+        "username": "x"
+      },
+      "fields_set": [
+        "auth_date",
+        "first_name",
+        "hash",
+        "id",
+        "last_name",
+        "photo_url",
+        "username"
+      ],
+      "input": {
+        "auth_date": 1,
+        "first_name": "x",
+        "hash": "x",
+        "id": 1,
+        "last_name": "x",
+        "photo_url": "x",
+        "username": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "auth_date": 1,
+        "first_name": "x",
+        "hash": "x",
+        "id": 1,
+        "last_name": null,
+        "photo_url": null,
+        "username": null
+      },
+      "fields_set": [
+        "auth_date",
+        "first_name",
+        "hash",
+        "id"
+      ],
+      "input": {
+        "auth_date": 1,
+        "first_name": "x",
+        "hash": "x",
+        "id": 1
+      }
+    }
+  },
+  "user.CreateUpdateUserModel": {
+    "full": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    },
+    "required": {
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "user.LinkInviteData": {
+    "full": {
+      "dump": {
+        "token": "x"
+      },
+      "fields_set": [
+        "token"
+      ],
+      "input": {
+        "token": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "token": "x"
+      },
+      "fields_set": [
+        "token"
+      ],
+      "input": {
+        "token": "x"
+      }
+    }
+  },
+  "user.PersonLinkRequest": {
+    "full": {
+      "dump": {
+        "person_id": "0e7a2401-3e8c-55d4-b12e-4cff0b22f7e9"
+      },
+      "fields_set": [
+        "person_id"
+      ],
+      "input": {
+        "person_id": "0e7a2401-3e8c-55d4-b12e-4cff0b22f7e9"
+      }
+    },
+    "required": {
+      "dump": {
+        "person_id": "0e7a2401-3e8c-55d4-b12e-4cff0b22f7e9"
+      },
+      "fields_set": [
+        "person_id"
+      ],
+      "input": {
+        "person_id": "0e7a2401-3e8c-55d4-b12e-4cff0b22f7e9"
+      }
+    }
+  },
+  "user.UserCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "email",
+          "invite_token",
+          "is_active",
+          "is_superuser",
+          "is_verified",
+          "password",
+          "username"
+        ],
+        "mapped": {
+          "email": "user@example.com",
+          "invite_token": "x",
+          "is_active": true,
+          "is_superuser": true,
+          "is_verified": true,
+          "password": "x",
+          "username": "x"
+        }
+      },
+      "dump": {
+        "email": "user@example.com",
+        "invite_token": "x",
+        "is_active": true,
+        "is_superuser": true,
+        "is_verified": true,
+        "password": "x",
+        "username": "x"
+      },
+      "fields_set": [
+        "email",
+        "invite_token",
+        "is_active",
+        "is_superuser",
+        "is_verified",
+        "password",
+        "username"
+      ],
+      "input": {
+        "email": "user@example.com",
+        "invite_token": "x",
+        "is_active": true,
+        "is_superuser": true,
+        "is_verified": true,
+        "password": "x",
+        "username": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "email",
+          "password",
+          "username"
+        ],
+        "mapped": {
+          "email": "user@example.com",
+          "invite_token": null,
+          "is_active": true,
+          "is_superuser": false,
+          "is_verified": false,
+          "password": "x",
+          "username": "x"
+        }
+      },
+      "dump": {
+        "email": "user@example.com",
+        "invite_token": null,
+        "is_active": true,
+        "is_superuser": false,
+        "is_verified": false,
+        "password": "x",
+        "username": "x"
+      },
+      "fields_set": [
+        "email",
+        "password",
+        "username"
+      ],
+      "input": {
+        "email": "user@example.com",
+        "password": "x",
+        "username": "x"
+      }
+    }
+  },
+  "user.UserRead": {
+    "full": {
+      "dump": {
+        "email": "user@example.com",
+        "id": "44d6b9e4-4d19-53f5-8a58-0e8f35c03e1e",
+        "is_active": true,
+        "is_superuser": true,
+        "is_verified": true,
+        "person_id": "894da755-eb20-5731-8f5d-cdee88ae8298",
+        "username": "x"
+      },
+      "fields_set": [
+        "email",
+        "id",
+        "is_active",
+        "is_superuser",
+        "is_verified",
+        "person_id",
+        "username"
+      ],
+      "input": {
+        "email": "user@example.com",
+        "id": "44d6b9e4-4d19-53f5-8a58-0e8f35c03e1e",
+        "is_active": true,
+        "is_superuser": true,
+        "is_verified": true,
+        "person_id": "894da755-eb20-5731-8f5d-cdee88ae8298",
+        "username": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "email": "user@example.com",
+        "id": "44d6b9e4-4d19-53f5-8a58-0e8f35c03e1e",
+        "is_active": true,
+        "is_superuser": false,
+        "is_verified": false,
+        "person_id": "894da755-eb20-5731-8f5d-cdee88ae8298",
+        "username": "x"
+      },
+      "fields_set": [
+        "email",
+        "id",
+        "person_id",
+        "username"
+      ],
+      "input": {
+        "email": "user@example.com",
+        "id": "44d6b9e4-4d19-53f5-8a58-0e8f35c03e1e",
+        "person_id": "894da755-eb20-5731-8f5d-cdee88ae8298",
+        "username": "x"
+      }
+    }
+  },
+  "user.UserUpdate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "current_password",
+          "email",
+          "is_active",
+          "is_superuser",
+          "is_verified",
+          "password",
+          "username"
+        ],
+        "mapped": {
+          "current_password": "x",
+          "email": "user@example.com",
+          "is_active": true,
+          "is_superuser": true,
+          "is_verified": true,
+          "password": "x",
+          "username": "x"
+        }
+      },
+      "dump": {
+        "current_password": "x",
+        "email": "user@example.com",
+        "is_active": true,
+        "is_superuser": true,
+        "is_verified": true,
+        "password": "x",
+        "username": "x"
+      },
+      "fields_set": [
+        "current_password",
+        "email",
+        "is_active",
+        "is_superuser",
+        "is_verified",
+        "password",
+        "username"
+      ],
+      "input": {
+        "current_password": "x",
+        "email": "user@example.com",
+        "is_active": true,
+        "is_superuser": true,
+        "is_verified": true,
+        "password": "x",
+        "username": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "username"
+        ],
+        "mapped": {
+          "current_password": null,
+          "email": null,
+          "is_active": null,
+          "is_superuser": null,
+          "is_verified": null,
+          "password": null,
+          "username": "x"
+        }
+      },
+      "dump": {
+        "current_password": null,
+        "email": null,
+        "is_active": null,
+        "is_superuser": null,
+        "is_verified": null,
+        "password": null,
+        "username": "x"
+      },
+      "fields_set": [
+        "username"
+      ],
+      "input": {
+        "username": "x"
+      }
+    }
+  }
+}
