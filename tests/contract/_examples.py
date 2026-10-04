@@ -13,6 +13,7 @@ from pydantic.errors import PydanticUserError
 
 FIELD_OVERRIDES = {"timezone": "Europe/Moscow"}
 VARIANTS = ("required", "full")
+GENERATED = "<generated>"
 
 
 def _string(schema: dict[str, Any], path: str) -> str:
@@ -133,7 +134,14 @@ def characterize(model: type[BaseModel], variant: str) -> dict[str, Any]:
             for err in exc.errors()
         )
         return record
+    generated = {
+        name: info
+        for name, info in model.model_fields.items()
+        if info.default_factory is not None and name not in instance.model_fields_set
+    }
     record["dump"] = instance.model_dump(mode="json", by_alias=True)
+    for name, info in generated.items():
+        record["dump"][info.alias or name] = GENERATED
     record["fields_set"] = sorted(instance.model_fields_set)
     to_dto = getattr(instance, "to_dto", None)
     if to_dto is not None:
@@ -142,7 +150,7 @@ def characterize(model: type[BaseModel], variant: str) -> dict[str, Any]:
         sent = instance.model_dump()
         record["dto"] = {
             "mapped": {
-                key: _encode(getattr(dto, key))
+                key: GENERATED if key in generated else _encode(getattr(dto, key))
                 for key in sorted(sent)
                 if key in dto_fields
             },
