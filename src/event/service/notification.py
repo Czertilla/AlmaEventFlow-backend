@@ -94,15 +94,36 @@ async def notify_event_targets(
     the given scope and publishes one attendance notification per event. Must be
     called inside an open unit of work (uses its session); publish is best-effort
     and never raises into the caller."""
-    rows = await _resolve_targets(
-        uow.session,
-        attendance_ids=attendance_ids,
-        participation_ids=participation_ids,
-        event_ids=event_ids,
+    scope = {
+        "attendance_ids": attendance_ids,
+        "participation_ids": participation_ids,
+        "event_ids": event_ids,
+    }
+    try:
+        rows = await _resolve_targets(uow.session, **scope)
+        stages = await _resolve_stages(uow.session, {row[0] for row in rows})
+        requests = _build_requests(rows, stages)
+    except Exception:
+        logger.exception(
+            "Failed to resolve attendance notification targets for %s",
+            _describe_scope(scope),
+        )
+        return
+    logger.info(
+        "Attendance notifications for %s: %d event(s) to notify",
+        _describe_scope(scope),
+        len(requests),
     )
-    stages = await _resolve_stages(uow.session, {row[0] for row in rows})
-    for request in _build_requests(rows, stages):
+    for request in requests:
         await _publish(request)
+
+
+def _describe_scope(scope: dict[str, Iterable[UUID] | None]) -> str:
+    return ", ".join(
+        f"{name}={[str(item) for item in ids]}"
+        for name, ids in scope.items()
+        if ids is not None
+    )
 
 
 async def _resolve_targets(
@@ -245,9 +266,37 @@ async def notify_collective_chats(
     resolves collective_id -> chat_id and owns edit-vs-send by event_id; a
     collective with no chat set up is simply skipped there. Best-effort,
     like the personal pipeline."""
-    rows = await _resolve_collective_targets(uow.session, event_ids=event_ids)
-    stages = await _resolve_stages(uow.session, {row[0] for row in rows})
-    for request in _build_announcements(rows, stages):
+    event_ids = list(event_ids)
+    try:
+        rows = await _resolve_collective_targets(
+            uow.session, event_ids=event_ids
+        )
+        stages = await _resolve_stages(uow.session, {row[0] for row in rows})
+        requests = _build_announcements(rows, stages)
+    except Exception:
+        logger.exception(
+            "Failed to resolve collective announcement targets for events %s",
+            [str(event_id) for event_id in event_ids],
+        )
+        return
+    for event_id in event_ids:
+        collectives = [
+            str(request.collective_id)
+            for request in requests
+            if request.event_id == event_id
+        ]
+        if collectives:
+            logger.info(
+                "Announcing event %s to collectives %s", event_id, collectives
+            )
+        else:
+            logger.info(
+                "Event %s has no announcement targets (its status is not in "
+                "%s, or no collective participates)",
+                event_id,
+                settings.EVENT_NOTIFY_TRIGGER_STATUSES,
+            )
+    for request in requests:
         await _publish_announcement(request)
 
 
@@ -344,6 +393,12 @@ async def _publish_announcement(request: AnnouncementRequest) -> None:
     except Exception:
         logger.exception(
             "Failed to publish announcement for event %s, collective %s",
+            request.event_id,
+            request.collective_id,
+        )
+    else:
+        logger.info(
+            "Announcement published: event=%s collective=%s",
             request.event_id,
             request.collective_id,
         )

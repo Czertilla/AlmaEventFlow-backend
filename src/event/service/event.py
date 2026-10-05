@@ -248,6 +248,7 @@ class EventService(BaseService[EventUOW]):
         """Publishes both the personal attendance ping and the collective
         chat announcement for the same event — two independent pipelines
         (see ``event/service/notification.py``), triggered together."""
+        logger.info("Publishing notices for event %s", event_id)
         await notify_event_targets(self.uow, event_ids=[event_id])
         await notify_collective_chats(self.uow, event_ids=[event_id])
 
@@ -264,6 +265,12 @@ class EventService(BaseService[EventUOW]):
         if not is_trigger_status(old_status) and is_trigger_status(
             event.status
         ):
+            logger.info(
+                "Event %s moved from %s to %s, announcing",
+                event.id,
+                old_status,
+                event.status,
+            )
             await self._publish_event_notice(event.id)
             return
         if (
@@ -272,7 +279,17 @@ class EventService(BaseService[EventUOW]):
             and is_trigger_status(event.status)
             and (old.name != event.name or old.date != event.date)
         ):
+            logger.info(
+                "Event %s was edited while %s, re-announcing", event.id, event.status
+            )
             await self._publish_event_notice(event.id)
+            return
+        logger.debug(
+            "Event %s: status %s -> %s needs no announcement",
+            event.id,
+            old_status,
+            event.status,
+        )
 
     async def create(self, event_create: EventCreateDTO) -> EventDTO:
         async with self.uow as uow:
