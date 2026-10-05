@@ -178,12 +178,20 @@ is a defect, not a style choice.
 
 - **Tokens** — `frontend/src/theme/variables.css`: brand and surface colours (Ionic variables, light
   and `.ion-palette-dark`), the type scale `--fs-2xs … --fs-2xl` (11/12/13/14/16/18/22px), weights
-  `--fw-regular|medium|semibold|bold` (400/500/600/700), radii `--radius-sm|md|lg|xl|pill`
-  (10/12/16/20/999px) and `--border-w` (1.5px).
+  `--fw-regular|medium|semibold|bold` (400/500/600/700), icon sizes `--icon-xl` (28px) and
+  `--icon-hero` (40px, empty and error states), radii `--radius-sm|md|lg|xl|pill`
+  (10/12/16/20/999px), `--border-w` (1.5px) and `--font-mono`. The font is `Inter Variable`, bundled
+  from `@fontsource-variable/inter` and loaded in `main.ts`.
 - **Primitives** — `frontend/src/theme/components.css`, loaded once from `main.ts`: `ui-input` (and
   its legacy name `native-input`), `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-chip`
-  (+ `--active`), `ui-btn` (+ `--primary`, `--ghost`), and the reset that makes `button`, `input`,
-  `select` and `textarea` inherit the page font.
+  (+ `--active`), `ui-btn` (+ `--primary`, `--ghost`); the dialog parts `ui-sheet`, `ui-sheet-head`,
+  `ui-sheet-title`, `ui-sheet-body` (scrolls) and `ui-sheet-actions` (buttons pinned under the body);
+  the thin 6px scrollbar for every scroll area, including the one inside `ion-content`; and the reset
+  that makes `button`, `input`, `select` and `textarea` inherit the page font.
+- **Dialogs** — `ion-modal` is styled once in `variables.css` (radius, shadow, width) and so are
+  the header and close button of a modal built from `ion-header`/`ion-toolbar`, which therefore look
+  like `ui-sheet-head`. A dialog with its own header uses the `ui-sheet-*` parts, with the close
+  button as `ui-icon-btn` and the primary action in `ui-sheet-actions`, not inside the scrolling body.
 - **Shared components** — `frontend/src/components/common/` and friends: `DateTimeField` (built on
   `TimeSpinner` and `TimeDrum`), `TimestampsMeta`, `admin/ResourceTable` and `admin/ResourceFormModal`
   for admin lists and forms, `geo/LocationField`. New screens compose these.
@@ -194,25 +202,30 @@ Rules:
   almost fits, add a modifier class to it; do not copy it into a view.
 - **No second copy.** A style that is needed in two places belongs in `components.css` or a shared
   component. A component's own `<style>` holds layout and positioning specific to it, not its
-  buttons, chips, fields or colours.
-- **No raw values.** Font sizes and weights, radii and border widths come from the tokens, colours
-  from the Ionic/brand variables (`--ion-color-primary-contrast` rather than `#fff`). Never declare
-  `font-family`; it is inherited. Sizes outside the scale (15px, 17px, 10px, 19px, `rem`/`em`) exist
-  only as legacy and are not to be used in new code.
+  buttons, chips, fields, headers, scrollbars or colours.
+- **No raw values.** `font-size` and `font-weight`, radii and border widths come from the tokens,
+  colours from the Ionic/brand variables (`--ion-color-primary-contrast` rather than `#fff`), and
+  `font-family` is never declared (it is inherited; `--font-mono` is the only other face). A size
+  that is not on the scale (15px, 17px, 10px, `rem`/`em`) is a defect: use the nearest step, 14px
+  for field text, 16px for the main text of a list row, 18px for a title.
+- **Overriding Ionic** needs a selector at least as specific as Ionic's own (its component rules are
+  scoped with a class); chain `.button.button-clear` and `[slot="icon-only"]` as `variables.css`
+  does, not `!important`.
 - **Icon-only buttons** are transparent at rest and tint on hover (`ui-icon-btn`); a permanent
   fill is not part of the language.
 - **Dates and times** go through `DateTimeField` only: typeable, with the `ДД.ММ.ГГГГ ЧЧ:ММ`
   template always visible, and a picker with a calendar and the two-drum `TimeSpinner`. Never use
-  `<input type="date|time|datetime-local">` and never give such a field a placeholder text.
+  `<input type="date|time|datetime-local">` and never give such a field a placeholder text. A field
+  may be given `suggest` (a date or a datetime): on focus it prefills the date of the suggestion, and
+  a time is never filled in on the user's behalf. A new stage's start suggests the previous stage or
+  the event date, and its end suggests the start.
 - **A new primitive** is added to `components.css` and to the list above in the same change.
 - **Check what you built** in the light and the dark theme, at phone width (375px) and on a desktop,
   with `npx vue-tsc --noEmit`, `npx eslint <files>` and `npx vitest run`.
 
 Known debt, to be paid when a view is touched and not as a drive-by: per-view copies of `.role-chip`
-(3 files), `.auth-btn` (6), `.sort-btn` (3), `.icon-btn` and `.row-icon-btn`, `.form-field`; about 70
-redundant `font-family: inherit` lines; off-scale sizes (15px about 36 times, 17px about 15, 10px
-about 10); `AdminPersonFile`'s own `.native-input` with a different background; `Inter` is first in
-the font stack but is not bundled (no `@font-face`), so each platform draws its system font.
+(3 files), `.auth-btn` (6), `.sort-btn` (3), `.icon-btn` and `.row-icon-btn`, `.form-field`, and
+`AdminPersonFile`'s own `.native-input` with a different background.
 
 ## Code style
 
