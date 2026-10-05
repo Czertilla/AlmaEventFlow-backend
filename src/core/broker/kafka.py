@@ -23,6 +23,12 @@ from core.config.settings import settings
 
 logger = getLogger(__name__)
 
+MAX_RECONNECT_INTERVAL = 30.0
+
+
+def next_reconnect_interval(current: float) -> float:
+    return min(current * 2, MAX_RECONNECT_INTERVAL)
+
 
 if not settings.IN_MEMORY_BROKER:
 
@@ -113,19 +119,24 @@ if not settings.IN_MEMORY_BROKER:
             self._rpc_reply.attach(self.config.producer)
 
         async def start(self) -> None:
-            try:
-                logger.info(
-                    f"Attempting to connect to Kafka with servers: {kafka_uri()}"
-                )
-                await super().start()
-            except Exception as e:
-                logger.error(
-                    "Error starting broker, reconnecting in "
-                    f"{self.reconnect_interval} seconds ({e=})"
-                )
-                await asyncio.sleep(self.reconnect_interval)
-                self.reconnect_interval *= 2
-                await self.start()
+            while True:
+                try:
+                    logger.info(
+                        f"Attempting to connect to Kafka with servers: {kafka_uri()}"
+                    )
+                    await super().start()
+                except Exception as e:
+                    logger.error(
+                        "Error starting broker, reconnecting in "
+                        f"{self.reconnect_interval} seconds ({e=})"
+                    )
+                    await asyncio.sleep(self.reconnect_interval)
+                    self.reconnect_interval = next_reconnect_interval(
+                        self.reconnect_interval
+                    )
+                else:
+                    logger.info("Kafka broker started")
+                    return
 
         async def stop(self, *args, **kwargs) -> None:
             await self._rpc_reply.stop()

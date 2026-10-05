@@ -1,4 +1,4 @@
-from asyncio import create_task, iscoroutine
+from asyncio import Task, create_task, iscoroutine
 from collections import defaultdict
 from collections.abc import Awaitable, Callable
 from functools import wraps
@@ -69,6 +69,7 @@ class MonolithBroker(SingletonMixin):
         # subscriber.
         if not hasattr(self, "_handlers"):
             self._handlers: dict[str, list[Handler]] = defaultdict(list)
+            self._tasks: set[Task[None]] = set()
 
     async def start(self) -> None:
         logger.info("Monolith broker started")
@@ -94,9 +95,36 @@ class MonolithBroker(SingletonMixin):
         return decorator
 
     async def publish(self, message: Any, topic: str, *args, **kwargs):
+        handlers = self._handlers.get(topic, [])
+        if not handlers and topic.endswith(".dlq"):
+            logger.error(
+                "Monolith dead letter: topic=%s message=%r", topic, message
+            )
+            return
+        if not handlers:
+            logger.warning(
+                "Monolith publish: no subscribers for topic=%s, message "
+                "dropped (the consumer runs in another process or is not "
+                "registered here)",
+                topic,
+            )
+            return
         logger.info("Monolith publish: topic=%s message=%r", topic, message)
-        for handler in self._handlers.get(topic, []):
-            create_task(handler(message))
+        for handler in handlers:
+            task = create_task(self._dispatch(handler, message, topic))
+            self._tasks.add(task)
+            task.add_done_callback(self._tasks.discard)
+
+    @staticmethod
+    async def _dispatch(handler: Handler, message: Any, topic: str) -> None:
+        try:
+            await handler(message)
+        except Exception:
+            logger.exception(
+                "Monolith subscriber failed: topic=%s handler=%s",
+                topic,
+                getattr(handler, "__name__", handler),
+            )
 
     async def request(
         self, message: Any, topic: str, *args, timeout: float = 5.0, **kwargs
