@@ -1,10 +1,9 @@
+from contextlib import AbstractAsyncContextManager
 from logging import getLogger
+from typing import Any
 
 from pymongo import AsyncMongoClient
-from pymongo.asynchronous.client_session import (
-    AsyncClientSession,
-    AsyncContextManager,
-)
+from pymongo.asynchronous.client_session import AsyncClientSession
 
 from core.database.beanie.client import get_client
 from core.uow.base import BaseUOW
@@ -27,7 +26,7 @@ class UnitOfWork(BaseUOW):
         self.client: AsyncMongoClient = get_client()
         self.max_commit_time_ms: int | None = max_commit_time_ms
         self.client_session: AsyncClientSession | None = None
-        self.client_context: AsyncContextManager | None = None
+        self.client_context: AbstractAsyncContextManager[Any] | None = None
 
     def _init_repo(self, repo_type):
         return repo_type(self.client_session)
