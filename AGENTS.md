@@ -180,21 +180,34 @@ is a defect, not a style choice.
   and `.ion-palette-dark`), the type scale `--fs-2xs … --fs-2xl` (11/12/13/14/16/18/22px), weights
   `--fw-regular|medium|semibold|bold` (400/500/600/700), icon sizes `--icon-xl` (28px) and
   `--icon-hero` (40px, empty and error states), radii `--radius-sm|md|lg|xl|pill`
-  (10/12/16/20/999px), `--border-w` (1.5px) and `--font-mono`. The font is `Inter Variable`, bundled
-  from `@fontsource-variable/inter` and loaded in `main.ts`.
-- **Primitives** — `frontend/src/theme/components.css`, loaded once from `main.ts`: `ui-input` (and
-  its legacy name `native-input`), `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-chip`
-  (+ `--active`), `ui-btn` (+ `--primary`, `--ghost`); the dialog parts `ui-sheet`, `ui-sheet-head`,
-  `ui-sheet-title`, `ui-sheet-body` (scrolls) and `ui-sheet-actions` (buttons pinned under the body);
-  the thin 6px scrollbar for every scroll area, including the one inside `ion-content`; and the reset
-  that makes `button`, `input`, `select` and `textarea` inherit the page font.
+  (10/12/16/20/999px), `--border-w` (1.5px) and `--font-mono`; for fields `--field-h` (48px),
+  `--field-pad-x` (14px) and `--field-border` (a step stronger in the dark theme). The font is
+  `Inter Variable`, bundled from `@fontsource-variable/inter` and loaded in `main.ts`.
+- **Primitives** — `frontend/src/theme/components.css`, loaded once from `main.ts`: the field
+  (`ui-field` and its parts: `ui-field-box`, `ui-field-label`, `ui-field-outline`, `ui-field-control`
+  for the native `input`/`textarea`/`select`/`ion-select` inside it, `ui-field-value` for a value that
+  is not typed, `ui-field-foot`; `ui-field-title` for the heading of a group of controls and
+  `ui-toggle-row` for a switch), `ui-menu` and `ui-menu-item` (a list of options under a field),
+  `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-chips` and `ui-chip` (+ `--active`),
+  `ui-btn` (+ `--primary`, `--ghost`); the dialog parts `ui-sheet`, `ui-sheet-head`, `ui-sheet-title`,
+  `ui-sheet-body` (scrolls) and `ui-sheet-actions` (buttons pinned under the body); the thin 6px
+  scrollbar for every scroll area, including the one inside `ion-content`; and the reset that makes
+  `button`, `input`, `select` and `textarea` inherit the page font.
 - **Dialogs** — `ion-modal` is styled once in `variables.css` (radius, shadow, width) and so are
   the header and close button of a modal built from `ion-header`/`ion-toolbar`, which therefore look
   like `ui-sheet-head`. A dialog with its own header uses the `ui-sheet-*` parts, with the close
   button as `ui-icon-btn` and the primary action in `ui-sheet-actions`, not inside the scrolling body.
+- **Fields** — `common/UiField` draws the box, the border with the label on it (the label sits inside
+  an empty field, floats onto the border with a gap cut in it on focus or when there is a value, and
+  is always floated where something is always shown), the error, hint and counter lines and the
+  `prefix`/`suffix` slots. On top of it: `UiInput`, `UiTextarea`, `UiSelect` (`ion-select` with the
+  popover), `UiNativeSelect` (a native `select`, for compact filters), `PasswordField`,
+  `DateTimeField`, `EntityPickerField` (search a reference, shows the pick as a value),
+  `admin/SearchPicker`, `geo/LocationField` and `geo/AddressSearchSelect`.
 - **Shared components** — `frontend/src/components/common/` and friends: `DateTimeField` (built on
-  `TimeSpinner` and `TimeDrum`), `TimestampsMeta`, `admin/ResourceTable` and `admin/ResourceFormModal`
-  for admin lists and forms, `geo/LocationField`. New screens compose these.
+  `TimeSpinner` and `TimeDrum`), `TimestampsMeta`, `event/StageFields` (one stage of an event, used
+  by the create form and the event page), `admin/ResourceTable` and `admin/ResourceFormModal` for
+  admin lists and forms. New screens compose these.
 
 Rules:
 
@@ -213,6 +226,14 @@ Rules:
   does, not `!important`.
 - **Icon-only buttons** are transparent at rest and tint on hover (`ui-icon-btn`); a permanent
   fill is not part of the language.
+- **Labels live on the border.** Every input has its label on the border of the field through the
+  field components above, never in a `<label>` or a heading over it, and its placeholder is a hint
+  that shows once the label has floated (do not repeat the label in it). Do not use `ion-input`,
+  `ion-textarea` or `ion-item` as a form field: their Material highlight and scoped padding are what
+  made the old fields crooked. A new kind of control goes inside `UiField` (give the control the
+  `ui-field-control` class, or put its content in `ui-field-value`) instead of getting its own border.
+  A heading over a group of controls (`План мероприятия`, `Роли`) is `ui-field-title`. A message about
+  a field (error, hint, counter) goes in its `error`, `hint` and `counter`, not in a `<p>` next to it.
 - **Dates and times** go through `DateTimeField` only: typeable, with the `ДД.ММ.ГГГГ ЧЧ:ММ`
   template always visible, and a picker with a calendar and the two-drum `TimeSpinner`. Never use
   `<input type="date|time|datetime-local">` and never give such a field a placeholder text. A field
@@ -223,9 +244,10 @@ Rules:
 - **Check what you built** in the light and the dark theme, at phone width (375px) and on a desktop,
   with `npx vue-tsc --noEmit`, `npx eslint <files>` and `npx vitest run`.
 
-Known debt, to be paid when a view is touched and not as a drive-by: per-view copies of `.role-chip`
-(3 files), `.auth-btn` (6), `.sort-btn` (3), `.icon-btn` and `.row-icon-btn`, `.form-field`, and
-`AdminPersonFile`'s own `.native-input` with a different background.
+Known debt, to be paid when a view is touched and not as a drive-by: per-view copies of `.auth-btn`
+(6 files), `.sort-btn` (3), `.lcf-btn` (the `ui-btn` look), `.icon-btn`, `.form-field` (now only a
+wrapper of a group), the search boxes of the list toolbars (`.ev-search`, `.rt-search`, `.pm-search`,
+three copies of one control) and raw radii and borders (`12px`, `999px`, `1.5px`) in the views.
 
 ## Code style
 
