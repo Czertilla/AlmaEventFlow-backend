@@ -170,6 +170,50 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   A deliberate change is a new `v<N+1>`; only pilot/pre-release work may regenerate with
   `UPDATE_CONTRACTS=1 uv run pytest tests/contract` and must review the resulting file diff.
 
+## Frontend design code (`frontend/`)
+
+The UI has one design language and agents extend it instead of reinventing it. Before writing
+markup or CSS, find the piece that already exists; a screen that looks different from its neighbours
+is a defect, not a style choice.
+
+- **Tokens** — `frontend/src/theme/variables.css`: brand and surface colours (Ionic variables, light
+  and `.ion-palette-dark`), the type scale `--fs-2xs … --fs-2xl` (11/12/13/14/16/18/22px), weights
+  `--fw-regular|medium|semibold|bold` (400/500/600/700), radii `--radius-sm|md|lg|xl|pill`
+  (10/12/16/20/999px) and `--border-w` (1.5px).
+- **Primitives** — `frontend/src/theme/components.css`, loaded once from `main.ts`: `ui-input` (and
+  its legacy name `native-input`), `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-chip`
+  (+ `--active`), `ui-btn` (+ `--primary`, `--ghost`), and the reset that makes `button`, `input`,
+  `select` and `textarea` inherit the page font.
+- **Shared components** — `frontend/src/components/common/` and friends: `DateTimeField` (built on
+  `TimeSpinner` and `TimeDrum`), `TimestampsMeta`, `admin/ResourceTable` and `admin/ResourceFormModal`
+  for admin lists and forms, `geo/LocationField`. New screens compose these.
+
+Rules:
+
+- **Reuse first.** Search `theme/` and `components/common/` before writing a style. If a primitive
+  almost fits, add a modifier class to it; do not copy it into a view.
+- **No second copy.** A style that is needed in two places belongs in `components.css` or a shared
+  component. A component's own `<style>` holds layout and positioning specific to it, not its
+  buttons, chips, fields or colours.
+- **No raw values.** Font sizes and weights, radii and border widths come from the tokens, colours
+  from the Ionic/brand variables (`--ion-color-primary-contrast` rather than `#fff`). Never declare
+  `font-family`; it is inherited. Sizes outside the scale (15px, 17px, 10px, 19px, `rem`/`em`) exist
+  only as legacy and are not to be used in new code.
+- **Icon-only buttons** are transparent at rest and tint on hover (`ui-icon-btn`); a permanent
+  fill is not part of the language.
+- **Dates and times** go through `DateTimeField` only: typeable, with the `ДД.ММ.ГГГГ ЧЧ:ММ`
+  template always visible, and a picker with a calendar and the two-drum `TimeSpinner`. Never use
+  `<input type="date|time|datetime-local">` and never give such a field a placeholder text.
+- **A new primitive** is added to `components.css` and to the list above in the same change.
+- **Check what you built** in the light and the dark theme, at phone width (375px) and on a desktop,
+  with `npx vue-tsc --noEmit`, `npx eslint <files>` and `npx vitest run`.
+
+Known debt, to be paid when a view is touched and not as a drive-by: per-view copies of `.role-chip`
+(3 files), `.auth-btn` (6), `.sort-btn` (3), `.icon-btn` and `.row-icon-btn`, `.form-field`; about 70
+redundant `font-family: inherit` lines; off-scale sizes (15px about 36 times, 17px about 15, 10px
+about 10); `AdminPersonFile`'s own `.native-input` with a different background; `Inter` is first in
+the font stack but is not bundled (no `@font-face`), so each platform draws its system font.
+
 ## Code style
 
 - Domain exceptions live in `<service>/exc/` (or the older `exceptions/` in `user`) as plain
@@ -256,7 +300,7 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
     know this codebase's SQLAlchemy/pydantic conventions, only Python's.
 - After adding/changing a migration: `uv run alembic -n <service> upgrade head` against the local
   dev Postgres (`docker compose up -d pg`).
-- Frontend (submodule): `npx vue-tsc --noEmit`, `npx eslint <files>`; regenerate the API client
+- Frontend (submodule): `npx vue-tsc --noEmit`, `npx eslint <files>`, `npx vitest run`; regenerate the API client
   with `npm run generate` (fetches the schema from a running backend, then runs Orval) after a
   backend contract change — don't hand-edit the generated client as a substitute for regenerating
   it, only as a stopgap when the backend isn't runnable.
