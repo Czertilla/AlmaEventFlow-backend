@@ -2,7 +2,7 @@ import json
 import logging
 from hashlib import sha256
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 import aiocache
@@ -108,7 +108,18 @@ class Localization:
         cache_key = f"i18n:{lang}:{key}:{self.hash_kwargs(kwargs)}"
 
         # Check cache
-        cached_translation: str | None = await self.cache.get(cache_key)
+        cached_translation: str | None = None
+        try:
+            cached_translation = cast(
+                "str | None", await self.cache.get(cache_key)
+            )
+        except Exception as exc:
+            logger.warning(
+                "Translation cache read failed for %s, translating without "
+                "cache: %s",
+                key,
+                exc,
+            )
         if cached_translation:
             logger.debug(f"Cache hit: {cache_key}")
             return cached_translation
@@ -119,8 +130,16 @@ class Localization:
         text: str = i18n.t(f"{markup}.{key}", locale=lang, **kwargs)
 
         # Store in cache
-        await self.cache.set(cache_key, text, ttl=self.ttl, namespace="i18n")
-        logger.debug(f"Cached translation: {cache_key} (TTL: {self.ttl}s)")
+        try:
+            await self.cache.set(
+                cache_key, text, ttl=self.ttl, namespace="i18n"
+            )
+        except Exception as exc:
+            logger.warning(
+                "Translation cache write failed for %s: %s", key, exc
+            )
+        else:
+            logger.debug(f"Cached translation: {cache_key} (TTL: {self.ttl}s)")
 
         return text
 

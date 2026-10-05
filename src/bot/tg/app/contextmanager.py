@@ -72,8 +72,27 @@ class TGBotContextManager(AppContextManager):
     async def stop_polling(self):
         await self.dp.stop_polling()
 
+    async def check_identity(self):
+        if self.bot is None:
+            return
+        try:
+            me = await self.bot.get_me()
+        except Exception:
+            logger.exception(
+                "Telegram getMe failed: the bot token is invalid or "
+                "api.telegram.org is unreachable, nothing can be delivered"
+            )
+            return
+        logger.info(
+            "Telegram bot authorised: @%s (id=%s), feed=%s",
+            me.username,
+            me.id,
+            settings.BOT_TG_FEED_TYPE,
+        )
+
     async def startup(self, app: FastAPI):
         await super().startup(app)
+        await self.check_identity()
         self.register_handlers()
         self.setup_di()
         await self.set_commands()

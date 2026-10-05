@@ -73,6 +73,7 @@ en:
     stages_header: "<b>Schedule:</b>"
     stage_line: "▫️ <b>%{name}</b> %{time}"
     stage_description: "   <i>%{description}</i>"
+    stages_more: "▫️ …and %{rest} more"
     cta: "Mark your attendance below 👇"
   error:
     username: "%{ch} For the bot to work best, set a @username in your Telegram settings."

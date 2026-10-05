@@ -73,6 +73,7 @@ ru:
     stages_header: "<b>Программа:</b>"
     stage_line: "▫️ <b>%{name}</b> %{time}"
     stage_description: "   <i>%{description}</i>"
+    stages_more: "▫️ …и ещё %{rest}"
     cta: "Отметьтесь ниже 👇"
   error:
     username: "%{ch} Для корректной работы бота укажите @username в настройках Telegram."

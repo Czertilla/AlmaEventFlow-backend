@@ -21,6 +21,7 @@ os.environ.setdefault("APP_HOST", "localhost")
 os.environ.setdefault("S3_BUCKET_NAME", "test")
 os.environ.setdefault("S3_ACCESS_KEY", "test")
 os.environ.setdefault("S3_SECRET_KEY", "test")
+os.environ.setdefault("BOT_TG_TOKEN", "123456:ABCdefGhIJKlmNoPQRsTUVwxyZ-0123456")
 
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
