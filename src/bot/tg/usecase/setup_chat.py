@@ -146,6 +146,7 @@ class SetupChatUseCase:
                 encode_start(StartKind.lead, result.binding.collective_id),
             ),
             primary=False,
+            ch=Emoji.gear,
         )
         if not result.changed:
             key = LocaleKey.SetupChat.unchanged

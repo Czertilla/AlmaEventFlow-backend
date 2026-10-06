@@ -15,7 +15,7 @@ from aiogram.methods import (
     SendMessage,
     TelegramMethod,
 )
-from aiogram.types import Message, Update, User
+from aiogram.types import InlineKeyboardMarkup, Message, Update, User
 
 TOKEN = "123456:ABCdefGhIJKlmNoPQRsTUVwxyZ-0123456"
 BOT_ID = 123456
@@ -37,6 +37,7 @@ class RecordingSession(BaseSession):
         self.admins: dict[int, set[int]] = {}
         self.titles: dict[int, str] = {}
         self.failures: dict[type, Exception] = {}
+        self.unrendered: list[str] = []
 
     async def close(self) -> None:
         return None
@@ -60,6 +61,7 @@ class RecordingSession(BaseSession):
         timeout: int | None = None,  # noqa: ASYNC109
     ) -> Any:
         self.calls.append(method)
+        self._note_unrendered(method)
         if type(method) in self.failures:
             raise self.failures[type(method)]
         if isinstance(method, GetMe):
@@ -78,6 +80,17 @@ class RecordingSession(BaseSession):
         if isinstance(method, AnswerCallbackQuery | DeleteMessage):
             return True
         return True
+
+    def _note_unrendered(self, method: TelegramMethod[Any]) -> None:
+        shown: list[str] = []
+        if isinstance(method, SendMessage | EditMessageText):
+            shown.append(str(method.text))
+            if isinstance(method.reply_markup, InlineKeyboardMarkup):
+                for row in method.reply_markup.inline_keyboard:
+                    shown.extend(button.text for button in row)
+        elif isinstance(method, AnswerCallbackQuery) and method.text:
+            shown.append(method.text)
+        self.unrendered.extend(text for text in shown if "%{" in text)
 
     def _member(self, method: GetChatMember) -> Any:
         from aiogram.types import ChatMemberAdministrator, ChatMemberMember

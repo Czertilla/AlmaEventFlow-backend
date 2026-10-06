@@ -265,3 +265,4 @@ async def tg(
     await redis.connection_pool.disconnect()
     await bot.session.close()
     assert not harness.errors, harness.errors
+    assert not session.unrendered, f"placeholders left in: {session.unrendered}"

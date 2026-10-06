@@ -121,7 +121,8 @@ async def test_a_leader_binds_the_chat_and_is_pointed_to_the_settings(
     reply = tg.session.sent[-1]
     assert "Готово" in reply.text and "Chess &lt;Club&gt;" in reply.text
     assert reply.ephemeral_message_parameters is None
-    settings_link = buttons(reply.reply_markup)[0][2]
+    settings_label, _, settings_link = buttons(reply.reply_markup)[0]
+    assert settings_label == "⚙️ Настройки"
     assert settings_link == (
         f"https://t.me/{BOT_USERNAME}?start={encode_start(StartKind.lead, CLUB)}"
     )

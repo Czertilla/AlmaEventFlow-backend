@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Any
 from uuid import UUID
 
 from aiogram.enums import ButtonStyle
@@ -150,11 +151,16 @@ class LeaderMixin(ABCKeyboardBuilder[InlineKeyboardButton]):
         return self.inline()
 
     async def url_kb(
-        self, key: Enum, url: str, *, primary: bool = True
+        self,
+        key: Enum,
+        url: str,
+        *,
+        primary: bool = True,
+        **phrase_args: Any,
     ) -> InlineKeyboardMarkup:
         self.row(
             InlineKeyboardButton(
-                text=await self.text_builder.get_phrase(key),
+                text=await self.text_builder.get_phrase(key, **phrase_args),
                 url=url,
                 style=ButtonStyle.PRIMARY if primary else None,
             )
