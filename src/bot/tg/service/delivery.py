@@ -1,8 +1,10 @@
+import re
 from datetime import UTC, datetime
 from logging import getLogger
 
 from aiogram import Bot
 from aiogram.exceptions import (
+    TelegramAPIError,
     TelegramBadRequest,
     TelegramForbiddenError,
     TelegramMigrateToChat,
@@ -19,7 +21,11 @@ from aiogram.types import (
 from bot.tg.model.message import TelegramMessageORM
 from bot.tg.uow.message import TelegramMessageUOW
 from core.enum.notify import DeliveryStatus
-from core.schema.message.notify import DeliveryResult, TelegramDeliveryItem
+from core.schema.message.notify import (
+    DeliveryResult,
+    TelegramButton,
+    TelegramDeliveryItem,
+)
 from core.service.base import BaseService
 
 logger = getLogger(__name__)
@@ -27,6 +33,28 @@ logger = getLogger(__name__)
 UPDATED_PING_TEXT = "🔄 Обновлено"
 
 RETRY_AFTER_PREFIX = "retry_after:"
+
+_TG_TIME = re.compile(r"<tg-time[^>]*>(.*?)</tg-time>", re.DOTALL)
+
+
+def strip_tg_time(text: str) -> str:
+    return _TG_TIME.sub(lambda match: match.group(1), text)
+
+
+def _entities_rejected(exc: TelegramBadRequest, text: str) -> bool:
+    return "parse entities" in str(exc).lower() and "<tg-time" in text
+
+
+def _button_url_rejected(exc: TelegramBadRequest) -> bool:
+    return "button_url_invalid" in str(exc).lower()
+
+
+def _without_links(
+    rows: list[list[TelegramButton]],
+) -> list[list[TelegramButton]]:
+    kept = [[b for b in row if b.url is None] for row in rows]
+    return [row for row in kept if row]
+
 
 _EDIT_TARGET_GONE = (
     "message to edit not found",
@@ -138,6 +166,30 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
                 error="forbidden",
             )
         except TelegramBadRequest as exc:
+            if _entities_rejected(exc, item.text):
+                logger.warning(
+                    "Telegram rejected date entities for chat %s, resending "
+                    "as plain text",
+                    chat_id,
+                )
+                return await self.deliver(
+                    item.model_copy(
+                        update={"text": strip_tg_time(item.text)}
+                    )
+                )
+            if _button_url_rejected(exc) and any(
+                button.url for row in item.buttons for button in row
+            ):
+                logger.warning(
+                    "Telegram rejected a link button for chat %s, resending "
+                    "without links",
+                    chat_id,
+                )
+                return await self.deliver(
+                    item.model_copy(
+                        update={"buttons": _without_links(item.buttons)}
+                    )
+                )
             if existing is not None and "message is not modified" in str(
                 exc
             ).lower():
@@ -216,7 +268,8 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
                 return await self._send_new(item, chat_id, markup)
             await self.bot.send_message(
                 chat_id=chat_id,
-                text=UPDATED_PING_TEXT,
+                text=item.edit_ping or UPDATED_PING_TEXT,
+                disable_notification=item.disable_notification or None,
                 reply_parameters=ReplyParameters(
                     message_id=existing.message_id,
                     allow_sending_without_reply=True,
@@ -236,6 +289,7 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
             text=item.text,
             reply_markup=markup,
             message_thread_id=item.message_thread_id,
+            disable_notification=item.disable_notification or None,
             parse_mode="HTML",
         )
         if item.correlation_key:
@@ -244,7 +298,24 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
                     item.correlation_key, chat_id, message.message_id
                 )
                 await uow.commit(True)
+        if item.pin:
+            await self._pin(chat_id, message.message_id)
         return message.message_id
+
+    async def _pin(self, chat_id: int, message_id: int) -> None:
+        try:
+            await self.bot.pin_chat_message(
+                chat_id=chat_id,
+                message_id=message_id,
+                disable_notification=True,
+            )
+        except TelegramAPIError as exc:
+            logger.warning(
+                "could not pin message %s in chat %s: %s",
+                message_id,
+                chat_id,
+                exc,
+            )
 
     @staticmethod
     def _markup(item: TelegramDeliveryItem) -> InlineKeyboardMarkup | None:
@@ -254,7 +325,10 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
             inline_keyboard=[
                 [
                     InlineKeyboardButton(
-                        text=button.text, callback_data=button.callback_data
+                        text=button.text,
+                        callback_data=button.callback_data,
+                        url=button.url,
+                        style=button.style,
                     )
                     for button in row
                 ]

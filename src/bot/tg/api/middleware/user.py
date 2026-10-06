@@ -30,15 +30,10 @@ class UserUpdateMiddleware(
         update: Update,
         data: dict[str, Any],
     ) -> object:
-        self.logger.debug(f"updating user by {update=}")
-        user = self.get_user(data)
-        if isinstance(user, User):
-            self.logger.debug(f"updating user {user.id=}")
-            user_service = UserService(UserUOW())
-            updated_user = await user_service.update_user(user, update)
-            if not updated_user:
-                self.logger.debug(f"user {user.id=} not updated")
-                return
-            self.logger.info(f"updated user {updated_user.id=}")
-            data["user"] = updated_user
+        sender = data.get("event_from_user")
+        data["user"] = (
+            await UserService(UserUOW()).update_user(sender)
+            if isinstance(sender, User) and not sender.is_bot
+            else None
+        )
         return await handler(update, data)

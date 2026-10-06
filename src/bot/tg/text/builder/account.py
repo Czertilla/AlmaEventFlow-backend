@@ -1,18 +1,30 @@
 from bot.enum.emoji import Emoji
 from bot.enum.locales import LocaleKey
-from bot.tg.utils.abstract.text_builder import ABCTextBuilder
+from bot.tg.dto.actor import ActorDTO
+from bot.tg.text.builder.roles import RolesMixin
 
 
-class AccountMixin(ABCTextBuilder):
-    async def on_account(self, is_linked: bool) -> str:
-        key = (
-            LocaleKey.Account.linked
-            if is_linked
-            else LocaleKey.Account.not_linked
-        )
-        return await self.get_phrase(
-            key, ch=Emoji.white_check_mark if is_linked else Emoji.warning
-        )
+class AccountMixin(RolesMixin):
+    async def on_account(
+        self, actor: ActorDTO, notifications_enabled: bool | None = None
+    ) -> str:
+        if not actor.is_linked:
+            return await self.get_phrase(
+                LocaleKey.Account.not_linked, ch=Emoji.warning
+            )
+        lines = [
+            await self.get_phrase(LocaleKey.Account.title),
+            await self.get_phrase(LocaleKey.Account.connected),
+        ]
+        if notifications_enabled is not None:
+            key = (
+                LocaleKey.Account.notifications_state_on
+                if notifications_enabled
+                else LocaleKey.Account.notifications_state_off
+            )
+            lines.append(await self.get_phrase(key))
+        lines.extend(await self.roles_lines(actor))
+        return "\n".join(lines)
 
     async def on_confirm_unlink(self) -> str:
         return await self.get_phrase(

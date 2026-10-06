@@ -102,6 +102,14 @@ class Emoji(StrEnum):
     """⭐️"""
     bell = "🔔"
     """🔔"""
+    no_bell = "🔕"
+    """🔕"""
+    link = "🔗"
+    """🔗"""
+    key = "🔑"
+    """🔑"""
+    speech_balloon = "💬"
+    """💬"""
 
 
 

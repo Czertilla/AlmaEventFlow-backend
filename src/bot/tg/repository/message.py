@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from bot.tg.model.message import TelegramMessageORM as Model
 from core.database.sqlalchemy.core import SQLAlchemyRepository
@@ -36,3 +36,11 @@ class TelegramMessageRepo(
                 "message_id": message_id,
             }
         )
+
+    async def move_chat(self, old_chat_id: int, new_chat_id: int) -> None:
+        stmt = (
+            update(Model)
+            .where(Model.chat_id == old_chat_id)
+            .values(chat_id=new_chat_id)
+        )
+        await self.execute(stmt, flush=True)

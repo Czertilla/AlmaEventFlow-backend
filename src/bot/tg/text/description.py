@@ -1,44 +1,36 @@
-from collections.abc import Generator
+from dataclasses import dataclass
 from functools import lru_cache
 from logging import getLogger
-from pathlib import Path
-
-from i18n.loaders.yaml_loader import Loader, YamlLoader
+from typing import Any
 
 from bot.enum.locales import Locale
-from core.utils.path import get_dir
+from bot.tg.text.commands import language_variants
+from bot.tg.text.locales_data import locales_data
 
 logger = getLogger(__name__)
 
 
-def parse_locales(loader: Loader, filenames: list[str]) -> Generator[dict]:
-    for filename in filenames:
-        with open(Path() / "res/locales" / filename, "rb") as f:
-            data = loader.parse_file(f)
-        logger.debug(f"Got {data=} from {filename=}")
-        yield data
-
-
-def get_locales_data():
-    loader = YamlLoader()
-    logger.debug(f"Got loader {loader}")
-    directory: list[str] = get_dir(Path() / "res/locales")
-    logger.debug(f"Detected locales: {directory}")
-    result = {}
-    for part in parse_locales(loader, directory):
-        result.update(part)
-    logger.debug(f"Got {result=}")
-    return result
+@dataclass(frozen=True, slots=True)
+class BotProfileText:
+    language_code: str | None
+    description: str
+    short_description: str
 
 
 @lru_cache
-def get_bot_descriptions():
-    result = []
-    locales_data = get_locales_data()
-    for locale in Locale:
-        current: dict = locales_data.get(locale.value, {}).get(
-            "description", ""
+def get_bot_profile_texts() -> list[BotProfileText]:
+    data = locales_data()
+    known = {locale.value for locale in Locale}
+    texts: list[BotProfileText] = []
+    for code, locale in language_variants():
+        if locale not in known:
+            continue
+        current: dict[str, Any] = data.get(locale, {})
+        texts.append(
+            BotProfileText(
+                language_code=code,
+                description=current.get("description", ""),
+                short_description=current.get("short_description", ""),
+            )
         )
-        logger.debug(f"Got {current=}")
-        result.append((current, locale))
-    return result
+    return texts

@@ -3,10 +3,11 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 from bot.tg.enum.callbacks import CBPrefix
 from bot.tg.text.builder import TextBuilder
 
+from .leader import LeaderMixin
 from .menu import MenuMixin
 
 
-class InlineBuilder(MenuMixin, InlineKeyboardBuilder):
+class InlineBuilder(MenuMixin, LeaderMixin, InlineKeyboardBuilder):
     def __init__(self, text_builder: TextBuilder, *args, **kwargs):
         """
         Custom inline keyboard builder with localization support.

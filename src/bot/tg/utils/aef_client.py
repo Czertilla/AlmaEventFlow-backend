@@ -215,6 +215,21 @@ async def get_my_collectives(person_id: UUID) -> list[dict[str, Any]]:
     return [c.model_dump(mode="json") for c in response.collectives]
 
 
+async def get_my_memberships(person_id: UUID) -> list[dict[str, Any]]:
+    """Collectives ``person_id`` is an active member of, led or not."""
+    try:
+        response = await rpc_call(
+            EventRPC.MY_MEMBERSHIPS,
+            MyCollectivesRequest(person_id=person_id),
+            MyCollectivesResponse,
+        )
+    except RpcError as exc:
+        raise AefClientError(
+            f"memberships lookup failed for person {person_id}: {exc}"
+        ) from exc
+    return [c.model_dump(mode="json") for c in response.collectives]
+
+
 async def get_my_attendance(
     person_id: UUID, event_id: UUID
 ) -> list[dict[str, Any]]:

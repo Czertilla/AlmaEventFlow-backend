@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 from logging import getLogger
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import ColumnElement, func, select
@@ -33,7 +34,7 @@ class UserRepo(SQLAlchemyRepository[Model]):
         )
         await self.execute(stmt, flush=True)
 
-    async def update_one(self, id: int, data: dict) -> Model | None:
+    async def update_one(self, id: int, data: dict[str, Any]) -> Model | None:
         stmt = (
             sa_update(Model)
             .where(Model.id == id)

@@ -1,65 +1,65 @@
 from logging import getLogger
 from uuid import UUID
 
-from aiogram import F, Router
+from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
+from aiogram.utils.callback_answer import CallbackAnswer
 
+from bot.enum.locales import LocaleKey
 from bot.tg.dependency.account_link import AccountLinkUOWDep
+from bot.tg.enum.callbacks import AttendanceCB
+from bot.tg.schema.user import TGUser
 from bot.tg.service.account_link import AccountLinkService
+from bot.tg.text.builder.builder import TextBuilder
 from bot.tg.utils.aef_client import (
     AefClientError,
     get_my_attendance,
     patch_my_attendance,
 )
+from bot.tg.utils.deeplink import start_url
 
 router = Router(name="attendance/")
 logger = getLogger(__name__)
 
 
-@router.callback_query(F.data.startswith("att:"))
+@router.callback_query(AttendanceCB.filter())
 async def mark_attendance(
-    callback: CallbackQuery, uow: AccountLinkUOWDep
+    callback: CallbackQuery,
+    callback_data: AttendanceCB,
+    callback_answer: CallbackAnswer,
+    user: TGUser,
+    bot: Bot,
+    uow: AccountLinkUOWDep,
 ) -> None:
-    parts = (callback.data or "").split(":")
-    if len(parts) != 3:
-        return
-    _, event_id_raw, decision = parts
-    try:
-        event_id = UUID(event_id_raw)
-    except ValueError:
-        return
+    text_builder = TextBuilder(lang=user.language_code)
+    phrase = text_builder.get_phrase
+    callback_answer.show_alert = True
 
-    person_id = await AccountLinkService(uow).get_person_id(
-        callback.from_user.id
-    )
+    person_id = await AccountLinkService(uow).get_person_id(user.id)
     if person_id is None:
-        await callback.answer(
-            "Сначала привяжите Telegram к аккаунту AlmaEventFlow: /account",
-            show_alert=True,
-        )
+        callback_answer.text = await phrase(LocaleKey.Attendance.need_link)
+        callback_answer.url = await start_url(bot)
         return
 
+    event_id = callback_data.event_id
     try:
         attendances = await get_my_attendance(person_id, event_id)
     except AefClientError:
         logger.exception("attendance lookup failed for person %s", person_id)
-        await callback.answer(
-            "Не удалось получить данные. Попробуйте позже.", show_alert=True
-        )
+        callback_answer.text = await phrase(LocaleKey.Attendance.unavailable)
         return
     if not attendances:
-        await callback.answer(
-            "Не нашли ваше участие в этом мероприятии.", show_alert=True
-        )
+        callback_answer.text = await phrase(LocaleKey.Attendance.not_participant)
         return
 
     attendance = attendances[0]
+    is_going = callback_data.decision == "yes"
     try:
         await patch_my_attendance(
             person_id,
             UUID(attendance["member_id"]),
             UUID(attendance["id"]),
-            is_attended=(decision == "yes"),
+            is_attended=is_going,
         )
     except AefClientError:
         logger.exception(
@@ -67,10 +67,10 @@ async def mark_attendance(
             person_id,
             event_id,
         )
-        await callback.answer(
-            "Не удалось сохранить отметку. Попробуйте позже.", show_alert=True
-        )
+        callback_answer.text = await phrase(LocaleKey.Attendance.save_error)
         return
 
-    text = "Отмечено: буду ✅" if decision == "yes" else "Отмечено: не буду ❌"
-    await callback.answer(text)
+    callback_answer.show_alert = False
+    callback_answer.text = await phrase(
+        LocaleKey.Attendance.yes if is_going else LocaleKey.Attendance.no
+    )

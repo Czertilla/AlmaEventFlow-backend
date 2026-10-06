@@ -170,6 +170,43 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   A deliberate change is a new `v<N+1>`; only pilot/pre-release work may regenerate with
   `UPDATE_CONTRACTS=1 uv run pytest tests/contract` and must review the resulting file diff.
 
+## Telegram bot (`src/bot`)
+
+- Handlers live in `bot/tg/api/router/{command,callback,chat_member,message}`; `load_common` picks
+  up every package's `router` and sorts them by `Router.name`. The private-chat catch-all is
+  `message/fallback.py`, so it has to stay the last message router.
+- **Every answer depends on who is asking.** `ActorDep` (`bot/tg/dependency/actor.py`) resolves an
+  `ActorDTO`: `unlinked`, `linked` (nothing attached yet), `member` or `leader`, plus
+  `is_superuser`. `roles_known` is `False` when `event` did not answer — then never say the person
+  has no collectives. A new flow must cover all four states and a group message from an anonymous
+  admin or a bot, where `data["user"]` is `None`. `aiogram3_di` hands a dependency only the
+  parameters that have **no default**, so a provider cannot take `user: TGUser | None = None`.
+- `UserUpdateMiddleware` registers every human who interacts, not only those who sent `/start`
+  (a person tapping a button in a group has never opened the bot). The username hint is private
+  chat only, once a week, after the real answer.
+- Texts are `res/locales/HTML.<lang>.yml`; `bot/enum/locales.py` is generated from the English
+  file with `python scripts/generate_locales.py`, never edited by hand. Quote the keys `yes`, `no`,
+  `on`, `off` (YAML turns them into booleans). Do not use `lang`, `key` or `markup` as a phrase
+  placeholder: they collide with the parameters of `Localization.get`.
+  `tests/bot/test_bot_locales.py` guards key parity, placeholders, Telegram limits and HTML tags.
+- Callback payloads are aiogram `CallbackData` classes (`bot/tg/enum/callbacks.py`, at most 64
+  bytes). Never name a `StrEnum` member like a `str` method (`replace`, `format`, …). Answer
+  callbacks through the injected `CallbackAnswer`; `CallbackAnswerMiddleware` closes every one, so a
+  hand-written `callback.answer()` is a double answer.
+- Telegram shows only the most specific command scope, so each scope's list must be complete.
+  Group chats use `all_group_chats` / `all_chat_administrators`; a private chat gets its own
+  `BotCommandScopeChat` per role from `CommandMenuService.refresh(actor)`.
+- A collective has one official chat and a chat belongs to one collective (both columns are
+  unique). `CollectiveChatService.setup` requires the bot and the caller to be admins of the chat
+  and the caller to lead the collective; settings (announcements on/off, silent, pin, language)
+  belong to the binding.
+- Time in announcements is a `<tg-time>` entity (each reader sees their own zone); delivery falls
+  back to plain text and to link-less buttons when Telegram rejects either. Ephemeral replies
+  (`reply_to_sender`) are for hints and refusals only and fall back to an ordinary reply.
+- Bot tests drive the real dispatcher: the `tg` fixture (`tests/bot/conftest.py`) with
+  `tests/support/telegram.py`'s recording session. It fails a test whose handler raised, even
+  though the error middleware swallowed it.
+
 ## Frontend design code (`frontend/`)
 
 The UI has one design language and agents extend it instead of reinventing it. Before writing

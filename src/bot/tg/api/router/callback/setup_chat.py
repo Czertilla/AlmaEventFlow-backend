@@ -1,23 +1,19 @@
 from logging import getLogger
-from uuid import UUID
 
 from aiogram import Bot, F, Router
 from aiogram.types import CallbackQuery
+from aiogram.utils.callback_answer import CallbackAnswer
 
-from bot.enum.emoji import Emoji
 from bot.enum.locales import LocaleKey
-from bot.tg.dependency.account_link import AccountLinkUOWDep
-from bot.tg.dependency.collective_chat import CollectiveChatUOWDep
-from bot.tg.enum.callbacks import CBPrefix
+from bot.tg.dependency.actor import ActorDep
+from bot.tg.enum.callbacks import SetupAction, SetupCB
 from bot.tg.schema.user import TGUser
-from bot.tg.service.account_link import AccountLinkService
-from bot.tg.service.collective_chat import (
-    CollectiveChatService,
-    NoLedCollectiveError,
-    NotBotAdminError,
-)
+from bot.tg.service.collective_chat import CollectiveChatService
 from bot.tg.text.builder.builder import TextBuilder
-from bot.tg.utils.aef_client import AefClientError
+from bot.tg.uow.collective_chat import CollectiveChatUOW
+from bot.tg.usecase.setup_chat import SetupChatUseCase
+from bot.tg.utils.html import plain_text
+from bot.tg.utils.message import source_message
 
 router = Router(name="setup_chat/")
 router.callback_query.filter(F.message.chat.type.in_({"group", "supergroup"}))
@@ -25,77 +21,43 @@ router.callback_query.filter(F.message.chat.type.in_({"group", "supergroup"}))
 logger = getLogger(__name__)
 
 
-@router.callback_query(F.data.startswith(f"{CBPrefix.setup_chat}/"))
+@router.callback_query(SetupCB.filter())
 async def setup_chat_pick(
     callback: CallbackQuery,
+    callback_data: SetupCB,
+    callback_answer: CallbackAnswer,
+    actor: ActorDep,
     user: TGUser,
-    account_uow: AccountLinkUOWDep,
-    chat_uow: CollectiveChatUOWDep,
     bot: Bot,
 ) -> None:
-    """Handles a tap on one of the collective-name buttons offered by
-    ``/setup_chat`` when the caller leads more than one. Re-validates the
-    pick against the tapping user's own led collectives exactly like the
-    typed-id path did -- a different group member tapping the same button
-    simply gets rejected by that check, no extra bookkeeping needed."""
+    """A tap on one of the buttons ``/setup_chat`` offers. The tapper is judged
+    on their own rights, so a button pressed by anyone but the leader the
+    choice is meant for is simply refused."""
     text_builder = TextBuilder(lang=user.language_code)
-    try:
-        collective_id = UUID((callback.data or "").split("/", 1)[1])
-    except (IndexError, ValueError):
-        await callback.answer()
+    message = source_message(callback)
+    if message is None:
         return
-
-    person_id = await AccountLinkService(account_uow).get_person_id(user.id)
-    if person_id is None:
-        await callback.answer(
-            await text_builder.get_phrase(
-                LocaleKey.SetupChat.not_linked, ch=Emoji.warning
-            ),
-            show_alert=True,
+    if callback_data.action is SetupAction.cancel:
+        callback_answer.text = await text_builder.get_phrase(
+            LocaleKey.SetupChat.cancelled
         )
+        await message.delete()
         return
-
-    service = CollectiveChatService(chat_uow, bot)
-    try:
-        await service.setup(
-            person_id,
-            callback.message.chat.id,
-            user.id,
-            collective_id=collective_id,
-        )
-    except NotBotAdminError:
-        await callback.answer(
-            await text_builder.get_phrase(
-                LocaleKey.SetupChat.not_admin, ch=Emoji.warning
-            ),
-            show_alert=True,
-        )
-        return
-    except NoLedCollectiveError:
-        await callback.answer(
-            await text_builder.get_phrase(
-                LocaleKey.SetupChat.no_collective, ch=Emoji.warning
-            ),
-            show_alert=True,
-        )
-        return
-    except AefClientError:
-        logger.exception(
-            "collective lookup failed for person %s in chat %s",
-            person_id,
-            callback.message.chat.id,
-        )
-        await callback.answer(
-            await text_builder.get_phrase(
-                LocaleKey.SetupChat.error, ch=Emoji.warning
-            ),
-            show_alert=True,
-        )
-        return
-
-    await callback.message.edit_text(
-        await text_builder.get_phrase(
-            LocaleKey.SetupChat.success, ch=Emoji.white_check_mark
-        )
+    usecase = SetupChatUseCase(
+        bot,
+        CollectiveChatService(CollectiveChatUOW(), bot),
+        text_builder,
     )
-    await callback.answer()
+    thread_id = message.message_thread_id if message.is_topic_message else None
+    reply = await usecase.setup(
+        actor,
+        chat_id=message.chat.id,
+        thread_id=thread_id,
+        collective_id=callback_data.collective_id,
+        replace=callback_data.action is SetupAction.swap,
+    )
+    if reply.private:
+        callback_answer.text = plain_text(reply.text)
+        callback_answer.show_alert = True
+        return
+    await message.edit_text(reply.text, reply_markup=reply.markup)

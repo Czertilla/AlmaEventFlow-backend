@@ -1,87 +1,98 @@
-from collections.abc import Generator
+from functools import lru_cache
 from logging import getLogger
-from pathlib import Path
+from typing import Any
 
-from aiogram.types import BotCommand
-from i18n.loaders.yaml_loader import Loader, YamlLoader
+from aiogram.types import (
+    BotCommand,
+    BotCommandScope,
+    BotCommandScopeAllChatAdministrators,
+    BotCommandScopeAllGroupChats,
+    BotCommandScopeAllPrivateChats,
+    BotCommandScopeChat,
+    BotCommandScopeDefault,
+)
 
 from bot.enum.locales import Locale
-from bot.tg.text.commands.scopes import (
-    BotCommandScope,
-    CustomScope,
-    get_custom_scopes,
-    get_scope_types,
-)
-from core.utils.path import get_dir
+from bot.tg.dto.actor import ActorDTO, ActorState
+from bot.tg.text.locales_data import locales_data
+from core.config.settings import settings
 
 logger = getLogger(__name__)
 
-
-def parse_locales(
-    loader: Loader, filenames: list[str], push_commands: bool = True
-) -> Generator[dict]:
-    for filename in filenames:
-        with open(
-            Path() / "res" / "locales" / filename,
-            "rb",
-        ) as f:
-            data = loader.parse_file(f)
-        logger.debug(f"Got {data=} from {filename=}")
-        yield data
+PRIVATE_SCOPE_BY_STATE = {
+    ActorState.unlinked: "private_unlinked",
+    ActorState.linked: "private_linked",
+    ActorState.member: "private_linked",
+    ActorState.leader: "private_leader",
+}
 
 
-def get_locales_data():
-    loader = YamlLoader()
-    logger.debug(f"Got loader {loader}")
-    directory: list[str] = get_dir(Path() / "res/locales")
-    logger.debug(f"Detected locales: {directory}")
-    result = {}
-    for part in parse_locales(loader, directory):
-        result.update(part)
-    logger.debug(f"Got {result=}")
-    return result
+@lru_cache
+def command_sets() -> dict[str, dict[str, dict[str, str]]]:
+    data = locales_data()
+    return {
+        locale.value: data.get(locale.value, {}).get("_commands", {})
+        for locale in Locale
+    }
 
 
-async def get_commands_hints():
-    scope_types = get_scope_types()
-
-    args: dict[tuple[str, BotCommandScope], dict[str, str]] = {}
-    locales_data = get_locales_data()
-    for locale in Locale:
-        current: dict = locales_data.get(locale.value, {}).get("_commands", {})
-        logger.debug(f"Got {current=}")
-        for scope, commands in current.items():
-            if scope in CustomScope:
-                args.update(
-                    {
-                        (key := (locale, sc)): args.get(key, {})
-                        | commands
-                        | current.get("default")
-                        for sc in await get_custom_scopes(scope)
-                    }
-                )
-                continue
-            if scope not in scope_types:
-                logger.warning(f"{scope} - unknown scope has been ignored")
-                continue
-            args.update(
-                {
-                    (key := (locale, scope_types[scope]())): args.get(key, {})
-                    | commands
-                }
-            )
-            logger.debug(f"merge {commands=} under {key=}")
-    logger.debug(f"Got {args=}")
-    result = [
-        {
-            "language_code": key[0],
-            "scope": key[1],
-            "commands": [
-                BotCommand(command=key1, description=val1)
-                for key1, val1 in val.items()
-            ],
-        }
-        for key, val in args.items()
+def language_variants() -> list[tuple[str | None, str]]:
+    """(``language_code`` for Telegram, locale of the texts). The last entry
+    has no language code, so it serves every language the bot has no
+    translation for."""
+    variants: list[tuple[str | None, str]] = [
+        (locale.value, locale.value) for locale in Locale
     ]
-    logger.debug(f"Got {result=}")
-    return result
+    variants.append((None, settings.LOCALIZATION_DEFAULT_LANG))
+    return variants
+
+
+def _commands(locale: str, *scopes: str) -> list[BotCommand]:
+    sets = command_sets().get(locale, {})
+    merged: dict[str, str] = {}
+    for scope in scopes:
+        merged |= sets.get(scope, {})
+    return [
+        BotCommand(command=name, description=description)
+        for name, description in merged.items()
+    ]
+
+
+def _hint(
+    scope: BotCommandScope, language_code: str | None, commands: list[BotCommand]
+) -> dict[str, Any]:
+    return {"scope": scope, "language_code": language_code, "commands": commands}
+
+
+def static_hints() -> list[dict[str, Any]]:
+    scopes: dict[str, tuple[BotCommandScope, tuple[str, ...]]] = {
+        "default": (BotCommandScopeDefault(), ("default",)),
+        "all_private_chats": (
+            BotCommandScopeAllPrivateChats(),
+            ("private_unlinked",),
+        ),
+        "all_group_chats": (BotCommandScopeAllGroupChats(), ("all_group_chats",)),
+        "all_chat_administrators": (
+            BotCommandScopeAllChatAdministrators(),
+            ("all_chat_administrators",),
+        ),
+    }
+    return [
+        _hint(scope, code, _commands(locale, *names))
+        for code, locale in language_variants()
+        for scope, names in scopes.values()
+    ]
+
+
+def private_scope_names(actor: ActorDTO) -> tuple[str, ...]:
+    names = (PRIVATE_SCOPE_BY_STATE[actor.state],)
+    return (*names, "private_superuser") if actor.is_superuser else names
+
+
+def user_hints(actor: ActorDTO) -> list[dict[str, Any]]:
+    scope = BotCommandScopeChat(chat_id=actor.tg_id)
+    names = private_scope_names(actor)
+    return [
+        _hint(scope, code, _commands(locale, *names))
+        for code, locale in language_variants()
+    ]

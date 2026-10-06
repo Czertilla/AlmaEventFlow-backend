@@ -86,4 +86,7 @@ class InlineBuilderMixin:
 
     def __init__(self, text_builder: TextBuilder, *args, **kwargs):
         super().__init__()
-        self.inline_builder = InlineBuilder(text_builder)
+
+    @property
+    def inline_builder(self) -> InlineBuilder:
+        return InlineBuilder(self.text_builder)

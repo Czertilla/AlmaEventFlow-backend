@@ -7,12 +7,16 @@ from fastapi import Depends
 
 from bot.tg.dependency.bot import bot as tg_bot
 from bot.tg.model.collective_chat import CollectiveChatORM
-from bot.tg.service.announcement import build_announcement_text
+from bot.tg.service.announcement import (
+    build_announcement_buttons,
+    build_announcement_text,
+)
 from bot.tg.service.delivery import (
     RETRY_AFTER_PREFIX,
     ChatMigratedError,
     TelegramDeliveryService,
 )
+from bot.tg.text.localization import i18n_manager
 from bot.tg.uow.collective_chat import CollectiveChatUOW
 from bot.tg.uow.message import TelegramMessageUOW
 from core.broker.kafka import KafkaRouter, broker
@@ -20,11 +24,7 @@ from core.dependencies.uow import ModuleUOWDep
 from core.enum.mq import AnnouncementQueue
 from core.enum.notify import DeliveryStatus
 from core.schema.message.announcement import AnnouncementRequest
-from core.schema.message.notify import (
-    DeliveryResult,
-    TelegramButton,
-    TelegramDeliveryItem,
-)
+from core.schema.message.notify import DeliveryResult, TelegramDeliveryItem
 
 logger = getLogger(__name__)
 
@@ -36,17 +36,6 @@ CollectiveChatUOWDep = Depends(ModuleUOWDep("bot")(CollectiveChatUOW))
 MAX_ATTEMPTS = 3
 _BACKOFF = (2.0, 5.0)
 _MAX_RETRY_AFTER = 30.0
-
-
-def _buttons(event_id) -> list[list[TelegramButton]]:
-    return [
-        [
-            TelegramButton(text="✅ Буду", callback_data=f"att:{event_id}:yes"),
-            TelegramButton(
-                text="❌ Не буду", callback_data=f"att:{event_id}:no"
-            ),
-        ]
-    ]
 
 
 async def _pause(seconds: float) -> None:
@@ -138,6 +127,13 @@ async def _deliver(
             request.event_id,
         )
         return
+    if not chat.announce_enabled:
+        logger.info(
+            "announcements of collective %s are switched off, event %s skipped",
+            request.collective_id,
+            request.event_id,
+        )
+        return
     logger.info(
         "announcement target: event=%s collective=%s chat=%s thread=%s",
         request.event_id,
@@ -146,13 +142,19 @@ async def _deliver(
         chat.thread_id,
     )
 
+    lang = chat.language
     item = TelegramDeliveryItem(
         delivery_id=uuid4(),
         chat_id=str(chat.chat_id),
-        text=await build_announcement_text(request),
-        buttons=_buttons(request.event_id),
+        text=await build_announcement_text(request, lang),
+        buttons=await build_announcement_buttons(request, lang),
         correlation_key=str(request.event_id),
         message_thread_id=chat.thread_id,
+        disable_notification=chat.silent,
+        pin=chat.pin_announcements,
+        edit_ping=await i18n_manager.get(
+            "announcement.updated", lang=lang or i18n_manager.default_lang
+        ),
     )
     service = TelegramDeliveryService(uow, tg_bot)
     migrated = False

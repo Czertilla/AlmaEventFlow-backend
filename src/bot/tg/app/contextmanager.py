@@ -2,17 +2,35 @@ from asyncio import create_task
 from logging import getLogger
 
 from aiogram import Bot, Dispatcher
+from aiogram.exceptions import TelegramAPIError
+from aiogram.types import ChatAdministratorRights
 from aiogram3_di import setup_di
 from fastapi import FastAPI
 
 from bot.tg.api.router import register_routers
-from bot.tg.text.commands import get_commands_hints
-from bot.tg.text.description import get_bot_descriptions
+from bot.tg.service.commands import CommandMenuService
+from bot.tg.text.description import get_bot_profile_texts
 from core.app.contextmanager import AppContextManager
 from core.config.settings import settings
 from core.enum.config import TgBotFeedType
 
 logger = getLogger(__name__)
+
+GROUP_ADMIN_RIGHTS = ChatAdministratorRights(
+    is_anonymous=False,
+    can_manage_chat=False,
+    can_delete_messages=False,
+    can_manage_video_chats=False,
+    can_restrict_members=False,
+    can_promote_members=False,
+    can_change_info=False,
+    can_invite_users=False,
+    can_post_stories=False,
+    can_edit_stories=False,
+    can_delete_stories=False,
+    can_send_welcome_messages=False,
+    can_pin_messages=True,
+)
 
 
 class TGBotContextManager(AppContextManager):
@@ -27,24 +45,20 @@ class TGBotContextManager(AppContextManager):
         self.dp = dp
 
     def register_handlers(self):
-        # self.dp.pre_checkout_query.register(pre_checkout_handler)
         register_routers(self.dp)
 
     def setup_di(self):
         setup_di(self.dp)
 
     async def set_commands(self):
-        for arg in await get_commands_hints():
-            if await self.bot.set_my_commands(**arg):
-                logger.info(
-                    f"Success setup bot commands for scope={arg['scope']} "
-                    f"and locale={arg['language_code']}"
-                )
-            else:
-                logger.error(
-                    f"Failed setup bot commands for scope={arg['scope']} "
-                    f"and locale={arg['language_code']}"
-                )
+        if self.bot is None:
+            return
+        menu = CommandMenuService(self.bot)
+        await menu.setup_static()
+        try:
+            await menu.refresh_superusers()
+        except Exception:
+            logger.exception("could not refresh superuser command menus")
 
     async def set_webhook(self):
         url = f"https://{settings.APP_HOST}{settings.BOT_TG_WEBHOOK}"
@@ -61,9 +75,22 @@ class TGBotContextManager(AppContextManager):
             secret_token=secret,
         )
 
-    async def set_description(self):
-        for description, locale in get_bot_descriptions():
-            await self.bot.set_my_description(description, locale)
+    async def set_profile(self):
+        if self.bot is None:
+            return
+        try:
+            for text in get_bot_profile_texts():
+                await self.bot.set_my_description(
+                    text.description, text.language_code
+                )
+                await self.bot.set_my_short_description(
+                    text.short_description, text.language_code
+                )
+            await self.bot.set_my_default_administrator_rights(
+                GROUP_ADMIN_RIGHTS, for_channels=False
+            )
+        except TelegramAPIError:
+            logger.exception("could not update the bot profile")
 
     async def start_polling(self):
         await self.bot.delete_webhook()
@@ -96,7 +123,7 @@ class TGBotContextManager(AppContextManager):
         self.register_handlers()
         self.setup_di()
         await self.set_commands()
-        await self.set_description()
+        await self.set_profile()
         if (feed_type := settings.BOT_TG_FEED_TYPE) == TgBotFeedType.WEBHOOK:
             await self.set_webhook()
         elif feed_type == TgBotFeedType.POLLING:

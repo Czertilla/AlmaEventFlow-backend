@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+from typing import Any
 
 from bot.enum.emoji import Emoji
 from bot.enum.locales import LocaleKey
@@ -7,6 +8,7 @@ from bot.tg.text.localization import i18n_manager
 from core.config.settings import settings
 
 from .account import AccountMixin
+from .leader import LeaderMixin
 from .menu import MenuMixin
 
 DEFAULT_MARKUP: str = settings.BOT_PARSE_MODE
@@ -15,7 +17,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class TextBuilder(MenuMixin, AccountMixin):
+class TextBuilder(MenuMixin, AccountMixin, LeaderMixin):
     """A class responsible for constructing localized message texts with
     appropriate markup formatting.
     """
@@ -41,7 +43,7 @@ class TextBuilder(MenuMixin, AccountMixin):
     async def get_username_warning(self) -> str:
         return await self.get_phrase(LocaleKey.Error.username, ch=Emoji.warning)
 
-    async def get_phrase(self, key: str | Enum, **kwargs) -> str:
+    async def get_phrase(self, key: str | Enum, **kwargs: Any) -> str:
         """
         Retrieves a localized phrase asynchronously.
 

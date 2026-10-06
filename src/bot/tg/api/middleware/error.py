@@ -5,16 +5,21 @@ from inspect import Traceback
 from typing import Any, Self
 from uuid import UUID, uuid4
 
-from aiogram import BaseMiddleware, Bot
+from aiogram import BaseMiddleware
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import CallbackQuery, Message
 from fastapi import HTTPException
 
+from bot.enum.emoji import Emoji
+from bot.enum.locales import LocaleKey
+from bot.tg.text.builder import TextBuilder
 from bot.tg.utils.mixins.middleware import GetUserMixin, LoggerMiddlewareMixin
 
 ErrorEvent = Message | CallbackQuery | Any
 HandlerCallable = Callable[[ErrorEvent, dict[str, Any]], Awaitable[Any]]
 ExceptionHandler = Callable[
-    [BaseException, ErrorEvent, dict[str, Any]], Awaitable[Any]
+    [type[BaseException], Any, Traceback, ErrorEvent, dict[str, Any]],
+    Awaitable[Any],
 ]
 
 
@@ -41,6 +46,9 @@ class ErrorHandlerMiddleware(
                 self.register_exception_handler(exc_type, handler)
         self.register_exception_handler(
             HTTPException, self._handle_http_exception
+        )
+        self.register_exception_handler(
+            TelegramBadRequest, self._handle_bad_request
         )
 
     async def __call__(
@@ -95,7 +103,7 @@ class ErrorHandlerMiddleware(
             await handler(exc_type, exc, tb, event, data)
             return
         await self._handle_unexpected_error(exc_type, exc, tb, event, data)
-        await self._notify_user(exc, data)
+        await self._notify_user(exc, event, data)
 
     def _ensure_error_id(self, err: BaseException) -> UUID:
         err_id = getattr(err, "id", None)
@@ -126,6 +134,20 @@ class ErrorHandlerMiddleware(
             extra={"err_id": str(err_id)},
         )
 
+    async def _handle_bad_request(
+        self,
+        exc_type: type[BaseException],
+        exc: TelegramBadRequest,
+        tb: Traceback,
+        event: ErrorEvent,
+        data: dict[str, Any],
+    ) -> None:
+        if "message is not modified" in str(exc).lower():
+            self.logger.debug("edit skipped, nothing changed: %s", exc)
+            return
+        await self._handle_unexpected_error(exc_type, exc, tb, event, data)
+        await self._notify_user(exc, event, data)
+
     async def _handle_unexpected_error(
         self,
         exc_type: type[BaseException],
@@ -143,17 +165,21 @@ class ErrorHandlerMiddleware(
         )
 
     async def _notify_user(
-        self, err: BaseException, data: dict[str, Any]
+        self, err: BaseException, event: ErrorEvent, data: dict[str, Any]
     ) -> None:
         if not self.notify_user:
             return
-        bot: Bot | None = data.get("bot")
-        user = self.get_user(data)
-        if not bot or not user:
-            return
-        message = self.format_user_message(err)
+        update_event = getattr(event, "event", None)
+        user = data.get("user")
+        text_builder = TextBuilder(getattr(user, "language_code", None))
+        message = await self.format_user_message(err, text_builder)
         try:
-            await bot.send_message(user.id, message, parse_mode="Markdown")
+            if isinstance(update_event, CallbackQuery):
+                target = update_event.message
+                if isinstance(target, Message):
+                    await target.answer(message)
+            elif isinstance(update_event, Message):
+                await update_event.answer(message)
         except Exception as exc:
             self.logger.critical(
                 f"Failed to notify user about error {getattr(err, 'id', None)}",
@@ -161,16 +187,11 @@ class ErrorHandlerMiddleware(
                 exc_info=exc,
             )
 
-    def format_user_message(self, err: BaseException) -> str:
+    async def format_user_message(
+        self, err: BaseException, text_builder: TextBuilder
+    ) -> str:
         err_id = getattr(err, "id", None)
-        detail = (
-            getattr(err, "detail", None)
-            or getattr(err, "message", None)
-            or str(err)
+        phrase = await text_builder.get_phrase(
+            LocaleKey.Error.unexpected, ch=Emoji.warning
         )
-        return (
-            "⚠️ Error.\n"
-            f"ID: `{err_id}`\n"
-            f"type: `{err.__class__.__name__}`\n"
-            f"descripition: ```\n{detail}```"
-        )
+        return f"{phrase}\n<code>{err_id}</code>"

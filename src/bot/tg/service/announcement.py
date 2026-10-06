@@ -5,12 +5,15 @@ from html import escape
 from logging import getLogger
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from bot.tg.enum.callbacks import AttendanceCB
 from bot.tg.text.localization import i18n_manager
 from core.schema.message.announcement import AnnouncementRequest, AnnouncementStage
+from core.schema.message.notify import TelegramButton
 
 logger = getLogger(__name__)
 
 MAX_MESSAGE_LENGTH = 4096
+QUOTE_FOLD_LENGTH = 300
 
 
 @dataclass(frozen=True, slots=True)
@@ -74,14 +77,23 @@ def _format_date(value: date, lang: str) -> str:
     return f"{value.day} {months[value.month]} {value.year}"
 
 
-def _format_time(value: datetime, tz_name: str | None) -> str:
-    """Renders the wall-clock time in ``tz_name`` when given and valid --
-    Telegram's plain text has no per-viewer rendering, so it commits to the
-    zone the stage's creator actually meant."""
+def _localize(value: datetime, tz_name: str | None) -> datetime:
     if tz_name:
         with contextlib.suppress(ZoneInfoNotFoundError, ValueError):
-            value = value.astimezone(ZoneInfo(tz_name))
-    return value.strftime("%H:%M")
+            return value.astimezone(ZoneInfo(tz_name))
+    return value
+
+
+def _format_time(value: datetime, tz_name: str | None) -> str:
+    return _localize(value, tz_name).strftime("%H:%M")
+
+
+def _tg_time(value: datetime, fmt: str, fallback: str) -> str:
+    """A date/time Telegram shows in each reader's own zone. ``fallback`` is
+    what clients without support, and the plain text, show: the time in the
+    zone the stage's creator meant."""
+    unix = int(value.timestamp())
+    return f'<tg-time unix="{unix}" format="{fmt}">{fallback}</tg-time>'
 
 
 def _format_date_time(
@@ -90,18 +102,24 @@ def _format_date_time(
     stage_tz: str | None,
     lang: str,
 ) -> str:
-    if event_date is None:
-        return ""
-    text = _format_date(event_date, lang)
     if stage_start is not None:
-        text += f", {_format_time(stage_start, stage_tz)}"
-    return text
+        local = _localize(stage_start, stage_tz)
+        day = event_date or local.date()
+        fallback = f"{_format_date(day, lang)}, {local.strftime('%H:%M')}"
+        return _tg_time(stage_start, "wDt", fallback)
+    if event_date is not None:
+        return _format_date(event_date, lang)
+    return ""
 
 
 def _format_stage_time(stage: AnnouncementStage) -> str:
-    time_part = _format_time(stage.start_at, stage.timezone)
+    time_part = _tg_time(
+        stage.start_at, "t", _format_time(stage.start_at, stage.timezone)
+    )
     if stage.end_at is not None:
-        time_part += f"–{_format_time(stage.end_at, stage.timezone)}"
+        time_part += "–" + _tg_time(
+            stage.end_at, "t", _format_time(stage.end_at, stage.timezone)
+        )
     return time_part
 
 
@@ -187,8 +205,14 @@ async def _render(
         paragraphs.append("\n".join(meta_lines))
 
     if request.event_description and limits.description:
+        description = _clip(request.event_description, limits.description)
+        key = (
+            "announcement.description_long"
+            if len(description) > QUOTE_FOLD_LENGTH
+            else "announcement.description"
+        )
         paragraphs.append(
-            escape(_clip(request.event_description, limits.description))
+            await i18n_manager.get(key, lang=lang, description=escape(description))
         )
 
     shown_stages = request.stages[: limits.stages]
@@ -225,3 +249,37 @@ async def _render(
     paragraphs.append(await i18n_manager.get("announcement.cta", lang=lang))
 
     return "\n\n".join(paragraphs)
+
+
+async def build_announcement_buttons(
+    request: AnnouncementRequest, lang: str | None = None
+) -> list[list[TelegramButton]]:
+    lang = lang or i18n_manager.default_lang
+    rows = [
+        [
+            TelegramButton(
+                text=await i18n_manager.get("attendance.button_yes", lang=lang),
+                callback_data=AttendanceCB(
+                    event_id=request.event_id, decision="yes"
+                ).pack(),
+                style="success",
+            ),
+            TelegramButton(
+                text=await i18n_manager.get("attendance.button_no", lang=lang),
+                callback_data=AttendanceCB(
+                    event_id=request.event_id, decision="no"
+                ).pack(),
+                style="danger",
+            ),
+        ]
+    ]
+    if request.action_url:
+        rows.append(
+            [
+                TelegramButton(
+                    text=await i18n_manager.get("button.open_event", lang=lang),
+                    url=request.action_url,
+                )
+            ]
+        )
+    return rows
