@@ -116,7 +116,7 @@ if not settings.IN_MEMORY_BROKER:
                 client_id=self.config.client_id or "aef",
                 connect_kwargs=parse_security(_kafka_security()),
             )
-            self._rpc_reply.attach(self.config.producer)
+            self._rpc_reply.attach(self.config)
 
         async def start(self) -> None:
             while True:

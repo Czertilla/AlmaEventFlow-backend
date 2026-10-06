@@ -26,15 +26,16 @@ same as any other topic this app publishes to.
 
 import asyncio
 import contextlib
-import types
 from logging import getLogger
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self, override
 from uuid import uuid4
 
 from aiokafka import AIOKafkaConsumer
+from faststream.kafka.publisher.producer import AioKafkaFastProducerImpl
 
 if TYPE_CHECKING:
-    from faststream.kafka.publisher.producer import AioKafkaFastProducerImpl
+    from faststream._internal.configs.broker import ConfigComposition
+    from faststream.kafka.configs.broker import KafkaBrokerConfig
     from faststream.kafka.response import KafkaPublishCommand
 
 logger = getLogger(__name__)
@@ -42,11 +43,45 @@ logger = getLogger(__name__)
 REPLY_TOPIC = "core.rpc.reply"
 
 
+def _slot_names(cls: type) -> list[str]:
+    return [
+        slot
+        for klass in cls.__mro__
+        for slot in getattr(klass, "__slots__", ())
+        if slot not in ("__dict__", "__weakref__")
+    ]
+
+
+class KafkaRpcProducer(AioKafkaFastProducerImpl):
+    """FastStream's slotted producer with a working ``request()``. The
+    producer cannot be patched in place (its instances have no ``__dict__``),
+    so the broker's own instance is replaced by this subclass carrying the
+    same state -- everything else about it (publish, connect, codec,
+    serializer) is inherited untouched."""
+
+    _reply: "KafkaRpcReplyConsumer"
+
+    @classmethod
+    def adopt(
+        cls,
+        producer: AioKafkaFastProducerImpl,
+        reply: "KafkaRpcReplyConsumer",
+    ) -> Self:
+        adopted = cls.__new__(cls)
+        for slot in _slot_names(AioKafkaFastProducerImpl):
+            setattr(adopted, slot, getattr(producer, slot))
+        adopted._reply = reply
+        return adopted
+
+    @override
+    async def request(self, cmd: "KafkaPublishCommand") -> Any:
+        return await self._reply.request(self, cmd)
+
+
 class KafkaRpcReplyConsumer:
     """Owns the background reply consumer and pending-request table for one
-    broker instance. ``attach()`` monkey-patches a producer's ``request()``
-    method to route through it -- everything else about the producer
-    (publish, connect, codec/serializer) is untouched. The consumer itself is
+    broker instance. ``attach()`` makes the broker's producer route
+    ``request()`` through it. The consumer itself is
     started lazily on the first actual request, so services that only
     publish/subscribe never pay for an extra topic subscription."""
 
@@ -105,7 +140,7 @@ class KafkaRpcReplyConsumer:
                 future.set_result(record)
 
     async def request(
-        self, producer: "AioKafkaFastProducerImpl", cmd: "KafkaPublishCommand"
+        self, producer: AioKafkaFastProducerImpl, cmd: "KafkaPublishCommand"
     ) -> Any:
         await self._ensure_started()
         cmd.reply_to = REPLY_TOPIC
@@ -117,12 +152,11 @@ class KafkaRpcReplyConsumer:
         finally:
             self._pending.pop(cmd.correlation_id, None)
 
-    def attach(self, producer: "AioKafkaFastProducerImpl") -> None:
-        reply_consumer = self
-
-        async def request(
-            _self: "AioKafkaFastProducerImpl", cmd: "KafkaPublishCommand"
-        ) -> Any:
-            return await reply_consumer.request(_self, cmd)
-
-        producer.request = types.MethodType(request, producer)
+    def attach(self, config: "ConfigComposition[KafkaBrokerConfig]") -> None:
+        broker_config = config.broker_config
+        producer = broker_config.producer
+        if not isinstance(producer, AioKafkaFastProducerImpl):
+            raise TypeError(
+                f"cannot add request/reply to {type(producer).__name__}"
+            )
+        broker_config.producer = KafkaRpcProducer.adopt(producer, self)
