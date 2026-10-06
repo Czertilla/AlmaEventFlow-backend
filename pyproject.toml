@@ -1,6 +1,6 @@
 [project]
 name = "alma-event-flow"
-version = "0.3.0-beta"
+version = "0.4.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
