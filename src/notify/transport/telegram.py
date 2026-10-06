@@ -80,10 +80,14 @@ class TelegramTransport(BaseTransport):
         return [
             [
                 TelegramButton(
-                    text="✅ Буду", callback_data=f"att:{event_id}:yes"
+                    text="✅ Буду",
+                    callback_data=f"att:{event_id}:yes",
+                    style="success",
                 ),
                 TelegramButton(
-                    text="❌ Не буду", callback_data=f"att:{event_id}:no"
+                    text="❌ Не буду",
+                    callback_data=f"att:{event_id}:no",
+                    style="danger",
                 ),
             ]
         ]

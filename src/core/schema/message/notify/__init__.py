@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from typing import Literal, Self
 from uuid import UUID, uuid4
 
 from pydantic import EmailStr, Field, model_validator
@@ -79,11 +80,20 @@ class WebPushDeliveryBatch(TransportBatch):
 
 
 class TelegramButton(MQRequest):
-    """One inline keyboard button. ``callback_data`` is opaque to notify — the
-    ``bot`` service defines and interprets its own callback formats."""
+    """One inline keyboard button: either a callback button or a link.
+    ``callback_data`` is opaque to notify — the ``bot`` service defines and
+    interprets its own callback formats."""
 
     text: str
-    callback_data: str
+    callback_data: str | None = None
+    url: str | None = None
+    style: Literal["primary", "success", "danger"] | None = None
+
+    @model_validator(mode="after")
+    def _exactly_one_action(self) -> Self:
+        if (self.callback_data is None) == (self.url is None):
+            raise ValueError("a button needs exactly one of callback_data, url")
+        return self
 
 
 class TelegramDeliveryItem(MQRequest):
@@ -103,6 +113,11 @@ class TelegramDeliveryItem(MQRequest):
     sending a new message — an edit targets an existing message_id, whose
     topic is already fixed."""
     expires_at: datetime | None = None
+    disable_notification: bool = False
+    pin: bool = False
+    """Pin a newly sent message (best effort, needs the right in the chat)."""
+    edit_ping: str | None = None
+    """Text of the reply that announces an edit; the bot's default if unset."""
 
 
 class TelegramDeliveryBatch(TransportBatch):
