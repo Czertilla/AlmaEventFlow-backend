@@ -86,7 +86,10 @@ async def test_activating_an_event_announces_it_once_and_edits_refresh_it(
     activated = await api.patch(
         f"{BASE}/events/{event_id}", json={"status": "active"}, headers=ADMIN
     )
-    untouched = await api.patch(
+    described = await api.patch(
+        f"{BASE}/events/{event_id}", json={"description": "Same"}, headers=ADMIN
+    )
+    repeated = await api.patch(
         f"{BASE}/events/{event_id}", json={"description": "Same"}, headers=ADMIN
     )
     renamed = await api.patch(
@@ -94,9 +97,10 @@ async def test_activating_an_event_announces_it_once_and_edits_refresh_it(
     )
 
     assert activated.json()["status"] == "active"
-    assert untouched.status_code == 200
+    assert described.status_code == 200
+    assert repeated.status_code == 200
     assert renamed.json()["name"] == "Renamed"
-    assert notices == [event_id, event_id]
+    assert notices == [event_id, event_id, event_id]
 
 
 async def test_events_are_filtered_and_sorted(api: httpx.AsyncClient) -> None:

@@ -62,12 +62,34 @@ class EventSnapshot:
     status: str | None
     name: str | None
     date: datetime.date | None
+    description: str | None = None
+    location_id: UUID | None = None
+    organizer_id: UUID | None = None
+
+    @classmethod
+    def of_event(cls, event: EventORM) -> "EventSnapshot":
+        return cls(
+            status=event.status,
+            name=event.name,
+            date=event.date,
+            description=event.description,
+            location_id=event.location_id,
+            organizer_id=event.organizer_id,
+        )
 
     @classmethod
     def of(cls, event: EventORM | None) -> "EventSnapshot | None":
-        if event is None:
-            return None
-        return cls(status=event.status, name=event.name, date=event.date)
+        return None if event is None else cls.of_event(event)
+
+    def announced_part(self) -> tuple[object, ...]:
+        """What the collective announcement shows besides the stages."""
+        return (
+            self.name,
+            self.date,
+            self.description,
+            self.location_id,
+            self.organizer_id,
+        )
 
 
 class EventService(BaseService[EventUOW]):
@@ -256,11 +278,12 @@ class EventService(BaseService[EventUOW]):
         self, old: EventSnapshot | None, event: EventORM
     ) -> None:
         """Notifies attendees on a transition into a trigger status (the
-        original 'mark your attendance' ping), and again on a later material
-        edit (name/date) to an already-active event — so the Telegram bot
-        (which decides edit-vs-send itself, keyed by event_id) can refresh a
-        message it already sent instead of it going stale. A no-op edit, or
-        one where nothing attendee-visible changed, publishes nothing."""
+        original 'mark your attendance' ping), and again on any later edit of
+        what the announcement shows (name, date, description, location,
+        organizer) to an already-active event — so the Telegram bot (which
+        decides edit-vs-send itself, keyed by event_id) can refresh a message
+        it already sent instead of it going stale. A no-op edit, or one where
+        nothing attendee-visible changed, publishes nothing."""
         old_status = old.status if old else None
         if not is_trigger_status(old_status) and is_trigger_status(
             event.status
@@ -277,7 +300,7 @@ class EventService(BaseService[EventUOW]):
             old is not None
             and is_trigger_status(old_status)
             and is_trigger_status(event.status)
-            and (old.name != event.name or old.date != event.date)
+            and old.announced_part() != EventSnapshot.of_event(event).announced_part()
         ):
             logger.info(
                 "Event %s was edited while %s, re-announcing", event.id, event.status
