@@ -74,12 +74,19 @@ def _binding(row: CollectiveChatORM) -> ChatBindingDTO:
         announce_enabled=row.announce_enabled,
         silent=row.silent,
         pin_announcements=row.pin_announcements,
+        detailed_updates=row.detailed_updates,
         language=row.language,
     )
 
 
 SETTING_FIELDS = frozenset(
-    {"announce_enabled", "silent", "pin_announcements", "language"}
+    {
+        "announce_enabled",
+        "silent",
+        "pin_announcements",
+        "detailed_updates",
+        "language",
+    }
 )
 
 

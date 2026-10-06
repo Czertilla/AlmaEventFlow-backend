@@ -260,6 +260,7 @@ async def test_a_new_binding_announces_loudly_without_pinning(
     assert binding.announce_enabled is True
     assert binding.silent is False
     assert binding.pin_announcements is False
+    assert binding.detailed_updates is False
     assert binding.language is None
 
 
@@ -272,13 +273,17 @@ async def test_a_leader_changes_the_settings_of_their_chat(
     await service.setup(person, CHAT, LEADER_TG)
 
     updated = await service.update_settings(
-        person, collective, {"silent": True, "language": "en"}
+        person,
+        collective,
+        {"silent": True, "language": "en", "detailed_updates": True},
     )
 
     assert updated is not None
     assert updated.silent is True and updated.language == "en"
+    assert updated.detailed_updates is True
     stored = await service.get_binding(CHAT)
     assert stored is not None and stored.silent is True
+    assert stored.detailed_updates is True
 
 
 async def test_settings_belong_only_to_the_leader_of_the_collective(

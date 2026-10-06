@@ -33,6 +33,11 @@ class CollectiveChatORM(Base, UUIDMixin, TimestampMixin):
     pin_announcements: Mapped[bool] = mapped_column(
         default=False, server_default=false()
     )
+    detailed_updates: Mapped[bool] = mapped_column(
+        default=False, server_default=false()
+    )
+    """Update replies name the event and list the changes instead of only
+    saying "updated"."""
     language: Mapped[str | None] = mapped_column(String(8), default=None)
     """Language of the announcements posted to the chat; ``None`` means the
     bot's default language."""

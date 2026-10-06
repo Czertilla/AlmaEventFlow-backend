@@ -98,6 +98,16 @@ class LeaderMixin(ABCKeyboardBuilder[InlineKeyboardButton]):
                     collective_id,
                 ),
             )
+            self.row(
+                await self._toggle(
+                    LocaleKey.Button.updates,
+                    await self.text_builder.detail_label(
+                        binding.detailed_updates
+                    ),
+                    LeaderAction.detail,
+                    collective_id,
+                )
+            )
         self.row(
             InlineKeyboardButton(
                 text=await phrase(LocaleKey.Button.bind_group),

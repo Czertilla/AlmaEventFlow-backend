@@ -198,8 +198,10 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   `BotCommandScopeChat` per role from `CommandMenuService.refresh(actor)`.
 - A collective has one official chat and a chat belongs to one collective (both columns are
   unique). `CollectiveChatService.setup` requires the bot and the caller to be admins of the chat
-  and the caller to lead the collective; settings (announcements on/off, silent, pin, language)
-  belong to the binding.
+  and the caller to lead the collective; settings (announcements on/off, silent, pin, update-notice
+  detail, language) belong to the binding. An edited announcement is followed by a one-line
+  "updated" reply by default; with `detailed_updates` the reply names the event and lists the
+  changes (`build_update_notice`).
 - Time in announcements is a `<tg-time>` entity (each reader sees their own zone); delivery falls
   back to plain text and to link-less buttons when Telegram rejects either. Ephemeral replies
   (`reply_to_sender`) are for hints and refusals only and fall back to an ordinary reply.

@@ -154,7 +154,14 @@ class LocaleKey(Enum):
 		"""🔔 Announcements: %{announce}
 		🔕 Silent: %{silent}
 		📌 Pin: %{pin}
+		🔄 Updates: %{updates}
 		🌐 Language: %{language}"""
+		@prefix("detail.")
+		class Detail(Enum):
+			short = "short"
+			"""brief"""
+			full = "full"
+			"""detailed"""
 		@prefix("state.")
 		class State(Enum):
 			on = "on"
@@ -355,6 +362,8 @@ class LocaleKey(Enum):
 		"""🔕 Silent: %{state}"""
 		pin = "pin"
 		"""📌 Pin: %{state}"""
+		updates = "updates"
+		"""🔄 Updates: %{state}"""
 		language = "language"
 		"""🌐 Language: %{state}"""
 		bind_group = "bind_group"

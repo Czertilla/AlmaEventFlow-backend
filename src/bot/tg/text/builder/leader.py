@@ -32,6 +32,13 @@ class LeaderMixin(ABCTextBuilder):
             LocaleKey.Leader.State.on if value else LocaleKey.Leader.State.off
         )
 
+    async def detail_label(self, detailed: bool) -> str:
+        return await self.get_phrase(
+            LocaleKey.Leader.Detail.full
+            if detailed
+            else LocaleKey.Leader.Detail.short
+        )
+
     async def lang_label(self, code: str) -> str:
         key = {
             "ru": LocaleKey.Leader.Lang.ru,
@@ -77,6 +84,7 @@ class LeaderMixin(ABCTextBuilder):
                 announce=await self.state_label(binding.announce_enabled),
                 silent=await self.state_label(binding.silent),
                 pin=await self.state_label(binding.pin_announcements),
+                updates=await self.detail_label(binding.detailed_updates),
                 language=await self.lang_label(binding.language or default_lang),
             )
         )

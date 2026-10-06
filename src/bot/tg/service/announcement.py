@@ -430,11 +430,16 @@ async def build_update_notice(
     previous: AnnouncementRequest | None,
     request: AnnouncementRequest,
     lang: str | None = None,
+    *,
+    detailed: bool,
 ) -> str:
-    """The reply posted under an announcement that was just edited: names the
-    event, lists what changed when the earlier version is known, and asks
-    everybody to re-check their attendance mark."""
+    """The reply posted under an announcement that was just edited. Brief: it
+    only says "updated" (the quoted announcement names the event). Detailed:
+    it names the event, lists what changed when the earlier version is known,
+    and asks everybody to re-check their attendance mark."""
     lang = lang or i18n_manager.default_lang
+    if not detailed:
+        return await i18n_manager.get("announcement.updated", lang=lang)
     title = await i18n_manager.get(
         "announcement.updated_title",
         lang=lang,

@@ -17,6 +17,7 @@ class ChatBindingDTO:
     announce_enabled: bool = True
     silent: bool = False
     pin_announcements: bool = False
+    detailed_updates: bool = False
     language: str | None = None
 
 

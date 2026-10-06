@@ -134,7 +134,10 @@ class TestNotice:
         self,
     ) -> None:
         notice = await build_update_notice(
-            _request(), _request(event_name="Gala", location="Hall 2"), "en"
+            _request(),
+            _request(event_name="Gala", location="Hall 2"),
+            "en",
+            detailed=True,
         )
 
         title, *rest = notice.split("\n")
@@ -146,7 +149,9 @@ class TestNotice:
         assert notice.endswith("Check that your mark is still right 👇")
 
     async def test_an_unknown_earlier_version_still_gets_a_notice(self) -> None:
-        notice = await build_update_notice(None, _request(event_name="Gala"), "en")
+        notice = await build_update_notice(
+            None, _request(event_name="Gala"), "en", detailed=True
+        )
 
         assert notice.split("\n") == [
             "🔄 <b>Gala</b> was updated",
@@ -158,18 +163,28 @@ class TestNotice:
         old = _request(stages=[_stage(f"Old {n}", 9) for n in range(12)])
         new = _request(stages=[_stage(f"New {n}", 9) for n in range(12)])
 
-        notice = await build_update_notice(old, new, "en")
+        notice = await build_update_notice(old, new, "en", detailed=True)
 
         assert "…and 16 more" in notice
         assert len(notice) < 1500
 
     async def test_it_speaks_the_language_of_the_chat(self) -> None:
         notice = await build_update_notice(
-            _request(), _request(event_name="Gala"), "ru"
+            _request(), _request(event_name="Gala"), "ru", detailed=True
         )
 
         assert "мероприятие обновлено" in notice
         assert "Название: <s>Concert</s> → <b>Gala</b>" in notice
+
+    async def test_the_brief_notice_only_says_the_event_was_updated(self) -> None:
+        old, new = _request(), _request(event_name="Gala", location="Hall 2")
+
+        assert await build_update_notice(old, new, "en", detailed=False) == (
+            "🔄 Updated"
+        )
+        assert await build_update_notice(old, new, "ru", detailed=False) == (
+            "🔄 Обновлено"
+        )
 
 
 def test_a_stored_snapshot_that_no_longer_fits_the_schema_is_ignored() -> None:
@@ -205,6 +220,61 @@ async def announced(tg: Any, monkeypatch: pytest.MonkeyPatch) -> Any:
     return send
 
 
+async def _configure(**settings: Any) -> None:
+    from bot.tg.uow.collective_chat import CollectiveChatUOW
+
+    async with CollectiveChatUOW() as uow:
+        await uow.collective_chats.update_settings(COLLECTIVE, settings)
+        await uow.commit(True)
+
+
+@pytest.fixture
+async def detailed(announced: Any) -> None:
+    await _configure(detailed_updates=True)
+
+
+async def test_by_default_an_edit_is_followed_by_a_one_line_reply(
+    tg: Any, announced: Any
+) -> None:
+    await announced(_request())
+
+    await announced(_request(event_name="Gala", location="Hall 2"))
+
+    (edited,) = tg.session.of(EditMessageText)
+    assert "Gala" in edited.text
+    _, reply = tg.session.of(SendMessage)
+    assert reply.text == "🔄 Обновлено"
+    assert reply.reply_markup is None
+    assert reply.reply_parameters.message_id == edited.message_id
+
+
+async def test_the_brief_reply_speaks_the_language_of_the_chat(
+    tg: Any, announced: Any
+) -> None:
+    await _configure(language="en")
+    await announced(_request())
+
+    await announced(_request(event_name="Gala"))
+
+    assert tg.session.of(SendMessage)[-1].text == "🔄 Updated"
+
+
+async def test_switching_to_detailed_compares_with_what_brief_mode_remembered(
+    tg: Any, announced: Any
+) -> None:
+    await announced(_request())
+    await announced(_request(event_name="Gala"))
+    assert tg.session.of(SendMessage)[-1].text == "🔄 Обновлено"
+    await _configure(detailed_updates=True)
+
+    await announced(_request(event_name="Gala", organizer="Band"))
+
+    last = tg.session.of(SendMessage)[-1].text
+    assert "Организатор: <s>Choir</s> → <b>Band</b>" in last
+    assert "Название" not in last
+
+
+@pytest.mark.usefixtures("detailed")
 async def test_an_edited_event_edits_the_message_and_replies_with_what_changed(
     tg: Any, announced: Any
 ) -> None:
@@ -223,6 +293,7 @@ async def test_an_edited_event_edits_the_message_and_replies_with_what_changed(
     assert reply.reply_parameters.message_id == edited.message_id
 
 
+@pytest.mark.usefixtures("detailed")
 async def test_the_reply_carries_the_attendance_buttons_so_people_can_recheck(
     tg: Any, announced: Any
 ) -> None:
@@ -238,6 +309,7 @@ async def test_the_reply_carries_the_attendance_buttons_so_people_can_recheck(
     )
 
 
+@pytest.mark.usefixtures("detailed")
 async def test_each_update_is_compared_with_the_one_before_it(
     tg: Any, announced: Any
 ) -> None:
@@ -251,6 +323,7 @@ async def test_each_update_is_compared_with_the_one_before_it(
     assert "Название" not in last
 
 
+@pytest.mark.usefixtures("detailed")
 async def test_a_message_sent_before_snapshots_existed_still_gets_a_notice(
     tg: Any, announced: Any
 ) -> None:

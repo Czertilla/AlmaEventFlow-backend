@@ -31,6 +31,7 @@ TOGGLES = {
     LeaderAction.announce: "announce_enabled",
     LeaderAction.silent: "silent",
     LeaderAction.pin: "pin_announcements",
+    LeaderAction.detail: "detailed_updates",
 }
 
 

@@ -152,7 +152,10 @@ async def _deliver(
     )
 
     lang = chat.language
-    previous = await _previous_request(uow, request, chat.chat_id)
+    detailed = chat.detailed_updates
+    previous = (
+        await _previous_request(uow, request, chat.chat_id) if detailed else None
+    )
     item = TelegramDeliveryItem(
         delivery_id=uuid4(),
         chat_id=str(chat.chat_id),
@@ -162,8 +165,10 @@ async def _deliver(
         message_thread_id=chat.thread_id,
         disable_notification=chat.silent,
         pin=chat.pin_announcements,
-        edit_ping=await build_update_notice(previous, request, lang),
-        edit_ping_buttons=True,
+        edit_ping=await build_update_notice(
+            previous, request, lang, detailed=detailed
+        ),
+        edit_ping_buttons=detailed,
         payload=request.model_dump(mode="json"),
     )
     service = TelegramDeliveryService(uow, tg_bot)

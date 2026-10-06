@@ -325,6 +325,16 @@ async def test_a_leader_tunes_the_announcements_of_a_bound_chat(
     await tg.press(language[1] or "", ALICE)
     card = tg.session.of(EditMessageText)[-1]
     assert "Язык: English" in card.text
+    assert "Обновления: кратко" in card.text
+    updates = next(b for b in buttons(card.reply_markup) if "Обновления" in b[0])
+    assert updates[0] == "🔄 Обновления: кратко"
+
+    await tg.press(updates[1] or "", ALICE)
+
+    card = tg.session.of(EditMessageText)[-1]
+    assert "Обновления: подробно" in card.text
+    updates = next(b for b in buttons(card.reply_markup) if "Обновления" in b[0])
+    assert updates[0] == "🔄 Обновления: подробно"
 
 
 async def test_unbinding_from_the_card_frees_the_chat_and_tells_it(

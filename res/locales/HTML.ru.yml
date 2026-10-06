@@ -99,7 +99,11 @@ ru:
       🔔 Анонсы: %{announce}
       🔕 Без звука: %{silent}
       📌 Закреплять: %{pin}
+      🔄 Обновления: %{updates}
       🌐 Язык: %{language}
+    detail:
+      short: "кратко"
+      full: "подробно"
     state:
       "on": "вкл"
       "off": "выкл"
@@ -212,6 +216,7 @@ ru:
     announce: "🔔 Анонсы: %{state}"
     silent: "🔕 Без звука: %{state}"
     pin: "📌 Закреплять: %{state}"
+    updates: "🔄 Обновления: %{state}"
     language: "🌐 Язык: %{state}"
     bind_group: "➕ Привязать группу"
     unbind: "🔌 Отвязать чат"

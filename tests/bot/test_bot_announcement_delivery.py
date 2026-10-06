@@ -155,6 +155,7 @@ def _chat(thread_id: int | None = None, **settings: Any) -> SimpleNamespace:
         "announce_enabled": True,
         "silent": False,
         "pin_announcements": False,
+        "detailed_updates": False,
         "language": None,
     }
     return SimpleNamespace(**(row | settings))
@@ -405,7 +406,9 @@ async def test_attendance_buttons_are_coloured_and_link_to_the_event(
 async def test_an_edit_is_announced_in_the_language_of_the_chat(
     make_harness: Any,
 ) -> None:
-    harness = make_harness(FakeBot(), _chat(language="en"))
+    harness = make_harness(
+        FakeBot(), _chat(language="en", detailed_updates=True)
+    )
     request = _request()
     harness.messages.rows[(str(request.event_id), CHAT_ID)] = SimpleNamespace(
         message_id=42, payload=None
@@ -417,6 +420,23 @@ async def test_an_edit_is_announced_in_the_language_of_the_chat(
     notice = harness.bot.sent[0]["text"]
     assert "was updated" in notice
     assert "Check that your mark is still right" in notice
+    assert harness.bot.sent[0]["reply_markup"] is not None
+
+
+async def test_an_edit_is_announced_briefly_unless_the_chat_wants_details(
+    make_harness: Any,
+) -> None:
+    harness = make_harness(FakeBot(), _chat(language="en"))
+    request = _request()
+    harness.messages.rows[(str(request.event_id), CHAT_ID)] = SimpleNamespace(
+        message_id=42, payload=None
+    )
+
+    await harness.run(request)
+
+    assert len(harness.bot.edited) == 1
+    assert harness.bot.sent[0]["text"] == "🔄 Updated"
+    assert harness.bot.sent[0]["reply_markup"] is None
 
 
 async def test_rejected_date_entities_are_resent_as_plain_text(

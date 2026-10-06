@@ -27,6 +27,7 @@ class LeaderAction(StrEnum):
     announce = "announce"
     silent = "silent"
     pin = "pin"
+    detail = "detail"
     language = "lang"
     unbind = "unbind"
 

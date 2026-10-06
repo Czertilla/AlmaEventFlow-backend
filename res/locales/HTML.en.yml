@@ -99,7 +99,11 @@ en:
       🔔 Announcements: %{announce}
       🔕 Silent: %{silent}
       📌 Pin: %{pin}
+      🔄 Updates: %{updates}
       🌐 Language: %{language}
+    detail:
+      short: "brief"
+      full: "detailed"
     state:
       "on": "on"
       "off": "off"
@@ -212,6 +216,7 @@ en:
     announce: "🔔 Announcements: %{state}"
     silent: "🔕 Silent: %{state}"
     pin: "📌 Pin: %{state}"
+    updates: "🔄 Updates: %{state}"
     language: "🌐 Language: %{state}"
     bind_group: "➕ Connect a group"
     unbind: "🔌 Disconnect chat"
