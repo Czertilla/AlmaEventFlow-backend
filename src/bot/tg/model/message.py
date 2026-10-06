@@ -1,3 +1,5 @@
+from typing import Any
+
 from sqlalchemy import BigInteger, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -24,3 +26,6 @@ class TelegramMessageORM(Base, UUIDMixin, TimestampMixin):
     correlation_key: Mapped[str] = mapped_column(String(64), index=True)
     chat_id: Mapped[int] = mapped_column(BigInteger)
     message_id: Mapped[int] = mapped_column(BigInteger)
+    payload: Mapped[dict[str, Any] | None] = mapped_column(default=None)
+    """What the message showed when it was last sent or edited, so the next
+    edit can say what changed. ``None`` for messages that predate it."""

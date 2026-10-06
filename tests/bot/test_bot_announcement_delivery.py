@@ -101,8 +101,16 @@ class FakeMessageRepo:
     ) -> SimpleNamespace | None:
         return self.rows.get((correlation_key, chat_id))
 
-    async def upsert(self, correlation_key: str, chat_id: int, message_id: int) -> None:
-        self.rows[(correlation_key, chat_id)] = SimpleNamespace(message_id=message_id)
+    async def upsert(
+        self,
+        correlation_key: str,
+        chat_id: int,
+        message_id: int,
+        payload: dict[str, Any] | None = None,
+    ) -> None:
+        self.rows[(correlation_key, chat_id)] = SimpleNamespace(
+            message_id=message_id, payload=payload
+        )
 
 
 class FakeUOW:
@@ -288,7 +296,7 @@ async def test_deleted_announcement_is_replaced_instead_of_edited(
     harness = make_harness(FakeBot(edit_errors=[gone]), _chat())
     request = _request()
     key = (str(request.event_id), CHAT_ID)
-    harness.messages.rows[key] = SimpleNamespace(message_id=42)
+    harness.messages.rows[key] = SimpleNamespace(message_id=42, payload=None)
 
     await harness.run(request)
 
@@ -400,13 +408,15 @@ async def test_an_edit_is_announced_in_the_language_of_the_chat(
     harness = make_harness(FakeBot(), _chat(language="en"))
     request = _request()
     harness.messages.rows[(str(request.event_id), CHAT_ID)] = SimpleNamespace(
-        message_id=42
+        message_id=42, payload=None
     )
 
     await harness.run(request)
 
     assert len(harness.bot.edited) == 1
-    assert [call["text"] for call in harness.bot.sent] == ["🔄 Updated"]
+    notice = harness.bot.sent[0]["text"]
+    assert "was updated" in notice
+    assert "Check that your mark is still right" in notice
 
 
 async def test_rejected_date_entities_are_resent_as_plain_text(

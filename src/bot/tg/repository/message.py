@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import select, update
@@ -22,18 +23,27 @@ class TelegramMessageRepo(
         return (await self.execute(stmt)).unique().scalar_one_or_none()
 
     async def upsert(
-        self, correlation_key: str, chat_id: int, message_id: int
+        self,
+        correlation_key: str,
+        chat_id: int,
+        message_id: int,
+        payload: dict[str, Any] | None = None,
     ) -> Model:
         existing = await self.get(correlation_key, chat_id)
         if existing is not None:
-            return await self.update_one(
-                existing.id, {"message_id": message_id}
-            )
+            data: dict[str, Any] = {"message_id": message_id}
+            if payload is not None:
+                data["payload"] = payload
+            updated = await self.update_one(existing.id, data)
+            if updated is None:
+                raise LookupError(f"message {existing.id} disappeared")
+            return updated
         return await self.add_n_return(
             {
                 "correlation_key": correlation_key,
                 "chat_id": chat_id,
                 "message_id": message_id,
+                "payload": payload,
             }
         )
 

@@ -41,7 +41,7 @@ def strip_tg_time(text: str) -> str:
     return _TG_TIME.sub(lambda match: match.group(1), text)
 
 
-def _entities_rejected(exc: TelegramBadRequest, text: str) -> bool:
+def _entities_rejected(exc: TelegramAPIError, text: str) -> bool:
     return "parse entities" in str(exc).lower() and "<tg-time" in text
 
 
@@ -166,7 +166,7 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
                 error="forbidden",
             )
         except TelegramBadRequest as exc:
-            if _entities_rejected(exc, item.text):
+            if _entities_rejected(exc, item.text + (item.edit_ping or "")):
                 logger.warning(
                     "Telegram rejected date entities for chat %s, resending "
                     "as plain text",
@@ -174,7 +174,14 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
                 )
                 return await self.deliver(
                     item.model_copy(
-                        update={"text": strip_tg_time(item.text)}
+                        update={
+                            "text": strip_tg_time(item.text),
+                            "edit_ping": (
+                                strip_tg_time(item.edit_ping)
+                                if item.edit_ping
+                                else None
+                            ),
+                        }
                     )
                 )
             if _button_url_rejected(exc) and any(
@@ -246,37 +253,69 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
         markup: InlineKeyboardMarkup | None,
         existing: TelegramMessageORM | None,
     ) -> int:
-        if existing is not None:
-            try:
-                await self.bot.edit_message_text(
-                    chat_id=chat_id,
-                    message_id=existing.message_id,
-                    text=item.text,
-                    reply_markup=markup,
-                    parse_mode="HTML",
-                )
-            except TelegramBadRequest as exc:
-                if not _edit_target_gone(exc):
-                    raise
-                logger.warning(
-                    "Telegram message %s in chat %s can't be edited (%s), "
-                    "sending a new one",
-                    existing.message_id,
-                    chat_id,
-                    exc,
-                )
-                return await self._send_new(item, chat_id, markup)
+        if existing is None:
+            return await self._send_new(item, chat_id, markup)
+        try:
+            await self.bot.edit_message_text(
+                chat_id=chat_id,
+                message_id=existing.message_id,
+                text=item.text,
+                reply_markup=markup,
+                parse_mode="HTML",
+            )
+        except TelegramBadRequest as exc:
+            if not _edit_target_gone(exc):
+                raise
+            logger.warning(
+                "Telegram message %s in chat %s can't be edited (%s), "
+                "sending a new one",
+                existing.message_id,
+                chat_id,
+                exc,
+            )
+            return await self._send_new(item, chat_id, markup)
+        await self._remember(item, chat_id, existing.message_id)
+        await self._ping_edit(item, chat_id, existing.message_id, markup)
+        return existing.message_id
+
+    async def _remember(
+        self, item: TelegramDeliveryItem, chat_id: int, message_id: int
+    ) -> None:
+        if not item.correlation_key or item.payload is None:
+            return
+        async with self.uow as uow:
+            await uow.messages.upsert(
+                item.correlation_key, chat_id, message_id, payload=item.payload
+            )
+            await uow.commit(True)
+
+    async def _ping_edit(
+        self,
+        item: TelegramDeliveryItem,
+        chat_id: int,
+        message_id: int,
+        markup: InlineKeyboardMarkup | None,
+    ) -> None:
+        try:
             await self.bot.send_message(
                 chat_id=chat_id,
                 text=item.edit_ping or UPDATED_PING_TEXT,
-                disable_notification=item.disable_notification or None,
+                reply_markup=markup if item.edit_ping_buttons else None,
                 reply_parameters=ReplyParameters(
-                    message_id=existing.message_id,
+                    message_id=message_id,
                     allow_sending_without_reply=True,
                 ),
             )
-            return existing.message_id
-        return await self._send_new(item, chat_id, markup)
+        except TelegramAPIError as exc:
+            if _entities_rejected(exc, item.edit_ping or ""):
+                raise
+            logger.warning(
+                "message %s in chat %s was edited but the update notice "
+                "failed: %s",
+                message_id,
+                chat_id,
+                exc,
+            )
 
     async def _send_new(
         self,
@@ -295,7 +334,10 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
         if item.correlation_key:
             async with self.uow as uow:
                 await uow.messages.upsert(
-                    item.correlation_key, chat_id, message.message_id
+                    item.correlation_key,
+                    chat_id,
+                    message.message_id,
+                    payload=item.payload,
                 )
                 await uow.commit(True)
         if item.pin:

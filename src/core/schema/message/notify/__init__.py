@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from typing import Literal, Self
+from typing import Any, Literal, Self
 from uuid import UUID, uuid4
 
 from pydantic import EmailStr, Field, model_validator
@@ -117,7 +117,14 @@ class TelegramDeliveryItem(MQRequest):
     pin: bool = False
     """Pin a newly sent message (best effort, needs the right in the chat)."""
     edit_ping: str | None = None
-    """Text of the reply that announces an edit; the bot's default if unset."""
+    """Text of the reply that announces an edit; the bot's default if unset.
+    The reply always notifies, whatever ``disable_notification`` says: an
+    edit may be the one message somebody must not miss."""
+    edit_ping_buttons: bool = False
+    """Attach the item's buttons to the edit reply as well."""
+    payload: dict[str, Any] | None = None
+    """Opaque data the bot stores with the sent message, handed back when the
+    same ``correlation_key`` is delivered again."""
 
 
 class TelegramDeliveryBatch(TransportBatch):

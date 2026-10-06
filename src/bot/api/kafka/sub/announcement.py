@@ -10,13 +10,14 @@ from bot.tg.model.collective_chat import CollectiveChatORM
 from bot.tg.service.announcement import (
     build_announcement_buttons,
     build_announcement_text,
+    build_update_notice,
+    request_from_payload,
 )
 from bot.tg.service.delivery import (
     RETRY_AFTER_PREFIX,
     ChatMigratedError,
     TelegramDeliveryService,
 )
-from bot.tg.text.localization import i18n_manager
 from bot.tg.uow.collective_chat import CollectiveChatUOW
 from bot.tg.uow.message import TelegramMessageUOW
 from core.broker.kafka import KafkaRouter, broker
@@ -88,6 +89,14 @@ async def _dead_letter(request: AnnouncementRequest) -> None:
         )
 
 
+async def _previous_request(
+    uow: TelegramMessageUOW, request: AnnouncementRequest, chat_id: int
+) -> AnnouncementRequest | None:
+    async with uow as scope:
+        row = await scope.messages.get(str(request.event_id), chat_id)
+    return request_from_payload(row.payload) if row is not None else None
+
+
 async def _rebind(
     chat_uow: CollectiveChatUOW,
     request: AnnouncementRequest,
@@ -143,6 +152,7 @@ async def _deliver(
     )
 
     lang = chat.language
+    previous = await _previous_request(uow, request, chat.chat_id)
     item = TelegramDeliveryItem(
         delivery_id=uuid4(),
         chat_id=str(chat.chat_id),
@@ -152,9 +162,9 @@ async def _deliver(
         message_thread_id=chat.thread_id,
         disable_notification=chat.silent,
         pin=chat.pin_announcements,
-        edit_ping=await i18n_manager.get(
-            "announcement.updated", lang=lang or i18n_manager.default_lang
-        ),
+        edit_ping=await build_update_notice(previous, request, lang),
+        edit_ping_buttons=True,
+        payload=request.model_dump(mode="json"),
     )
     service = TelegramDeliveryService(uow, tg_bot)
     migrated = False
