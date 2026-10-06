@@ -19,3 +19,18 @@ class CollectiveService(BaseService[CollectiveUOW]):
     ) -> list[CollectiveSummaryDTO]:
         async with self.uow:
             return await self._get_my_collectives(person_id)
+
+    @required_transaction
+    async def _get_my_memberships(
+        self, person_id: UUID
+    ) -> list[CollectiveSummaryDTO]:
+        collectives = await self.uow.collectives.get_by_member_person_id(
+            person_id
+        )
+        return [dto_from_orm(c, CollectiveSummaryDTO) for c in collectives]
+
+    async def get_my_memberships(
+        self, person_id: UUID
+    ) -> list[CollectiveSummaryDTO]:
+        async with self.uow:
+            return await self._get_my_memberships(person_id)

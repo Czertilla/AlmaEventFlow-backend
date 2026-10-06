@@ -13,6 +13,7 @@ class UserRPC(StrEnum):
 @prefix("rpc.event.")
 class EventRPC(StrEnum):
     MY_COLLECTIVES = "my-collectives"
+    MY_MEMBERSHIPS = "my-memberships"
     MY_ATTENDANCE = "my-attendance"
     PATCH_MY_ATTENDANCE = "patch-my-attendance"
 

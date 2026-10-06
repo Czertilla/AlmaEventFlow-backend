@@ -48,6 +48,23 @@ async def on_my_collectives(
     return await rpc_respond(_call())
 
 
+@router.subscriber(EventRPC.MY_MEMBERSHIPS)
+async def on_my_memberships(
+    request: MyCollectivesRequest, uow: CollectiveUOW = CollectiveUOWDep
+) -> MQResponse[MyCollectivesResponse]:
+    async def _call() -> MyCollectivesResponse:
+        collectives = await CollectiveService(uow).get_my_memberships(
+            request.person_id
+        )
+        return MyCollectivesResponse(
+            collectives=[
+                MyCollectiveData.model_validate(c) for c in collectives
+            ]
+        )
+
+    return await rpc_respond(_call())
+
+
 @router.subscriber(EventRPC.MY_ATTENDANCE)
 async def on_my_attendance(
     request: MyAttendanceRequest, uow=AttendanceUOWDep
