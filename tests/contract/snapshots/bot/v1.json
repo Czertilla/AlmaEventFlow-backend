@@ -1,6 +1,30 @@
 {
   "components": {
     "schemas": {
+      "HealthV1": {
+        "properties": {
+          "service": {
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "const": "ok",
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "service",
+          "version"
+        ],
+        "title": "HealthV1",
+        "type": "object"
+      },
       "WebhookInfo": {
         "additionalProperties": true,
         "description": "Describes the current status of a webhook.\n\nSource: https://core.telegram.org/bots/api#webhookinfo",
@@ -98,6 +122,28 @@
     }
   },
   "paths": {
+    "/bot/v1/health": {
+      "get": {
+        "description": "Liveness probe: answers once the application has finished starting.",
+        "operationId": "health_bot_v1_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthV1"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
     "/bot/v1/webhook/tg": {
       "get": {
         "description": "Returns information about the webhook.\n\nArgs:\n    bot: The Telegram bot instance.\n\nReturns:\n    WebhookInfo: Information about the current webhook.",

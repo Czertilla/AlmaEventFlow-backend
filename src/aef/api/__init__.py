@@ -5,7 +5,7 @@ from fastapi import FastAPI
 # from bot.api import include_routers as include_bot
 from event.api import include_routers as include_event
 from geo.api import include_routers as include_geo
-from mail.api.kafka import include_routers as include_mail
+from mail.api import include_routers as include_mail
 from notify.api import include_routers as include_notify
 from org.api import include_routers as include_org
 

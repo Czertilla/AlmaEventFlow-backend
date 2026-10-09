@@ -1,4 +1,38 @@
 {
+  "health.HealthV1": {
+    "full": {
+      "dump": {
+        "service": "x",
+        "status": "ok",
+        "version": "x"
+      },
+      "fields_set": [
+        "service",
+        "status",
+        "version"
+      ],
+      "input": {
+        "service": "x",
+        "status": "ok",
+        "version": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "service": "x",
+        "status": "ok",
+        "version": "x"
+      },
+      "fields_set": [
+        "service",
+        "version"
+      ],
+      "input": {
+        "service": "x",
+        "version": "x"
+      }
+    }
+  },
   "pagination.PageParamV1": {
     "full": {
       "dto": {

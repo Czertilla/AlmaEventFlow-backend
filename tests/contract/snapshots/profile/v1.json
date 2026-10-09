@@ -387,6 +387,30 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "HealthV1": {
+        "properties": {
+          "service": {
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "const": "ok",
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "service",
+          "version"
+        ],
+        "title": "HealthV1",
+        "type": "object"
+      },
       "NameVariantCreate": {
         "properties": {
           "name": {
@@ -4300,6 +4324,28 @@
         "summary": "Put Diet",
         "tags": [
           "diet"
+        ]
+      }
+    },
+    "/profile/v1/health": {
+      "get": {
+        "description": "Liveness probe: answers once the application has finished starting.",
+        "operationId": "health_profile_v1_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthV1"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
         ]
       }
     },

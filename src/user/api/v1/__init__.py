@@ -6,6 +6,7 @@ def include_routers(app: APIRouter, prefix: str) -> None:
     from user.api.oauth2 import google_oauth_client
     from user.api.v1.router.auth import router as auth_router
     from user.api.v1.router.check import router as check_router
+    from user.api.v1.router.health import router as health_router
     from user.api.v1.router.sessions import router as sessions_router
     from user.api.v1.router.telegram import router as telegram_router
     from user.api.v1.router.telegram_auth import router as telegram_auth_router
@@ -65,3 +66,4 @@ def include_routers(app: APIRouter, prefix: str) -> None:
     app.include_router(telegram_router, prefix=prefix, tags=["telegram"])
     app.include_router(telegram_auth_router, prefix=prefix, tags=["auth"])
     app.include_router(check_router, prefix=prefix)
+    app.include_router(health_router, prefix=f"{prefix}/v1")
