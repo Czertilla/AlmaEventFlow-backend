@@ -35,7 +35,20 @@ sharing one codebase and one dependency-resolution graph:
   most services as their own containers in parallel (`user`, `mail`, `profile`, `event`, `org`,
   `geo`, `notify`, ports 8001–8007+, Traefik `PathPrefix('/<service>')`). New services should get
   their own container block mirroring an existing one (`notify`'s is a good template) rather than
-  only being wired into the monolith.
+  only being wired into the monolith. Every HTTP service serves `GET /<service>/v1/health`
+  (`router/health.py` = `health_router("<service>")` from `core/api/v1/health.py`, a liveness probe
+  with no DB access) and its compose block probes it through `core/utils/healthcheck.py` (the slim
+  image has no curl). The `aef` container probes `/user/v1/health` only: the monolith mounts every
+  service's router. Traefik's Docker provider routes only to healthy containers, so a wrong probe
+  path takes the service off the API host; `tests/contract/test_compose_healthchecks.py` checks each
+  probe path against the service's contract snapshot. The frontend probes the same endpoint
+  (`frontend/src/api/availability.ts`, `composables/useBackendStatus.ts`). A failed request is only
+  a suspicion: the browser also reports a 500 without CORS headers as a network error, and a flaky
+  link drops single requests, so a service counts as down only after three health probes in a row
+  stay silent (`verifyReachable`); never mark it down from one request. **Only a 401 on `/user/v1/auth/jwt/refresh` ends a session**; a network error, 5xx or
+  a proxy 404 leaves it intact (`tryRefresh` answers `unknown`, the guard waits on `/unavailable`).
+  There is exactly one refresh at a time (`refreshAccessToken`): the backend revokes the whole
+  session when a used refresh token is presented again.
 - `frontend/` is a **git submodule** (Ionic Vue) — treat it as a separate deployable; its API
   client (`frontend/src/api/generated/`) is Orval-generated from `frontend/api_schema/openapi.json`.
 - `migrations/` is shared: one Alembic environment, but `alembic.ini` has a `[<service>]` section
@@ -228,7 +241,7 @@ is a defect, not a style choice.
   is not typed, `ui-field-foot`; `ui-field-title` for the heading of a group of controls and
   `ui-toggle-row` for a switch), `ui-menu` and `ui-menu-item` (a list of options under a field),
   `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-chips` and `ui-chip` (+ `--active`),
-  `ui-btn` (+ `--primary`, `--ghost`); the dialog parts `ui-sheet`, `ui-sheet-head`, `ui-sheet-title`,
+  `ui-btn` (+ `--primary`, `--ghost`, `--sm`); the dialog parts `ui-sheet`, `ui-sheet-head`, `ui-sheet-title`,
   `ui-sheet-body` (scrolls) and `ui-sheet-actions` (buttons pinned under the body); the thin 6px
   scrollbar for every scroll area, including the one inside `ion-content`; and the reset that makes
   `button`, `input`, `select` and `textarea` inherit the page font.

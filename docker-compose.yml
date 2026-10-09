@@ -1,5 +1,11 @@
 version: "3.8"
 
+x-healthcheck: &healthcheck
+  interval: 15s
+  timeout: 5s
+  retries: 5
+  start_period: 60s
+
 services:
   pg:
     image: postgis/postgis:16-master
@@ -154,6 +160,9 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "/app/core/utils/healthcheck.py", "/user/v1/health"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.aef.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`)"
@@ -182,6 +191,9 @@ services:
       #   condition: service_healthy
       kafka:
         condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "/app/core/utils/healthcheck.py", "/user/v1/health"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.user.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/user`)"
@@ -206,6 +218,9 @@ services:
     # depends_on:
       # redis:
       #   condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "/app/core/utils/healthcheck.py", "/mail/v1/health"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mail.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/mail`)"
@@ -234,6 +249,9 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "/app/core/utils/healthcheck.py", "/profile/v1/health"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.profile.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/profile`)"
@@ -262,6 +280,9 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "/app/core/utils/healthcheck.py", "/event/v1/health"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.event.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/event`)"
@@ -290,6 +311,9 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "/app/core/utils/healthcheck.py", "/org/v1/health"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.org.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/org`)"
@@ -320,6 +344,9 @@ services:
       #   condition: service_healthy
       kafka:
         condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "/app/core/utils/healthcheck.py", "/geo/v1/health"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.geo.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/geo`)"
@@ -351,6 +378,9 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "/app/core/utils/healthcheck.py", "/notify/v1/health"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.notify.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/notify`)"
@@ -390,6 +420,9 @@ services:
       # kafka runs on a different host for this deployment -- reachable only
       # over the network (see EXTERNAL/SASL_SSL client config above), so a
       # local depends_on wouldn't apply.
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "/app/core/utils/healthcheck.py", "/bot/v1/health"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bot.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && PathPrefix(`/bot`)"
