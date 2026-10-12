@@ -32,11 +32,15 @@ sharing one codebase and one dependency-resolution graph:
   the monolith yet — check `aef/api/__init__.py` and `aef/app/contextmanager.py` before assuming
   a given service runs there.
 - `docker-compose.yml` runs **one deployment mode at a time**, a compose profile: `monolith` (`aef`
-  at the bare API host, plus `bot`, which is not in the monolith) or `microservices` (`user`,
-  `mail`, `profile`, `event`, `org`, `geo`, `notify` and `bot`, Traefik `PathPrefix('/<service>')`).
-  The choice is global: `COMPOSE_PROFILES=monolith|microservices` in `.env`, or
-  `scripts/deploy.sh --mode <mode>`. Infrastructure (`pg`, `kafka`, `redis`, `frontend`, `traefik`,
-  `status-page`) always runs; a bare `docker compose up` therefore starts no application. Separate
+  at the bare API host) or `microservices` (`user`, `mail`, `profile`, `event`, `org`, `geo` and
+  `notify`, Traefik `PathPrefix('/<service>')`). The choice is global:
+  `COMPOSE_PROFILES=monolith|microservices` in `.env`, or `scripts/deploy.sh --mode <mode>`.
+  Infrastructure (`pg`, `kafka`, `redis`, `frontend`, `traefik`, `status-page`) always runs; a bare
+  `docker compose up` therefore starts no application. Two things never start by themselves, each
+  in its own opt-in profile: the Telegram `bot` (it is not in the monolith and usually runs on
+  another host than Kafka, so a second copy would fight over the same updates) and `kafka-ui`
+  (profile `tools`: it publishes port 8088 without a password). Name them (`up bot`), put them in
+  `COMPOSE_PROFILES` (`monolith,bot`) or pass `scripts/deploy.sh --with bot|tools`. Separate
   processes cannot share an in-memory broker, so every microservice block forces
   `IN_MEMORY_BROKER=false` (Kafka coordinates still come from `.env`). The aggregated OpenAPI
   (`/openapi.json`) exists only in the monolith. New services get their own container block
@@ -72,7 +76,9 @@ sharing one codebase and one dependency-resolution graph:
 - `scripts/deploy.sh` builds the images while the old version still serves, switches the
   maintenance mode on, removes the other mode's containers, runs `up -d --wait`, and lifts the
   mode; if anything fails after it went on, it stays on. `--no-maintenance` and
-  `--keep-maintenance` change that. The Docker tests need local images (`PROXY_TEST_TRAEFIK_IMAGE`,
+  `--keep-maintenance` change that. Without `--mode` the mode and the extra profiles are whatever
+  compose itself resolves from `COMPOSE_PROFILES` (shell or `.env`), so the script never
+  overrides them; a bot or `kafka-ui` that is already running is left alone. The Docker tests need local images (`PROXY_TEST_TRAEFIK_IMAGE`,
   `PROXY_TEST_NGINX_IMAGE`) and skip themselves without them; they never pull.
 - The frontend probes the same endpoint (`frontend/src/api/availability.ts`,
   `composables/useBackendStatus.ts`). A failed request is only a suspicion: the browser also
