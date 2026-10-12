@@ -6,6 +6,18 @@ x-healthcheck: &healthcheck
   retries: 5
   start_period: 60s
 
+x-microservice: &microservice
+  profiles: ["microservices"]
+  environment:
+    IN_MEMORY_BROKER: "false"
+
+x-status-page: &status-page
+  image: nginx:1.27-alpine
+  restart: unless-stopped
+  volumes:
+    - ./docker/status/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+    - ./docker/status/pages:/usr/share/nginx/status:ro
+
 services:
   pg:
     image: postgis/postgis:16-master
@@ -132,6 +144,7 @@ services:
     restart: unless-stopped
 
   aef:
+    profiles: ["monolith"]
     build:
       context: .
       dockerfile: src/aef/Dockerfile
@@ -169,8 +182,14 @@ services:
       - "traefik.http.routers.aef.entrypoints=websecure"
       - "traefik.http.routers.aef.tls.certresolver=myresolver"
       - "traefik.http.services.aef.loadbalancer.server.port=8000"
+      - "traefik.http.routers.aef.service=aef-guarded@file"
+      - "traefik.http.services.aef.loadbalancer.healthcheck.path=/user/v1/health"
+      - "traefik.http.services.aef.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.aef.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.aef.loadbalancer.healthcheck.timeout=2s"
 
   user:
+    <<: *microservice
     build:
       context: .
       dockerfile: src/user/Dockerfile
@@ -200,8 +219,14 @@ services:
       - "traefik.http.routers.user.entrypoints=websecure"
       - "traefik.http.routers.user.tls.certresolver=myresolver"
       - "traefik.http.services.user.loadbalancer.server.port=8000"
+      - "traefik.http.routers.user.service=user-guarded@file"
+      - "traefik.http.services.user.loadbalancer.healthcheck.path=/user/v1/health"
+      - "traefik.http.services.user.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.user.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.user.loadbalancer.healthcheck.timeout=2s"
 
   mail:
+    <<: *microservice
     build:
       context: .
       dockerfile: src/mail/Dockerfile
@@ -215,7 +240,9 @@ services:
       - type: bind
         source: ./logs/mail/
         target: /app/logs
-    # depends_on:
+    depends_on:
+      kafka:
+        condition: service_healthy
       # redis:
       #   condition: service_healthy
     healthcheck:
@@ -227,8 +254,14 @@ services:
       - "traefik.http.routers.mail.entrypoints=websecure"
       - "traefik.http.routers.mail.tls.certresolver=myresolver"
       - "traefik.http.services.mail.loadbalancer.server.port=8000"
+      - "traefik.http.routers.mail.service=mail-guarded@file"
+      - "traefik.http.services.mail.loadbalancer.healthcheck.path=/mail/v1/health"
+      - "traefik.http.services.mail.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.mail.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.mail.loadbalancer.healthcheck.timeout=2s"
 
   profile:
+    <<: *microservice
     build:
       context: .
       dockerfile: src/profile/Dockerfile
@@ -258,8 +291,14 @@ services:
       - "traefik.http.routers.profile.entrypoints=websecure"
       - "traefik.http.routers.profile.tls.certresolver=myresolver"
       - "traefik.http.services.profile.loadbalancer.server.port=8000"
+      - "traefik.http.routers.profile.service=profile-guarded@file"
+      - "traefik.http.services.profile.loadbalancer.healthcheck.path=/profile/v1/health"
+      - "traefik.http.services.profile.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.profile.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.profile.loadbalancer.healthcheck.timeout=2s"
 
   event:
+    <<: *microservice
     build:
       context: .
       dockerfile: src/event/Dockerfile
@@ -289,8 +328,14 @@ services:
       - "traefik.http.routers.event.entrypoints=websecure"
       - "traefik.http.routers.event.tls.certresolver=myresolver"
       - "traefik.http.services.event.loadbalancer.server.port=8000"
+      - "traefik.http.routers.event.service=event-guarded@file"
+      - "traefik.http.services.event.loadbalancer.healthcheck.path=/event/v1/health"
+      - "traefik.http.services.event.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.event.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.event.loadbalancer.healthcheck.timeout=2s"
 
   org:
+    <<: *microservice
     build:
       context: .
       dockerfile: src/org/Dockerfile
@@ -320,8 +365,14 @@ services:
       - "traefik.http.routers.org.entrypoints=websecure"
       - "traefik.http.routers.org.tls.certresolver=myresolver"
       - "traefik.http.services.org.loadbalancer.server.port=8000"
+      - "traefik.http.routers.org.service=org-guarded@file"
+      - "traefik.http.services.org.loadbalancer.healthcheck.path=/org/v1/health"
+      - "traefik.http.services.org.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.org.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.org.loadbalancer.healthcheck.timeout=2s"
 
   geo:
+    <<: *microservice
     build:
       context: .
       dockerfile: src/geo/Dockerfile
@@ -353,8 +404,14 @@ services:
       - "traefik.http.routers.geo.entrypoints=websecure"
       - "traefik.http.routers.geo.tls.certresolver=myresolver"
       - "traefik.http.services.geo.loadbalancer.server.port=8000"
+      - "traefik.http.routers.geo.service=geo-guarded@file"
+      - "traefik.http.services.geo.loadbalancer.healthcheck.path=/geo/v1/health"
+      - "traefik.http.services.geo.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.geo.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.geo.loadbalancer.healthcheck.timeout=2s"
 
   notify:
+    <<: *microservice
     build:
       context: .
       dockerfile: src/notify/Dockerfile
@@ -387,8 +444,14 @@ services:
       - "traefik.http.routers.notify.entrypoints=websecure"
       - "traefik.http.routers.notify.tls.certresolver=myresolver"
       - "traefik.http.services.notify.loadbalancer.server.port=8000"
+      - "traefik.http.routers.notify.service=notify-guarded@file"
+      - "traefik.http.services.notify.loadbalancer.healthcheck.path=/notify/v1/health"
+      - "traefik.http.services.notify.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.notify.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.notify.loadbalancer.healthcheck.timeout=2s"
 
   bot:
+    profiles: ["monolith", "microservices"]
     build:
       context: .
       dockerfile: src/bot/Dockerfile
@@ -429,6 +492,58 @@ services:
       - "traefik.http.routers.bot.entrypoints=websecure"
       - "traefik.http.routers.bot.tls.certresolver=myresolver"
       - "traefik.http.services.bot.loadbalancer.server.port=8000"
+      - "traefik.http.routers.bot.service=bot-guarded@file"
+      - "traefik.http.services.bot.loadbalancer.healthcheck.path=/bot/v1/health"
+      - "traefik.http.services.bot.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.bot.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.bot.loadbalancer.healthcheck.timeout=2s"
+
+  status-page:
+    <<: *status-page
+    environment:
+      NGINX_ENVSUBST_FILTER: STATUS_
+      STATUS_PAGE: outage
+      STATUS_RETRY_AFTER: "30"
+      STATUS_APP_HOST: ${APP_HOST}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/healthz >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.outage.loadbalancer.server.port=80"
+      - "traefik.http.services.outage.loadbalancer.healthcheck.path=/healthz"
+      - "traefik.http.services.outage.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.outage.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.outage.loadbalancer.healthcheck.timeout=2s"
+      - "traefik.http.routers.outage.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`) && (PathPrefix(`/user`) || PathPrefix(`/mail`) || PathPrefix(`/profile`) || PathPrefix(`/event`) || PathPrefix(`/org`) || PathPrefix(`/geo`) || PathPrefix(`/notify`) || PathPrefix(`/bot`))"
+      - "traefik.http.routers.outage.priority=1"
+      - "traefik.http.routers.outage.entrypoints=websecure"
+      - "traefik.http.routers.outage.tls.certresolver=myresolver"
+      - "traefik.http.routers.outage.service=outage"
+      - "traefik.http.routers.outage-web.rule=Host(`${APP_HOST}`)"
+      - "traefik.http.routers.outage-web.priority=1"
+      - "traefik.http.routers.outage-web.entrypoints=websecure"
+      - "traefik.http.routers.outage-web.tls.certresolver=myresolver"
+      - "traefik.http.routers.outage-web.service=outage"
+
+  maintenance:
+    <<: *status-page
+    profiles: ["maintenance"]
+    environment:
+      NGINX_ENVSUBST_FILTER: STATUS_
+      STATUS_PAGE: maintenance
+      STATUS_RETRY_AFTER: "120"
+      STATUS_APP_HOST: ${APP_HOST}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.maintenance.loadbalancer.server.port=80"
+      - "traefik.http.routers.maintenance.rule=Host(`${API_SUBDOMAIN}.${APP_HOST}`)"
+      - "traefik.http.routers.maintenance.priority=1000000"
+      - "traefik.http.routers.maintenance.entrypoints=websecure"
+      - "traefik.http.routers.maintenance.tls.certresolver=myresolver"
+      - "traefik.http.routers.maintenance.service=maintenance"
 
   frontend:
     build:
@@ -444,6 +559,11 @@ services:
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      - "traefik.http.routers.frontend.service=frontend-guarded@file"
+      - "traefik.http.services.frontend.loadbalancer.healthcheck.path=/"
+      - "traefik.http.services.frontend.loadbalancer.healthcheck.interval=3s"
+      - "traefik.http.services.frontend.loadbalancer.healthcheck.unhealthyinterval=1s"
+      - "traefik.http.services.frontend.loadbalancer.healthcheck.timeout=2s"
 
   traefik:
     image: traefik:v3.7
@@ -459,12 +579,16 @@ services:
     - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
     - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
     - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    - "--providers.docker.allowEmptyServices=true"
+    - "--providers.file.directory=/etc/traefik/dynamic"
+    - "--providers.file.watch=true"
     ports:
       - "443:443"
       - "8080:8080"
       - "${KAFKA_EXTERNAL_PORT:-9093}:${KAFKA_EXTERNAL_PORT:-9093}"
     volumes:
       - "./letsencrypt:/letsencrypt"
+      - "./docker/traefik/dynamic:/etc/traefik/dynamic:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   kafka-ui:

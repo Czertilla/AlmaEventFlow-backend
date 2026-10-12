@@ -1,0 +1,52 @@
+http:
+  services:
+    aef-guarded:
+      failover:
+        service: aef@docker
+        fallback: outage@docker
+        healthCheck: {}
+    user-guarded:
+      failover:
+        service: user@docker
+        fallback: outage@docker
+        healthCheck: {}
+    mail-guarded:
+      failover:
+        service: mail@docker
+        fallback: outage@docker
+        healthCheck: {}
+    profile-guarded:
+      failover:
+        service: profile@docker
+        fallback: outage@docker
+        healthCheck: {}
+    event-guarded:
+      failover:
+        service: event@docker
+        fallback: outage@docker
+        healthCheck: {}
+    org-guarded:
+      failover:
+        service: org@docker
+        fallback: outage@docker
+        healthCheck: {}
+    geo-guarded:
+      failover:
+        service: geo@docker
+        fallback: outage@docker
+        healthCheck: {}
+    notify-guarded:
+      failover:
+        service: notify@docker
+        fallback: outage@docker
+        healthCheck: {}
+    bot-guarded:
+      failover:
+        service: bot@docker
+        fallback: outage@docker
+        healthCheck: {}
+    frontend-guarded:
+      failover:
+        service: frontend@docker
+        fallback: outage@docker
+        healthCheck: {}
