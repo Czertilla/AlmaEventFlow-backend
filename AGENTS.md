@@ -31,24 +31,61 @@ sharing one codebase and one dependency-resolution graph:
   the combined process). Toggled by `MONOLITH=true`. Not every service is necessarily wired into
   the monolith yet — check `aef/api/__init__.py` and `aef/app/contextmanager.py` before assuming
   a given service runs there.
-- `docker-compose.yml` runs the monolith (`aef`, port 8000, Traefik at the bare API host) **and**
-  most services as their own containers in parallel (`user`, `mail`, `profile`, `event`, `org`,
-  `geo`, `notify`, ports 8001–8007+, Traefik `PathPrefix('/<service>')`). New services should get
-  their own container block mirroring an existing one (`notify`'s is a good template) rather than
-  only being wired into the monolith. Every HTTP service serves `GET /<service>/v1/health`
-  (`router/health.py` = `health_router("<service>")` from `core/api/v1/health.py`, a liveness probe
-  with no DB access) and its compose block probes it through `core/utils/healthcheck.py` (the slim
-  image has no curl). The `aef` container probes `/user/v1/health` only: the monolith mounts every
-  service's router. Traefik's Docker provider routes only to healthy containers, so a wrong probe
-  path takes the service off the API host; `tests/contract/test_compose_healthchecks.py` checks each
-  probe path against the service's contract snapshot. The frontend probes the same endpoint
-  (`frontend/src/api/availability.ts`, `composables/useBackendStatus.ts`). A failed request is only
-  a suspicion: the browser also reports a 500 without CORS headers as a network error, and a flaky
-  link drops single requests, so a service counts as down only after three health probes in a row
-  stay silent (`verifyReachable`); never mark it down from one request. **Only a 401 on `/user/v1/auth/jwt/refresh` ends a session**; a network error, 5xx or
-  a proxy 404 leaves it intact (`tryRefresh` answers `unknown`, the guard waits on `/unavailable`).
-  There is exactly one refresh at a time (`refreshAccessToken`): the backend revokes the whole
-  session when a used refresh token is presented again.
+- `docker-compose.yml` runs **one deployment mode at a time**, a compose profile: `monolith` (`aef`
+  at the bare API host, plus `bot`, which is not in the monolith) or `microservices` (`user`,
+  `mail`, `profile`, `event`, `org`, `geo`, `notify` and `bot`, Traefik `PathPrefix('/<service>')`).
+  The choice is global: `COMPOSE_PROFILES=monolith|microservices` in `.env`, or
+  `scripts/deploy.sh --mode <mode>`. Infrastructure (`pg`, `kafka`, `redis`, `frontend`, `traefik`,
+  `status-page`) always runs; a bare `docker compose up` therefore starts no application. Separate
+  processes cannot share an in-memory broker, so every microservice block forces
+  `IN_MEMORY_BROKER=false` (Kafka coordinates still come from `.env`). The aggregated OpenAPI
+  (`/openapi.json`) exists only in the monolith. New services get their own container block
+  mirroring an existing one (`notify`'s is a good template, with `<<: *microservice`) and are wired
+  into the monolith too.
+- Every HTTP service serves `GET /<service>/v1/health` (`router/health.py` =
+  `health_router("<service>")` from `core/api/v1/health.py`, a liveness probe with no DB access)
+  and its compose block probes it through `core/utils/healthcheck.py` (the slim image has no
+  curl). The `aef` container probes `/user/v1/health` only: the monolith mounts every service's
+  router. `tests/contract/test_compose_healthchecks.py` checks each probe path against the service's
+  contract snapshot.
+- **Outage and maintenance pages are Traefik's job, in three layers** (all covered by
+  `tests/contract/test_compose_proxy.py` and the Docker tests in `tests/proxy/`):
+  1. A container that runs but fails its probe: Traefik probes `/<service>/v1/health` itself
+     (`loadbalancer.healthcheck.*` labels, 3 s, 1 s once unhealthy) and each router points at
+     `<service>-guarded@file`, a `failover` service in `docker/traefik/dynamic/failover.yml` whose
+     fallback is `outage@docker`. `--providers.docker.allowEmptyServices=true` keeps the router of
+     an unhealthy container alive, and a failover needs every descendant probed, so the fallback
+     has its own `/healthz` probe.
+  2. A container that is stopped or removed: its router disappears, so the priority-1 `outage`
+     router (every service prefix on the API host, and the frontend host) answers instead.
+  3. Planned work: `scripts/deploy.sh maintenance on|off|status` starts the `maintenance` container
+     (profile `maintenance`), whose priority-1000000 router answers every API-host request.
+  The pages (`docker/status/`) are nginx behind envsubst: HTML for browsers, JSON
+  `{status: "unavailable"|"maintenance", message, retry_after}` for the SPA, status 503 with
+  `Retry-After`, and CORS headers for the known origins, because a CORS-less body is invisible to
+  the browser. Do not replace the failover with an `errors` middleware by status: the apps return
+  503 on purpose (`WEBPUSH_NOT_CONFIGURED`, `TELEGRAM_BOT_NOT_CONFIGURED`) and only the failover
+  tells Traefik's "no healthy server" from the app's own 503. A container that is just starting can
+  answer 500 for up to one probe interval; a planned deploy hides that behind the maintenance mode.
+  A new routed service needs the healthcheck labels, a `<service>-guarded` entry and its prefix in
+  the `outage` rule.
+- `scripts/deploy.sh` builds the images while the old version still serves, switches the
+  maintenance mode on, removes the other mode's containers, runs `up -d --wait`, and lifts the
+  mode; if anything fails after it went on, it stays on. `--no-maintenance` and
+  `--keep-maintenance` change that. The Docker tests need local images (`PROXY_TEST_TRAEFIK_IMAGE`,
+  `PROXY_TEST_NGINX_IMAGE`) and skip themselves without them; they never pull.
+- The frontend probes the same endpoint (`frontend/src/api/availability.ts`,
+  `composables/useBackendStatus.ts`). A failed request is only a suspicion: the browser also
+  reports a 500 without CORS headers as a network error, and a flaky link drops single requests,
+  so a service counts as down only after three health probes in a row stay silent
+  (`verifyReachable`); never mark it down from one request. The 503 pages of Traefik
+  (`{status: "maintenance"|"unavailable"}`) are the exception: they are an answer of the
+  infrastructure, so `probe` returns them as a `reason`, the service goes down at once and
+  `utils/backendCopy.ts` picks the wording of the banner and of `/unavailable`. **Only a 401 on
+  `/user/v1/auth/jwt/refresh` ends a session**; a network error, 5xx or a proxy 404 leaves it
+  intact (`tryRefresh` answers `unknown`, the guard waits on `/unavailable`). There is exactly one
+  refresh at a time (`refreshAccessToken`): the backend revokes the whole session when a used
+  refresh token is presented again.
 - `frontend/` is a **git submodule** (Ionic Vue) — treat it as a separate deployable; its API
   client (`frontend/src/api/generated/`) is Orval-generated from `frontend/api_schema/openapi.json`.
 - `migrations/` is shared: one Alembic environment, but `alembic.ini` has a `[<service>]` section
@@ -104,7 +141,7 @@ Across `src/*/service/*.py`:
 ## API layer, DTOs and schema versioning
 
 Every HTTP service follows this: `event`, `org`, `geo`, `profile`, `notify`, `bot` and `user`
-(`mail` has no HTTP API). A new service copies the shape of `org` (simple CRUD) or `event`.
+(`mail` serves only its health endpoint over HTTP). A new service copies the shape of `org` (simple CRUD) or `event`.
 
 - A service's HTTP API lives in `<service>/api/v<N>/router/` + `<service>/api/v<N>/schema/`
   (horizontal split, same as everywhere else — not per-entity packages, so schemas can import
