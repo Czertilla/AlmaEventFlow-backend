@@ -115,12 +115,13 @@ def test_the_maintenance_mode_outranks_every_router_and_only_exists_on_demand() 
     )
 
 
-def test_the_deployment_mode_is_a_compose_profile_and_the_bot_belongs_to_both() -> None:
+def test_the_mode_is_a_profile_and_the_bot_and_the_kafka_ui_are_opt_in() -> None:
     services = _compose()["services"]
     profiles = {name: set(spec.get("profiles", [])) for name, spec in services.items()}
 
     assert profiles["aef"] == {"monolith"}
-    assert profiles["bot"] == {"monolith", "microservices"}
+    assert profiles["bot"] == {"bot"}
+    assert profiles["kafka-ui"] == {"tools"}
     assert all(profiles[name] == {"microservices"} for name in MICROSERVICES)
     always_on = {name for name, found in profiles.items() if not found}
     assert always_on == {
@@ -129,7 +130,6 @@ def test_the_deployment_mode_is_a_compose_profile_and_the_bot_belongs_to_both() 
         "redis",
         "frontend",
         "traefik",
-        "kafka-ui",
         "status-page",
     }
 
