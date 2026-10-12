@@ -11,7 +11,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 NGINX_IMAGE = os.environ.get("PROXY_TEST_NGINX_IMAGE", "nginx:1.27-alpine")
 GIT_BASH = Path("C:/Program Files/Git/bin/bash.exe")
-ALL_PROFILES = "monolith,microservices,maintenance"
+ALL_PROFILES = "monolith,microservices,maintenance,bot,tools"
 INFRA = {"pg", "status-page"}
 
 
@@ -58,7 +58,8 @@ class Deploy:
             ),
             "user": _service("microservices", healthcheck=broken),
             "notify": _service("microservices"),
-            "bot": _service("monolith", "microservices"),
+            "bot": _service("bot"),
+            "kafka-ui": _service("tools"),
             "maintenance": _service("maintenance"),
         }
         self.file.write_text(yaml.safe_dump({"services": services}), encoding="utf-8")
@@ -101,6 +102,14 @@ class Deploy:
             check=True,
         )
         return set(out.stdout.split())
+
+    def remove(self, *services: str) -> None:
+        subprocess.run(
+            ["docker", "compose", "rm", "-sf", *services],
+            env=self.env(COMPOSE_PROFILES=ALL_PROFILES),
+            capture_output=True,
+            check=True,
+        )
 
     def teardown(self) -> None:
         subprocess.run(
@@ -146,16 +155,16 @@ def test_the_monolith_is_deployed_with_the_maintenance_mode_lifted_afterwards(
     result = deploy.run("--mode", "monolith", "--no-build")
 
     assert result.returncode == 0, result.stderr
-    assert deploy.running() == {*INFRA, "aef", "bot"}
+    assert deploy.running() == {*INFRA, "aef"}
 
 
-def test_switching_to_microservices_removes_the_monolith_and_keeps_the_shared_bot(
+def test_switching_to_microservices_removes_the_monolith(
     deploy: Deploy,
 ) -> None:
     result = deploy.run("--mode", "microservices", "--no-build")
 
     assert result.returncode == 0, result.stderr
-    assert deploy.running() == {*INFRA, "user", "notify", "bot"}
+    assert deploy.running() == {*INFRA, "user", "notify"}
     assert (
         "aef"
         not in subprocess.run(
@@ -181,7 +190,7 @@ def test_the_mode_comes_from_compose_profiles_when_no_flag_is_given(
     result = deploy.run("--no-build", COMPOSE_PROFILES="monolith")
 
     assert result.returncode == 0, result.stderr
-    assert deploy.running() == {*INFRA, "aef", "bot"}
+    assert deploy.running() == {*INFRA, "aef"}
 
 
 @pytest.mark.parametrize(
@@ -245,4 +254,54 @@ def test_a_failed_build_changes_nothing_and_never_starts_the_maintenance_mode(
 
     assert result.returncode != 0
     assert "сборка не удалась" in result.stderr
+    assert deploy.running() == before
+
+
+def test_the_mode_and_the_extra_profiles_come_from_the_env_file(
+    deploy: Deploy,
+) -> None:
+    env_file = deploy.file.parent / ".env"
+    env_file.write_text("COMPOSE_PROFILES=monolith,bot\n", encoding="utf-8")
+    try:
+        result = deploy.run("--no-build")
+    finally:
+        env_file.unlink()
+
+    assert result.returncode == 0, result.stderr
+    assert deploy.running() == {*INFRA, "aef", "bot"}
+
+
+def test_a_plain_deploy_leaves_a_running_bot_alone(deploy: Deploy) -> None:
+    before = deploy.running()
+
+    result = deploy.run("--mode", "monolith", "--no-build")
+
+    assert result.returncode == 0, result.stderr
+    assert "bot" in before
+    assert deploy.running() == before
+
+
+def test_with_adds_the_extra_profiles_and_nothing_else_does(deploy: Deploy) -> None:
+    deploy.remove("bot")
+
+    result = deploy.run("--mode", "monolith", "--with", "tools", "--no-build")
+    started = deploy.running()
+    deploy.remove("kafka-ui")
+
+    assert result.returncode == 0, result.stderr
+    assert started == {*INFRA, "aef", "kafka-ui"}
+
+
+def test_with_needs_a_mode_and_a_known_profile_and_changes_nothing_otherwise(
+    deploy: Deploy,
+) -> None:
+    before = deploy.running()
+
+    alone = deploy.run("--with", "tools", "--no-build")
+    unknown = deploy.run("--mode", "monolith", "--with", "nope", "--no-build")
+
+    assert alone.returncode != 0
+    assert "только вместе" in alone.stderr
+    assert unknown.returncode != 0
+    assert "неизвестный профиль" in unknown.stderr
     assert deploy.running() == before

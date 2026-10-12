@@ -6,7 +6,9 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 WAIT_TIMEOUT="${WAIT_TIMEOUT:-300}"
 SETTLE="${SETTLE:-3}"
 MODES="monolith microservices"
+EXTRAS="bot tools"
 MODE=""
+WITH=()
 BUILD=1
 MAINTENANCE=1
 KEEP_MAINTENANCE=0
@@ -14,13 +16,18 @@ KEEP_MAINTENANCE=0
 usage() {
   cat <<'EOF'
 Использование:
-  scripts/deploy.sh [--mode monolith|microservices] [--no-build] [--no-maintenance] [--keep-maintenance]
+  scripts/deploy.sh [--mode monolith|microservices] [--with bot|tools] [--no-build]
+                    [--no-maintenance] [--keep-maintenance]
   scripts/deploy.sh maintenance on|off|status
   scripts/deploy.sh status
 
 Развёртывание выбирается глобально: монолит (aef) или микросервисы. Режим берётся из
 --mode, иначе из COMPOSE_PROFILES (например, в .env: COMPOSE_PROFILES=monolith).
 При смене режима контейнеры другого режима останавливаются и удаляются.
+
+Telegram-бот (профиль bot) и kafka-ui (профиль tools) сами не запускаются. Включить их
+можно флагом --with (только вместе с --mode, флаг повторяется) либо в COMPOSE_PROFILES,
+например COMPOSE_PROFILES=monolith,bot. Убрать работающий бот: docker compose rm -sf bot.
 
 Деплой: собирает образы (пока работает старая версия), включает режим технических работ,
 обновляет контейнеры, дожидается их готовности и снимает режим. Если обновление не удалось,
@@ -53,7 +60,8 @@ services_of() {
 
 detect_mode() {
   local services has_aef=0 has_user=0
-  services=$(services_of "${COMPOSE_PROFILES:-}")
+  services=$(docker compose config --services 2>/dev/null) ||
+    { docker compose config -q || true; die "compose-файл не разобран"; }
   grep -qx aef <<<"$services" && has_aef=1
   grep -qx user <<<"$services" && has_user=1
   if ((has_aef && has_user)); then
@@ -68,12 +76,19 @@ detect_mode() {
 }
 
 resolve_mode() {
+  local extra profiles
   if [[ -n "$MODE" ]]; then
     [[ " $MODES " == *" $MODE "* ]] || die "неизвестный режим: $MODE (допустимы: $MODES)"
+    profiles="$MODE"
+    for extra in ${WITH[@]+"${WITH[@]}"}; do
+      [[ " $EXTRAS " == *" $extra "* ]] || die "неизвестный профиль: $extra (допустимы: $EXTRAS)"
+      profiles+=",$extra"
+    done
+    export COMPOSE_PROFILES="$profiles"
   else
+    ((${#WITH[@]} == 0)) || die "--with работает только вместе с --mode"
     MODE=$(detect_mode)
   fi
-  export COMPOSE_PROFILES="$MODE"
   if [[ "$MODE" == monolith ]]; then OTHER=microservices; else OTHER=monolith; fi
 }
 
@@ -154,6 +169,7 @@ case "${1:-}" in
     while (($#)); do
       case "$1" in
         --mode) MODE="${2:?--mode требует значение}"; shift 2 ;;
+        --with) WITH+=("${2:?--with требует значение}"); shift 2 ;;
         --no-build) BUILD=0; shift ;;
         --no-maintenance) MAINTENANCE=0; shift ;;
         --keep-maintenance) KEEP_MAINTENANCE=1; shift ;;
