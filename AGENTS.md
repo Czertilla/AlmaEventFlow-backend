@@ -262,13 +262,16 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   back to plain text and to link-less buttons when Telegram rejects either. Ephemeral replies
   (`reply_to_sender`) are for hints and refusals only and fall back to an ordinary reply.
 - An announcement is a **rich message** (Bot API 10.1, `sendRichMessage`; `build_announcement_rich`
-  → `TelegramDeliveryItem.rich_html`): the schedule is a `<table compact>` with the time in the first
-  column, and when the stages start on different days (grouped in the stage's own `timezone`) each
-  day gets `<hr/>` and an `<h5>` with a `<tg-time format="wD">` instead of a date glued to every
-  time; the one exception is a stage that ends on another day, whose end carries its date. Rich HTML
-  accepts only the tags of the Bot API's "rich message formatting options" (a cell holds inline
-  markup only, a line break is `<br>`, text newlines mean nothing), so its structure lives in code and
-  the locale files keep the legacy HTML that `ALLOWED_TAGS` in `test_bot_locales.py` checks.
+  → `TelegramDeliveryItem.rich_html`): a stage is one `▫️ time <b>name</b>` line (the same
+  `announcement.stage_line` phrase as the text fallback, time first so the ranges start at one
+  place), the lines of a day are one `<p>` joined by `<br>`, and when the stages start on different
+  days (grouped in the stage's own `timezone`) each day gets `<hr/>` and an `<h5>` with a
+  `<tg-time format="wD">` instead of a date glued to every time; the one exception is a stage that
+  ends on another day, whose end carries its date. There is no table: Telegram gives a table's
+  columns no width control (no `width`, `<col>`), so the name started mid-message. Rich HTML accepts
+  only the tags of the Bot API's "rich message formatting options" (a line break is `<br>`, text
+  newlines mean nothing), so its structure lives in code and the locale files keep the legacy HTML
+  that `ALLOWED_TAGS` in `test_bot_locales.py` checks.
   `build_announcement_text` stays the fallback: `TelegramDeliveryService` sends or edits it when
   Telegram rejects the rich one (`_rich_rejected`), which is also how an announcement posted as
   plain text before keeps being edited. Rich limits: 32768 characters, 500 blocks, 20 table columns.

@@ -19,6 +19,7 @@ logger = getLogger(__name__)
 MAX_MESSAGE_LENGTH = 4096
 MAX_RICH_LENGTH = 32768
 QUOTE_FOLD_LENGTH = 300
+_RICH_INDENT = "&nbsp;" * 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -180,10 +181,9 @@ async def build_announcement_rich(
     request: AnnouncementRequest, lang: str | None = None
 ) -> str:
     """The same announcement as the HTML of a Telegram rich message (Bot API
-    10.1): the schedule is a table with the time in the first column, and an
-    event that spans several days gets a divider with the date between the
-    days. ``build_announcement_text`` stays the fallback for when Telegram
-    rejects it."""
+    10.1): headings and paragraphs, and an event that spans several days gets
+    a divider with the date between the days. ``build_announcement_text``
+    stays the fallback for when Telegram rejects it."""
     return await _fit(request, lang, _render_rich, MAX_RICH_LENGTH)
 
 
@@ -274,6 +274,36 @@ async def _description(
     )
 
 
+async def _stage_lines(
+    stages: list[AnnouncementStage], lang: str, limits: _Limits, *, rich: bool
+) -> list[str]:
+    lines: list[str] = []
+    for stage in stages:
+        lines.append(
+            await i18n_manager.get(
+                "announcement.stage_line",
+                lang=lang,
+                name=escape(_clip(stage.name, limits.field)),
+                time=_format_stage_time(stage),
+            )
+        )
+        if stage.description and limits.stage_description:
+            note = _free_text(
+                _clip(stage.description, limits.stage_description), rich=rich
+            )
+            if rich:
+                lines.append(f"{_RICH_INDENT}<i>{note}</i>")
+            else:
+                lines.append(
+                    await i18n_manager.get(
+                        "announcement.stage_description",
+                        lang=lang,
+                        description=note,
+                    )
+                )
+    return lines
+
+
 async def _render(
     request: AnnouncementRequest, lang: str | None, limits: _Limits
 ) -> str:
@@ -301,25 +331,7 @@ async def _render(
                         date=_day_label(day, group[0], lang),
                     )
                 )
-            for stage in group:
-                stage_lines.append(
-                    await i18n_manager.get(
-                        "announcement.stage_line",
-                        lang=lang,
-                        name=escape(_clip(stage.name, limits.field)),
-                        time=_format_stage_time(stage),
-                    )
-                )
-                if stage.description and limits.stage_description:
-                    stage_lines.append(
-                        await i18n_manager.get(
-                            "announcement.stage_description",
-                            lang=lang,
-                            description=escape(
-                                _clip(stage.description, limits.stage_description)
-                            ),
-                        )
-                    )
+            stage_lines.extend(await _stage_lines(group, lang, limits, rich=False))
         hidden = len(request.stages) - len(shown_stages)
         if hidden:
             stage_lines.append(
@@ -358,20 +370,8 @@ async def _render_rich(
                 if index:
                     blocks.append("<hr/>")
                 blocks.append(f"<h5>{_day_label(day, group[0], lang)}</h5>")
-            rows: list[str] = []
-            for stage in group:
-                name = escape(_clip(stage.name, limits.field))
-                rows.append(
-                    f"<tr><td>{_format_stage_time(stage)}</td>"
-                    f"<td><b>{name}</b></td></tr>"
-                )
-                if stage.description and limits.stage_description:
-                    note = _free_text(
-                        _clip(stage.description, limits.stage_description),
-                        rich=True,
-                    )
-                    rows.append(f'<tr><td colspan="2"><i>{note}</i></td></tr>')
-            blocks.append("<table compact>" + "".join(rows) + "</table>")
+            lines = await _stage_lines(group, lang, limits, rich=True)
+            blocks.append("<p>" + "<br>".join(lines) + "</p>")
         hidden = len(request.stages) - len(shown_stages)
         if hidden:
             more = await i18n_manager.get(

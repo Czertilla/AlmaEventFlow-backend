@@ -25,10 +25,7 @@ RICH_TAGS = {
     "hr",
     "i",
     "p",
-    "table",
-    "td",
     "tg-time",
-    "tr",
 }
 VOID_TAGS = {"br", "hr"}
 
@@ -271,18 +268,18 @@ async def test_the_days_follow_the_zone_the_stages_were_planned_in() -> None:
     assert "<hr/>" not in rich
 
 
-async def test_the_rich_schedule_is_a_table_with_the_time_in_the_first_column() -> None:
+async def test_the_rich_schedule_is_a_line_per_stage_with_the_time_first() -> None:
     request = _request(stages=[_day_stage("Doors", 1), _day_stage("Talk", 1, 11)])
 
     html = await build_announcement_rich(request, lang="en")
 
-    assert html.count("<table compact>") == 1
-    rows = html.split("<tr>")[1:]
-    assert len(rows) == 2
-    for row, name in zip(rows, ("Doors", "Talk"), strict=True):
-        time_cell, name_cell = row.split("</td><td>")
-        assert time_cell.startswith("<td><tg-time")
-        assert name_cell.startswith(f"<b>{name}</b></td></tr>")
+    assert "<table" not in html
+    schedule = html.split("</h4>")[1].split("</p>")[0].removeprefix("<p>")
+    lines = schedule.split("<br>")
+    assert len(lines) == 2
+    for line, name in zip(lines, ("Doors", "Talk"), strict=True):
+        assert line.startswith("▫️ <tg-time")
+        assert line.endswith(f"<b>{name}</b>")
 
 
 async def test_a_rich_schedule_over_several_days_has_a_divider_between_days() -> None:
@@ -297,7 +294,7 @@ async def test_a_rich_schedule_over_several_days_has_a_divider_between_days() ->
     html = await build_announcement_rich(request, lang="en")
 
     assert html.count("<hr/>") == 2
-    assert html.count("<table compact>") == 3
+    assert "<table" not in html
     for label in ("1 May 2026", "2 May 2026", "3 May 2026"):
         assert f'format="wD">{label}</tg-time></h5>' in html
     assert html.index("1 May 2026</tg-time></h5>") < html.index("Doors")
@@ -305,7 +302,7 @@ async def test_a_rich_schedule_over_several_days_has_a_divider_between_days() ->
     assert html.index("<hr/>") < html.index("2 May 2026</tg-time></h5>")
 
 
-async def test_a_stage_description_is_a_row_under_its_stage() -> None:
+async def test_a_stage_description_is_a_line_under_its_stage() -> None:
     request = _request(
         stages=[_day_stage("Talk", 1, description="Line one\nLine <two>")]
     )
@@ -313,7 +310,7 @@ async def test_a_stage_description_is_a_row_under_its_stage() -> None:
     html = await build_announcement_rich(request, lang="en")
 
     assert (
-        '<tr><td colspan="2"><i>Line one<br>Line &lt;two&gt;</i></td></tr>' in html
+        "<b>Talk</b><br>&nbsp;&nbsp;&nbsp;<i>Line one<br>Line &lt;two&gt;</i>" in html
     )
 
 
@@ -359,9 +356,9 @@ async def test_the_rich_announcement_escapes_what_people_typed() -> None:
     parser.feed(html)
     parser.close()
     assert "&lt;b&gt;&amp;" in html
-    assert "<b><tr>" not in html
+    assert "&lt;tr&gt;" in html
+    assert "<tr>" not in html
     assert not parser.unknown
-    assert html.count("<tr>") == 1
 
 
 async def test_an_oversized_rich_announcement_fits_the_rich_limit() -> None:
@@ -387,4 +384,4 @@ async def test_stages_beyond_the_shown_ones_are_counted_in_the_rich_text() -> No
     html = await build_announcement_rich(request, lang="en")
 
     assert "…and 10 more" in html
-    assert html.count("<tr>") == 30
+    assert html.count("<b>Stage ") == 30
