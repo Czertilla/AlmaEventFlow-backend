@@ -248,5 +248,696 @@
         "type": "personal_all"
       }
     }
+  },
+  "member_profile.AttendanceByMonth": {
+    "full": {
+      "dump": {
+        "absent": 1,
+        "attended": 1,
+        "month": "2026-01-01",
+        "unmarked": 1,
+        "upcoming": 1
+      },
+      "fields_set": [
+        "absent",
+        "attended",
+        "month",
+        "unmarked",
+        "upcoming"
+      ],
+      "input": {
+        "absent": 1,
+        "attended": 1,
+        "month": "2026-01-01",
+        "unmarked": 1,
+        "upcoming": 1
+      }
+    },
+    "required": {
+      "dump": {
+        "absent": 1,
+        "attended": 1,
+        "month": "2026-01-01",
+        "unmarked": 1,
+        "upcoming": 1
+      },
+      "fields_set": [
+        "absent",
+        "attended",
+        "month",
+        "unmarked",
+        "upcoming"
+      ],
+      "input": {
+        "absent": 1,
+        "attended": 1,
+        "month": "2026-01-01",
+        "unmarked": 1,
+        "upcoming": 1
+      }
+    }
+  },
+  "member_profile.AttendanceByType": {
+    "full": {
+      "dump": {
+        "absent": 1,
+        "attended": 1,
+        "type": "rehearsal",
+        "unmarked": 1,
+        "upcoming": 1
+      },
+      "fields_set": [
+        "absent",
+        "attended",
+        "type",
+        "unmarked",
+        "upcoming"
+      ],
+      "input": {
+        "absent": 1,
+        "attended": 1,
+        "type": "rehearsal",
+        "unmarked": 1,
+        "upcoming": 1
+      }
+    },
+    "required": {
+      "dump": {
+        "absent": 1,
+        "attended": 1,
+        "type": "rehearsal",
+        "unmarked": 1,
+        "upcoming": 1
+      },
+      "fields_set": [
+        "absent",
+        "attended",
+        "type",
+        "unmarked",
+        "upcoming"
+      ],
+      "input": {
+        "absent": 1,
+        "attended": 1,
+        "type": "rehearsal",
+        "unmarked": 1,
+        "upcoming": 1
+      }
+    }
+  },
+  "member_profile.AttendanceCounts": {
+    "full": {
+      "dump": {
+        "absent": 1,
+        "attended": 1,
+        "unmarked": 1,
+        "upcoming": 1
+      },
+      "fields_set": [
+        "absent",
+        "attended",
+        "unmarked",
+        "upcoming"
+      ],
+      "input": {
+        "absent": 1,
+        "attended": 1,
+        "unmarked": 1,
+        "upcoming": 1
+      }
+    },
+    "required": {
+      "dump": {
+        "absent": 1,
+        "attended": 1,
+        "unmarked": 1,
+        "upcoming": 1
+      },
+      "fields_set": [
+        "absent",
+        "attended",
+        "unmarked",
+        "upcoming"
+      ],
+      "input": {
+        "absent": 1,
+        "attended": 1,
+        "unmarked": 1,
+        "upcoming": 1
+      }
+    }
+  },
+  "member_profile.MemberAttendanceItem": {
+    "full": {
+      "dump": {
+        "attendance_id": "cefab03b-7a2c-534b-abbf-bd643bf769fb",
+        "comment": "x",
+        "date": "2026-01-01",
+        "event_id": "248b1258-f41b-5f8c-b7cb-1aa8356ba417",
+        "event_name": "x",
+        "is_attended": true,
+        "is_verified": true,
+        "outcome": "attended",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "attendance_id",
+        "comment",
+        "date",
+        "event_id",
+        "event_name",
+        "is_attended",
+        "is_verified",
+        "outcome",
+        "status",
+        "type"
+      ],
+      "input": {
+        "attendance_id": "cefab03b-7a2c-534b-abbf-bd643bf769fb",
+        "comment": "x",
+        "date": "2026-01-01",
+        "event_id": "248b1258-f41b-5f8c-b7cb-1aa8356ba417",
+        "event_name": "x",
+        "is_attended": true,
+        "is_verified": true,
+        "outcome": "attended",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dump": {
+        "attendance_id": "cefab03b-7a2c-534b-abbf-bd643bf769fb",
+        "comment": "x",
+        "date": "2026-01-01",
+        "event_id": "248b1258-f41b-5f8c-b7cb-1aa8356ba417",
+        "event_name": "x",
+        "is_attended": true,
+        "is_verified": true,
+        "outcome": "attended",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "attendance_id",
+        "comment",
+        "date",
+        "event_id",
+        "event_name",
+        "is_attended",
+        "is_verified",
+        "outcome",
+        "status",
+        "type"
+      ],
+      "input": {
+        "attendance_id": "cefab03b-7a2c-534b-abbf-bd643bf769fb",
+        "comment": "x",
+        "date": "2026-01-01",
+        "event_id": "248b1258-f41b-5f8c-b7cb-1aa8356ba417",
+        "event_name": "x",
+        "is_attended": true,
+        "is_verified": true,
+        "outcome": "attended",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    }
+  },
+  "member_profile.MemberAttendanceSummary": {
+    "full": {
+      "dump": {
+        "absent": 1,
+        "attended": 1,
+        "current_streak": 1,
+        "last_attended": "2026-01-01",
+        "longest_streak": 1,
+        "past": 1,
+        "rate": 1.5,
+        "unmarked": 1,
+        "upcoming": 1,
+        "verified": 1
+      },
+      "fields_set": [
+        "absent",
+        "attended",
+        "current_streak",
+        "last_attended",
+        "longest_streak",
+        "past",
+        "rate",
+        "unmarked",
+        "upcoming",
+        "verified"
+      ],
+      "input": {
+        "absent": 1,
+        "attended": 1,
+        "current_streak": 1,
+        "last_attended": "2026-01-01",
+        "longest_streak": 1,
+        "past": 1,
+        "rate": 1.5,
+        "unmarked": 1,
+        "upcoming": 1,
+        "verified": 1
+      }
+    },
+    "required": {
+      "dump": {
+        "absent": 1,
+        "attended": 1,
+        "current_streak": 1,
+        "last_attended": "2026-01-01",
+        "longest_streak": 1,
+        "past": 1,
+        "rate": 1.5,
+        "unmarked": 1,
+        "upcoming": 1,
+        "verified": 1
+      },
+      "fields_set": [
+        "absent",
+        "attended",
+        "current_streak",
+        "last_attended",
+        "longest_streak",
+        "past",
+        "rate",
+        "unmarked",
+        "upcoming",
+        "verified"
+      ],
+      "input": {
+        "absent": 1,
+        "attended": 1,
+        "current_streak": 1,
+        "last_attended": "2026-01-01",
+        "longest_streak": 1,
+        "past": 1,
+        "rate": 1.5,
+        "unmarked": 1,
+        "upcoming": 1,
+        "verified": 1
+      }
+    }
+  },
+  "member_profile.MemberPerson": {
+    "full": {
+      "dump": {
+        "id": "456646b5-7d98-5e92-a797-ba7284a38523",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "456646b5-7d98-5e92-a797-ba7284a38523",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "456646b5-7d98-5e92-a797-ba7284a38523",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "456646b5-7d98-5e92-a797-ba7284a38523",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "member_profile.MemberProfileParams": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "date_from": "2026-01-01",
+          "date_to": "2026-01-01"
+        }
+      },
+      "dump": {
+        "date_from": "2026-01-01",
+        "date_to": "2026-01-01"
+      },
+      "fields_set": [
+        "date_from",
+        "date_to"
+      ],
+      "input": {
+        "date_from": "2026-01-01",
+        "date_to": "2026-01-01"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "date_from": null,
+          "date_to": null
+        }
+      },
+      "dump": {
+        "date_from": null,
+        "date_to": null
+      },
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "member_profile.MemberProfileRead": {
+    "full": {
+      "dump": {
+        "by_month": [
+          {
+            "absent": 1,
+            "attended": 1,
+            "month": "2026-01-01",
+            "unmarked": 1,
+            "upcoming": 1
+          }
+        ],
+        "by_type": [
+          {
+            "absent": 1,
+            "attended": 1,
+            "type": "rehearsal",
+            "unmarked": 1,
+            "upcoming": 1
+          }
+        ],
+        "can_manage": true,
+        "date_from": "2026-01-01",
+        "date_to": "2026-01-01",
+        "items": [
+          {
+            "attendance_id": "24cac699-2d38-57e0-9007-ce190317c4cf",
+            "comment": "x",
+            "date": "2026-01-01",
+            "event_id": "9ce963e4-e9be-5762-bc5f-171de754995d",
+            "event_name": "x",
+            "is_attended": true,
+            "is_verified": true,
+            "outcome": "attended",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "member": {
+          "collective_id": "48068293-1cb4-5713-b050-b4314bb29341",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "09c1e147-a75d-5e8e-a68d-b03aaae2e7f8",
+          "is_active": true,
+          "person_id": "ea14e450-2238-501d-bb76-ddef3e93ab7e",
+          "roles": [
+            {
+              "id": "ef74b755-507a-520d-8a27-782019f0024a",
+              "name": "x"
+            }
+          ]
+        },
+        "person": {
+          "id": "c339fbfc-680b-541d-a1cb-980392bf5d07",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "summary": {
+          "absent": 1,
+          "attended": 1,
+          "current_streak": 1,
+          "last_attended": "2026-01-01",
+          "longest_streak": 1,
+          "past": 1,
+          "rate": 1.5,
+          "unmarked": 1,
+          "upcoming": 1,
+          "verified": 1
+        },
+        "years": [
+          1
+        ]
+      },
+      "fields_set": [
+        "by_month",
+        "by_type",
+        "can_manage",
+        "date_from",
+        "date_to",
+        "items",
+        "member",
+        "person",
+        "summary",
+        "years"
+      ],
+      "input": {
+        "by_month": [
+          {
+            "absent": 1,
+            "attended": 1,
+            "month": "2026-01-01",
+            "unmarked": 1,
+            "upcoming": 1
+          }
+        ],
+        "by_type": [
+          {
+            "absent": 1,
+            "attended": 1,
+            "type": "rehearsal",
+            "unmarked": 1,
+            "upcoming": 1
+          }
+        ],
+        "can_manage": true,
+        "date_from": "2026-01-01",
+        "date_to": "2026-01-01",
+        "items": [
+          {
+            "attendance_id": "24cac699-2d38-57e0-9007-ce190317c4cf",
+            "comment": "x",
+            "date": "2026-01-01",
+            "event_id": "9ce963e4-e9be-5762-bc5f-171de754995d",
+            "event_name": "x",
+            "is_attended": true,
+            "is_verified": true,
+            "outcome": "attended",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "member": {
+          "collective_id": "48068293-1cb4-5713-b050-b4314bb29341",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "09c1e147-a75d-5e8e-a68d-b03aaae2e7f8",
+          "is_active": true,
+          "person_id": "ea14e450-2238-501d-bb76-ddef3e93ab7e",
+          "roles": [
+            {
+              "id": "ef74b755-507a-520d-8a27-782019f0024a",
+              "name": "x"
+            }
+          ]
+        },
+        "person": {
+          "id": "c339fbfc-680b-541d-a1cb-980392bf5d07",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "summary": {
+          "absent": 1,
+          "attended": 1,
+          "current_streak": 1,
+          "last_attended": "2026-01-01",
+          "longest_streak": 1,
+          "past": 1,
+          "rate": 1.5,
+          "unmarked": 1,
+          "upcoming": 1,
+          "verified": 1
+        },
+        "years": [
+          1
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "by_month": [
+          {
+            "absent": 1,
+            "attended": 1,
+            "month": "2026-01-01",
+            "unmarked": 1,
+            "upcoming": 1
+          }
+        ],
+        "by_type": [
+          {
+            "absent": 1,
+            "attended": 1,
+            "type": "rehearsal",
+            "unmarked": 1,
+            "upcoming": 1
+          }
+        ],
+        "can_manage": true,
+        "date_from": "2026-01-01",
+        "date_to": "2026-01-01",
+        "items": [
+          {
+            "attendance_id": "24cac699-2d38-57e0-9007-ce190317c4cf",
+            "comment": "x",
+            "date": "2026-01-01",
+            "event_id": "9ce963e4-e9be-5762-bc5f-171de754995d",
+            "event_name": "x",
+            "is_attended": true,
+            "is_verified": true,
+            "outcome": "attended",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "member": {
+          "collective_id": "48068293-1cb4-5713-b050-b4314bb29341",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "09c1e147-a75d-5e8e-a68d-b03aaae2e7f8",
+          "is_active": true,
+          "person_id": "ea14e450-2238-501d-bb76-ddef3e93ab7e",
+          "roles": [
+            {
+              "id": "ef74b755-507a-520d-8a27-782019f0024a",
+              "name": "x"
+            }
+          ]
+        },
+        "person": {
+          "id": "c339fbfc-680b-541d-a1cb-980392bf5d07",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "summary": {
+          "absent": 1,
+          "attended": 1,
+          "current_streak": 1,
+          "last_attended": "2026-01-01",
+          "longest_streak": 1,
+          "past": 1,
+          "rate": 1.5,
+          "unmarked": 1,
+          "upcoming": 1,
+          "verified": 1
+        },
+        "years": [
+          1
+        ]
+      },
+      "fields_set": [
+        "by_month",
+        "by_type",
+        "can_manage",
+        "date_from",
+        "date_to",
+        "items",
+        "member",
+        "person",
+        "summary",
+        "years"
+      ],
+      "input": {
+        "by_month": [
+          {
+            "absent": 1,
+            "attended": 1,
+            "month": "2026-01-01",
+            "unmarked": 1,
+            "upcoming": 1
+          }
+        ],
+        "by_type": [
+          {
+            "absent": 1,
+            "attended": 1,
+            "type": "rehearsal",
+            "unmarked": 1,
+            "upcoming": 1
+          }
+        ],
+        "can_manage": true,
+        "date_from": "2026-01-01",
+        "date_to": "2026-01-01",
+        "items": [
+          {
+            "attendance_id": "24cac699-2d38-57e0-9007-ce190317c4cf",
+            "comment": "x",
+            "date": "2026-01-01",
+            "event_id": "9ce963e4-e9be-5762-bc5f-171de754995d",
+            "event_name": "x",
+            "is_attended": true,
+            "is_verified": true,
+            "outcome": "attended",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "member": {
+          "collective_id": "48068293-1cb4-5713-b050-b4314bb29341",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "09c1e147-a75d-5e8e-a68d-b03aaae2e7f8",
+          "person_id": "ea14e450-2238-501d-bb76-ddef3e93ab7e",
+          "roles": [
+            {
+              "id": "ef74b755-507a-520d-8a27-782019f0024a",
+              "name": "x"
+            }
+          ]
+        },
+        "person": {
+          "id": "c339fbfc-680b-541d-a1cb-980392bf5d07",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "summary": {
+          "absent": 1,
+          "attended": 1,
+          "current_streak": 1,
+          "last_attended": "2026-01-01",
+          "longest_streak": 1,
+          "past": 1,
+          "rate": 1.5,
+          "unmarked": 1,
+          "upcoming": 1,
+          "verified": 1
+        },
+        "years": [
+          1
+        ]
+      }
+    }
   }
 }

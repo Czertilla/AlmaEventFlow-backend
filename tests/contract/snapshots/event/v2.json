@@ -1,6 +1,90 @@
 {
   "components": {
     "schemas": {
+      "AttendanceByMonth": {
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "attended": {
+            "title": "Attended",
+            "type": "integer"
+          },
+          "month": {
+            "description": "The first day of the month.",
+            "format": "date",
+            "title": "Month",
+            "type": "string"
+          },
+          "unmarked": {
+            "title": "Unmarked",
+            "type": "integer"
+          },
+          "upcoming": {
+            "title": "Upcoming",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "attended",
+          "absent",
+          "unmarked",
+          "upcoming",
+          "month"
+        ],
+        "title": "AttendanceByMonth",
+        "type": "object"
+      },
+      "AttendanceByType": {
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "attended": {
+            "title": "Attended",
+            "type": "integer"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventTypeEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unmarked": {
+            "title": "Unmarked",
+            "type": "integer"
+          },
+          "upcoming": {
+            "title": "Upcoming",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "attended",
+          "absent",
+          "unmarked",
+          "upcoming",
+          "type"
+        ],
+        "title": "AttendanceByType",
+        "type": "object"
+      },
+      "AttendanceOutcomeEnumV1": {
+        "enum": [
+          "attended",
+          "absent",
+          "unmarked",
+          "upcoming"
+        ],
+        "title": "AttendanceOutcomeEnumV1",
+        "type": "string"
+      },
       "AvailableFeeds": {
         "properties": {
           "member_collectives": {
@@ -65,6 +149,28 @@
         "title": "ErrorModel",
         "type": "object"
       },
+      "EventStatusEnumV1": {
+        "enum": [
+          "draft",
+          "template",
+          "active",
+          "archived"
+        ],
+        "title": "EventStatusEnumV1",
+        "type": "string"
+      },
+      "EventTypeEnumV1": {
+        "enum": [
+          "rehearsal",
+          "competition",
+          "concert",
+          "festival",
+          "play",
+          "performance"
+        ],
+        "title": "EventTypeEnumV1",
+        "type": "string"
+      },
       "FeedDescriptor": {
         "properties": {
           "collective_id": {
@@ -105,6 +211,351 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "MemberAttendanceItem": {
+        "properties": {
+          "attendance_id": {
+            "format": "uuid",
+            "title": "Attendance Id",
+            "type": "string"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Only for the leader, a superuser and the member themself.",
+            "title": "Comment"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "event_id": {
+            "format": "uuid",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "event_name": {
+            "title": "Event Name",
+            "type": "string"
+          },
+          "is_attended": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null while the row was never marked, whatever is stored.",
+            "title": "Is Attended"
+          },
+          "is_verified": {
+            "title": "Is Verified",
+            "type": "boolean"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/AttendanceOutcomeEnumV1",
+            "description": "`attended` / `absent`: the mark was set by hand; `unmarked`: nobody marked it and the event is over; `upcoming`: the event is today (unmarked) or later."
+          },
+          "status": {
+            "$ref": "#/components/schemas/EventStatusEnumV1"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventTypeEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "attendance_id",
+          "event_id",
+          "event_name",
+          "date",
+          "status",
+          "type",
+          "outcome",
+          "is_attended",
+          "is_verified",
+          "comment"
+        ],
+        "title": "MemberAttendanceItem",
+        "type": "object"
+      },
+      "MemberAttendanceSummary": {
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "attended": {
+            "title": "Attended",
+            "type": "integer"
+          },
+          "current_streak": {
+            "description": "Attended events in a row up to the latest decided one.",
+            "title": "Current Streak",
+            "type": "integer"
+          },
+          "last_attended": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Attended"
+          },
+          "longest_streak": {
+            "title": "Longest Streak",
+            "type": "integer"
+          },
+          "past": {
+            "description": "Events already decided: attended + absent + unmarked.",
+            "title": "Past",
+            "type": "integer"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "attended / past, 0..1; null while nothing is decided.",
+            "title": "Rate"
+          },
+          "unmarked": {
+            "title": "Unmarked",
+            "type": "integer"
+          },
+          "upcoming": {
+            "title": "Upcoming",
+            "type": "integer"
+          },
+          "verified": {
+            "description": "Of those, how many the leader confirmed.",
+            "title": "Verified",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "attended",
+          "absent",
+          "unmarked",
+          "upcoming",
+          "past",
+          "verified",
+          "rate",
+          "current_streak",
+          "longest_streak",
+          "last_attended"
+        ],
+        "title": "MemberAttendanceSummary",
+        "type": "object"
+      },
+      "MemberPerson": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "patronymic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Patronymic"
+          },
+          "surname": {
+            "title": "Surname",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "surname",
+          "name",
+          "patronymic"
+        ],
+        "title": "MemberPerson",
+        "type": "object"
+      },
+      "MemberProfileRead": {
+        "description": "Counts cover active and archived events dated inside the period.",
+        "properties": {
+          "by_month": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceByMonth"
+            },
+            "title": "By Month",
+            "type": "array"
+          },
+          "by_type": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceByType"
+            },
+            "title": "By Type",
+            "type": "array"
+          },
+          "can_manage": {
+            "description": "The caller leads the collective (or is a superuser).",
+            "title": "Can Manage",
+            "type": "boolean"
+          },
+          "date_from": {
+            "format": "date",
+            "title": "Date From",
+            "type": "string"
+          },
+          "date_to": {
+            "format": "date",
+            "title": "Date To",
+            "type": "string"
+          },
+          "items": {
+            "description": "Newest first.",
+            "items": {
+              "$ref": "#/components/schemas/MemberAttendanceItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "member": {
+            "$ref": "#/components/schemas/MemberRead"
+          },
+          "person": {
+            "$ref": "#/components/schemas/MemberPerson"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/MemberAttendanceSummary"
+          },
+          "years": {
+            "description": "Years with events of the member, newest first, any period.",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Years",
+            "type": "array"
+          }
+        },
+        "required": [
+          "member",
+          "person",
+          "can_manage",
+          "date_from",
+          "date_to",
+          "years",
+          "summary",
+          "by_type",
+          "by_month",
+          "items"
+        ],
+        "title": "MemberProfileRead",
+        "type": "object"
+      },
+      "MemberRead": {
+        "properties": {
+          "collective_id": {
+            "format": "uuid",
+            "title": "Collective Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_active": {
+            "default": true,
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "person_id": {
+            "format": "uuid",
+            "title": "Person Id",
+            "type": "string"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RolePreview"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "created_at",
+          "edited_at",
+          "id",
+          "person_id",
+          "roles",
+          "collective_id"
+        ],
+        "title": "MemberRead",
+        "type": "object"
+      },
+      "RolePreview": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "RolePreview",
         "type": "object"
       },
       "SubscriptionCreate": {
@@ -762,6 +1213,153 @@
         "summary": "Rotate Subscription Token",
         "tags": [
           "calendar"
+        ]
+      }
+    },
+    "/event/v2/members/{member_id}/profile": {
+      "get": {
+        "description": "A member's card with attendance statistics.\n\nOpen to the leader of the member's collective, the collective's active\nmembers and superusers (``403 NOT_COLLECTIVE_MEMBER`` otherwise).",
+        "operationId": "get_member_profile_event_v2_members__member_id__profile_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "member_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Member Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "First day of the period; the last 365 days when omitted.",
+            "in": "query",
+            "name": "date_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First day of the period; the last 365 days when omitted.",
+              "title": "Date From"
+            }
+          },
+          {
+            "description": "Last day of the period; today when omitted.",
+            "in": "query",
+            "name": "date_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Last day of the period; today when omitted.",
+              "title": "Date To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberProfileRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NOT_COLLECTIVE_MEMBER": {
+                    "summary": "NOT_COLLECTIVE_MEMBER",
+                    "value": {
+                      "detail": "NOT_COLLECTIVE_MEMBER"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "NOT_COLLECTIVE_MEMBER"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "MEMBER_NOT_FOUND": {
+                    "summary": "MEMBER_NOT_FOUND",
+                    "value": {
+                      "detail": "MEMBER_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "MEMBER_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Member Profile",
+        "tags": [
+          "member"
         ]
       }
     }

@@ -38,6 +38,22 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "calendar.AvailableFeeds": "event.dto.calendar:AvailableFeedsDTO",
             "calendar.FeedDescriptor": "event.dto.calendar:FeedDescriptorDTO",
             "calendar.SubscriptionRead": ("event.dto.calendar:CalendarSubscriptionDTO"),
+            "member_profile.AttendanceByMonth": (
+                "event.dto.member_profile:AttendanceByMonthDTO"
+            ),
+            "member_profile.AttendanceByType": (
+                "event.dto.member_profile:AttendanceByTypeDTO"
+            ),
+            "member_profile.MemberAttendanceItem": (
+                "event.dto.member_profile:MemberAttendanceItemDTO"
+            ),
+            "member_profile.MemberAttendanceSummary": (
+                "event.dto.member_profile:MemberAttendanceSummaryDTO"
+            ),
+            "member_profile.MemberPerson": "event.dto.member_profile:MemberPersonDTO",
+            "member_profile.MemberProfileRead": (
+                "event.dto.member_profile:MemberProfileDTO"
+            ),
         },
     ),
     "geo_v1": (

@@ -1,4 +1,9 @@
+import datetime
+from collections.abc import Collection, Sequence
+from typing import Any
 from uuid import UUID
+
+from sqlalchemy import Row, Select, extract, select
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -7,6 +12,8 @@ from core.database.sqlalchemy.mixins.repositories import (
     UpsertRepositoryMixin,
 )
 from event.models.attendance import AttendanceORM as Model
+from event.models.event import EventORM, EventStatusORM, EventTypeORM
+from event.models.participation import ParticipationORM
 
 
 class AttendanceRepo(
@@ -20,3 +27,64 @@ class AttendanceRepo(
 
     async def search(self, filter, pagination, *, options=None):
         return await super().search(filter, pagination)
+
+    def _member_scope(
+        self,
+        stmt: Select[Any],
+        member_id: UUID,
+        collective_id: UUID,
+        statuses: Collection[str],
+    ) -> Select[Any]:
+        return (
+            stmt.select_from(self.model)
+            .join(ParticipationORM, ParticipationORM.id == self.model.participation_id)
+            .join(EventORM, EventORM.id == ParticipationORM.event_id)
+            .join(EventStatusORM, EventStatusORM.id == EventORM.status_id)
+            .where(
+                self.model.member_id == member_id,
+                ParticipationORM.collective_id == collective_id,
+                EventORM.date.is_not(None),
+                EventStatusORM.name.in_(statuses),
+            )
+        )
+
+    async def member_history(
+        self,
+        member_id: UUID,
+        collective_id: UUID,
+        date_from: datetime.date,
+        date_to: datetime.date,
+        statuses: Collection[str],
+    ) -> Sequence[Row[Any]]:
+        stmt = self._member_scope(
+            select(
+                self.model.id.label("attendance_id"),
+                self.model.is_attended,
+                self.model.is_verified,
+                self.model.edited_at,
+                self.model.comment,
+                EventORM.id.label("event_id"),
+                EventORM.name.label("event_name"),
+                EventORM.date,
+                EventStatusORM.name.label("status"),
+                EventTypeORM.name.label("type"),
+            ),
+            member_id,
+            collective_id,
+            statuses,
+        )
+        stmt = (
+            stmt.outerjoin(EventTypeORM, EventTypeORM.id == EventORM.type_id)
+            .where(EventORM.date.between(date_from, date_to))
+            .order_by(EventORM.date.desc(), EventORM.name)
+        )
+        return (await self.execute(stmt)).all()
+
+    async def member_event_years(
+        self, member_id: UUID, collective_id: UUID, statuses: Collection[str]
+    ) -> list[int]:
+        year = extract("year", EventORM.date)
+        stmt = self._member_scope(
+            select(year).distinct(), member_id, collective_id, statuses
+        ).order_by(year.desc())
+        return [int(value) for value in (await self.execute(stmt)).scalars()]

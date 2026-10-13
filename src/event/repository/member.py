@@ -33,6 +33,16 @@ class MemberRepo(
         )
         return (await self.execute(stmt)).unique().scalars().all()
 
+    async def get_with_details(self, member_id: UUID) -> Model | None:
+        stmt = (
+            select(self.model)
+            .options(
+                selectinload(self.model.roles), selectinload(self.model.person)
+            )
+            .where(self.model.id == member_id)
+        )
+        return (await self.execute(stmt)).unique().scalar_one_or_none()
+
     async def create_member_with_roles(
         self, member_data: dict, role_ids: list[UUID]
     ) -> Model:
