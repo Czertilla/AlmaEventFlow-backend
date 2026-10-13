@@ -106,6 +106,9 @@ class TelegramDeliveryItem(MQRequest):
     delivery_id: UUID
     chat_id: str
     text: str
+    rich_html: str | None = None
+    """HTML of a Telegram rich message sent instead of ``text``; ``text`` is
+    what goes out when Telegram rejects it."""
     buttons: list[list[TelegramButton]] = Field(default_factory=list)
     correlation_key: str | None = None
     message_thread_id: int | None = None

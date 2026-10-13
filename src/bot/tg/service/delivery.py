@@ -15,6 +15,8 @@ from aiogram.exceptions import (
 from aiogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    InputRichMessage,
+    Message,
     ReplyParameters,
 )
 
@@ -47,6 +49,12 @@ def _entities_rejected(exc: TelegramAPIError, text: str) -> bool:
 
 def _button_url_rejected(exc: TelegramBadRequest) -> bool:
     return "button_url_invalid" in str(exc).lower()
+
+
+def _rich_rejected(exc: TelegramBadRequest) -> bool:
+    return not _button_url_rejected(exc) and (
+        "message is not modified" not in str(exc).lower()
+    )
 
 
 def _without_links(
@@ -256,13 +264,7 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
         if existing is None:
             return await self._send_new(item, chat_id, markup)
         try:
-            await self.bot.edit_message_text(
-                chat_id=chat_id,
-                message_id=existing.message_id,
-                text=item.text,
-                reply_markup=markup,
-                parse_mode="HTML",
-            )
+            await self._edit(item, chat_id, existing.message_id, markup)
         except TelegramBadRequest as exc:
             if not _edit_target_gone(exc):
                 raise
@@ -277,6 +279,41 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
         await self._remember(item, chat_id, existing.message_id)
         await self._ping_edit(item, chat_id, existing.message_id, markup)
         return existing.message_id
+
+    async def _edit(
+        self,
+        item: TelegramDeliveryItem,
+        chat_id: int,
+        message_id: int,
+        markup: InlineKeyboardMarkup | None,
+    ) -> None:
+        if item.rich_html is not None:
+            try:
+                await self.bot.edit_message_text(
+                    chat_id=chat_id,
+                    message_id=message_id,
+                    rich_message=InputRichMessage(html=item.rich_html),
+                    reply_markup=markup,
+                )
+            except TelegramBadRequest as exc:
+                if not _rich_rejected(exc):
+                    raise
+                logger.warning(
+                    "Telegram rejected the rich edit of message %s in chat "
+                    "%s, editing it as text: %s",
+                    message_id,
+                    chat_id,
+                    exc,
+                )
+            else:
+                return
+        await self.bot.edit_message_text(
+            chat_id=chat_id,
+            message_id=message_id,
+            text=item.text,
+            reply_markup=markup,
+            parse_mode="HTML",
+        )
 
     async def _remember(
         self, item: TelegramDeliveryItem, chat_id: int, message_id: int
@@ -323,14 +360,7 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
         chat_id: int,
         markup: InlineKeyboardMarkup | None,
     ) -> int:
-        message = await self.bot.send_message(
-            chat_id=chat_id,
-            text=item.text,
-            reply_markup=markup,
-            message_thread_id=item.message_thread_id,
-            disable_notification=item.disable_notification or None,
-            parse_mode="HTML",
-        )
+        message = await self._send(item, chat_id, markup)
         if item.correlation_key:
             async with self.uow as uow:
                 await uow.messages.upsert(
@@ -343,6 +373,39 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
         if item.pin:
             await self._pin(chat_id, message.message_id)
         return message.message_id
+
+    async def _send(
+        self,
+        item: TelegramDeliveryItem,
+        chat_id: int,
+        markup: InlineKeyboardMarkup | None,
+    ) -> Message:
+        if item.rich_html is not None:
+            try:
+                return await self.bot.send_rich_message(
+                    chat_id=chat_id,
+                    rich_message=InputRichMessage(html=item.rich_html),
+                    reply_markup=markup,
+                    message_thread_id=item.message_thread_id,
+                    disable_notification=item.disable_notification or None,
+                )
+            except TelegramBadRequest as exc:
+                if not _rich_rejected(exc):
+                    raise
+                logger.warning(
+                    "Telegram rejected the rich message for chat %s, "
+                    "sending text: %s",
+                    chat_id,
+                    exc,
+                )
+        return await self.bot.send_message(
+            chat_id=chat_id,
+            text=item.text,
+            reply_markup=markup,
+            message_thread_id=item.message_thread_id,
+            disable_notification=item.disable_notification or None,
+            parse_mode="HTML",
+        )
 
     async def _pin(self, chat_id: int, message_id: int) -> None:
         try:

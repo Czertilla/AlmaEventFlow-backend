@@ -9,6 +9,7 @@ from bot.tg.dependency.bot import bot as tg_bot
 from bot.tg.model.collective_chat import CollectiveChatORM
 from bot.tg.service.announcement import (
     build_announcement_buttons,
+    build_announcement_rich,
     build_announcement_text,
     build_update_notice,
     request_from_payload,
@@ -160,6 +161,7 @@ async def _deliver(
         delivery_id=uuid4(),
         chat_id=str(chat.chat_id),
         text=await build_announcement_text(request, lang),
+        rich_html=await build_announcement_rich(request, lang),
         buttons=await build_announcement_buttons(request, lang),
         correlation_key=str(request.event_id),
         message_thread_id=chat.thread_id,

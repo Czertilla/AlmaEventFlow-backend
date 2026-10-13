@@ -1,4 +1,5 @@
 import contextlib
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import date, datetime
 from html import escape
@@ -16,6 +17,7 @@ from core.schema.message.notify import TelegramButton
 logger = getLogger(__name__)
 
 MAX_MESSAGE_LENGTH = 4096
+MAX_RICH_LENGTH = 32768
 QUOTE_FOLD_LENGTH = 300
 
 
@@ -119,11 +121,47 @@ def _format_stage_time(stage: AnnouncementStage) -> str:
     time_part = _tg_time(
         stage.start_at, "t", _format_time(stage.start_at, stage.timezone)
     )
-    if stage.end_at is not None:
-        time_part += "–" + _tg_time(
+    if stage.end_at is None:
+        return time_part
+    if _local_day(stage.end_at, stage.timezone) != _local_day(
+        stage.start_at, stage.timezone
+    ):
+        end = _stage_moment(stage.end_at, stage.timezone)
+    else:
+        end = _tg_time(
             stage.end_at, "t", _format_time(stage.end_at, stage.timezone)
         )
-    return time_part
+    return f"{time_part}–{end}"
+
+
+def _local_day(value: datetime, tz_name: str | None) -> date:
+    return _localize(value, tz_name).date()
+
+
+def _is_multi_day(stages: list[AnnouncementStage]) -> bool:
+    return len({_local_day(stage.start_at, stage.timezone) for stage in stages}) > 1
+
+
+def _by_day(
+    stages: list[AnnouncementStage],
+) -> list[tuple[date, list[AnnouncementStage]]]:
+    days: list[tuple[date, list[AnnouncementStage]]] = []
+    for stage in stages:
+        day = _local_day(stage.start_at, stage.timezone)
+        if days and days[-1][0] == day:
+            days[-1][1].append(stage)
+        else:
+            days.append((day, [stage]))
+    return days
+
+
+def _day_label(day: date, first: AnnouncementStage, lang: str) -> str:
+    return _tg_time(first.start_at, "wD", _format_date(day, lang))
+
+
+def _free_text(value: str, *, rich: bool) -> str:
+    escaped = escape(value)
+    return "<br>".join(escaped.splitlines()) if rich else escaped
 
 
 async def build_announcement_text(
@@ -135,10 +173,30 @@ async def build_announcement_text(
     individually; the surrounding markup lives in the translation strings.
     Free text is trimmed step by step until the result fits one Telegram
     message, so a long description never makes the whole send fail."""
+    return await _fit(request, lang, _render, MAX_MESSAGE_LENGTH)
+
+
+async def build_announcement_rich(
+    request: AnnouncementRequest, lang: str | None = None
+) -> str:
+    """The same announcement as the HTML of a Telegram rich message (Bot API
+    10.1): the schedule is a table with the time in the first column, and an
+    event that spans several days gets a divider with the date between the
+    days. ``build_announcement_text`` stays the fallback for when Telegram
+    rejects it."""
+    return await _fit(request, lang, _render_rich, MAX_RICH_LENGTH)
+
+
+async def _fit(
+    request: AnnouncementRequest,
+    lang: str | None,
+    render: Callable[[AnnouncementRequest, str | None, _Limits], Awaitable[str]],
+    max_length: int,
+) -> str:
     text = ""
     for step, limits in enumerate(_FIT_STEPS):
-        text = await _render(request, lang, limits)
-        if len(text) <= MAX_MESSAGE_LENGTH:
+        text = await render(request, lang, limits)
+        if len(text) <= max_length:
             if step:
                 logger.info(
                     "announcement for event %s trimmed to %d characters "
@@ -156,33 +214,26 @@ async def build_announcement_text(
     return text
 
 
-async def _render(
-    request: AnnouncementRequest, lang: str | None, limits: _Limits
-) -> str:
-    lang = lang or i18n_manager.default_lang
-    paragraphs: list[str] = []
-
+async def _title(request: AnnouncementRequest, lang: str, limits: _Limits) -> str:
+    event_name = escape(_clip(request.event_name, limits.field))
     if request.action_url:
-        paragraphs.append(
-            await i18n_manager.get(
-                "announcement.title_linked",
-                lang=lang,
-                event_name=escape(_clip(request.event_name, limits.field)),
-                action_url=escape(request.action_url),
-            )
+        return await i18n_manager.get(
+            "announcement.title_linked",
+            lang=lang,
+            event_name=event_name,
+            action_url=escape(request.action_url),
         )
-    else:
-        paragraphs.append(
-            await i18n_manager.get(
-                "announcement.title",
-                lang=lang,
-                event_name=escape(_clip(request.event_name, limits.field)),
-            )
-        )
+    return await i18n_manager.get(
+        "announcement.title", lang=lang, event_name=event_name
+    )
 
+
+async def _meta_lines(
+    request: AnnouncementRequest, lang: str, limits: _Limits
+) -> list[str]:
     stage_start = request.stages[0].start_at if request.stages else None
     stage_tz = request.stages[0].timezone if request.stages else None
-    meta_lines = []
+    meta_lines: list[str] = []
     date_time = _format_date_time(request.event_date, stage_start, stage_tz, lang)
     if date_time:
         meta_lines.append(
@@ -204,42 +255,71 @@ async def _render(
                 organizer=escape(_clip(request.organizer, limits.field)),
             )
         )
+    return meta_lines
+
+
+async def _description(
+    request: AnnouncementRequest, lang: str, limits: _Limits, *, rich: bool
+) -> str | None:
+    if not request.event_description or not limits.description:
+        return None
+    description = _clip(request.event_description, limits.description)
+    key = (
+        "announcement.description_long"
+        if len(description) > QUOTE_FOLD_LENGTH
+        else "announcement.description"
+    )
+    return await i18n_manager.get(
+        key, lang=lang, description=_free_text(description, rich=rich)
+    )
+
+
+async def _render(
+    request: AnnouncementRequest, lang: str | None, limits: _Limits
+) -> str:
+    lang = lang or i18n_manager.default_lang
+    paragraphs = [await _title(request, lang, limits)]
+
+    meta_lines = await _meta_lines(request, lang, limits)
     if meta_lines:
         paragraphs.append("\n".join(meta_lines))
 
-    if request.event_description and limits.description:
-        description = _clip(request.event_description, limits.description)
-        key = (
-            "announcement.description_long"
-            if len(description) > QUOTE_FOLD_LENGTH
-            else "announcement.description"
-        )
-        paragraphs.append(
-            await i18n_manager.get(key, lang=lang, description=escape(description))
-        )
+    description = await _description(request, lang, limits, rich=False)
+    if description:
+        paragraphs.append(description)
 
     shown_stages = request.stages[: limits.stages]
     if shown_stages:
+        multi_day = _is_multi_day(request.stages)
         stage_lines = [await i18n_manager.get("announcement.stages_header", lang=lang)]
-        for stage in shown_stages:
-            stage_lines.append(
-                await i18n_manager.get(
-                    "announcement.stage_line",
-                    lang=lang,
-                    name=escape(_clip(stage.name, limits.field)),
-                    time=_format_stage_time(stage),
-                )
-            )
-            if stage.description and limits.stage_description:
+        for day, group in _by_day(shown_stages):
+            if multi_day:
                 stage_lines.append(
                     await i18n_manager.get(
-                        "announcement.stage_description",
+                        "announcement.stage_day",
                         lang=lang,
-                        description=escape(
-                            _clip(stage.description, limits.stage_description)
-                        ),
+                        date=_day_label(day, group[0], lang),
                     )
                 )
+            for stage in group:
+                stage_lines.append(
+                    await i18n_manager.get(
+                        "announcement.stage_line",
+                        lang=lang,
+                        name=escape(_clip(stage.name, limits.field)),
+                        time=_format_stage_time(stage),
+                    )
+                )
+                if stage.description and limits.stage_description:
+                    stage_lines.append(
+                        await i18n_manager.get(
+                            "announcement.stage_description",
+                            lang=lang,
+                            description=escape(
+                                _clip(stage.description, limits.stage_description)
+                            ),
+                        )
+                    )
         hidden = len(request.stages) - len(shown_stages)
         if hidden:
             stage_lines.append(
@@ -252,6 +332,57 @@ async def _render(
     paragraphs.append(await i18n_manager.get("announcement.cta", lang=lang))
 
     return "\n\n".join(paragraphs)
+
+
+async def _render_rich(
+    request: AnnouncementRequest, lang: str | None, limits: _Limits
+) -> str:
+    lang = lang or i18n_manager.default_lang
+    blocks = [f"<h3>{await _title(request, lang, limits)}</h3>"]
+
+    meta_lines = await _meta_lines(request, lang, limits)
+    if meta_lines:
+        blocks.append("<p>" + "<br>".join(meta_lines) + "</p>")
+
+    description = await _description(request, lang, limits, rich=True)
+    if description:
+        blocks.append(description)
+
+    shown_stages = request.stages[: limits.stages]
+    if shown_stages:
+        multi_day = _is_multi_day(request.stages)
+        header = await i18n_manager.get("announcement.stages_header", lang=lang)
+        blocks.append(f"<h4>{header}</h4>")
+        for index, (day, group) in enumerate(_by_day(shown_stages)):
+            if multi_day:
+                if index:
+                    blocks.append("<hr/>")
+                blocks.append(f"<h5>{_day_label(day, group[0], lang)}</h5>")
+            rows: list[str] = []
+            for stage in group:
+                name = escape(_clip(stage.name, limits.field))
+                rows.append(
+                    f"<tr><td>{_format_stage_time(stage)}</td>"
+                    f"<td><b>{name}</b></td></tr>"
+                )
+                if stage.description and limits.stage_description:
+                    note = _free_text(
+                        _clip(stage.description, limits.stage_description),
+                        rich=True,
+                    )
+                    rows.append(f'<tr><td colspan="2"><i>{note}</i></td></tr>')
+            blocks.append("<table compact>" + "".join(rows) + "</table>")
+        hidden = len(request.stages) - len(shown_stages)
+        if hidden:
+            more = await i18n_manager.get(
+                "announcement.stages_more", lang=lang, rest=hidden
+            )
+            blocks.append(f"<p>{more}</p>")
+
+    cta = await i18n_manager.get("announcement.cta", lang=lang)
+    blocks.append(f"<p>{cta}</p>")
+
+    return "".join(blocks)
 
 
 async def build_announcement_buttons(

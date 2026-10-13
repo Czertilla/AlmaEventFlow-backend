@@ -241,8 +241,8 @@ async def test_by_default_an_edit_is_followed_by_a_one_line_reply(
     await announced(_request(event_name="Gala", location="Hall 2"))
 
     (edited,) = tg.session.of(EditMessageText)
-    assert "Gala" in edited.text
-    _, reply = tg.session.of(SendMessage)
+    assert "Gala" in edited.rich_message.html
+    (reply,) = tg.session.of(SendMessage)
     assert reply.text == "🔄 Обновлено"
     assert reply.reply_markup is None
     assert reply.reply_parameters.message_id == edited.message_id
@@ -283,9 +283,10 @@ async def test_an_edited_event_edits_the_message_and_replies_with_what_changed(
     await announced(_request(event_name="Gala", location="Hall 2"))
 
     (edited,) = tg.session.of(EditMessageText)
-    assert "Gala" in edited.text
-    first, reply = tg.session.of(SendMessage)
-    assert "Concert" in first.text
+    assert "Gala" in edited.rich_message.html
+    (first,) = tg.session.sent_rich
+    assert "Concert" in first.rich_message.html
+    (reply,) = tg.session.of(SendMessage)
     assert reply.text.startswith("🔄 <b>Gala</b> — мероприятие обновлено")
     assert "Название: <s>Concert</s> → <b>Gala</b>" in reply.text
     assert "Место: <s>Main hall</s> → <b>Hall 2</b>" in reply.text
@@ -352,7 +353,8 @@ async def test_the_update_notice_always_makes_a_sound_even_in_a_silent_chat(
 
     await announced(_request(event_name="Gala"))
 
-    first, reply = tg.session.of(SendMessage)
+    (first,) = tg.session.sent_rich
+    (reply,) = tg.session.of(SendMessage)
     assert first.disable_notification is True
     assert reply.disable_notification is None
 

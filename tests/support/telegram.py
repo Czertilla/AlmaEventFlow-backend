@@ -13,6 +13,7 @@ from aiogram.methods import (
     GetChatMember,
     GetMe,
     SendMessage,
+    SendRichMessage,
     TelegramMethod,
 )
 from aiogram.types import InlineKeyboardMarkup, Message, Update, User
@@ -54,6 +55,10 @@ class RecordingSession(BaseSession):
     def sent(self) -> list[SendMessage]:
         return self.of(SendMessage)
 
+    @property
+    def sent_rich(self) -> list[SendRichMessage]:
+        return self.of(SendRichMessage)
+
     async def make_request(
         self,
         bot: Bot,
@@ -75,7 +80,7 @@ class RecordingSession(BaseSession):
             return self._member(method)
         if isinstance(method, GetChat):
             return self._chat(bot, method)
-        if isinstance(method, SendMessage | EditMessageText):
+        if isinstance(method, SendMessage | EditMessageText | SendRichMessage):
             return self._message(bot, method)
         if isinstance(method, AnswerCallbackQuery | DeleteMessage):
             return True
@@ -83,8 +88,12 @@ class RecordingSession(BaseSession):
 
     def _note_unrendered(self, method: TelegramMethod[Any]) -> None:
         shown: list[str] = []
-        if isinstance(method, SendMessage | EditMessageText):
+        rich = getattr(method, "rich_message", None)
+        if rich is not None:
+            shown.append(str(rich.html))
+        elif isinstance(method, SendMessage | EditMessageText):
             shown.append(str(method.text))
+        if isinstance(method, SendMessage | EditMessageText | SendRichMessage):
             if isinstance(method.reply_markup, InlineKeyboardMarkup):
                 for row in method.reply_markup.inline_keyboard:
                     shown.extend(button.text for button in row)
@@ -138,7 +147,9 @@ class RecordingSession(BaseSession):
         )
 
     @staticmethod
-    def _message(bot: Bot, method: SendMessage | EditMessageText) -> Message:
+    def _message(
+        bot: Bot, method: SendMessage | EditMessageText | SendRichMessage
+    ) -> Message:
         chat_id = getattr(method, "chat_id", 0) or 0
         return Message.model_validate(
             {

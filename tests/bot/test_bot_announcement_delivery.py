@@ -51,6 +51,8 @@ class FakeBot:
         self.sent.append(kwargs)
         return SimpleNamespace(message_id=500 + len(self.sent))
 
+    send_rich_message = send_message
+
     async def pin_chat_message(self, **kwargs: Any) -> None:
         if self.pin_error is not None:
             raise self.pin_error
@@ -170,6 +172,11 @@ def _request(event_id: UUID | None = None) -> AnnouncementRequest:
     )
 
 
+def _html(call: dict[str, Any]) -> str:
+    rich = call.get("rich_message")
+    return rich.html if rich is not None else call["text"]
+
+
 @pytest.fixture
 def make_harness(monkeypatch: pytest.MonkeyPatch):
     import bot.api.kafka.sub.announcement as module
@@ -206,7 +213,7 @@ async def test_announcement_is_sent_to_the_bound_chat(make_harness: Any) -> None
     sent = harness.bot.sent[0]
     assert sent["chat_id"] == CHAT_ID
     assert sent["message_thread_id"] == 9
-    assert "Concert" in sent["text"]
+    assert "Concert" in _html(sent)
     assert (str(request.event_id), CHAT_ID) in harness.messages.rows
 
 
@@ -294,7 +301,7 @@ async def test_deleted_announcement_is_replaced_instead_of_edited(
     gone = TelegramBadRequest(
         _method(), "Bad Request: message to edit not found"
     )
-    harness = make_harness(FakeBot(edit_errors=[gone]), _chat())
+    harness = make_harness(FakeBot(edit_errors=[gone, gone]), _chat())
     request = _request()
     key = (str(request.event_id), CHAT_ID)
     harness.messages.rows[key] = SimpleNamespace(message_id=42, payload=None)
@@ -381,7 +388,7 @@ async def test_the_announcement_speaks_the_language_of_the_chat(
     await harness.run(_request())
 
     sent = harness.bot.sent[0]
-    assert "Mark your attendance below" in sent["text"]
+    assert "Mark your attendance below" in _html(sent)
     first_row = sent["reply_markup"].inline_keyboard[0]
     assert [button.text for button in first_row] == ["✅ Going", "❌ Not going"]
 
@@ -445,7 +452,8 @@ async def test_rejected_date_entities_are_resent_as_plain_text(
     rejected = TelegramBadRequest(
         _method(), "Bad Request: can't parse entities: unsupported tag"
     )
-    harness = make_harness(FakeBot(send_errors=[rejected]), _chat())
+    errors: list[Exception | None] = [rejected] * 3
+    harness = make_harness(FakeBot(send_errors=errors), _chat())
     request = AnnouncementRequest(
         collective_id=COLLECTIVE_ID,
         event_id=uuid4(),
@@ -475,3 +483,86 @@ async def test_a_rejected_link_button_is_resent_without_links(
     rows = harness.bot.sent[0]["reply_markup"].inline_keyboard
     assert len(rows) == 1
     assert [button.url for button in rows[0]] == [None, None]
+
+
+async def test_the_announcement_goes_out_as_a_rich_message(
+    make_harness: Any,
+) -> None:
+    harness = make_harness(FakeBot(), _chat())
+
+    await harness.run(_request())
+
+    (sent,) = harness.bot.sent
+    assert "text" not in sent
+    assert sent["rich_message"].html.startswith("<h3>")
+
+
+async def test_a_rejected_rich_message_is_sent_as_text(
+    make_harness: Any, caplog: pytest.LogCaptureFixture
+) -> None:
+    rejected = TelegramBadRequest(_method(), "Bad Request: can't parse rich message")
+    harness = make_harness(FakeBot(send_errors=[rejected]), _chat(thread_id=9))
+
+    with caplog.at_level(logging.WARNING):
+        await harness.run(_request())
+
+    (sent,) = harness.bot.sent
+    assert "rich_message" not in sent
+    assert "Concert" in sent["text"]
+    assert sent["message_thread_id"] == 9
+    assert "rejected the rich message" in caplog.text
+    assert harness.dead_letters == []
+
+
+async def test_an_edit_replaces_the_rich_content_of_the_message(
+    make_harness: Any,
+) -> None:
+    harness = make_harness(FakeBot(), _chat())
+    request = _request()
+    harness.messages.rows[(str(request.event_id), CHAT_ID)] = SimpleNamespace(
+        message_id=42, payload=None
+    )
+
+    await harness.run(request)
+
+    (edited,) = harness.bot.edited
+    assert edited["message_id"] == 42
+    assert "Concert" in edited["rich_message"].html
+    assert "text" not in edited
+
+
+async def test_a_rejected_rich_edit_edits_the_message_as_text(
+    make_harness: Any,
+) -> None:
+    rejected = TelegramBadRequest(
+        _method(), "Bad Request: can't parse entities: unsupported tag"
+    )
+    harness = make_harness(FakeBot(edit_errors=[rejected]), _chat())
+    request = _request()
+    harness.messages.rows[(str(request.event_id), CHAT_ID)] = SimpleNamespace(
+        message_id=42, payload=None
+    )
+
+    await harness.run(request)
+
+    (edited,) = harness.bot.edited
+    assert edited["message_id"] == 42
+    assert "Concert" in edited["text"]
+    assert "rich_message" not in edited
+
+
+async def test_an_unchanged_rich_edit_is_not_redone_as_text(
+    make_harness: Any,
+) -> None:
+    unchanged = TelegramBadRequest(_method(), "Bad Request: message is not modified")
+    harness = make_harness(FakeBot(edit_errors=[unchanged]), _chat())
+    request = _request()
+    harness.messages.rows[(str(request.event_id), CHAT_ID)] = SimpleNamespace(
+        message_id=42, payload=None
+    )
+
+    await harness.run(request)
+
+    assert harness.bot.edited == []
+    assert harness.bot.sent == []
+    assert harness.dead_letters == []
