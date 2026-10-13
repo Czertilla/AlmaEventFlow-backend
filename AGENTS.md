@@ -276,7 +276,9 @@ is a defect, not a style choice.
   `--fw-regular|medium|semibold|bold` (400/500/600/700), icon sizes `--icon-xl` (28px) and
   `--icon-hero` (40px, empty and error states), radii `--radius-sm|md|lg|xl|pill`
   (10/12/16/20/999px), `--border-w` (1.5px) and `--font-mono`; for fields `--field-h` (48px),
-  `--field-pad-x` (14px) and `--field-border` (a step stronger in the dark theme). The font is
+  `--field-pad-x` (14px) and `--field-border` (a step stronger in the dark theme); the colours of an
+  attendance outcome `--att-attended-rgb|absent|unmarked|upcoming` (RGB triplets: green, red, yellow,
+  brand violet), used through `ui-att` below. The font is
   `Inter Variable`, bundled from `@fontsource-variable/inter` and loaded in `main.ts`.
 - **Primitives** — `frontend/src/theme/components.css`, loaded once from `main.ts`: the field
   (`ui-field` and its parts: `ui-field-box`, `ui-field-label`, `ui-field-outline`, `ui-field-control`
@@ -284,7 +286,19 @@ is a defect, not a style choice.
   is not typed, `ui-field-foot`; `ui-field-title` for the heading of a group of controls and
   `ui-toggle-row` for a switch), `ui-menu` and `ui-menu-item` (a list of options under a field),
   `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-chips` and `ui-chip` (+ `--active`),
-  `ui-btn` (+ `--primary`, `--ghost`, `--sm`); the dialog parts `ui-sheet`, `ui-sheet-head`, `ui-sheet-title`,
+  `ui-btn` (+ `--primary`, `--ghost`, `--sm`); `ui-card`, `ui-card-head` and `ui-card-title` (a section
+  card; `HomePage`'s own `.section-card` is a copy of it, see the debt below); `ui-att--attended|absent`
+  (a filled mark), `ui-att--unmarked` (yellow hatching), `ui-att--upcoming` (a hollow one),
+  `ui-att-rate` (a cell filled with the `--att-rate` colour set inline), `ui-att-hatch` (the same
+  colour as stripes on the grey ground of `ui-att--unmarked`: a day with unmarked events, its marked
+  ones having given it the colour; `--att-hatch` is the stripe period, 4px) and `ui-att-ink--<outcome>`
+  (an icon or text in the outcome colour): every attendance chart, legend and calendar dot takes its
+  colour from these, never from its own rgba; a day of the heatmap/calendar is the exception, it is
+  coloured by its presence ratio through `rateColor`/`rateGradient` (`utils/memberAttendance.ts`: the
+  presence token at 1, the unmarked token at 0.5, the absence token at 0, blended with `color-mix` in
+  between; an unmarked event adds nothing to the ratio, so a day with only those stays at the middle,
+  which is exactly `ui-att--unmarked`, and the hatching only says that not every mark is set), so a
+  day with both presence and absence is never painted as one of them; the dialog parts `ui-sheet`, `ui-sheet-head`, `ui-sheet-title`,
   `ui-sheet-body` (scrolls) and `ui-sheet-actions` (buttons pinned under the body); the thin 6px
   scrollbar for every scroll area, including the one inside `ion-content`; and the reset that makes
   `button`, `input`, `select` and `textarea` inherit the page font.
@@ -302,7 +316,12 @@ is a defect, not a style choice.
 - **Shared components** — `frontend/src/components/common/` and friends: `DateTimeField` (built on
   `TimeSpinner` and `TimeDrum`), `TimestampsMeta`, `event/StageFields` (one stage of an event, used
   by the create form and the event page), `admin/ResourceTable` and `admin/ResourceFormModal` for
-  admin lists and forms. New screens compose these.
+  admin lists and forms; `member/` (the member profile: `AttendanceHeatmap`, `MonthBars`,
+  `TypeBars`, `AttendanceHistory`, `AttendanceLegend`, all fed by `utils/memberAttendance.ts`; and
+  `MemberEditorModal` / `MemberDeleteAlert`, the one add/edit dialog and delete confirmation shared by
+  the member list and the profile) and
+  `calendar/CalendarGrid` (takes `dayMarks`, a list of dots per `yyyy-MM-dd`, to colour the day).
+  New screens compose these.
 
 Rules:
 
@@ -336,11 +355,20 @@ Rules:
   a time is never filled in on the user's behalf. A new stage's start suggests the previous stage or
   the event date, and its end suggests the start.
 - **A new primitive** is added to `components.css` and to the list above in the same change.
+- **Sub-pages of the principal and admin panels** (`/principal/members/<id>`, `/admin/persons/<id>`)
+  are in-place routes: the layout matches a path prefix and renders the page itself, and a child page
+  navigates with `usePrincipalNavigate` / `useAdminNavigate`, never `router.push` inside the panel
+  (see `utils/inPlaceNav.ts`). Such a page must also handle a deep link and a missing entity.
+  `MemberProfilePage` is the one page that lives in two places: in the panel
+  (`/principal/members/<id>`, reached from the member list and the dashboard) and outside it
+  (`/member/<id>`, `views/MemberPage.vue`, reached from the event page and open to the members of
+  the collective); it finds out which by injecting `principalNavigateKey`, and shows edit/delete
+  only when the API answers `can_manage`.
 - **Check what you built** in the light and the dark theme, at phone width (375px) and on a desktop,
   with `npx vue-tsc --noEmit`, `npx eslint <files>` and `npx vitest run`.
 
 Known debt, to be paid when a view is touched and not as a drive-by: per-view copies of `.auth-btn`
-(6 files), `.sort-btn` (3), `.lcf-btn` (the `ui-btn` look), `.icon-btn`, `.form-field` (now only a
+(6 files), `.section-card` (`HomePage`, the old `ui-card`), `.sort-btn` (3), `.lcf-btn` (the `ui-btn` look), `.icon-btn`, `.form-field` (now only a
 wrapper of a group), the search boxes of the list toolbars (`.ev-search`, `.rt-search`, `.pm-search`,
 three copies of one control) and raw radii and borders (`12px`, `999px`, `1.5px`) in the views.
 
