@@ -80,7 +80,7 @@ class UpsertRepositoryMixin(
         }
 
     async def upsert(
-        self, data: dict[str, Any], options: tuple[ExecutableOption] = ()
+        self, data: dict[str, Any], options: tuple[ExecutableOption, ...] = ()
     ) -> Model | None:
         stmt = (
             insert(self.model)
@@ -95,7 +95,9 @@ class UpsertRepositoryMixin(
         return (await self.execute(stmt)).scalar_one_or_none()
     
     async def upsert_many(
-        self, data: list[dict[str, Any]], options: tuple[ExecutableOption] = ()
+        self,
+        data: list[dict[str, Any]],
+        options: tuple[ExecutableOption, ...] = (),
     ) -> Model | None:
         if not data:
             return iter(())

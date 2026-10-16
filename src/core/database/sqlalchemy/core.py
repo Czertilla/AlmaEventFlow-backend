@@ -82,7 +82,7 @@ class SQLAlchemyRepository(Generic[Model], AbstractRepository):
         await self.execute(stmt, flush=True)
 
     async def add_n_return(
-        self, data: dict[str, Any], options: tuple = ()
+        self, data: dict[str, Any], options: tuple[Any, ...] = ()
     ) -> Model:
         stmt = (
             insert(self.model)
