@@ -6,7 +6,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 WAIT_TIMEOUT="${WAIT_TIMEOUT:-300}"
 SETTLE="${SETTLE:-3}"
 MODES="monolith microservices"
-EXTRAS="bot tools"
+EXTRAS="bot tools photon"
 MODE=""
 WITH=()
 BUILD=1
@@ -16,7 +16,7 @@ KEEP_MAINTENANCE=0
 usage() {
   cat <<'EOF'
 Использование:
-  scripts/deploy.sh [--mode monolith|microservices] [--with bot|tools] [--no-build]
+  scripts/deploy.sh [--mode monolith|microservices] [--with bot|tools|photon] [--no-build]
                     [--no-maintenance] [--keep-maintenance]
   scripts/deploy.sh maintenance on|off|status
   scripts/deploy.sh status
@@ -25,7 +25,8 @@ usage() {
 --mode, иначе из COMPOSE_PROFILES (например, в .env: COMPOSE_PROFILES=monolith).
 При смене режима контейнеры другого режима останавливаются и удаляются.
 
-Telegram-бот (профиль bot) и kafka-ui (профиль tools) сами не запускаются. Включить их
+Telegram-бот (профиль bot), kafka-ui (профиль tools) и свой Photon для геокодера (профиль
+photon, ему нужен GEO_PHOTON_URL=http://photon:2322 в .env) сами не запускаются. Включить их
 можно флагом --with (только вместе с --mode, флаг повторяется) либо в COMPOSE_PROFILES,
 например COMPOSE_PROFILES=monolith,bot. Убрать работающий бот: docker compose rm -sf bot.
 

@@ -122,6 +122,7 @@ def test_the_mode_is_a_profile_and_the_bot_and_the_kafka_ui_are_opt_in() -> None
     assert profiles["aef"] == {"monolith"}
     assert profiles["bot"] == {"bot"}
     assert profiles["kafka-ui"] == {"tools"}
+    assert profiles["photon"] == {"photon"}
     assert all(profiles[name] == {"microservices"} for name in MICROSERVICES)
     always_on = {name for name, found in profiles.items() if not found}
     assert always_on == {
@@ -132,6 +133,32 @@ def test_the_mode_is_a_profile_and_the_bot_and_the_kafka_ui_are_opt_in() -> None
         "traefik",
         "status-page",
     }
+
+
+def test_the_own_photon_is_internal_persistent_and_never_routed() -> None:
+    spec = _compose()["services"]["photon"]
+
+    assert "labels" not in spec
+    assert "ports" not in spec
+    assert spec["expose"] == ["2322"]
+    assert spec["volumes"] == ["photon-data:/photon/data"]
+    assert "photon-data" in _compose()["volumes"]
+    assert spec["environment"]["REGION"].startswith("${PHOTON_REGION:-")
+
+
+def test_the_deploy_script_knows_every_opt_in_profile_of_the_compose_file() -> None:
+    script = (ROOT / "scripts" / "deploy.sh").read_text(encoding="utf-8")
+    extras = re.search(r'^EXTRAS="([^"]*)"', script, re.MULTILINE)
+    services = _compose()["services"]
+    opt_in = {
+        profile
+        for spec in services.values()
+        for profile in spec.get("profiles", [])
+        if profile not in {"monolith", "microservices", "maintenance"}
+    }
+
+    assert extras is not None
+    assert set(extras.group(1).split()) == opt_in
 
 
 @pytest.mark.parametrize("service", MICROSERVICES)

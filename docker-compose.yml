@@ -591,6 +591,24 @@ services:
       - "./docker/traefik/dynamic:/etc/traefik/dynamic:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
+  # Свой Photon для геокодера geo (необязательный; публичный photon.komoot.io - fair-use).
+  # Образ неофициальный (rtuszik/photon-docker): при первом старте скачивает индекс региона,
+  # дальше обновляет его сам. Включить: профиль photon и GEO_PHOTON_URL=http://photon:2322 в .env.
+  photon:
+    profiles: ["photon"]
+    image: rtuszik/photon-docker:latest
+    container_name: photon
+    restart: unless-stopped
+    environment:
+      REGION: ${PHOTON_REGION:-ru}
+      UPDATE_STRATEGY: ${PHOTON_UPDATE_STRATEGY:-PARALLEL}
+      UPDATE_INTERVAL: ${PHOTON_UPDATE_INTERVAL:-7d}
+      JAVA_PARAMS: ${PHOTON_JAVA_PARAMS:--Xmx4g}
+    volumes:
+      - photon-data:/photon/data
+    expose:
+      - "2322"
+
   kafka-ui:
     profiles: ["tools"]
     container_name: kafka-ui
@@ -605,3 +623,4 @@ volumes:
   mongo-data:
   mongo-config:
   kafka-data:
+  photon-data:
