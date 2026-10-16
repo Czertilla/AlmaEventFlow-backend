@@ -67,6 +67,7 @@ class AddressDTO:
     source: str | None
     created_at: datetime.datetime
     edited_at: datetime.datetime | None
+    locality: str = ""
 
 
 @dataclass(frozen=True, slots=True)

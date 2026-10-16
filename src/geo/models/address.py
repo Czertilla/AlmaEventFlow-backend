@@ -1,7 +1,13 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Computed, DateTime, ForeignKey, Index, String
+from sqlalchemy import (
+    Computed,
+    DateTime,
+    ForeignKey,
+    Index,
+    String,
+)
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -28,8 +34,15 @@ class AddressORM(
 ):
     __tablename__ = "address"
 
-    name_tsv: Mapped[str] = mapped_column(
-        TSVECTOR, Computed("""to_tsvector('russian', "name")""", persisted=True)
+    locality: Mapped[str] = mapped_column(String(512), server_default="")
+    """Written by ``AddressAlchemyRepo`` from the city, never by callers."""
+    search_tsv: Mapped[str] = mapped_column(
+        TSVECTOR,
+        Computed(
+            "setweight(to_tsvector('russian', \"name\"), 'A') || "
+            "setweight(to_tsvector('russian', \"locality\"), 'C')",
+            persisted=True,
+        ),
     )
     city_id: Mapped[int] = mapped_column(
         ForeignKey("city.id", ondelete="CASCADE")
@@ -57,11 +70,7 @@ class AddressORM(
     )
 
     __table_args__ = (
-        Index(
-            "idx_spot_search_fts",
-            name_tsv,
-            postgresql_using="gin",
-        ),
+        Index("ix_address_search_tsv", search_tsv, postgresql_using="gin"),
         Index(
             "ix_spot_search_trgm",
             "name",
@@ -70,3 +79,7 @@ class AddressORM(
         ),
         Index("ix_address_source_sync", "source", "city_id", "synced_at"),
     )
+
+
+ADDRESS_SEARCH_TEXT = AddressORM.name + " " + AddressORM.locality
+"""What trigram scores rank: the address and its place line."""

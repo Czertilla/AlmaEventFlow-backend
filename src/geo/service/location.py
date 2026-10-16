@@ -27,8 +27,7 @@ from geo.exc.location import LocationNotExistsException
 from geo.filter.location import LocationFilter
 from geo.models.address import AddressORM
 from geo.models.location import LocationORM
-from geo.models.spot import point_from_geometry
-from geo.service.mapping import address_to_dto
+from geo.service.mapping import location_to_dto
 from geo.uow.location import LocationUOW
 
 logger = getLogger()
@@ -47,16 +46,7 @@ def _display_name(location: LocationDTO) -> str | None:
 class LocationService(BaseService[LocationUOW]):
     @staticmethod
     def _to_dto(location: LocationORM) -> LocationDTO:
-        address = location.address
-        return LocationDTO(
-            id=location.id,
-            name=location.name,
-            address_id=location.address_id,
-            spot=point_from_geometry(location.spot),
-            address=address_to_dto(address) if address else None,
-            created_at=location.created_at,
-            edited_at=location.edited_at,
-        )
+        return location_to_dto(location)
 
     @required_transaction
     async def _create(self, location_create: LocationCreateDTO) -> LocationORM:

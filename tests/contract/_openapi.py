@@ -24,6 +24,7 @@ PINNED_ENV = {
     "APP_ARCHITECTURE": "monolith",
     "IN_MEMORY_BROKER": "true",
     "GEO_LIVE_FETCH": "false",
+    "GEO_EXTERNAL_SEARCH": "false",
     "APP_HOST": "localhost",
     "S3_BUCKET_NAME": "test",
     "S3_ACCESS_KEY": "test",

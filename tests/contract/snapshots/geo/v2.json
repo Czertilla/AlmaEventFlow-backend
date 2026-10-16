@@ -1,0 +1,1352 @@
+{
+  "components": {
+    "schemas": {
+      "AddressFields": {
+        "properties": {
+          "apartment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Apartment"
+          },
+          "building": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Building"
+          },
+          "district": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "District"
+          },
+          "house": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "House"
+          },
+          "street": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Street"
+          }
+        },
+        "title": "AddressFields",
+        "type": "object"
+      },
+      "AddressHit": {
+        "properties": {
+          "address": {
+            "$ref": "#/components/schemas/AddressReadV2"
+          },
+          "kind": {
+            "const": "address",
+            "title": "Kind",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "local",
+              "external"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Relevance, higher is better; null when ranked by distance only.",
+            "title": "Score"
+          }
+        },
+        "required": [
+          "kind",
+          "origin",
+          "score",
+          "address"
+        ],
+        "title": "AddressHit",
+        "type": "object"
+      },
+      "AddressReadV2": {
+        "properties": {
+          "city_id": {
+            "title": "City Id",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "full_name": {
+            "readOnly": true,
+            "title": "Full Name",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "locality": {
+            "description": "City, and region and country when they add something, as one string: \"Москва, Россия\".",
+            "title": "Locality",
+            "type": "string"
+          },
+          "map_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "RFC 5870 ``geo:`` URI.",
+            "readOnly": true,
+            "title": "Map Uri"
+          },
+          "name": {
+            "description": "The address itself: street, house, ...",
+            "title": "Name",
+            "type": "string"
+          },
+          "parsed": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AddressFields"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "created_at",
+          "edited_at",
+          "id",
+          "city_id",
+          "name",
+          "locality",
+          "full_name",
+          "map_uri"
+        ],
+        "title": "AddressReadV2",
+        "type": "object"
+      },
+      "ClusterFeature": {
+        "properties": {
+          "geometry": {
+            "$ref": "#/components/schemas/PointGeometry"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/ClusterProperties"
+          },
+          "type": {
+            "const": "Feature",
+            "default": "Feature",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "geometry",
+          "properties"
+        ],
+        "title": "ClusterFeature",
+        "type": "object"
+      },
+      "ClusterProperties": {
+        "properties": {
+          "bbox": {
+            "description": "[west, south, east, north] of the clustered places; fit the map to it to open the cluster.",
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Bbox",
+            "type": "array"
+          },
+          "cluster": {
+            "const": true,
+            "default": true,
+            "title": "Cluster",
+            "type": "boolean"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/KindCounts"
+          },
+          "point_count": {
+            "title": "Point Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "point_count",
+          "counts",
+          "bbox"
+        ],
+        "title": "ClusterProperties",
+        "type": "object"
+      },
+      "EntityFeature": {
+        "properties": {
+          "geometry": {
+            "$ref": "#/components/schemas/PointGeometry"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/EntityProperties"
+          },
+          "type": {
+            "const": "Feature",
+            "default": "Feature",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "geometry",
+          "properties"
+        ],
+        "title": "EntityFeature",
+        "type": "object"
+      },
+      "EntityProperties": {
+        "properties": {
+          "cluster": {
+            "const": false,
+            "default": false,
+            "title": "Cluster",
+            "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "address",
+              "location"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "locality": {
+            "title": "Locality",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "locality"
+        ],
+        "title": "EntityProperties",
+        "type": "object"
+      },
+      "ErrorModel": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorModel",
+        "type": "object"
+      },
+      "ExternalStatus": {
+        "properties": {
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "state": {
+            "description": "`skipped`: the local answer was enough, or the request opted out. `ok` / `cached`: the external geocoder was asked. `timeout`, `error`, `unavailable`: it could not be, the answer is local only.",
+            "enum": [
+              "skipped",
+              "ok",
+              "cached",
+              "timeout",
+              "error",
+              "unavailable"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "title": "ExternalStatus",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "KindCounts": {
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "integer"
+          },
+          "location": {
+            "title": "Location",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "address",
+          "location"
+        ],
+        "title": "KindCounts",
+        "type": "object"
+      },
+      "LocationHit": {
+        "properties": {
+          "kind": {
+            "const": "location",
+            "title": "Kind",
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/LocationReadV2"
+          },
+          "origin": {
+            "enum": [
+              "local",
+              "external"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Relevance, higher is better; null when ranked by distance only.",
+            "title": "Score"
+          }
+        },
+        "required": [
+          "kind",
+          "origin",
+          "score",
+          "location"
+        ],
+        "title": "LocationHit",
+        "type": "object"
+      },
+      "LocationReadV2": {
+        "properties": {
+          "address": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AddressReadV2"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "address_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Id"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Display Name"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "locality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Locality"
+          },
+          "map_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Map Uri"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "spot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "created_at",
+          "edited_at",
+          "id",
+          "display_name",
+          "locality",
+          "map_uri"
+        ],
+        "title": "LocationReadV2",
+        "type": "object"
+      },
+      "MapResponse": {
+        "description": "RFC 7946 FeatureCollection; `number_matched` and `number_returned`\nfollow OGC API - Features.",
+        "properties": {
+          "features": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/EntityFeature"
+                },
+                {
+                  "$ref": "#/components/schemas/ClusterFeature"
+                }
+              ]
+            },
+            "title": "Features",
+            "type": "array"
+          },
+          "number_matched": {
+            "description": "Places in the window, clustered or not.",
+            "title": "Number Matched",
+            "type": "integer"
+          },
+          "number_returned": {
+            "description": "Features in this response.",
+            "title": "Number Returned",
+            "type": "integer"
+          },
+          "truncated": {
+            "description": "More features than `limit` were left out, smallest clusters first.",
+            "title": "Truncated",
+            "type": "boolean"
+          },
+          "type": {
+            "const": "FeatureCollection",
+            "default": "FeatureCollection",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "features",
+          "number_matched",
+          "number_returned",
+          "truncated"
+        ],
+        "title": "MapResponse",
+        "type": "object"
+      },
+      "Point": {
+        "properties": {
+          "lat": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "Point",
+        "type": "object"
+      },
+      "PointGeometry": {
+        "properties": {
+          "coordinates": {
+            "description": "[longitude, latitude], the RFC 7946 order.",
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Coordinates",
+            "type": "array"
+          },
+          "type": {
+            "const": "Point",
+            "default": "Point",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "coordinates"
+        ],
+        "title": "PointGeometry",
+        "type": "object"
+      },
+      "SearchResponse": {
+        "properties": {
+          "external": {
+            "$ref": "#/components/schemas/ExternalStatus"
+          },
+          "items": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "address": "#/components/schemas/AddressHit",
+                  "location": "#/components/schemas/LocationHit"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/AddressHit"
+                },
+                {
+                  "$ref": "#/components/schemas/LocationHit"
+                }
+              ]
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items",
+          "external"
+        ],
+        "title": "SearchResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "paths": {
+    "/geo/v2/addresses/{address_id}": {
+      "get": {
+        "operationId": "get_address_geo_v2_addresses__address_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "address_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Address Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressReadV2"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ADDRESS_NOT_FOUND": {
+                    "summary": "ADDRESS_NOT_FOUND",
+                    "value": {
+                      "detail": "ADDRESS_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ADDRESS_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Address",
+        "tags": [
+          "address"
+        ]
+      }
+    },
+    "/geo/v2/locations/{location_id}": {
+      "get": {
+        "operationId": "get_location_geo_v2_locations__location_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "location_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Location Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationReadV2"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "LOCATION_NOT_FOUND": {
+                    "summary": "LOCATION_NOT_FOUND",
+                    "value": {
+                      "detail": "LOCATION_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "LOCATION_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Location",
+        "tags": [
+          "location"
+        ]
+      }
+    },
+    "/geo/v2/map": {
+      "get": {
+        "description": "Places in a map window, clustered for the zoom.\n\nThe window is cut into cells of `radius_px` screen pixels (Web Mercator,\nso a cell is the same size on screen everywhere) and every cell becomes\none feature: the place itself when it is alone, a cluster otherwise.\nThe answer is bounded by the cells that fit the window, not by how\ndense the data is, so a crowded district cannot push the rest out.\nFrom zoom 17 on nothing is clustered.",
+        "operationId": "get_map_geo_v2_map_get",
+        "parameters": [
+          {
+            "description": "west,south,east,north in degrees (RFC 7946 order). West greater than east means a window across the antimeridian.",
+            "in": "query",
+            "name": "bbox",
+            "required": true,
+            "schema": {
+              "description": "west,south,east,north in degrees (RFC 7946 order). West greater than east means a window across the antimeridian.",
+              "examples": [
+                "37.3,55.5,37.9,55.9"
+              ],
+              "title": "Bbox",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The map's zoom level, fractions allowed.",
+            "in": "query",
+            "name": "zoom",
+            "required": true,
+            "schema": {
+              "description": "The map's zoom level, fractions allowed.",
+              "maximum": 22,
+              "minimum": 0,
+              "title": "Zoom",
+              "type": "number"
+            }
+          },
+          {
+            "description": "Screen pixels one marker (or cluster) takes.",
+            "in": "query",
+            "name": "radius_px",
+            "required": false,
+            "schema": {
+              "default": 64,
+              "description": "Screen pixels one marker (or cluster) takes.",
+              "maximum": 256,
+              "minimum": 24,
+              "title": "Radius Px",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "What to draw; both by default.",
+            "in": "query",
+            "name": "kinds",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "enum": [
+                      "address",
+                      "location"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "What to draw; both by default.",
+              "title": "Kinds"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 1000,
+              "maximum": 5000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              },
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              },
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Map",
+        "tags": [
+          "map"
+        ]
+      }
+    },
+    "/geo/v2/search": {
+      "get": {
+        "description": "Typeahead over addresses and named locations, ranked together.\n\nThe city counts: \"тверская москва\" narrows to Moscow. With a point the\nnearer of equal matches comes first; with a point and no text the\nnearest places are listed. Addresses the external geocoder finds are\nstored, so every result has an id usable as `address_id`.",
+        "operationId": "search_geo_v2_search_get",
+        "parameters": [
+          {
+            "description": "Free text: street, house, place, city.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free text: street, house, place, city.",
+              "title": "Q"
+            }
+          },
+          {
+            "description": "Latitude of the map centre or the user.",
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 90,
+                  "minimum": -90,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Latitude of the map centre or the user.",
+              "title": "Lat"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 180,
+                  "minimum": -180,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lon"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "What to search; both by default.",
+            "in": "query",
+            "name": "kinds",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "enum": [
+                      "address",
+                      "location"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "What to search; both by default.",
+              "title": "Kinds"
+            }
+          },
+          {
+            "in": "query",
+            "name": "city_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "City Id"
+            }
+          },
+          {
+            "description": "Skip the unnamed locations that only stand for an address (the address itself is already a result).",
+            "in": "query",
+            "name": "named_locations_only",
+            "required": false,
+            "schema": {
+              "default": true,
+              "description": "Skip the unnamed locations that only stand for an address (the address itself is already a result).",
+              "title": "Named Locations Only",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "`auto` asks the external geocoder when the local answer is short; `off` never does.",
+            "in": "query",
+            "name": "external",
+            "required": false,
+            "schema": {
+              "default": "auto",
+              "description": "`auto` asks the external geocoder when the local answer is short; `off` never does.",
+              "enum": [
+                "auto",
+                "off"
+              ],
+              "title": "External",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Search",
+        "tags": [
+          "search"
+        ]
+      }
+    }
+  }
+}

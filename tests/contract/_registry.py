@@ -5,6 +5,7 @@ SCHEMA_PACKAGES = {
     "event_v1": "event.api.v1.schema",
     "event_v2": "event.api.v2.schema",
     "geo_v1": "geo.api.v1.schema",
+    "geo_v2": "geo.api.v2.schema",
     "notify_v1": "notify.api.v1.schema",
     "org_v1": "org.api.v1.schema",
     "profile_v1": "profile.api.v1.schema",
@@ -64,6 +65,16 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "location.LocationRead": "geo.dto.location:LocationDTO",
             "map.MapResult": "geo.dto.map:MapResultDTO",
             "point.Point": "geo.dto.point:PointDTO",
+        },
+    ),
+    "geo_v2": (
+        "geo.api.v2.schema",
+        {
+            "address.AddressReadV2": "geo.dto.address:AddressDTO",
+            "location.LocationReadV2": "geo.dto.location:LocationDTO",
+            "map.MapResponse": "geo.dto.map:MapViewDTO",
+            "search.ExternalStatus": "geo.dto.search:ExternalStatusDTO",
+            "search.SearchResponse": "geo.dto.search:SearchResultDTO",
         },
     ),
     "notify_v1": (

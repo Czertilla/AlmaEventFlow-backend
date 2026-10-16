@@ -45,6 +45,26 @@ class Settings(BaseSettings):
     by geo.bootstrap.run's --servers default. Unset uses the built-in
     DEFAULT_MIRRORS pool. Example: 'z,main,http://my-mirror:8080/api/interpreter'."""
 
+    GEO_EXTERNAL_SEARCH: bool = True
+    """Whether geo's v2 search may ask an external geocoder when the local
+    database has too few matches. Off in tests (see tests/conftest.py)."""
+
+    GEO_PHOTON_URL: str = "https://photon.komoot.io"
+    """Base URL of the Photon instance behind that search. The public one is
+    fair-use only; point this at a self-hosted instance for real traffic."""
+
+    GEO_EXTERNAL_TIMEOUT: float = 2.0
+    """Seconds a search waits for the external geocoder before answering
+    with local results only."""
+
+    GEO_OVERPASS_SEARCH: bool = False
+    """Whether a search that Photon could not answer also asks Overpass for the
+    street and house near the point. Off by default: the public mirrors are
+    slow and flaky, and the answer needs a point."""
+
+    GEO_OVERPASS_SEARCH_TIMEOUT: float = 5.0
+    """Seconds that Overpass search may take before it counts as a timeout."""
+
     ADMIN_EMAIL: EmailStr | None = None
 
     APP_NAME: str = "Simple App"

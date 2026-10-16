@@ -226,6 +226,69 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   A deliberate change is a new `v<N+1>`; only pilot/pre-release work may regenerate with
   `UPDATE_CONTRACTS=1 uv run pytest tests/contract` and must review the resulting file diff.
 
+## Geo (`src/geo`)
+
+- **`address.name` is the clean address, `address.locality` the place line** ("Москва, Россия";
+  city, then region and country only when they differ from the names before them,
+  `geo/locality.py`). `AddressAlchemyRepo` writes `locality` from the city on every write that
+  carries a `city_id` (`_prepare`), so API, cascade, bootstrap and live fetch need no code of their
+  own; a city rename is not propagated. Never put it into a trigram index: every row of a city
+  shares its trigrams and the index prunes nothing (a typo'd city name rechecked all rows, ~3 s per
+  300k). The typo filter looks at `name`, `locality` only ranks the few survivors.
+- Text search (`geo/search.py`): the morphological stage matches `address.search_tsv` (name weight
+  A, locality weight C) with a cheap rank (`ts_rank` + exact-stem bonus); trigram scores cost ~10x
+  per row and rank only the fuzzy stage, which `search_ranked` also caps (`FUZZY_CANDIDATES`).
+  `search_page` (paginated, v1) and `search_ranked` (top-N with a score and a bias to a point, v2)
+  share the two stages.
+- **v2 is additive**: `GET /geo/v2/search` (typeahead over addresses and named locations, flat
+  ranked list with a `kind` discriminator, no pagination), `GET /geo/v2/map` (GeoJSON, below) and
+  `GET /geo/v2/{addresses,locations}/{id}`. v1 CRUD stays on v1; the v2 read models are
+  `AddressReadV2`/`LocationReadV2` (the suffix keeps OpenAPI component names apart in the monolith).
+- **External search** (`SearchService`, `service/external.py`, `geocoder/`): a provider is asked
+  **outside any DB transaction** when fewer than `limit` local addresses match a query of 3+
+  characters, or when the query names a house (`identity.query_house`) that none of them has.
+  Photon (`GEO_PHOTON_URL`, houses only, `layer=house`) goes first; with `GEO_OVERPASS_SEARCH=true`
+  Overpass (`geocoder/overpass.py`, street stem + house near the point, slow, default off) is asked
+  next while the answer is still short, and its hits take their city from a stored address within
+  `PLACE_RADIUS_M` (none near: dropped; the background live fetch fills a cold area). The named
+  house comes first in the answer, wherever it was found. `ExternalSearch` is a TTL cache, a
+  2-request cap and a circuit breaker per provider; a failure is a `state` in the answer
+  (`timeout`, `error`, `unavailable`), never an exception. `GEO_EXTERNAL_SEARCH=false` (tests)
+  switches it all off. Nominatim is not an option, its policy forbids autocomplete.
+- **A found address is matched to a stored one before it is stored** (`SearchService._twins`,
+  `geo/identity.py`): the same street and house (`address_key`: case, ё, street type and word order
+  ignored) within `DUPLICATE_RADIUS_M` is the same address **whatever city it is filed under**
+  ("Ростов" / "Ростов Великий"), so the stored row is returned and no city is created. Otherwise the
+  row gets the `uuid5` id of the OSM import, so one in the same city collapses into it.
+  `AddressAlchemyRepo.save_found` inserts a new row and refreshes a row of the **same `source`**
+  (name, point, `synced_at`); an OSM or manual row is never rewritten by a provider.
+  `resolve_city_loose` reuses a city whose region is spelled differently ("Татарстан" /
+  "Республика Татарстан") but never merges across regions.
+- **Photon rows age; `python -m geo.bootstrap.refresh`** asks the geocoder again for the rows not
+  confirmed for `--older-than-days` (30) and, when the instance reports its build date (`/status`,
+  `DatedGeocoder`), only for those confirmed before it. A found row takes the current data; a missing
+  one is only reported. `--prune` deletes a row unseen for `--prune-after-days` (90) and a duplicate
+  of another source's row, never one a location points at. `--delay` (1 s) is for the public Photon,
+  use 0 for your own. Rerun it from cron; nothing runs it by itself.
+- **Own Photon is optional** (compose profile `photon`, `scripts/deploy.sh --with photon`): the
+  unofficial `rtuszik/photon-docker` image downloads the `PHOTON_REGION` index (default `ru`) on the
+  first start and swaps in a fresh one every `PHOTON_UPDATE_INTERVAL` (`PARALLEL` keeps serving).
+  It is internal (no port, no Traefik) and has no healthcheck on purpose: the first start downloads
+  for a long time and `up --wait` would fail the deploy. Switch geo to it with
+  `GEO_PHOTON_URL=http://photon:2322` in `.env`; the public instance stays the default. Disk and RAM
+  of the `ru` index were not measured here: size `PHOTON_JAVA_PARAMS` and the volume from the image's
+  README and watch the first start.
+- **Map** (`repository/map.py`, `service/viewport.py`): the window is cut into cells of
+  `radius_px` screen pixels in Web Mercator (arithmetic in SQL, no PROJ), one feature per cell: the
+  place when it is alone, a cluster (`cluster: true`, `point_count`, `bbox`) otherwise. The answer is
+  bounded by the cells that fit the window, not by data density, which is what keeps a zoomed-out
+  window evenly filled. From zoom 17 nothing is clustered. Unnamed address-proxy locations are left
+  out (the address is there). `west > east` is a window across the antimeridian (RFC 7946). The
+  grouping uses `any_value` (PostgreSQL 16, as in `docker-compose.yml`) and carries only narrow
+  columns; labels of single places come from a second query. Response media type is
+  `application/geo+json`.
+- The migration that adds `locality` rewrites `address` (about a minute per 300k rows).
+
 ## Telegram bot (`src/bot`)
 
 - Handlers live in `bot/tg/api/router/{command,callback,chat_member,message}`; `load_common` picks

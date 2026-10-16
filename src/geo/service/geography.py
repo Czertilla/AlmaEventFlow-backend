@@ -65,3 +65,31 @@ async def resolve_or_create_city(
 
     await session.commit()
     return city.id
+
+
+_REGION_NOISE = frozenset({"республика", "область", "край", "автономный", "округ"})
+
+
+def _region_key(name: str) -> str:
+    words = name.casefold().replace("ё", "е").split()  # noqa: RUF001
+    return " ".join(word for word in words if word not in _REGION_NOISE)
+
+
+async def resolve_city_loose(
+    uow: AddressUOW, country_name: str, region_name: str, city_name: str
+) -> int:
+    """``resolve_or_create_city`` that tolerates another spelling of the region."""
+    stmt = (
+        select(CityORM.id, RegionORM.name)
+        .join(RegionORM, RegionORM.id == CityORM.region_id)
+        .join(CountryORM, CountryORM.id == RegionORM.country_id)
+        .where(
+            CityORM.name == city_name.strip(),
+            CountryORM.name == country_name.strip(),
+        )
+    )
+    wanted = _region_key(region_name)
+    for city_id, existing_region in (await uow.addresses.execute(stmt)).all():
+        if _region_key(existing_region) == wanted:
+            return city_id
+    return await resolve_or_create_city(uow, country_name, region_name, city_name)

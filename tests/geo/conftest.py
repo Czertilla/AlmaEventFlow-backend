@@ -27,6 +27,7 @@ _PUBLISHERS = {
         "on_location_updated",
         "on_location_deleted",
     ),
+    "geo.service.search": ("on_address_created",),
 }
 
 

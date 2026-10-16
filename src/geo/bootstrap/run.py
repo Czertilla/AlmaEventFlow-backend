@@ -142,13 +142,16 @@ async def _flush(batch: list[dict], sessionmaker: async_sessionmaker | None) -> 
     return len(rows)
 
 
-def _address_id(city_id: int, street: str, housenumber: str) -> UUID:
+def address_id(city_id: int, street: str, housenumber: str) -> UUID:
     """Keyed on the normalized (city, street, housenumber), not the upstream
     element: OSM's own id for the same real-world address can change between
     reimports (a redrawn way, a node retagged to a way, ...), and this keeps
     the row -- and its uuid -- stable regardless, so a reimport updates the
     existing row instead of inserting a duplicate."""
     return uuid5(NAMESPACE_URL, f"{city_id}:{street}:{housenumber}")
+
+
+_address_id = address_id
 
 
 async def _import_cell(

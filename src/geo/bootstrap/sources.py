@@ -1,13 +1,17 @@
 import asyncio
+import re
 from collections.abc import AsyncIterator, Iterator, Sequence
 from dataclasses import dataclass
 from logging import getLogger
-from typing import Protocol
+from typing import Any, Protocol
 from urllib.parse import urlsplit
 
 import aiohttp
 
 logger = getLogger(__name__)
+
+_QUERY_WORD = re.compile(r"[^\W_]+(?:-[^\W_]+)*")
+_DIGITS = re.compile(r"[0-9]+")
 
 BBox = tuple[float, float, float, float]
 """(min_lat, min_lon, max_lat, max_lon)."""
@@ -192,7 +196,7 @@ class OverpassSource:
         out tags;
         """
 
-    async def _request(self, url: str, query: str) -> dict:
+    async def _request(self, url: str, query: str) -> dict[str, Any]:
         timeout = aiohttp.ClientTimeout(total=self.timeout)
         async with aiohttp.ClientSession(timeout=timeout, trust_env=True) as session:
             async with session.post(
@@ -210,7 +214,7 @@ class OverpassSource:
             raise _Retryable(remark)
         return payload
 
-    async def _post(self, query: str) -> dict:
+    async def _post(self, query: str) -> dict[str, Any]:
         last_error: BaseException | None = None
         for attempt in range(1, self.attempts + 1):
             url = await self._idle.get()
@@ -260,27 +264,65 @@ class OverpassSource:
         if self.request_delay:
             await asyncio.sleep(self.request_delay)
         payload = await self._post(self._address_query(bbox))
+        for raw in raw_addresses(payload):
+            yield raw
 
-        for element in payload.get("elements", []):
-            tags = element.get("tags", {})
-            street = tags.get("addr:street")
-            housenumber = tags.get("addr:housenumber")
-            if not street or not housenumber:
-                continue
+    async def search(
+        self,
+        bbox: BBox,
+        street_words: Sequence[str],
+        number: str | None,
+        limit: int,
+    ) -> list[RawAddress]:
+        """Addresses in ``bbox`` whose street contains every word (a case-blind
+        substring, so one stem covers the case endings) and, when given, whose
+        house number starts with the digits ``number`` (a suffix is allowed)."""
+        if not all(_QUERY_WORD.fullmatch(word) for word in street_words):
+            raise ValueError("street words may hold letters, digits and hyphens only")
+        if number is not None and not _DIGITS.fullmatch(number):
+            raise ValueError("a house number filter is digits only")
+        min_lat, min_lon, max_lat, max_lon = bbox
+        box = f"{min_lat},{min_lon},{max_lat},{max_lon}"
+        filters = "".join(f'["addr:street"~"{word}",i]' for word in street_words)
+        if number is None:
+            filters += '["addr:housenumber"]'
+        else:
+            filters += f'["addr:housenumber"~"^{number}([^0-9]|$)"]'
+        query = f"""
+        [out:json][timeout:{int(self.timeout)}];
+        (
+          node{filters}({box});
+          way{filters}({box});
+        );
+        out center {int(limit)};
+        """
+        return list(raw_addresses(await self._post(query)))
 
-            if element["type"] == "node":
-                lat, lon = element.get("lat"), element.get("lon")
-            else:
-                center = element.get("center") or {}
-                lat, lon = center.get("lat"), center.get("lon")
-            if lat is None or lon is None:
-                continue
 
-            yield RawAddress(
-                source="osm",
-                source_id=f"{element['type']}/{element['id']}",
-                street=street,
-                housenumber=housenumber,
-                lat=lat,
-                lon=lon,
-            )
+def raw_addresses(payload: dict[str, Any]) -> Iterator[RawAddress]:
+    elements: list[dict[str, Any]] = payload.get("elements", [])
+    for element in elements:
+        tags: dict[str, Any] = element.get("tags", {})
+        street = tags.get("addr:street")
+        housenumber = tags.get("addr:housenumber")
+        if not street or not housenumber:
+            continue
+
+        lat: float | None
+        lon: float | None
+        if element["type"] == "node":
+            lat, lon = element.get("lat"), element.get("lon")
+        else:
+            center: dict[str, Any] = element.get("center") or {}
+            lat, lon = center.get("lat"), center.get("lon")
+        if lat is None or lon is None:
+            continue
+
+        yield RawAddress(
+            source="osm",
+            source_id=f"{element['type']}/{element['id']}",
+            street=street,
+            housenumber=housenumber,
+            lat=lat,
+            lon=lon,
+        )
