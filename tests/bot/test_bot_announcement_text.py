@@ -1,3 +1,4 @@
+import re
 from datetime import UTC, date, datetime
 from html.parser import HTMLParser
 from uuid import uuid4
@@ -385,3 +386,79 @@ async def test_stages_beyond_the_shown_ones_are_counted_in_the_rich_text() -> No
 
     assert "…and 10 more" in html
     assert html.count("<b>Stage ") == 30
+
+
+async def test_a_location_with_a_point_links_to_it_on_the_map() -> None:
+    request = _request(location="Main hall", location_lat=55.75, location_lon=37.62)
+
+    for build in (build_announcement_text, build_announcement_rich):
+        html = await build(request, lang="en")
+
+        assert (
+            '📍 <a href="https://yandex.ru/maps/?pt=37.620000,55.750000'
+            '&amp;z=17&amp;l=map">Main hall</a>'
+        ) in html
+
+
+async def test_a_location_without_a_point_links_to_a_search_for_its_text() -> None:
+    request = _request(location="ул. Пушкина, 10 & 2")
+
+    for build in (build_announcement_text, build_announcement_rich):
+        html = await build(request, lang="en")
+
+        assert (
+            '<a href="https://yandex.ru/maps/?text='
+            "%D1%83%D0%BB.%20%D0%9F%D1%83%D1%88%D0%BA%D0%B8%D0%BD%D0%B0%2C%2010%20%26%202"
+            '">ул. Пушкина, 10 &amp; 2</a>'
+        ) in html
+
+
+async def test_no_location_means_no_map_link() -> None:
+    for build in (build_announcement_text, build_announcement_rich):
+        html = await build(_request(), lang="en")
+
+        assert "yandex.ru/maps" not in html
+        assert "📍" not in html
+
+
+async def test_a_half_known_point_is_not_a_point() -> None:
+    html = await build_announcement_text(
+        _request(location="Main hall", location_lat=55.75), lang="en"
+    )
+
+    assert "?text=Main%20hall" in html
+    assert "pt=" not in html
+
+
+async def test_what_people_typed_cannot_break_out_of_the_link() -> None:
+    request = _request(location='"><b>x</b>')
+
+    for build in (build_announcement_text, build_announcement_rich):
+        html = await build(request, lang="en")
+        parser = _RichStructure()
+        parser.feed(html)
+        parser.close()
+
+        assert (
+            '<a href="https://yandex.ru/maps/?text=%22%3E%3Cb%3Ex%3C%2Fb%3E">'
+            "&quot;&gt;&lt;b&gt;x&lt;/b&gt;</a>"
+        ) in html
+        assert "<b>x</b>" not in html
+        assert not parser.unknown
+
+
+async def test_a_long_location_keeps_its_link_short_and_the_message_in_limit() -> None:
+    request = _request(
+        location="Ж" * 500,
+        stages=_stages(40, 500),
+        event_description="d" * 10_000,
+    )
+
+    text = await build_announcement_text(request, lang="ru")
+    rich = await build_announcement_rich(request, lang="ru")
+
+    assert len(text) <= TELEGRAM_LIMIT
+    assert len(rich) <= RICH_LIMIT
+    hrefs = re.findall(r'href="(https://yandex\.ru/maps[^"]*)"', text)
+    assert len(hrefs) == 1
+    assert len(hrefs[0]) < 800

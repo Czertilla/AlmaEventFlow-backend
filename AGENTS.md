@@ -304,6 +304,12 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   /geo/v2/locations` with a name alone; v1 still refuses it). The same text, whatever its case and
   spacing, is the same location (`find_or_create_text_only`). The UI copies the text or opens a map
   service with it as the search query (`MapLinkMenu` with `search`).
+- **Other services see a location as `LocationData`**: the text to show (`display_name`) and where it
+  is (`lat`/`lon`: its own point, else its address's; none for a text-only one), built by
+  `location_to_data`. A moved or renamed address republishes the locations at it
+  (`AddressService._tell_locations`). `event` keeps both in its `location` projection and puts them
+  in the announcement (`location_lat`/`location_lon`); a row told about before the columns existed
+  has no point until geo tells about it again.
 - **Map** (`repository/map.py`, `service/viewport.py`): the window is cut into cells of
   `radius_px` screen pixels in Web Mercator (arithmetic in SQL, no PROJ), one feature per cell: the
   place when it is alone, a cluster (`cluster: true`, `point_count`, `bbox`) otherwise. The answer is
@@ -347,6 +353,9 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   detail, language) belong to the binding. An edited announcement is followed by a one-line
   "updated" reply by default; with `detailed_updates` the reply names the event and lists the
   changes (`build_update_notice`).
+- The location line of an announcement is a link (`links.map_url`, Yandex Maps): the pin when the
+  request has both `location_lat` and `location_lon`, else a search for the text. The URL is built
+  from the clipped label, so it shrinks with the fit steps.
 - Time in announcements is a `<tg-time>` entity (each reader sees their own zone); delivery falls
   back to plain text and to link-less buttons when Telegram rejects either. Ephemeral replies
   (`reply_to_sender`) are for hints and refusals only and fall back to an ordinary reply.

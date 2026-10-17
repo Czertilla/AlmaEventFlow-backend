@@ -11,6 +11,7 @@ from pydantic import ValidationError
 
 from bot.tg.enum.callbacks import AttendanceCB
 from bot.tg.text.localization import i18n_manager
+from bot.tg.utils.links import map_url
 from core.schema.message.announcement import AnnouncementRequest, AnnouncementStage
 from core.schema.message.notify import TelegramButton
 
@@ -228,6 +229,12 @@ async def _title(request: AnnouncementRequest, lang: str, limits: _Limits) -> st
     )
 
 
+def _location_link(request: AnnouncementRequest, limits: _Limits) -> str:
+    label = _clip(request.location or "", limits.field)
+    url = map_url(label, request.location_lat, request.location_lon)
+    return f'<a href="{escape(url)}">{escape(label)}</a>'
+
+
 async def _meta_lines(
     request: AnnouncementRequest, lang: str, limits: _Limits
 ) -> list[str]:
@@ -244,7 +251,7 @@ async def _meta_lines(
             await i18n_manager.get(
                 "announcement.location",
                 lang=lang,
-                location=escape(_clip(request.location, limits.field)),
+                location=_location_link(request, limits),
             )
         )
     if request.organizer:

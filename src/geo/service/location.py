@@ -7,7 +7,6 @@ from sqlalchemy.orm import selectinload
 
 from core.dto.base import dto_dict
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
-from core.schema.message.geo import LocationData
 from core.service.base import BaseService, required_transaction
 from geo.api.kafka.pub.location import (
     on_location_created,
@@ -27,7 +26,7 @@ from geo.exc.location import LocationNotExistsException
 from geo.filter.location import LocationFilter
 from geo.models.address import AddressORM
 from geo.models.location import LocationORM
-from geo.service.mapping import location_to_dto
+from geo.service.mapping import location_to_data, location_to_dto
 from geo.uow.location import LocationUOW
 
 logger = getLogger()
@@ -37,10 +36,6 @@ _WITH_ADDRESS = (selectinload(LocationORM.address),)
 address-anchored location (which has no ``spot`` of its own) -- read paths
 only, RETURNING-based mutation results don't support eager-loading a
 relationship in the same statement."""
-
-
-def _display_name(location: LocationDTO) -> str | None:
-    return location.name or (location.address.name if location.address else None)
 
 
 class LocationService(BaseService[LocationUOW]):
@@ -132,7 +127,7 @@ class LocationService(BaseService[LocationUOW]):
             result = self._to_dto(await self._read(created.id))
             await uow.commit()
         await on_location_created(
-            [LocationData(id=result.id, name=_display_name(result))]
+            [location_to_data(result)]
         )
         return result
 
@@ -147,7 +142,7 @@ class LocationService(BaseService[LocationUOW]):
             result = self._to_dto(await self._read(updated.id))
             await uow.commit()
         await on_location_updated(
-            [LocationData(id=result.id, name=_display_name(result))]
+            [location_to_data(result)]
         )
         return result
 
@@ -157,7 +152,7 @@ class LocationService(BaseService[LocationUOW]):
             result = self._to_dto(await self._read(upserted.id))
             await uow.commit()
         await on_location_updated(
-            [LocationData(id=result.id, name=_display_name(result))]
+            [location_to_data(result)]
         )
         return result
 
@@ -217,7 +212,7 @@ class LocationService(BaseService[LocationUOW]):
             await uow.commit()
         if created:
             await on_location_created(
-                [LocationData(id=result.id, name=_display_name(result))]
+                [location_to_data(result)]
             )
         return result
 
@@ -233,7 +228,7 @@ class LocationService(BaseService[LocationUOW]):
             await uow.commit()
         if created:
             await on_location_created(
-                [LocationData(id=result.id, name=_display_name(result))]
+                [location_to_data(result)]
             )
         return result
 

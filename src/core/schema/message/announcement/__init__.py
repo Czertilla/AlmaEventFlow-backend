@@ -35,6 +35,9 @@ class AnnouncementRequest(MQRequest):
     event_date: date | None = None
     event_description: str | None = None
     location: str | None = None
+    location_lat: float | None = Field(default=None, ge=-90, le=90)
+    location_lon: float | None = Field(default=None, ge=-180, le=180)
+    """Where ``location`` is on a map, when it is known."""
     organizer: str | None = None
     stages: list[AnnouncementStage] = Field(default_factory=list)
     action_url: str | None = None

@@ -12,7 +12,7 @@ from geo.api.kafka.pub.address import (
     on_address_deleted,
     on_address_updated,
 )
-from geo.api.kafka.pub.location import on_location_deleted
+from geo.api.kafka.pub.location import on_location_deleted, on_location_updated
 from geo.dto.address import (
     AddressCascadeCreateDTO,
     AddressCreateDTO,
@@ -28,7 +28,7 @@ from geo.filter.address import AddressFilter
 from geo.models.address import AddressORM
 from geo.service.geography import resolve_or_create_city
 from geo.service.live_fetch import schedule_live_fetch
-from geo.service.mapping import address_to_dto
+from geo.service.mapping import address_to_dto, location_to_data, location_to_dto
 from geo.uow.address import AddressUOW
 
 logger = getLogger(__name__)
@@ -132,6 +132,7 @@ class AddressService(BaseService[AddressUOW]):
             result = self._to_dto(await self._update(address_patch.id, address_data))
             await uow.commit()
         await on_address_updated([AddressData(id=result.id, name=result.name)])
+        await self._tell_locations(result.id)
         return result
 
     async def put(self, address_put: AddressPutDTO) -> AddressDTO:
@@ -140,7 +141,16 @@ class AddressService(BaseService[AddressUOW]):
             result = self._to_dto(await self._read(upserted.id))
             await uow.commit()
         await on_address_updated([AddressData(id=result.id, name=result.name)])
+        await self._tell_locations(result.id)
         return result
+
+    async def _tell_locations(self, address_id: UUID) -> None:
+        """The locations at an address show its name and point elsewhere."""
+        async with self.uow:
+            rows = await self.uow.locations.anchored_to(address_id)
+            told = [location_to_data(location_to_dto(row)) for row in rows]
+        if told:
+            await on_location_updated(told)
 
     async def delete(self, address_id: UUID) -> None:
         async with self.uow as uow:

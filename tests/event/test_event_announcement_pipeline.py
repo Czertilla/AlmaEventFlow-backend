@@ -98,11 +98,12 @@ async def test_each_participating_collective_gets_one_published_request(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     event_id, first, second = uuid4(), uuid4(), uuid4()
+    concert = (event_id, "Concert", date(2026, 5, 1), None, None, None, None, None)
     _patch_targets(
         monkeypatch,
         [
-            (event_id, "Concert", date(2026, 5, 1), None, None, None, first),
-            (event_id, "Concert", date(2026, 5, 1), None, None, None, second),
+            (*concert, first),
+            (*concert, second),
         ],
     )
 
@@ -120,7 +121,7 @@ async def test_publish_failure_is_logged_with_its_context(
     event_id, collective_id = uuid4(), uuid4()
     _patch_targets(
         monkeypatch,
-        [(event_id, "Concert", None, None, None, None, collective_id)],
+        [(event_id, "Concert", None, None, None, None, None, None, collective_id)],
     )
 
     async def broken(request: AnnouncementRequest) -> None:

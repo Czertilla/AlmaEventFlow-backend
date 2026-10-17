@@ -1,3 +1,4 @@
+from core.schema.message.geo import LocationData
 from geo.dto.address import AddressDTO
 from geo.dto.location import LocationDTO
 from geo.models.address import AddressORM
@@ -31,3 +32,14 @@ def location_to_dto(location: LocationORM) -> LocationDTO:
         edited_at=location.edited_at,
     )
 
+
+def location_to_data(location: LocationDTO) -> LocationData:
+    """What other services keep of a location: the text to show and where it is."""
+    address = location.address
+    point = location.spot or (address.spot if address else None)
+    return LocationData(
+        id=location.id,
+        name=location.name or (address.name if address else None),
+        lat=point.lat if point else None,
+        lon=point.lon if point else None,
+    )

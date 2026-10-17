@@ -3,10 +3,11 @@ from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from datetime import date, datetime
 from logging import getLogger
+from typing import Any
 from uuid import UUID
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from sqlalchemy import select
+from sqlalchemy import Row, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config.settings import settings
@@ -302,7 +303,7 @@ async def notify_collective_chats(
 
 async def _resolve_collective_targets(
     session: AsyncSession, *, event_ids: Iterable[UUID]
-) -> Sequence:
+) -> Sequence[Row[Any]]:
     stmt = (
         select(
             EventORM.id,
@@ -310,6 +311,8 @@ async def _resolve_collective_targets(
             EventORM.date,
             EventORM.description,
             LocationORM.name,
+            LocationORM.lat,
+            LocationORM.lon,
             OrganizationORM.name,
             ParticipationORM.collective_id,
         )
@@ -327,7 +330,7 @@ async def _resolve_collective_targets(
 
 
 def _build_announcements(
-    rows: Sequence, stages: dict[UUID, list[StageInfo]]
+    rows: Sequence[Row[Any]], stages: dict[UUID, list[StageInfo]]
 ) -> list[AnnouncementRequest]:
     result = []
     for row in rows:
@@ -337,6 +340,8 @@ def _build_announcements(
             event_date,
             description,
             location,
+            location_lat,
+            location_lon,
             organizer,
             collective_id,
         ) = row
@@ -347,6 +352,8 @@ def _build_announcements(
                 event_date,
                 description,
                 location,
+                location_lat,
+                location_lon,
                 organizer,
                 collective_id,
                 stages.get(event_id, []),
@@ -361,6 +368,8 @@ def _build_announcement(
     event_date: date | None,
     description: str | None,
     location: str | None,
+    location_lat: float | None,
+    location_lon: float | None,
     organizer: str | None,
     collective_id: UUID,
     stages: list[StageInfo],
@@ -372,6 +381,8 @@ def _build_announcement(
         event_date=event_date,
         event_description=description,
         location=location,
+        location_lat=location_lat,
+        location_lon=location_lon,
         organizer=organizer,
         stages=[
             AnnouncementStage(

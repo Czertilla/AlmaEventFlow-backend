@@ -24,6 +24,10 @@ class LocationData(MQRequest):
     """Resolved display text (``Location.display_name``), not the raw,
     often-``None`` location name -- an address-proxy location has no name
     of its own."""
+    lat: float | None = Field(default=None, ge=-90, le=90)
+    lon: float | None = Field(default=None, ge=-180, le=180)
+    """Where it is on a map: its own point, else its address's; ``None`` for a
+    location that is only text."""
 
 class LocationCreatedEvent(MQEvent[LocationData]): ...
 

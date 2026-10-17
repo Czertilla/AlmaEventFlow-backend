@@ -220,6 +220,14 @@ class LocationRepo(
         )
         return (await self.execute(stmt)).scalar_one_or_none()
 
+    async def anchored_to(self, address_id: UUID) -> list[Model]:
+        stmt = (
+            select(self.model)
+            .where(self.model.address_id == address_id)
+            .options(selectinload(self.model.address))
+        )
+        return list((await self.execute(stmt)).unique().scalars())
+
     async def find_text_only(self, name: str) -> Model | None:
         """The location that is this text and nothing else, whatever the case."""
         stmt = (
