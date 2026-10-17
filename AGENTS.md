@@ -252,9 +252,27 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   next while the answer is still short, and its hits take their city from a stored address within
   `PLACE_RADIUS_M` (none near: dropped; the background live fetch fills a cold area). The named
   house comes first in the answer, wherever it was found. `ExternalSearch` is a TTL cache, a
-  2-request cap and a circuit breaker per provider; a failure is a `state` in the answer
-  (`timeout`, `error`, `unavailable`), never an exception. `GEO_EXTERNAL_SEARCH=false` (tests)
-  switches it all off. Nominatim is not an option, its policy forbids autocomplete.
+  request budget (token bucket, `GEO_EXTERNAL_RATE` a second after a `GEO_EXTERNAL_BURST`, per
+  process; a cached answer costs nothing), a 2-request cap and a circuit breaker per provider. A 429
+  (`RateLimitedError`, `Retry-After`) pauses the provider for that long (60 s when it says nothing,
+  at most 15 min). A failure is a `state` in the answer (`timeout`, `error`, `unavailable`,
+  `throttled`), never an exception. `GEO_EXTERNAL_SEARCH=false` (tests) switches it all off.
+  Nominatim is not an option, its policy forbids autocomplete.
+- **Who may make geo call out**: typed text, and a point the user put on the map (`marked` in the
+  frontend's `useGeoSearch`). A map that merely moves asks with `external=off`, and `external=off`
+  also keeps the background Overpass fetch (`schedule_live_fetch`) from starting, as does a text
+  with a bias point: only a point alone (a marker) or a found settlement starts it.
+- **Around a point and settlement names** (`SearchService._around`, `_find_place`): with a point and
+  no text the answer is the nearest stored places; when fewer than `limit` addresses lie within
+  `NEARBY_ENOUGH_M` the provider lists the houses around the point (`NearbyGeocoder`, Photon
+  `/reverse`, `NEARBY_RADIUS_KM`) and they are stored like any found address. No address farther than
+  `NEARBY_MAX_M` is "around" (named locations stay). A short text without digits is first tried as a
+  settlement (`PlaceGeocoder`, Photon `layer=city`, only when every typed word is a whole word of the
+  name; a street of that name near the point wins, `layer=street`, 30 km): the answer is then the
+  addresses nearest to its centre, `place` in the response says where it is, and the text search
+  is skipped (Photon's `layer=house` answers a bare place name with shops of that name). A text
+  that is a street some local hit already has is never a settlement. Both extras are optional
+  capabilities of a geocoder (`runtime_checkable` protocols): one without them is `skipped`.
 - **A found address is matched to a stored one before it is stored** (`SearchService._twins`,
   `geo/identity.py`): the same street and house (`address_key`: case, ё, street type and word order
   ignored) within `DUPLICATE_RADIUS_M` is the same address **whatever city it is filed under**

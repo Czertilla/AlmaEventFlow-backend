@@ -54,6 +54,9 @@ def value_for(tp: Any, path: str) -> Any:
     if origin in (list, set, frozenset):
         items: list[Any] = [value_for(args[0], path + "[]")]
         return cast("Any", origin)(items)
+    if origin is tuple:
+        members = args[:1] if args[-1:] == (Ellipsis,) else args
+        return tuple(value_for(arg, path + "[]") for arg in members)
     if origin is dict:
         key = value_for(args[0], path + ".k")
         return {key: value_for(args[1], path + ".v")}

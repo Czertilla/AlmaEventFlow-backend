@@ -57,6 +57,14 @@ class Settings(BaseSettings):
     """Seconds a search waits for the external geocoder before answering
     with local results only."""
 
+    GEO_EXTERNAL_RATE: float = 1.0
+    """Requests per second geo may send to the external geocoder, all users
+    together and per process; a cached answer costs nothing. 0 means no limit.
+    The public Photon is fair-use: a burst past this is answered locally."""
+
+    GEO_EXTERNAL_BURST: int = 6
+    """How many requests may go out at once before GEO_EXTERNAL_RATE applies."""
+
     GEO_OVERPASS_SEARCH: bool = False
     """Whether a search that Photon could not answer also asks Overpass for the
     street and house near the point. Off by default: the public mirrors are

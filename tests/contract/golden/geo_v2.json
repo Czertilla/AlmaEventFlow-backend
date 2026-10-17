@@ -767,46 +767,60 @@
       }
     }
   },
-  "search.SearchResponse": {
+  "search.Place": {
     "full": {
+      "error": [
+        "bbox.0:float_type",
+        "bbox.1:float_type",
+        "bbox.2:float_type",
+        "bbox.3:float_type"
+      ],
+      "input": {
+        "bbox": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "country": "x",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x",
+        "region": "x"
+      }
+    },
+    "required": {
       "dump": {
-        "external": {
-          "provider": "x",
-          "state": "skipped"
-        },
-        "items": [
-          {
-            "address": {
-              "city_id": 1,
-              "created_at": "2026-01-01T10:00:00Z",
-              "edited_at": "2026-01-01T10:00:00Z",
-              "full_name": "x, x",
-              "id": "96fac202-3f44-5d70-a551-8d8a4aa6ae33",
-              "locality": "x",
-              "map_uri": "geo:1.5,1.5",
-              "name": "x",
-              "parsed": {
-                "apartment": "x",
-                "building": "x",
-                "district": "x",
-                "house": "x",
-                "street": "x"
-              },
-              "source": "x",
-              "spot": {
-                "lat": 1.5,
-                "lon": 1.5
-              }
-            },
-            "kind": "address",
-            "origin": "local",
-            "score": 1.5
-          }
-        ]
+        "bbox": null,
+        "country": "x",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x",
+        "region": "x"
       },
       "fields_set": [
-        "external",
-        "items"
+        "country",
+        "lat",
+        "lon",
+        "name",
+        "region"
+      ],
+      "input": {
+        "country": "x",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x",
+        "region": "x"
+      }
+    }
+  },
+  "search.SearchResponse": {
+    "full": {
+      "error": [
+        "place.bbox.0:float_type",
+        "place.bbox.1:float_type",
+        "place.bbox.2:float_type",
+        "place.bbox.3:float_type"
       ],
       "input": {
         "external": {
@@ -839,7 +853,20 @@
             "origin": "local",
             "score": 1.5
           }
-        ]
+        ],
+        "place": {
+          "bbox": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "country": "x",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x",
+          "region": "x"
+        }
       }
     },
     "required": {
@@ -867,7 +894,8 @@
             "origin": "local",
             "score": 1.5
           }
-        ]
+        ],
+        "place": null
       },
       "fields_set": [
         "external",

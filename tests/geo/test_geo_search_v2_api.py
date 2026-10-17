@@ -4,7 +4,13 @@ from uuid import uuid4
 
 import httpx
 import pytest
-from support.geocoder import StubGeocoder, moscow_house
+from support.geocoder import (
+    SUZDAL_PLACE,
+    RichStubGeocoder,
+    StubGeocoder,
+    moscow_house,
+    suzdal,
+)
 from support.http import api_client, principal
 
 from geo.service.external import ExternalSearch
@@ -140,15 +146,23 @@ async def test_a_point_without_text_lists_what_is_near(
 ) -> None:
     await _address(api, city_id, "Далеко", spot={"lat": 56.5, "lon": 37.6})
     await _address(api, city_id, "Рядом", spot={"lat": 55.7501, "lon": 37.6})
+    await _address(api, city_id, "Чуть дальше", spot={"lat": 55.76, "lon": 37.6})
+    far_hall = await api.post(
+        f"{V1}/locations",
+        json={"name": "Далёкий зал", "spot": {"lat": 59.9, "lon": 30.3}},
+        headers=ADMIN,
+    )
+    assert far_hall.status_code == 200, far_hall.text
 
     response = await api.get(
         f"{BASE}/search", params={"lat": 55.75, "lon": 37.6}, headers=USER
     )
 
-    assert [i["address"]["name"] for i in response.json()["items"]] == [
-        "Рядом",
-        "Далеко",
+    names = [
+        i["address"]["name"] if i["kind"] == "address" else i["location"]["name"]
+        for i in response.json()["items"]
     ]
+    assert names == ["Рядом", "Чуть дальше", "Далёкий зал"]
     assert {i["score"] for i in response.json()["items"]} == {None}
 
 
@@ -182,8 +196,69 @@ async def test_external_off_never_reaches_the_geocoder(
     assert response.json() == {
         "items": [],
         "external": {"state": "skipped", "provider": None},
+        "place": None,
     }
     assert geocoder.calls == []
+
+
+@pytest.fixture
+def rich(monkeypatch: pytest.MonkeyPatch) -> RichStubGeocoder:
+    stub = RichStubGeocoder(
+        found=[],
+        place=SUZDAL_PLACE,
+        nearby=[suzdal(), suzdal("Ленина улица", "9", lat=56.43, lon=40.45)],
+    )
+    external = ExternalSearch(stub)
+    monkeypatch.setattr("geo.service.search.shared_external_search", lambda: external)
+
+    def schedule(*_args: Any, **_kwargs: Any) -> None:
+        return None
+
+    monkeypatch.setattr("geo.service.search.schedule_live_fetch", schedule)
+    return stub
+
+
+async def test_a_settlement_name_lists_its_addresses_and_says_where_it_is(
+    api: httpx.AsyncClient, city_id: int, rich: RichStubGeocoder
+) -> None:
+    response = await api.get(f"{BASE}/search", params={"q": "суздаль"}, headers=USER)
+
+    body = response.json()
+    assert response.status_code == 200
+    assert [hit["address"]["name"] for hit in body["items"]] == [
+        "Кремлёвская улица, 6",
+        "Ленина улица, 9",
+    ]
+    assert body["items"][0]["address"]["locality"] == (
+        "Суздаль, Владимирская область, Россия"
+    )
+    assert body["place"] == {
+        "name": "Суздаль",
+        "region": "Владимирская область",
+        "country": "Россия",
+        "lat": SUZDAL_PLACE.lat,
+        "lon": SUZDAL_PLACE.lon,
+        "bbox": list(SUZDAL_PLACE.bbox or ()),
+    }
+    assert rich.place_calls == ["суздаль"]
+
+
+async def test_a_point_alone_lists_the_houses_around_it(
+    api: httpx.AsyncClient, city_id: int, rich: RichStubGeocoder
+) -> None:
+    response = await api.get(
+        f"{BASE}/search", params={"lat": 56.4185, "lon": 40.447}, headers=USER
+    )
+
+    body = response.json()
+    assert response.status_code == 200
+    assert [hit["address"]["name"] for hit in body["items"]] == [
+        "Кремлёвская улица, 6",
+        "Ленина улица, 9",
+    ]
+    assert body["place"] is None
+    assert body["external"]["state"] == "ok"
+    assert rich.nearby_calls[0][1:] == (2.0, 10)
 
 
 async def test_a_dead_geocoder_still_gets_a_200(

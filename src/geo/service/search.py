@@ -1,3 +1,4 @@
+import math
 from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
@@ -9,15 +10,17 @@ from geo.bootstrap.run import address_id
 from geo.dto.point import PointDTO
 from geo.dto.search import (
     ExternalStatusDTO,
+    PlaceDTO,
     SearchHitDTO,
     SearchQueryDTO,
     SearchResultDTO,
 )
-from geo.geocoder.base import GeocodedAddress
+from geo.geocoder.base import GeocodedAddress, GeocodedPlace
 from geo.identity import (
     DUPLICATE_RADIUS_M,
     address_key,
     meters_between,
+    place_words,
     query_house,
     stored_key,
 )
@@ -40,7 +43,45 @@ from geo.uow.address import AddressUOW
 PLACE_RADIUS_M = 500.0
 """How close a stored address must be to lend its city to a hit that names none."""
 
+NEARBY_RADIUS_KM = 2.0
+NEARBY_ENOUGH_M = 1500.0
+"""A point with `limit` stored addresses this close needs no provider."""
+NEARBY_MAX_M = 25_000.0
+"""No address farther than this is "around" a point; the few named locations stay."""
+
+MAX_PLACE_WORDS = 4
+
 Ranked = list[tuple[float, SearchHitDTO]]
+
+
+def _spot(hit: SearchHitDTO) -> PointDTO | None:
+    if hit.address:
+        return hit.address.spot
+    location = hit.location
+    if location is None:
+        return None
+    if location.spot:
+        return location.spot
+    return location.address.spot if location.address else None
+
+
+def _meters_to(hit: SearchHitDTO, point: PointDTO) -> float:
+    spot = _spot(hit)
+    if spot is None:
+        return math.inf
+    return meters_between(point.lat, point.lon, spot.lat, spot.lon)
+
+
+def _distinct(hits: list[SearchHitDTO]) -> list[SearchHitDTO]:
+    seen: set[tuple[str, UUID]] = set()
+    kept: list[SearchHitDTO] = []
+    for hit in hits:
+        place = hit.address or hit.location
+        if place is None or (hit.kind, place.id) in seen:
+            continue
+        seen.add((hit.kind, place.id))
+        kept.append(hit)
+    return kept
 
 
 class SearchService(BaseService[AddressUOW]):
@@ -265,25 +306,139 @@ class SearchService(BaseService[AddressUOW]):
         rest = [hit for hit in taken if hit not in exact]
         return (exact + local + rest)[:limit]
 
+    @staticmethod
+    def _names_a_street(text: str, hits: list[SearchHitDTO]) -> bool:
+        """Some address has every word of the text as a whole word of its street."""
+        wanted = set(place_words(text))
+        streets = (
+            stored_key(hit.address.name, hit.address.parsed)[0].split()
+            for hit in hits
+            if hit.address
+        )
+        return any(wanted <= set(street) for street in streets)
+
+    @classmethod
+    def _wants_place(
+        cls, query: SearchQueryDTO, text: str, hits: list[SearchHitDTO]
+    ) -> bool:
+        """A short text with no number that is not a street the answer has."""
+        if not query.external or "address" not in query.kinds:
+            return False
+        if len(text) < MIN_QUERY_LENGTH or any(char.isdigit() for char in text):
+            return False
+        if not 0 < len(place_words(text)) <= MAX_PLACE_WORDS:
+            return False
+        return not cls._names_a_street(text, hits)
+
+    @staticmethod
+    def _sparse(
+        query: SearchQueryDTO, hits: list[SearchHitDTO], point: PointDTO
+    ) -> bool:
+        """Fewer addresses than asked for lie close to the point."""
+        if not query.external or "address" not in query.kinds:
+            return False
+        close = sum(
+            hit.kind == "address" and _meters_to(hit, point) <= NEARBY_ENOUGH_M
+            for hit in hits
+        )
+        return close < query.limit
+
+    async def _find_place(
+        self, text: str, near: PointDTO | None
+    ) -> tuple[GeocodedPlace | None, ExternalStatusDTO | None]:
+        status: ExternalStatusDTO | None = None
+        for provider in self.providers:
+            outcome = await provider.place(text, near=near)
+            if outcome.state == "skipped":
+                continue
+            status = ExternalStatusDTO(outcome.state, outcome.provider)
+            if outcome.items:
+                return outcome.items[0], status
+        return None, status
+
+    async def _around(
+        self,
+        query: SearchQueryDTO,
+        point: PointDTO,
+        hits: list[SearchHitDTO],
+        *,
+        stored: bool,
+    ) -> tuple[list[SearchHitDTO], ExternalStatusDTO | None]:
+        """The places nearest to the point: the stored ones and, when they are
+        few, the houses a provider lists around it. ``hits`` are kept."""
+        if stored:
+            async with self.uow:
+                nearest = await self._nearest(query, point)
+            hits = _distinct(hits + [hit for _, hit in nearest])
+        status: ExternalStatusDTO | None = None
+        if self._sparse(query, hits, point):
+            known = {hit.address.id for hit in hits if hit.address}
+            for provider in self.providers:
+                outcome = await provider.nearby(
+                    point, radius_km=NEARBY_RADIUS_KM, limit=query.limit
+                )
+                if outcome.state == "skipped":
+                    continue
+                status = ExternalStatusDTO(outcome.state, outcome.provider)
+                if outcome.items:
+                    hits = hits + await self._take_external(outcome.items, known)
+                    break
+        hits = sorted(hits, key=lambda hit: _meters_to(hit, point))
+        hits = [
+            hit
+            for hit in hits
+            if hit.kind == "location" or _meters_to(hit, point) <= NEARBY_MAX_M
+        ]
+        return hits[: query.limit], status
+
     async def search(self, query: SearchQueryDTO) -> SearchResultDTO:
         text = (query.query or "").strip()
         async with self.uow:
             hits = await self._local(query, text)
 
         status = ExternalStatusDTO("skipped")
-        for provider in self.providers:
-            if not self._wants_external(query, text, hits):
-                break
-            outcome = await provider.search(text, near=query.near, limit=query.limit)
-            status = ExternalStatusDTO(outcome.state, outcome.provider)
-            if outcome.items:
-                known = {hit.address.id for hit in hits if hit.address}
-                taken = await self._take_external(outcome.items, known)
-                hits = self._merge(hits, taken, text, query.limit)
+        place: PlaceDTO | None = None
+        if self._wants_place(query, text, hits):
+            found, place_status = await self._find_place(text, query.near)
+            status = place_status or status
+            if found is not None:
+                place = PlaceDTO(
+                    found.name,
+                    found.region,
+                    found.country,
+                    found.lat,
+                    found.lon,
+                    found.bbox,
+                )
+                centre = PointDTO(lat=found.lat, lon=found.lon)
+                hits, around = await self._around(query, centre, hits, stored=True)
+                status = around or status
+                schedule_live_fetch(
+                    centre,
+                    sessionmaker=self.uow.session_factory,  # pyright: ignore[reportUnknownMemberType]
+                )
 
-        if query.near is not None:
+        if place is None:
+            for provider in self.providers:
+                if not self._wants_external(query, text, hits):
+                    break
+                outcome = await provider.search(
+                    text, near=query.near, limit=query.limit
+                )
+                status = ExternalStatusDTO(outcome.state, outcome.provider)
+                if outcome.items:
+                    known = {hit.address.id for hit in hits if hit.address}
+                    taken = await self._take_external(outcome.items, known)
+                    hits = self._merge(hits, taken, text, query.limit)
+            if query.near is not None and not tokenize(text):
+                hits, around = await self._around(
+                    query, query.near, hits, stored=False
+                )
+                status = around or status
+
+        if query.near is not None and query.external and not text:
             schedule_live_fetch(
                 query.near,
                 sessionmaker=self.uow.session_factory,  # pyright: ignore[reportUnknownMemberType]
             )
-        return SearchResultDTO(items=hits, external=status)
+        return SearchResultDTO(items=hits, external=status, place=place)

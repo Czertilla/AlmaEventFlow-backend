@@ -128,7 +128,20 @@
           "origin": "local",
           "score": 1.5
         }
-      ]
+      ],
+      "place": {
+        "bbox": [
+          1.5,
+          1.5,
+          1.5,
+          1.5
+        ],
+        "country": "x",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x",
+        "region": "x"
+      }
     }
   }
 }

@@ -281,7 +281,7 @@ async def test_a_point_without_text_lists_the_nearest_places_of_both_kinds(
     locations = LocationService(LocationUOW(sessionmaker_))
     far = await addresses.create(
         AddressCreateDTO(
-            city_id=city_id, name="Далеко", spot=PointDTO(lat=56.5, lon=37.6)
+            city_id=city_id, name="Далеко", spot=PointDTO(lat=55.95, lon=37.6)
         )
     )
     close = await addresses.create(

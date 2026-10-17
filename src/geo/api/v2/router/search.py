@@ -55,8 +55,11 @@ async def search(
 
     The city counts: "тверская москва" narrows to Moscow. With a point the
     nearer of equal matches comes first; with a point and no text the
-    nearest places are listed. Addresses the external geocoder finds are
-    stored, so every result has an id usable as `address_id`.
+    nearest places are listed, the houses around the point included when too
+    few are stored. A text that names a settlement ("суздаль") lists the
+    addresses nearest to its centre and says where it is in `place`.
+    Addresses the external geocoder finds are stored, so every result has an
+    id usable as `address_id`.
     """
     if (lat is None) != (lon is None):
         raise HTTPException(422, detail="lat and lon go together")

@@ -7,7 +7,9 @@ from geo.dto.point import PointDTO
 
 SearchKind = Literal["address", "location"]
 SearchOrigin = Literal["local", "external"]
-ExternalState = Literal["skipped", "ok", "cached", "timeout", "error", "unavailable"]
+ExternalState = Literal[
+    "skipped", "ok", "cached", "timeout", "error", "unavailable", "throttled"
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,6 +39,17 @@ class ExternalStatusDTO:
 
 
 @dataclass(frozen=True, slots=True)
+class PlaceDTO:
+    name: str
+    region: str
+    country: str
+    lat: float
+    lon: float
+    bbox: tuple[float, float, float, float] | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class SearchResultDTO:
     items: list[SearchHitDTO]
     external: ExternalStatusDTO
+    place: PlaceDTO | None = None

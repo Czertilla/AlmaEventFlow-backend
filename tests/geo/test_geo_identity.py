@@ -7,8 +7,10 @@ from geo.identity import (
     box_around,
     house_key,
     meters_between,
+    place_words,
     query_house,
     split_query,
+    starts_like,
     stored_key,
     street_key,
     street_words,
@@ -119,3 +121,30 @@ def test_the_box_holds_the_circle_at_any_latitude():
         assert meters_between(lat, 30.0, north, 30.0) == pytest.approx(150.0, abs=1.0)
         assert meters_between(lat, 30.0, lat, east) == pytest.approx(150.0, abs=1.0)
         assert (south, west) < (lat, 30.0) < (north, east)
+
+
+@pytest.mark.parametrize(
+    "typed, name, expected",
+    [
+        ("суздаль", "суздаль", True),
+        ("суздал", "суздаль", False),
+        ("суз", "суздаль", False),
+        ("уфа", "уфа", True),
+        ("ростов", "ростов великий", True),
+        ("ростов вели", "ростов великий", False),
+        ("ростов великий", "ростов великий", True),
+        ("великий", "ростов великий", False),
+        ("ростов на дону", "ростов на дону", True),
+        ("ростов на дону центр", "ростов на дону", False),
+        ("", "суздаль", False),
+    ],
+)
+def test_typed_words_begin_a_settlement_name_only_as_whole_words(
+    typed: str, name: str, expected: bool
+):
+    assert starts_like(typed.split(), name.split()) is expected
+
+
+def test_place_words_ignore_case_yo_and_hyphens():
+    assert place_words("Ростов-на-Дону") == ["ростов", "на", "дону"]
+    assert place_words("ЧЁРНАЯ  речка") == ["черная", "речка"]

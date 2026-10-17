@@ -23,6 +23,7 @@ _STREET_TYPES = {
     "пр-д": "проезд",
     "туп": "тупик",
 }
+STREET_TYPE_WORDS = frozenset(_STREET_TYPES) | frozenset(_STREET_TYPES.values())
 _WORD = re.compile(r"[^\W_]+(?:-[^\W_]+)*")
 _ORDINAL = re.compile(r"^\d+-(?:я|й|е|ая|ой|ий|го|ое)$")
 _HOUSE_PREFIX = re.compile(r"^(?:дом|д)(?=\d)")
@@ -40,6 +41,20 @@ _LATIN = str.maketrans("abcekmhopxty", "авсекмнорхту")
 
 def _plain(text: str) -> str:
     return text.casefold().replace("ё", "е")
+
+
+def place_words(text: str) -> list[str]:
+    """Words of a settlement name: case, ё and hyphens do not matter."""
+    found: list[str] = re.findall(r"[^\W_]+", _plain(text))
+    return found
+
+
+def starts_like(typed: list[str], name: list[str]) -> bool:
+    """The typed words are the first whole words of the name.
+
+    A word still being typed is not one: the name it may become is unknown.
+    """
+    return bool(typed) and name[: len(typed)] == typed
 
 
 def street_key(street: str) -> str:
@@ -91,7 +106,7 @@ def query_house(text: str) -> str | None:
 
 def street_words(words: list[str]) -> list[str]:
     """Words of a street name without its type ("улица", "пр-т", ...)."""
-    kinds = _STREET_TYPES.keys() | _STREET_TYPES.values() | {"д", "дом"}
+    kinds = STREET_TYPE_WORDS | {"д", "дом"}
     found: list[str] = _WORD.findall(" ".join(words))
     return [word for word in found if word not in kinds]
 

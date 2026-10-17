@@ -10,7 +10,7 @@ from geo.dto.address import AddressDTO
 from geo.dto.location import LocationDTO
 from geo.dto.point import PointDTO
 from geo.dto.search import SearchHitDTO
-from geo.geocoder.base import GeocodedAddress
+from geo.geocoder.base import GeocodedAddress, GeocodedPlace
 from geo.models.address import AddressORM
 from geo.service.geography import resolve_or_create_city
 from geo.uow.address import AddressUOW
@@ -104,6 +104,75 @@ class Clock:
 
     def __call__(self) -> float:
         return self.now
+
+
+class RichStubGeocoder(StubGeocoder):
+    """A geocoder that also finds a settlement and lists the houses around a point."""
+
+    def __init__(
+        self,
+        found: list[GeocodedAddress] | None = None,
+        *,
+        nearby: list[GeocodedAddress] | None = None,
+        place: GeocodedPlace | None = None,
+        nearby_error: Exception | None = None,
+        place_error: Exception | None = None,
+        **options: Any,
+    ):
+        super().__init__(found, **options)
+        self.nearby_found = nearby or []
+        self.place_found = place
+        self.nearby_error = nearby_error
+        self.place_error = place_error
+        self.nearby_calls: list[tuple[PointDTO, float, int]] = []
+        self.place_calls: list[str] = []
+        self.place_nears: list[PointDTO | None] = []
+
+    async def nearby(
+        self, point: PointDTO, *, radius_km: float, limit: int
+    ) -> list[GeocodedAddress]:
+        self.nearby_calls.append((point, radius_km, limit))
+        if self.nearby_error:
+            raise self.nearby_error
+        return list(self.nearby_found)
+
+    async def place(
+        self, query: str, *, near: PointDTO | None = None
+    ) -> GeocodedPlace | None:
+        self.place_calls.append(query)
+        self.place_nears.append(near)
+        if self.place_error:
+            raise self.place_error
+        return self.place_found
+
+
+def suzdal(
+    street: str = "Кремлёвская улица",
+    housenumber: str = "6",
+    *,
+    lat: float = 56.4185,
+    lon: float = 40.4470,
+    source_id: str = "node/10",
+) -> GeocodedAddress:
+    return moscow_house(
+        street,
+        housenumber,
+        source_id=source_id,
+        city="Суздаль",
+        region="Владимирская область",
+        lat=lat,
+        lon=lon,
+    )
+
+
+SUZDAL_PLACE = GeocodedPlace(
+    name="Суздаль",
+    region="Владимирская область",
+    country="Россия",
+    lat=56.4194,
+    lon=40.4488,
+    bbox=(40.419, 56.399, 40.477, 56.455),
+)
 
 
 class DatedStubGeocoder(StubGeocoder):
