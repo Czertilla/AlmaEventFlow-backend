@@ -296,6 +296,14 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   `GEO_PHOTON_URL=http://photon:2322` in `.env`; the public instance stays the default. Disk and RAM
   of the `ru` index were not measured here: size `PHOTON_JAVA_PARAMS` and the volume from the image's
   README and watch the first start.
+- **Locations that stand for less than a place.** An address-proxy location (`name IS NULL`, one
+  per address, `find_or_create_address_proxy`, unique partial index) only attaches an address to an
+  event: lists leave it out (`named_locations_only` in v2 search, `name__isnull=false` from the
+  frontend on the v1 list, v2 map) and the UI shows it as the address. The fallback for a place with
+  nothing on a map is a **text-only location**: a `name` and no address, no `spot` (`POST
+  /geo/v2/locations` with a name alone; v1 still refuses it). The same text, whatever its case and
+  spacing, is the same location (`find_or_create_text_only`). The UI copies the text or opens a map
+  service with it as the search query (`MapLinkMenu` with `search`).
 - **Map** (`repository/map.py`, `service/viewport.py`): the window is cut into cells of
   `radius_px` screen pixels in Web Mercator (arithmetic in SQL, no PROJ), one feature per cell: the
   place when it is alone, a cluster (`cluster: true`, `point_count`, `bbox`) otherwise. The answer is

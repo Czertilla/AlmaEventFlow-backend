@@ -87,6 +87,48 @@
       }
     }
   },
+  "location.LocationCreateV2": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "address_id": "ff187618-78ce-5418-97be-ac4ca2b631ac",
+          "name": "x",
+          "spot": {
+            "lat": 1.5,
+            "lon": 1.5
+          }
+        }
+      },
+      "dump": {
+        "address_id": "ff187618-78ce-5418-97be-ac4ca2b631ac",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      },
+      "fields_set": [
+        "address_id",
+        "name",
+        "spot"
+      ],
+      "input": {
+        "address_id": "ff187618-78ce-5418-97be-ac4ca2b631ac",
+        "name": "x",
+        "spot": {
+          "lat": 1.5,
+          "lon": 1.5
+        }
+      }
+    },
+    "required": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {}
+    }
+  },
   "location.LocationReadV2": {
     "full": {
       "dump": {

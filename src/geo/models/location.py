@@ -21,7 +21,8 @@ class LocationORM(ModuleBase, Base, OptionalSpotMixin, TimestampMixin):
     the location to a specific point near/within that address (e.g. a
     particular entrance) rather than the address as a whole. Never neither
     -- enforced by ``ck_location_address_or_spot`` below, not just at the
-    API layer."""
+    API layer. A name alone is the third way: an address written as plain
+    text, for a place nothing else is known about."""
 
     address_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("address.id", ondelete="SET NULL")
@@ -33,7 +34,7 @@ class LocationORM(ModuleBase, Base, OptionalSpotMixin, TimestampMixin):
 
     __table_args__ = (
         CheckConstraint(
-            "(address_id IS NOT NULL) OR (spot IS NOT NULL)",
+            "(address_id IS NOT NULL) OR (spot IS NOT NULL) OR (name IS NOT NULL)",
             name="ck_location_address_or_spot",
         ),
         Index(

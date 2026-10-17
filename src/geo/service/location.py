@@ -85,6 +85,14 @@ class LocationService(BaseService[LocationUOW]):
         return proxy, created
 
     @required_transaction
+    async def _ensure_text_only(self, name: str) -> tuple[LocationORM, bool]:
+        existing = await self.uow.locations.find_text_only(name)
+        if existing is not None:
+            return existing, False
+        created = await self._create(LocationCreateDTO(name=name))
+        return await self._read(created.id), True
+
+    @required_transaction
     async def _update(
         self,
         location_id: UUID,
@@ -113,6 +121,12 @@ class LocationService(BaseService[LocationUOW]):
     async def create(self, location_create: LocationCreateDTO) -> LocationDTO:
         if location_create.address_id and location_create.name is None:
             return await self.find_or_create_address_proxy(location_create.address_id)
+        if (
+            location_create.name
+            and location_create.address_id is None
+            and location_create.spot is None
+        ):
+            return await self.find_or_create_text_only(location_create.name)
         async with self.uow as uow:
             created = await self._create(location_create)
             result = self._to_dto(await self._read(created.id))
@@ -200,6 +214,22 @@ class LocationService(BaseService[LocationUOW]):
         async with self.uow as uow:
             proxy, created = await self._ensure_address_proxy(address_id)
             result = self._to_dto(proxy)
+            await uow.commit()
+        if created:
+            await on_location_created(
+                [LocationData(id=result.id, name=_display_name(result))]
+            )
+        return result
+
+    async def find_or_create_text_only(self, text: str) -> LocationDTO:
+        """A location that is an address written as plain text, nothing else.
+        The same text, whatever its case and spacing, is the same location, so
+        a resubmitted form does not pile up twins; two requests at once may
+        still make two."""
+        name = " ".join(text.split())[:512]
+        async with self.uow as uow:
+            row, created = await self._ensure_text_only(name)
+            result = self._to_dto(row)
             await uow.commit()
         if created:
             await on_location_created(

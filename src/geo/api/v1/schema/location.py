@@ -16,7 +16,7 @@ from geo.api.v1.schema.point import Point
 from geo.dto.location import LocationCreateDTO, LocationPatchDTO, LocationPutDTO
 
 
-def _check_address_or_spot(
+def check_address_or_spot(
     address_id: UUID | None, spot: object, name: str | None
 ) -> None:
     if address_id is None and spot is None:
@@ -28,7 +28,7 @@ def _check_address_or_spot(
         )
 
 
-def _blank_to_none(value: str | None) -> str | None:
+def blank_to_none(value: str | None) -> str | None:
     return value.strip() or None if value else None
 
 
@@ -41,11 +41,11 @@ class LocationFields(BaseModel):
 
 
 class LocationBase(LocationFields):
-    _normalize_name = field_validator("name")(_blank_to_none)
+    _normalize_name = field_validator("name")(blank_to_none)
 
     @model_validator(mode="after")
     def _validate_anchor(self) -> "LocationBase":
-        _check_address_or_spot(self.address_id, self.spot, self.name)
+        check_address_or_spot(self.address_id, self.spot, self.name)
         return self
 
 
@@ -82,7 +82,7 @@ class LocationPatchData(PatchModelV1):
     address_id: UUID | None = None
     spot: Point | None = None
 
-    _normalize_name = field_validator("name")(_blank_to_none)
+    _normalize_name = field_validator("name")(blank_to_none)
 
 
 class LocationPatch(LocationPatchData, UUIDMixinV1, ToDTOMixinV1):
@@ -104,4 +104,4 @@ class LocationFromAddressCreate(BaseModel):
     address_id: UUID
     name: str | None = Field(max_length=512, default=None)
 
-    _normalize_name = field_validator("name")(_blank_to_none)
+    _normalize_name = field_validator("name")(blank_to_none)

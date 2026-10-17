@@ -220,6 +220,20 @@ class LocationRepo(
         )
         return (await self.execute(stmt)).scalar_one_or_none()
 
+    async def find_text_only(self, name: str) -> Model | None:
+        """The location that is this text and nothing else, whatever the case."""
+        stmt = (
+            select(self.model)
+            .where(
+                self.model.address_id.is_(None),
+                self.model.spot.is_(None),
+                func.lower(self.model.name) == name.lower(),
+            )
+            .options(selectinload(self.model.address))
+            .limit(1)
+        )
+        return (await self.execute(stmt)).unique().scalars().first()
+
     async def delete_by_address(self, address_id: UUID) -> list[UUID]:
         stmt = (
             delete(self.model)
