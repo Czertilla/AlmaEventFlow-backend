@@ -506,6 +506,28 @@ three copies of one control) and raw radii and borders (`12px`, `999px`, `1.5px`
   paragraph, not a bulleted list) is the max — and only for the *why* (constraint, invariant), never
   the *what* the code already says.
 
+## Changelog (`frontend/public/changelog/`)
+
+The in-app changelog ("Что нового") is written for the **users of the app** (students, collective
+leaders, people working in the admin panel), not for developers or operators. It is shown to them
+after every update, so it has to read like news, not like release notes for the team.
+
+- **What goes in:** what changes for the person using the app - a new feature, a changed behaviour,
+  a fixed bug. That is the whole content. A change the user cannot see gets no line, however big it
+  was (refactors, tests, speed-ups nobody notices, internal clean-ups).
+- **How it is written:** in plain Russian anyone understands: what the person can do now, or no
+  longer suffers from, in the words of the screen (the names of pages and buttons as they are shown).
+  Never: endpoint paths, HTTP codes, environment variables, migrations, deploy/Docker steps, names of
+  services and libraries (Photon, Kafka, Traefik, Orval, ...), API versions, schema fields, ids.
+- **Where the technical side goes:** the commit message and the hand-over message to the maintainer
+  (a migration to run, a new setting, an API change, a known limitation). Not the changelog: no
+  "Сервер и API" and no "Развёртывание" sections.
+- **Structure:** group by what the user sees (`Мероприятия`, `Telegram-бот`, `Административная
+  панель`, `Исправления`, ...); a release describes everything user-visible since the previous one.
+- **Format** (the page's parser reads only this): a file `<version>.md` with `## <version> — <date>`,
+  `### section`, `- item` and `**bold**`; no backticks, links or nested lists; plus the newest entry
+  first in `index.json`. It is committed as `docs(changelog): ...` in the `frontend` submodule.
+
 ## Commit conventions
 
 - **Conventional Commits** (`type(scope): subject`, e.g. `fix(event): ...`, `feat(user): ...`,
