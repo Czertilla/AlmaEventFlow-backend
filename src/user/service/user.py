@@ -560,6 +560,22 @@ class UserService(BaseService[UserUOW]):
         await self._announce_updated(result, {"person_id"})
         return result
 
+    async def link_created_person(self, user_id: UUID, person_id: UUID) -> UserDTO:
+        async with self.uow as uow:
+            user = await uow.users.get(user_id)
+            if user is None:
+                raise UserNotFound()
+            if user.person_id is not None:
+                raise AccountAlreadyLinked()
+            if await uow.users.exists_person(person_id):
+                raise PersonAlreadyHasAccount()
+            await uow.persons.upsert(data={"id": person_id})
+            await uow.users.update_one(user_id, {"person_id": person_id})
+            result = await self._flushed(user_id)
+            await uow.commit()
+        await self._announce_updated(result, {"person_id"})
+        return result
+
     async def announce_login(self, user_id: UUID, device_info: str | None) -> None:
         body = f"Выполнен вход с устройства: {device_info}" if device_info else ""
         logger.debug(f"Dispatching login notification for user {user_id}")

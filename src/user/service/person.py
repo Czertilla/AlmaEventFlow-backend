@@ -8,7 +8,7 @@ class UserPersonEventService(PersonEventService[UserPersonUOW]):
 
     @required_transaction
     async def _create(self, person: PersonData):
-        await self.uow.persons.add_n_return(data={"id": person.id})
+        await self.uow.persons.upsert(data={"id": person.id})
 
     @required_transaction
     async def _upsert(self, person: PersonData):

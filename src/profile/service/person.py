@@ -18,10 +18,15 @@ from profile.uow.person import PersonUOW
 from typing import Any
 from uuid import UUID
 
+from core.broker.rpc import RpcError, rpc_call
 from core.dto.base import dto_dict, dto_from_orm
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
+from core.enum.rpc import UserRPC
+from core.schema.message.core import Ack
 from core.schema.message.profile import PersonData
+from core.schema.message.user import LinkPersonRequest
 from core.service.base import BaseService, required_transaction
+from core.utils.exc.http import VancedHTTPException
 
 logger = getLogger(__name__)
 
@@ -90,6 +95,31 @@ class PersonService(BaseService[PersonUOW]):
         async with self.uow as uow:
             result = self._to_dto(await self._create(person_create))
             await uow.commit()
+        await on_person_created([self._event(result)])
+        return result
+
+    async def create_own(
+        self, user_id: UUID, person_create: PersonCreateDTO
+    ) -> PersonDTO:
+        async with self.uow as uow:
+            result = self._to_dto(await self._create(person_create))
+            await uow.commit()
+        try:
+            await rpc_call(
+                UserRPC.LINK_PERSON,
+                LinkPersonRequest(user_id=user_id, person_id=result.id),
+                Ack,
+            )
+        except RpcError as exc:
+            async with self.uow as uow:
+                await self._delete(result.id)
+                await uow.commit()
+            raise VancedHTTPException(
+                status_code=exc.error.code, detail=exc.error.detail
+            ) from exc
+        except Exception:
+            await on_person_created([self._event(result)])
+            raise
         await on_person_created([self._event(result)])
         return result
 

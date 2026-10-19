@@ -1,0 +1,1152 @@
+{
+  "components": {
+    "schemas": {
+      "DietRead": {
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "DietRead",
+        "type": "object"
+      },
+      "ErrorModel": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorModel",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "OrganizationRead": {
+        "properties": {
+          "acronym": {
+            "anyOf": [
+              {
+                "maxLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acronym"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "OrganizationRead",
+        "type": "object"
+      },
+      "PersonCreate": {
+        "properties": {
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "patronymic": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Patronymic"
+          },
+          "surname": {
+            "maxLength": 128,
+            "title": "Surname",
+            "type": "string"
+          }
+        },
+        "required": [
+          "surname",
+          "name"
+        ],
+        "title": "PersonCreate",
+        "type": "object"
+      },
+      "PersonRead": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "title": "Name",
+            "type": "string"
+          },
+          "patronymic": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Patronymic"
+          },
+          "surname": {
+            "maxLength": 128,
+            "title": "Surname",
+            "type": "string"
+          }
+        },
+        "required": [
+          "created_at",
+          "edited_at",
+          "id",
+          "surname",
+          "name",
+          "patronymic"
+        ],
+        "title": "PersonRead",
+        "type": "object"
+      },
+      "ProfileRead": {
+        "properties": {
+          "birthdate": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Birthdate"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "diet": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DietRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "diet_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diet Id"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "person": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "workplace": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OrganizationRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "workplace_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workplace Id"
+          }
+        },
+        "required": [
+          "created_at",
+          "edited_at",
+          "id"
+        ],
+        "title": "ProfileRead",
+        "type": "object"
+      },
+      "StudentGroupRead": {
+        "properties": {
+          "degree_id": {
+            "title": "Degree Id",
+            "type": "integer"
+          },
+          "faculty_id": {
+            "format": "uuid",
+            "title": "Faculty Id",
+            "type": "string"
+          },
+          "grade": {
+            "title": "Grade",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 32,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "degree_id",
+          "faculty_id",
+          "grade"
+        ],
+        "title": "StudentGroupRead",
+        "type": "object"
+      },
+      "StudentPatchData": {
+        "properties": {
+          "faculty_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Faculty Id"
+          },
+          "group_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Id"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "is_budget": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Budget"
+          },
+          "is_full": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Full"
+          },
+          "student_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student Id"
+          }
+        },
+        "title": "StudentPatchData",
+        "type": "object"
+      },
+      "StudentPutData": {
+        "properties": {
+          "faculty_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Faculty Id"
+          },
+          "group_id": {
+            "title": "Group Id",
+            "type": "integer"
+          },
+          "is_active": {
+            "default": true,
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "is_budget": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Budget"
+          },
+          "is_full": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Full"
+          },
+          "student_id": {
+            "maxLength": 64,
+            "title": "Student Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "student_id",
+          "group_id"
+        ],
+        "title": "StudentPutData",
+        "type": "object"
+      },
+      "StudentRead": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "faculty_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Faculty Id"
+          },
+          "group": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StudentGroupRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "group_id": {
+            "title": "Group Id",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_active": {
+            "default": true,
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "is_budget": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Budget"
+          },
+          "is_full": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Full"
+          },
+          "person": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProfileRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "student_id": {
+            "maxLength": 64,
+            "title": "Student Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "created_at",
+          "edited_at",
+          "id",
+          "student_id",
+          "group_id"
+        ],
+        "title": "StudentRead",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "paths": {
+    "/profile/v2/persons/my": {
+      "post": {
+        "description": "Creates the caller's own person and attaches it to the account.\n\nThe access token carries the person id: refresh it afterwards, or the\n`/my` endpoints keep answering `ATTACHED_PERSON_REQUIRED`.",
+        "operationId": "create_my_person_profile_v2_persons_my_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ACCOUNT_ALREADY_LINKED": {
+                    "summary": "ACCOUNT_ALREADY_LINKED",
+                    "value": {
+                      "detail": "ACCOUNT_ALREADY_LINKED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ACCOUNT_ALREADY_LINKED"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create My Person",
+        "tags": [
+          "person"
+        ]
+      }
+    },
+    "/profile/v2/students/my": {
+      "delete": {
+        "operationId": "delete_my_student_profile_v2_students_my_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ATTACHED_PERSON_REQUIRED": {
+                    "summary": "ATTACHED_PERSON_REQUIRED",
+                    "value": {
+                      "detail": "ATTACHED_PERSON_REQUIRED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ATTACHED_PERSON_REQUIRED"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete My Student",
+        "tags": [
+          "student"
+        ]
+      },
+      "get": {
+        "operationId": "get_my_student_profile_v2_students_my_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ATTACHED_PERSON_REQUIRED": {
+                    "summary": "ATTACHED_PERSON_REQUIRED",
+                    "value": {
+                      "detail": "ATTACHED_PERSON_REQUIRED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ATTACHED_PERSON_REQUIRED"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "STUDENT_NOT_FOUND": {
+                    "summary": "STUDENT_NOT_FOUND",
+                    "value": {
+                      "detail": "STUDENT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "STUDENT_NOT_FOUND"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get My Student",
+        "tags": [
+          "student"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_my_student_profile_v2_students_my_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentPatchData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ATTACHED_PERSON_REQUIRED": {
+                    "summary": "ATTACHED_PERSON_REQUIRED",
+                    "value": {
+                      "detail": "ATTACHED_PERSON_REQUIRED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ATTACHED_PERSON_REQUIRED"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "STUDENT_NOT_FOUND": {
+                    "summary": "STUDENT_NOT_FOUND",
+                    "value": {
+                      "detail": "STUDENT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "STUDENT_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Patch My Student",
+        "tags": [
+          "student"
+        ]
+      },
+      "put": {
+        "operationId": "put_my_student_profile_v2_students_my_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentPutData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ATTACHED_PERSON_REQUIRED": {
+                    "summary": "ATTACHED_PERSON_REQUIRED",
+                    "value": {
+                      "detail": "ATTACHED_PERSON_REQUIRED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ATTACHED_PERSON_REQUIRED"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PROFILE_NOT_FOUND": {
+                    "summary": "PROFILE_NOT_FOUND",
+                    "value": {
+                      "detail": "PROFILE_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PROFILE_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Put My Student",
+        "tags": [
+          "student"
+        ]
+      }
+    }
+  }
+}
