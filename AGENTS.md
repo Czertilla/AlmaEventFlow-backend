@@ -166,11 +166,22 @@ Every HTTP service follows this: `event`, `org`, `geo`, `profile`, `notify`, `bo
   `PageV1[Read].from_dto(page_dto)`, page query `page_param.to_dto()`.
 - `Filter` classes (fastapi-filter) stay ORM-bound in `<service>/filter/`; the service takes a
   `…FilterDTO` and rebuilds the `Filter` with `Filter.from_dto` right before the repository call.
+- Filters reach across relations on purpose: `IdentityFilterMixin` (`id`, `id__in`) on every
+  resource an admin page links to, `RelatedSearchFilter.Constants.search_paths` lets `search` match
+  columns of related rows (a chain walked through `has()`: an attendance is found by the person's
+  name, the collective or the event), and an attendance is narrowed by `collective_id`, `event_id`
+  and `person_id` through its participation and member. `MemberFilter` hides inactive members unless
+  `include_inactive=true`; `is_active` alone cannot say "any". A filter DTO that has `id` extends
+  `IdentityFilterDTOMixin`, which already carries the timestamp fields (two slotted dataclass bases
+  cannot be combined). A field a filter resolves itself is set to `None` around `super().filter()`
+  and restored after: `fastapi_filter` would look for it as a column.
 - List endpoints sort and filter through `core/filter/`: `OrderedFilter` accepts only the fields in
   `Constants.order_fields` (anything else is a 422, and the allowed fields are listed in the
   `order_by` description), `TimestampFilterMixin` adds `created_at__gte/lte`, `edited_at__gte/lte`
   and `edited_at__isnull`, `RelatedSearchFilter` extends `search` over one related row with an
-  `EXISTS`. A sort key that is not a model column (event `status`/`level`/`type`, ordered by the
+  `EXISTS`. `search` also finds a row by its id (`OrderedFilter._search_clauses`,
+  `core.filter.identity.id_search_clause`): a whole uuid, the start of one (6+ hex characters) or a
+  whole number for an integer key, so no list of an admin page needs a second box for it. A sort key that is not a model column (event `status`/`level`/`type`, ordered by the
   lookup id) is mapped in the filter's own `sort()`. Every filter field must exist on its
   `…FilterDTO`. Routers import `FilterDepends` from `core.filter.depends`, not from
   `fastapi_filter`: the original drops field descriptions from the OpenAPI schema.
@@ -310,6 +321,12 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   (`AddressService._tell_locations`). `event` keeps both in its `location` projection and puts them
   in the announcement (`location_lat`/`location_lon`); a row told about before the columns existed
   has no point until geo tells about it again.
+- **Where a collective met lately** is `event`'s to say and geo's to describe: `GET
+  /event/v2/collectives/{id}/recent-locations` lists the location ids of the collective's events
+  (through its participations), the latest first, a place counted from its event's `edited_at`
+  (`created_at` when never edited), once per place; address-only locations are included. For the
+  collective's leader and superusers. The ids go to `GET /geo/v2/locations?id=…` (repeat `id`, up to 50),
+  which returns the locations in the order given and skips an id that does not exist.
 - **Map** (`repository/map.py`, `service/viewport.py`): the window is cut into cells of
   `radius_px` screen pixels in Web Mercator (arithmetic in SQL, no PROJ), one feature per cell: the
   place when it is alone, a cluster (`cluster: true`, `point_count`, `bbox`) otherwise. The answer is
@@ -394,9 +411,14 @@ is a defect, not a style choice.
   `Inter Variable`, bundled from `@fontsource-variable/inter` and loaded in `main.ts`.
 - **Primitives** — `frontend/src/theme/components.css`, loaded once from `main.ts`: the field
   (`ui-field` and its parts: `ui-field-box`, `ui-field-label`, `ui-field-outline`, `ui-field-control`
-  for the native `input`/`textarea`/`select`/`ion-select` inside it, `ui-field-value` for a value that
+  for the native `input`/`textarea`/`button` inside it, `ui-field-value` for a value that
   is not typed, `ui-field-foot`; `ui-field-title` for the heading of a group of controls and
   `ui-toggle-row` for a switch), `ui-menu` and `ui-menu-item` (a list of options under a field),
+  `ui-select-trigger` (the button of a select inside a field), `ui-popup` and `ui-option` (the
+  floating list of a dropdown, with `ui-option--active|selected|disabled` and a leading
+  `ui-option-icon` when the option has an `icon`), `ui-select-pill`
+  (+ `--sm`, `--set`: the compact select of a toolbar, with a leading icon and room for a
+  direction button) and the `ui-pop` transition,
   `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-chips` and `ui-chip` (+ `--active`),
   `ui-btn` (+ `--primary`, `--ghost`, `--sm`); `ui-card`, `ui-card-head` and `ui-card-title` (a section
   card; `HomePage`'s own `.section-card` is a copy of it, see the debt below); `ui-att--attended|absent`
@@ -421,14 +443,21 @@ is a defect, not a style choice.
 - **Fields** — `common/UiField` draws the box, the border with the label on it (the label sits inside
   an empty field, floats onto the border with a gap cut in it on focus or when there is a value, and
   is always floated where something is always shown), the error, hint and counter lines and the
-  `prefix`/`suffix` slots. On top of it: `UiInput`, `UiTextarea`, `UiSelect` (`ion-select` with the
-  popover), `UiNativeSelect` (a native `select`, for compact filters), `PasswordField`,
+  `prefix`/`suffix` slots. On top of it: `UiInput`, `UiTextarea`, `UiSelect` (a custom
+  dropdown on `useSelect`, see Dropdowns below), `PasswordField`,
   `DateTimeField`, `EntityPickerField` (search a reference, shows the pick as a value),
   `admin/SearchPicker`, `geo/LocationField` and `geo/AddressSearchSelect`.
 - **Shared components** — `frontend/src/components/common/` and friends: `DateTimeField` (built on
   `TimeSpinner` and `TimeDrum`), `TimestampsMeta`, `event/StageFields` (one stage of an event, used
-  by the create form and the event page), `admin/ResourceTable` and `admin/ResourceFormModal` for
-  admin lists and forms; `member/` (the member profile: `AttendanceHeatmap`, `MonthBars`,
+  by the create form and the event page), `common/SlidingTabs` (a row of tabs whose
+  active pill slides to the chosen one; the principal panel uses it), `common/UiSelectPill`,
+  `event/EventCreateModal` (the new-event form, opened from the events list and the dashboard),
+  `event/EventEditModal` and `event/EventStagesModal` (the event and its stages, shared by the
+  event page and the admin: the caller passes the API adapter, `save` or `StageApi`),
+  `admin/ResourceTable` and `admin/ResourceFormModal` for admin lists and forms (with
+  `admin/ResourceFilterFields` for the filter fields, `admin/RowActionsMenu` for the actions of a row and
+  `admin/MultiSearchField` for a field that takes several records), `common/SortFab` and `common/AppFab`
+  (the floating buttons of a phone); `member/` (the member profile: `AttendanceHeatmap`, `MonthBars`,
   `TypeBars`, `AttendanceHistory`, `AttendanceLegend`, all fed by `utils/memberAttendance.ts`; and
   `MemberEditorModal` / `MemberDeleteAlert`, the one add/edit dialog and delete confirmation shared by
   the member list and the profile) and
@@ -466,10 +495,61 @@ Rules:
   may be given `suggest` (a date or a datetime): on focus it prefills the date of the suggestion, and
   a time is never filled in on the user's behalf. A new stage's start suggests the previous stage or
   the event date, and its end suggests the start.
+- **Dropdowns** are `UiSelect` (in a field) and `UiSelectPill` (in a toolbar), both fed with
+  `options: SelectOption[]` (`utils/selectOptions`: `optionsFromPairs`, `withAny`) and drawn by
+  `UiSelectMenu`, a listbox teleported to `body` and anchored under the control, as wide as the
+  field, flipped above when there is no room. Never use `<select>`/`<option>` or `ion-select`: the
+  browser draws their list itself, in the colours of the OS, which is how text ended up the colour of
+  the background in the dark theme. The list never takes focus (`mousedown.prevent`), keyboard works
+  from the trigger (`composables/useSelect`: arrows, Home/End, Enter, Escape, type-ahead).
+- **A list that offers its results never pushes the page.** The results of `EntityPickerField`
+  (and so of `SearchPicker`) are a `UiSelectMenu` popup anchored under the input, like a dropdown:
+  an inline list under a field shifted every field below it in a filter panel.
+- **Filters and sort on a phone are floating buttons.** On a phone the filters of a list open in a
+  sheet (`ion-modal`, breakpoints `[0, 0.6, 1]`, header "Фильтры", close button: `HomePage`,
+  `DashboardPage`, `ResourceTable`) from a small `AppFab secondary` above the main one, and the sort
+  is its own `SortFab` above that (`stack` counts the small ones; the menu lists the sorts, a tap on
+  the direction row flips the order). On a desktop the filters stay on the page and the sort is a
+  `UiSelectPill`. An admin list also keeps its search in a bar that sticks to the top and goes away
+  with the swipe up (`composables/useHideOnScroll`, a `transform`, never a height, so the list does not
+  jump); the small buttons then slip under the main one (`AppFab` `tucked`). The list ends with room
+  for the main button (88px), so it never covers the last row's actions.
+- **A row of an admin table never loses its edit and delete buttons.** The other actions of a row
+  (`rowLinks`, `extraAction`) are buttons while there is one of them and fold into one `RowActionsMenu`
+  ("⋯") when there are two or more: a menu that hides a single button is a defect, and so is clipping
+  the cell (`text-overflow` on the actions cell once replaced the delete button with an ellipsis).
+- **A form field with several records** is a `multisearch` field of `ResourceFormModal`
+  (`MultiSearchField`: chips plus a picker). Its `choices(search, form)` may look at the form, and
+  `dependsOn` blocks it until the field it depends on is set (the roles of a member need the
+  collective); its value goes to the API as a list of ids, an empty one included, because an empty
+  list is how a link is cleared.
+- **A place picker opens on what was used before.** `LocationField` and `LocationPickerModal` take a
+  `collectiveId` and, with nothing typed, list that collective's recent places first
+  (`composables/useRecentLocations`: the event service for the ids, then geo for the rows), under the
+  heading "Недавние места", with the map fitted to them; without recents, or without a collective,
+  the general list of locations. The list follows the map (the places around its centre) only after
+  the user has touched it (`GeoMap` `interact`: pointer, wheel or keys), never because the map
+  settled by itself after a fit: that is what used to replace the list with the nearby addresses.
+- **Filters live in the URL.** A list page keeps its search, sort and filters in the address bar
+  (`composables/useUrlState` for plain pages, `utils/urlState` `readQuery`/`patchQuery` for the rest;
+  `ResourceTable` does it for every admin list: `q`, `sort`, `order` and one key per filter). Values
+  equal to their defaults stay out of the URL, other query parameters are left alone, and it is
+  written with `replaceState`, so no history entries. This is the state of the screen, not the
+  parameters of an API request: the two share names only by convention. A page that links to a
+  filtered list builds the target with `withQuery('/admin/members', { collective_id })`; the panel
+  layouts accept a target with a query, and recreate the page when only the query changed.
+- **Admin lists** cross-link: a `ResourceTable` takes `rowLinks` (a button per row, a chip on a phone)
+  and `ResourceFormModal` takes `links`, both leading to another list with the filter already set
+  (`utils/adminLinks`). A filter of type `picker` searches a record of another resource
+  (`utils/adminPickers`: one entry per resource with its `search` and the `ResourceKind` that names a
+  picked id); a reference field of a form shows the name of the saved value by asking for that id
+  (`resolveResourceLabel`), never by looking for it among the first search results.
 - **A new primitive** is added to `components.css` and to the list above in the same change.
 - **Sub-pages of the principal and admin panels** (`/principal/members/<id>`, `/admin/persons/<id>`)
   are in-place routes: the layout matches a path prefix and renders the page itself, and a child page
-  navigates with `usePrincipalNavigate` / `useAdminNavigate`, never `router.push` inside the panel
+  navigates with `usePrincipalNavigate` / `useAdminNavigate` (a modal that is open must be dismissed
+  first, `modalController.dismiss()`, or its overlay stays over the new page), never `router.push`
+  inside the panel
   (see `utils/inPlaceNav.ts`). Such a page must also handle a deep link and a missing entity.
   `MemberProfilePage` is the one page that lives in two places: in the panel
   (`/principal/members/<id>`, reached from the member list and the dashboard) and outside it
