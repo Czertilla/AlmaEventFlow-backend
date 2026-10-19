@@ -300,7 +300,7 @@ wheels = [
 
 [[package]]
 name = "alma-event-flow"
-version = "0.4.4-beta"
+version = "0.4.5-beta"
 source = { virtual = "." }
 dependencies = [
     { name = "aiobotocore" },
