@@ -102,6 +102,20 @@ sharing one codebase and one dependency-resolution graph:
   ORM class, or autogenerate/upgrade silently sees no tables. Run migrations with
   `alembic -n <service> upgrade head`; new revisions go under `migrations/versions/<service>/`.
 
+## Profile (`src/profile`)
+
+- A user without a person creates their own: `POST /profile/v2/persons/my` creates the row, then asks
+  `user` over RPC (`rpc.user.link-person`, `LinkPersonRequest`) to attach it to the caller's account;
+  `user` upserts its `person` projection in the same transaction as the link, so the later
+  `person-created` event finds the row (`UserPersonEventService._create` is an upsert). `person-created`
+  is published only after the link. A refused link (`RpcError`) deletes the person again and answers with
+  the refusal; an unanswered one keeps the person and announces it, since the link may have happened.
+  The id the token carries changes only at the next refresh, so the client refreshes after the call.
+- The user's own data goes through `/my` endpoints: v1 for person, profile and contacts, v2
+  (`/profile/v2/students/my`) for the student card, which has no mutation open to a non-superuser in v1.
+  A student card needs the profile first (`PROFILE_NOT_FOUND`), the profile is made with `PUT
+  /profile/v1/profiles/my`. Passports stay for superusers until their storage and encryption are designed.
+
 ## Event-driven sync between services (EDA)
 
 - Kafka via `faststream` (`core/broker/kafka.py`); `IN_MEMORY_BROKER=true` swaps in an in-process
@@ -236,6 +250,18 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
 - A released version is frozen: never "fix" a failing contract test by regenerating its snapshot.
   A deliberate change is a new `v<N+1>`; only pilot/pre-release work may regenerate with
   `UPDATE_CONTRACTS=1 uv run pytest tests/contract` and must review the resulting file diff.
+
+## Collective profile (`src/event`)
+
+- `GET /event/v2/collectives/{id}/profile?date_from&date_to` is the member profile of a whole roster
+  (`service/collective_profile.py`, the same period rules and `COUNTED_STATUSES` as
+  `service/member_profile.py`; rows come from `AttendanceRepo.collective_history`, mapped by the shared
+  `attendance_stats.to_item` and rolled up per day, event, month, type and member). Access is the
+  leader, the active members and superusers (`403 NOT_COLLECTIVE_MEMBER`); `can_manage` is the leader
+  and superusers. A place is a declared attendance row of the collective's participation, so an event
+  nobody was declared to does not appear. The member list holds the active members and the former ones
+  who have rows in the period. `rate` of the summary and of a member is `attended / past` (unmarked
+  count in `past`), while the UI colours a day by `attended / (attended + absent)`.
 
 ## Geo (`src/geo`)
 
@@ -421,7 +447,9 @@ is a defect, not a style choice.
   direction button) and the `ui-pop` transition,
   `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-chips` and `ui-chip` (+ `--active`),
   `ui-btn` (+ `--primary`, `--ghost`, `--sm`); `ui-card`, `ui-card-head` and `ui-card-title` (a section
-  card; `HomePage`'s own `.section-card` is a copy of it, see the debt below); `ui-att--attended|absent`
+  card; `HomePage`'s own `.section-card` is a copy of it, see the debt below), `ui-count` (the number
+  badge in a card head) and `ui-banner` (a tinted line with a close button: the day picked on a
+  heatmap); `ui-att--attended|absent`
   (a filled mark), `ui-att--unmarked` (yellow hatching), `ui-att--upcoming` (a hollow one),
   `ui-att-rate` (a cell filled with the `--att-rate` colour set inline), `ui-att-hatch` (the same
   colour as stripes on the grey ground of `ui-att--unmarked`: a day with unmarked events, its marked
@@ -457,10 +485,18 @@ is a defect, not a style choice.
   `admin/ResourceTable` and `admin/ResourceFormModal` for admin lists and forms (with
   `admin/ResourceFilterFields` for the filter fields, `admin/RowActionsMenu` for the actions of a row and
   `admin/MultiSearchField` for a field that takes several records), `common/SortFab` and `common/AppFab`
-  (the floating buttons of a phone); `member/` (the member profile: `AttendanceHeatmap`, `MonthBars`,
-  `TypeBars`, `AttendanceHistory`, `AttendanceLegend`, all fed by `utils/memberAttendance.ts`; and
-  `MemberEditorModal` / `MemberDeleteAlert`, the one add/edit dialog and delete confirmation shared by
-  the member list and the profile) and
+  (the floating buttons of a phone); `member/` (the attendance dashboards of a member and of a
+  collective: `AttendanceHead` (the card with the rate), `AttendanceTiles`, `AttendanceActivity` (the
+  Год/Месяц card with the period chips, the heatmap or calendar, the legend and the slots for the day
+  picked and the empty state), `AttendanceHeatmap` (takes `items` or ready `days`), `MonthBars`,
+  `TypeBars`, `AttendanceHistory`, `AttendanceLegend` (`labels` and `scaleLabels` rename the
+  outcomes), `ProfileWho`, all fed by `utils/memberAttendance.ts` and `composables/useAttendancePeriod`;
+  and `MemberEditorModal` / `MemberDeleteAlert`, the one add/edit dialog and delete confirmation
+  shared by the member list and the profile), `collective/CollectiveEventList` and
+  `CollectiveMemberList`, `common/PageState` (the error or not-found card with actions) and
+  `common/BackLink`, `profile/PersonFile` (the personal file: person, profile, student card and
+  contacts; the caller passes a `PersonFileApi` from `profile/personFileApi`: `myPersonFileApi` for
+  the user's own file, `adminPersonFileApi(personId)` for the admin dossier) and
   `calendar/CalendarGrid` (takes `dayMarks`, a list of dots per `yyyy-MM-dd`, to colour the day).
   New screens compose these.
 
@@ -544,6 +580,16 @@ Rules:
   (`utils/adminPickers`: one entry per resource with its `search` and the `ResourceKind` that names a
   picked id); a reference field of a form shows the name of the saved value by asking for that id
   (`resolveResourceLabel`), never by looking for it among the first search results.
+- **The collective profile** (`views/principal/CollectiveProfilePage.vue`) is the member profile for
+  the whole roster and lives in two places the same way: the panel tab `/principal/collective` (the
+  layout passes the active collective as `collectiveId`) and `/collective/<id>`
+  (`views/CollectivePage.vue`, open to the leader and the active members). Its heatmap day is coloured
+  by the share of the declared roster that came, `attended / (attended + absent)` of the day's places
+  (`collectiveDays`), and unmarked places only hatch the day. The member profile reached from it goes
+  back to the tab through `principalReturnTo`.
+- **A user makes their own personal file** at `/profile/file` (`views/PersonalFilePage.vue`): no person
+  yet means a name form, which posts `/profile/v2/persons/my`; the access token carries the person id,
+  so the page refreshes it (`auth.tryRefresh()`) before it loads the file. Passport data is not in it.
 - **A new primitive** is added to `components.css` and to the list above in the same change.
 - **Sub-pages of the principal and admin panels** (`/principal/members/<id>`, `/admin/persons/<id>`)
   are in-place routes: the layout matches a path prefix and renders the page itself, and a child page
