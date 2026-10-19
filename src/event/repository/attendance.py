@@ -48,6 +48,60 @@ class AttendanceRepo(
             )
         )
 
+    def _collective_scope(
+        self, stmt: Select[Any], collective_id: UUID, statuses: Collection[str]
+    ) -> Select[Any]:
+        return (
+            stmt.select_from(self.model)
+            .join(ParticipationORM, ParticipationORM.id == self.model.participation_id)
+            .join(EventORM, EventORM.id == ParticipationORM.event_id)
+            .join(EventStatusORM, EventStatusORM.id == EventORM.status_id)
+            .where(
+                ParticipationORM.collective_id == collective_id,
+                EventORM.date.is_not(None),
+                EventStatusORM.name.in_(statuses),
+            )
+        )
+
+    async def collective_history(
+        self,
+        collective_id: UUID,
+        date_from: datetime.date,
+        date_to: datetime.date,
+        statuses: Collection[str],
+    ) -> Sequence[Row[Any]]:
+        stmt = self._collective_scope(
+            select(
+                self.model.id.label("attendance_id"),
+                self.model.member_id,
+                self.model.is_attended,
+                self.model.is_verified,
+                self.model.edited_at,
+                EventORM.id.label("event_id"),
+                EventORM.name.label("event_name"),
+                EventORM.date,
+                EventStatusORM.name.label("status"),
+                EventTypeORM.name.label("type"),
+            ),
+            collective_id,
+            statuses,
+        )
+        stmt = (
+            stmt.outerjoin(EventTypeORM, EventTypeORM.id == EventORM.type_id)
+            .where(EventORM.date.between(date_from, date_to))
+            .order_by(EventORM.date.desc(), EventORM.name)
+        )
+        return (await self.execute(stmt)).all()
+
+    async def collective_event_years(
+        self, collective_id: UUID, statuses: Collection[str]
+    ) -> list[int]:
+        year = extract("year", EventORM.date)
+        stmt = self._collective_scope(
+            select(year).distinct(), collective_id, statuses
+        ).order_by(year.desc())
+        return [int(value) for value in (await self.execute(stmt)).scalars()]
+
     async def member_history(
         self,
         member_id: UUID,

@@ -10,7 +10,6 @@ from core.service.base import BaseService, required_transaction
 from core.utils.exc.http import VancedHTTPException
 from event.dto.member import MemberDTO
 from event.dto.member_profile import (
-    MemberAttendanceItemDTO,
     MemberPersonDTO,
     MemberProfileDTO,
     MemberProfilePeriodDTO,
@@ -18,15 +17,13 @@ from event.dto.member_profile import (
 )
 from event.dto.role import RolePreviewDTO
 from event.enum.status import EventStatusEnumV1
-from event.enum.type import EventTypeEnumV1
 from event.exc.event import MemberNotExistsException
 from event.models.member import MemberORM
 from event.service.attendance_stats import (
     by_month,
     by_type,
-    classify,
-    is_marked,
     summarize,
+    to_item,
 )
 from event.uow.member_profile import MemberProfileUOW
 
@@ -45,24 +42,6 @@ class MemberProfileService(BaseService[MemberProfileUOW]):
             roles=[RolePreviewDTO(id=r.id, name=r.name) for r in member.roles],
             created_at=member.created_at,
             edited_at=member.edited_at,
-        )
-
-    @staticmethod
-    def _to_item(
-        row: Row[Any], today: datetime.date, show_comment: bool
-    ) -> MemberAttendanceItemDTO:
-        marked = is_marked(row.is_attended, row.edited_at, row.is_verified)
-        return MemberAttendanceItemDTO(
-            attendance_id=row.attendance_id,
-            event_id=row.event_id,
-            event_name=row.event_name,
-            date=row.date,
-            status=EventStatusEnumV1(row.status),
-            type=EventTypeEnumV1(row.type) if row.type else None,
-            outcome=classify(row.date, row.is_attended, marked, today),
-            is_attended=row.is_attended if marked else None,
-            is_verified=row.is_verified,
-            comment=row.comment if show_comment else None,
         )
 
     @required_transaction
@@ -137,7 +116,7 @@ class MemberProfileService(BaseService[MemberProfileUOW]):
                 name=member.person.name,
                 patronymic=member.person.patronymic,
             )
-        items = [self._to_item(row, today, show_comments) for row in rows]
+        items = [to_item(row, today, show_comments) for row in rows]
         return MemberProfileDTO(
             member=member_dto,
             person=person,

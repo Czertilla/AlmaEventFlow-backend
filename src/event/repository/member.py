@@ -33,6 +33,14 @@ class MemberRepo(
         )
         return (await self.execute(stmt)).unique().scalars().all()
 
+    async def get_by_collective_with_person(self, collective_id: UUID) -> list[Model]:
+        stmt = (
+            select(self.model)
+            .options(selectinload(self.model.person))
+            .where(self.model.collective_id == collective_id)
+        )
+        return list((await self.execute(stmt)).unique().scalars().all())
+
     async def get_with_details(self, member_id: UUID) -> Model | None:
         stmt = (
             select(self.model)

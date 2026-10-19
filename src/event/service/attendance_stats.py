@@ -1,7 +1,16 @@
 import datetime
 from collections import Counter, defaultdict
 from collections.abc import Sequence
+from typing import Any
+from uuid import UUID
 
+from sqlalchemy import Row
+
+from event.dto.collective_profile import (
+    CollectiveAttendanceSummaryDTO,
+    CollectiveDayDTO,
+    CollectiveEventItemDTO,
+)
 from event.dto.member_profile import (
     AttendanceByMonthDTO,
     AttendanceByTypeDTO,
@@ -9,6 +18,8 @@ from event.dto.member_profile import (
     MemberAttendanceSummaryDTO,
 )
 from event.enum.attendance import AttendanceOutcomeEnumV1 as Outcome
+from event.enum.status import EventStatusEnumV1
+from event.enum.type import EventTypeEnumV1
 
 
 def is_marked(
@@ -25,6 +36,24 @@ def classify(
     if not marked:
         return Outcome.upcoming if date == today else Outcome.unmarked
     return Outcome.attended if is_attended else Outcome.absent
+
+
+def to_item(
+    row: Row[Any], today: datetime.date, show_comment: bool = False
+) -> MemberAttendanceItemDTO:
+    marked = is_marked(row.is_attended, row.edited_at, row.is_verified)
+    return MemberAttendanceItemDTO(
+        attendance_id=row.attendance_id,
+        event_id=row.event_id,
+        event_name=row.event_name,
+        date=row.date,
+        status=EventStatusEnumV1(row.status),
+        type=EventTypeEnumV1(row.type) if row.type else None,
+        outcome=classify(row.date, row.is_attended, marked, today),
+        is_attended=row.is_attended if marked else None,
+        is_verified=row.is_verified,
+        comment=row.comment if show_comment else None,
+    )
 
 
 def _counts(items: Sequence[MemberAttendanceItemDTO]) -> dict[str, int]:
@@ -86,3 +115,60 @@ def by_month(
         AttendanceByMonthDTO(month=month, **_counts(group))
         for month, group in sorted(groups.items())
     ]
+
+
+def past_count(counts: dict[str, int]) -> int:
+    return counts["attended"] + counts["absent"] + counts["unmarked"]
+
+
+def rollup(
+    items: Sequence[MemberAttendanceItemDTO],
+) -> tuple[dict[str, int], int, float | None]:
+    counts = _counts(items)
+    past = past_count(counts)
+    return counts, past, counts["attended"] / past if past else None
+
+
+def summarize_collective(
+    items: Sequence[MemberAttendanceItemDTO],
+) -> CollectiveAttendanceSummaryDTO:
+    counts, past, rate = rollup(items)
+    return CollectiveAttendanceSummaryDTO(
+        **counts,
+        past=past,
+        verified=sum(
+            item.is_verified for item in items if item.outcome is not Outcome.upcoming
+        ),
+        rate=rate,
+        events=len({item.event_id for item in items}),
+    )
+
+
+def by_day(items: Sequence[MemberAttendanceItemDTO]) -> list[CollectiveDayDTO]:
+    groups: defaultdict[datetime.date, list[MemberAttendanceItemDTO]] = (
+        defaultdict(list)
+    )
+    for item in items:
+        groups[item.date].append(item)
+    return [
+        CollectiveDayDTO(date=day, **_counts(group))
+        for day, group in sorted(groups.items())
+    ]
+
+
+def by_event(items: Sequence[MemberAttendanceItemDTO]) -> list[CollectiveEventItemDTO]:
+    groups: defaultdict[UUID, list[MemberAttendanceItemDTO]] = defaultdict(list)
+    for item in items:
+        groups[item.event_id].append(item)
+    events = [
+        CollectiveEventItemDTO(
+            event_id=event_id,
+            event_name=group[0].event_name,
+            date=group[0].date,
+            status=group[0].status,
+            type=group[0].type,
+            **_counts(group),
+        )
+        for event_id, group in groups.items()
+    ]
+    return sorted(events, key=lambda event: (-event.date.toordinal(), event.event_name))

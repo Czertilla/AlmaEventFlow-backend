@@ -126,6 +126,348 @@
         "title": "CalendarSubscriptionTypeEnum",
         "type": "string"
       },
+      "CollectiveAttendanceSummary": {
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "attended": {
+            "title": "Attended",
+            "type": "integer"
+          },
+          "events": {
+            "description": "Events of the collective inside the period.",
+            "title": "Events",
+            "type": "integer"
+          },
+          "past": {
+            "description": "Declared places of events already decided: attended + absent + unmarked.",
+            "title": "Past",
+            "type": "integer"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "attended / past, 0..1; null while nothing is decided.",
+            "title": "Rate"
+          },
+          "unmarked": {
+            "title": "Unmarked",
+            "type": "integer"
+          },
+          "upcoming": {
+            "title": "Upcoming",
+            "type": "integer"
+          },
+          "verified": {
+            "description": "Of those, how many the leader confirmed.",
+            "title": "Verified",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "attended",
+          "absent",
+          "unmarked",
+          "upcoming",
+          "past",
+          "verified",
+          "rate",
+          "events"
+        ],
+        "title": "CollectiveAttendanceSummary",
+        "type": "object"
+      },
+      "CollectiveDay": {
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "attended": {
+            "title": "Attended",
+            "type": "integer"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "unmarked": {
+            "title": "Unmarked",
+            "type": "integer"
+          },
+          "upcoming": {
+            "title": "Upcoming",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "attended",
+          "absent",
+          "unmarked",
+          "upcoming",
+          "date"
+        ],
+        "title": "CollectiveDay",
+        "type": "object"
+      },
+      "CollectiveEventItem": {
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "attended": {
+            "title": "Attended",
+            "type": "integer"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "event_id": {
+            "format": "uuid",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "event_name": {
+            "title": "Event Name",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EventStatusEnumV1"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventTypeEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unmarked": {
+            "title": "Unmarked",
+            "type": "integer"
+          },
+          "upcoming": {
+            "title": "Upcoming",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "attended",
+          "absent",
+          "unmarked",
+          "upcoming",
+          "event_id",
+          "event_name",
+          "date",
+          "status",
+          "type"
+        ],
+        "title": "CollectiveEventItem",
+        "type": "object"
+      },
+      "CollectiveInfo": {
+        "properties": {
+          "active_members": {
+            "title": "Active Members",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_verified": {
+            "title": "Is Verified",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "principal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MemberPerson"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "is_verified",
+          "principal",
+          "active_members"
+        ],
+        "title": "CollectiveInfo",
+        "type": "object"
+      },
+      "CollectiveMemberItem": {
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "integer"
+          },
+          "attended": {
+            "title": "Attended",
+            "type": "integer"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "member_id": {
+            "format": "uuid",
+            "title": "Member Id",
+            "type": "string"
+          },
+          "past": {
+            "description": "attended + absent + unmarked of the member.",
+            "title": "Past",
+            "type": "integer"
+          },
+          "person": {
+            "$ref": "#/components/schemas/MemberPerson"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "attended / past, 0..1.",
+            "title": "Rate"
+          },
+          "unmarked": {
+            "title": "Unmarked",
+            "type": "integer"
+          },
+          "upcoming": {
+            "title": "Upcoming",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "attended",
+          "absent",
+          "unmarked",
+          "upcoming",
+          "member_id",
+          "person",
+          "is_active",
+          "past",
+          "rate"
+        ],
+        "title": "CollectiveMemberItem",
+        "type": "object"
+      },
+      "CollectiveProfileRead": {
+        "description": "Counts cover the places declared (attendance rows) for the collective's\nactive and archived events dated inside the period.",
+        "properties": {
+          "by_month": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceByMonth"
+            },
+            "title": "By Month",
+            "type": "array"
+          },
+          "by_type": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceByType"
+            },
+            "title": "By Type",
+            "type": "array"
+          },
+          "can_manage": {
+            "description": "The caller leads the collective (or is a superuser).",
+            "title": "Can Manage",
+            "type": "boolean"
+          },
+          "collective": {
+            "$ref": "#/components/schemas/CollectiveInfo"
+          },
+          "date_from": {
+            "format": "date",
+            "title": "Date From",
+            "type": "string"
+          },
+          "date_to": {
+            "format": "date",
+            "title": "Date To",
+            "type": "string"
+          },
+          "days": {
+            "description": "One entry per day with events, oldest first.",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveDay"
+            },
+            "title": "Days",
+            "type": "array"
+          },
+          "events": {
+            "description": "Newest first.",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveEventItem"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "members": {
+            "description": "Active members and those with events in the period, by surname.",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveMemberItem"
+            },
+            "title": "Members",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/CollectiveAttendanceSummary"
+          },
+          "years": {
+            "description": "Years with events of the collective, newest first, any period.",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Years",
+            "type": "array"
+          }
+        },
+        "required": [
+          "collective",
+          "can_manage",
+          "date_from",
+          "date_to",
+          "years",
+          "summary",
+          "by_type",
+          "by_month",
+          "days",
+          "events",
+          "members"
+        ],
+        "title": "CollectiveProfileRead",
+        "type": "object"
+      },
       "ErrorModel": {
         "properties": {
           "detail": {
@@ -1233,6 +1575,153 @@
         "summary": "Rotate Subscription Token",
         "tags": [
           "calendar"
+        ]
+      }
+    },
+    "/event/v2/collectives/{collective_id}/profile": {
+      "get": {
+        "description": "A collective's card with the attendance of its whole roster.\n\nOpen to the leader, the collective's active members and superusers\n(``403 NOT_COLLECTIVE_MEMBER`` otherwise).",
+        "operationId": "get_collective_profile_event_v2_collectives__collective_id__profile_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collective_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Collective Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "First day of the period; the last 365 days when omitted.",
+            "in": "query",
+            "name": "date_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First day of the period; the last 365 days when omitted.",
+              "title": "Date From"
+            }
+          },
+          {
+            "description": "Last day of the period; today when omitted.",
+            "in": "query",
+            "name": "date_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Last day of the period; today when omitted.",
+              "title": "Date To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveProfileRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NOT_COLLECTIVE_MEMBER": {
+                    "summary": "NOT_COLLECTIVE_MEMBER",
+                    "value": {
+                      "detail": "NOT_COLLECTIVE_MEMBER"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "NOT_COLLECTIVE_MEMBER"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "COLLECTIVE_NOT_FOUND": {
+                    "summary": "COLLECTIVE_NOT_FOUND",
+                    "value": {
+                      "detail": "COLLECTIVE_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "COLLECTIVE_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Collective Profile",
+        "tags": [
+          "collective"
         ]
       }
     },

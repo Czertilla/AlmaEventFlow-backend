@@ -39,6 +39,24 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "calendar.AvailableFeeds": "event.dto.calendar:AvailableFeedsDTO",
             "calendar.FeedDescriptor": "event.dto.calendar:FeedDescriptorDTO",
             "calendar.SubscriptionRead": ("event.dto.calendar:CalendarSubscriptionDTO"),
+            "collective_profile.CollectiveAttendanceSummary": (
+                "event.dto.collective_profile:CollectiveAttendanceSummaryDTO"
+            ),
+            "collective_profile.CollectiveDay": (
+                "event.dto.collective_profile:CollectiveDayDTO"
+            ),
+            "collective_profile.CollectiveEventItem": (
+                "event.dto.collective_profile:CollectiveEventItemDTO"
+            ),
+            "collective_profile.CollectiveInfo": (
+                "event.dto.collective_profile:CollectiveInfoDTO"
+            ),
+            "collective_profile.CollectiveMemberItem": (
+                "event.dto.collective_profile:CollectiveMemberItemDTO"
+            ),
+            "collective_profile.CollectiveProfileRead": (
+                "event.dto.collective_profile:CollectiveProfileDTO"
+            ),
             "location.RecentLocationRead": "event.dto.location:RecentLocationDTO",
             "member_profile.AttendanceByMonth": (
                 "event.dto.member_profile:AttendanceByMonthDTO"
