@@ -1,6 +1,7 @@
 import os
 from collections.abc import AsyncIterator
 from typing import Any
+from uuid import UUID
 
 os.environ.setdefault("OAUTH_GOOGLE_CLIENT_ID", "test")
 os.environ.setdefault("OAUTH_GOOGLE_CLIENT_SECRET", "test")
@@ -76,6 +77,17 @@ def outbox(monkeypatch: pytest.MonkeyPatch) -> Outbox:
     monkeypatch.setattr(f"{SERVICE}.send_reset_message", reset)
     monkeypatch.setattr(f"{SERVICE}.send_notification", notify)
     return box
+
+
+@pytest.fixture(autouse=True)
+def profile_links(monkeypatch: pytest.MonkeyPatch) -> list[tuple[UUID, UUID, bool]]:
+    calls: list[tuple[UUID, UUID, bool]] = []
+
+    async def link(user_id: UUID, person_id: UUID, *, replace: bool = False) -> None:
+        calls.append((user_id, person_id, replace))
+
+    monkeypatch.setattr("user.service.user.link_account", link)
+    return calls
 
 
 @pytest.fixture

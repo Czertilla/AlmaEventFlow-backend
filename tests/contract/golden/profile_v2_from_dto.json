@@ -1,0 +1,60 @@
+{
+  "profile.MyProfileRead": {
+    "response": {
+      "birthdate": "2026-01-01",
+      "contacts": [
+        {
+          "id": "7eec1ec1-32a3-5c89-b60a-ed0dab67b21f",
+          "is_main": true,
+          "type": "email",
+          "value": "x"
+        }
+      ],
+      "created_at": "2026-01-01T10:00:00Z",
+      "diet": {
+        "description": "x",
+        "id": 1,
+        "name": "x"
+      },
+      "diet_id": 1,
+      "edited_at": "2026-01-01T10:00:00Z",
+      "id": "aa0a3a14-75a1-5b7e-9922-f1000b3c283d",
+      "name": "x",
+      "patronymic": "x",
+      "student": {
+        "faculty_id": "71c78fbd-d375-5288-8a9f-dbfddad5243d",
+        "group": {
+          "degree_id": 1,
+          "faculty_id": "9daa5e3e-cfe9-5e34-8948-969c5fcfdc24",
+          "grade": 1,
+          "id": 1,
+          "name": "x"
+        },
+        "group_id": 1,
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      },
+      "surname": "x",
+      "workplace_id": "3415a909-e5fa-58b2-bb08-d7dff4e98597"
+    }
+  },
+  "profile.MyStudentRead": {
+    "response": {
+      "faculty_id": "34e5ace1-5fd8-524c-85b6-dd5a5de4b2ec",
+      "group": {
+        "degree_id": 1,
+        "faculty_id": "a0397816-8cf7-543c-8156-7590790a13a1",
+        "grade": 1,
+        "id": 1,
+        "name": "x"
+      },
+      "group_id": 1,
+      "is_active": true,
+      "is_budget": true,
+      "is_full": true,
+      "student_id": "x"
+    }
+  }
+}

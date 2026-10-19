@@ -7,8 +7,8 @@ from profile.api.v1.schema.profile import (
     ProfilePutData,
     ProfileRead,
 )
+from profile.dependency.account import RequiredPersonDep
 from profile.dependency.profile import ProfileUOWDep
-from profile.exc.user import NonPersonalUserException
 from profile.filter.profile import ProfileFilter
 from profile.service.profile import ProfileService
 from uuid import UUID
@@ -46,10 +46,12 @@ async def get_many(
     "/my",
     responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
 )
-async def get_my_profile(user: UserJWTDep, uow: ProfileUOWDep) -> ProfileRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
-    return ProfileRead.from_dto(await ProfileService(uow).read(user.person_id))
+async def get_my_profile(
+    user: UserJWTDep,
+    person_id: RequiredPersonDep,
+    uow: ProfileUOWDep,
+) -> ProfileRead:
+    return ProfileRead.from_dto(await ProfileService(uow).read(person_id))
 
 
 @router.post("", responses={**auth_responses()})
@@ -64,14 +66,15 @@ async def create_profile(
     responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
 )
 async def put_my_profile(
-    profile: ProfilePutData, user: UserJWTDep, uow: ProfileUOWDep
+    profile: ProfilePutData,
+    user: UserJWTDep,
+    person_id: RequiredPersonDep,
+    uow: ProfileUOWDep,
 ) -> ProfileRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
     return ProfileRead.from_dto(
         await ProfileService(uow).put(
             ProfilePut.model_validate(
-                {"id": user.person_id, **profile.model_dump()}
+                {"id": person_id, **profile.model_dump()}
             ).to_dto()
         )
     )
@@ -82,14 +85,15 @@ async def put_my_profile(
     responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
 )
 async def patch_my_profile(
-    profile: ProfilePatchData, user: UserJWTDep, uow: ProfileUOWDep
+    profile: ProfilePatchData,
+    user: UserJWTDep,
+    person_id: RequiredPersonDep,
+    uow: ProfileUOWDep,
 ) -> ProfileRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
     return ProfileRead.from_dto(
         await ProfileService(uow).patch(
             ProfilePatch.model_validate(
-                {"id": user.person_id, **profile.model_dump()}
+                {"id": person_id, **profile.model_dump()}
             ).to_dto()
         )
     )

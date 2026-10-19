@@ -2,6 +2,7 @@ from logging import getLogger
 from profile.api.kafka.pub.person import (
     on_person_created,
     on_person_deleted,
+    on_person_link_changed,
     on_person_updated,
 )
 from profile.dto.person import (
@@ -18,15 +19,10 @@ from profile.uow.person import PersonUOW
 from typing import Any
 from uuid import UUID
 
-from core.broker.rpc import RpcError, rpc_call
 from core.dto.base import dto_dict, dto_from_orm
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
-from core.enum.rpc import UserRPC
-from core.schema.message.core import Ack
-from core.schema.message.profile import PersonData
-from core.schema.message.user import LinkPersonRequest
+from core.schema.message.profile import PersonData, PersonLinkData
 from core.service.base import BaseService, required_transaction
-from core.utils.exc.http import VancedHTTPException
 
 logger = getLogger(__name__)
 
@@ -98,31 +94,6 @@ class PersonService(BaseService[PersonUOW]):
         await on_person_created([self._event(result)])
         return result
 
-    async def create_own(
-        self, user_id: UUID, person_create: PersonCreateDTO
-    ) -> PersonDTO:
-        async with self.uow as uow:
-            result = self._to_dto(await self._create(person_create))
-            await uow.commit()
-        try:
-            await rpc_call(
-                UserRPC.LINK_PERSON,
-                LinkPersonRequest(user_id=user_id, person_id=result.id),
-                Ack,
-            )
-        except RpcError as exc:
-            async with self.uow as uow:
-                await self._delete(result.id)
-                await uow.commit()
-            raise VancedHTTPException(
-                status_code=exc.error.code, detail=exc.error.detail
-            ) from exc
-        except Exception:
-            await on_person_created([self._event(result)])
-            raise
-        await on_person_created([self._event(result)])
-        return result
-
     async def read(self, person_id: UUID) -> PersonDTO:
         async with self.uow:
             return self._to_dto(await self._read(person_id, True))
@@ -160,6 +131,12 @@ class PersonService(BaseService[PersonUOW]):
 
     async def delete(self, person_id: UUID) -> None:
         async with self.uow as uow:
+            link = await uow.account_links.get_by_person(person_id)
+            user_id = link.user_id if link is not None else None
             await self._delete(person_id)
             await uow.commit()
+        if user_id is not None:
+            await on_person_link_changed(
+                [PersonLinkData(user_id=user_id, person_id=None)]
+            )
         await on_person_deleted([person_id])

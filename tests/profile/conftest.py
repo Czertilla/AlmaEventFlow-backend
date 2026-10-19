@@ -1,6 +1,7 @@
 import os
 from collections.abc import AsyncIterator
 from typing import Any
+from uuid import NAMESPACE_URL, UUID, uuid5
 
 import httpx
 import pytest
@@ -11,13 +12,14 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from support.http import api_client
+from support.http import AsPerson, api_client, principal
 
-_PUBLISHERS = (
-    "on_person_created",
-    "on_person_updated",
-    "on_person_deleted",
-)
+_PUBLISHERS = {
+    "on_person_created": ("person", "my_profile"),
+    "on_person_updated": ("person", "my_profile"),
+    "on_person_deleted": ("person",),
+    "on_person_link_changed": ("person", "account", "my_profile"),
+}
 
 
 @pytest.fixture
@@ -47,6 +49,23 @@ def profile_sessionmaker(
 
 
 @pytest.fixture
+def as_person(profile_engine: AsyncEngine) -> AsPerson:
+    async def make(person_id: UUID) -> dict[str, str]:
+        user_id = uuid5(NAMESPACE_URL, str(person_id))
+        async with profile_engine.begin() as conn:
+            await conn.execute(
+                text(
+                    "INSERT INTO person_account (person_id, user_id, created_at) "
+                    "VALUES (:person, :user, now()) ON CONFLICT DO NOTHING"
+                ),
+                {"person": person_id, "user": user_id},
+            )
+        return principal(person_id=person_id, user_id=user_id)
+
+    return make
+
+
+@pytest.fixture
 def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, Any]]:
     events: list[tuple[str, Any]] = []
 
@@ -56,8 +75,9 @@ def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, Any]]:
 
         return publish
 
-    for name in _PUBLISHERS:
-        monkeypatch.setattr(f"profile.service.person.{name}", recorder(name))
+    for name, modules in _PUBLISHERS.items():
+        for module in modules:
+            monkeypatch.setattr(f"profile.service.{module}.{name}", recorder(name))
     return events
 
 

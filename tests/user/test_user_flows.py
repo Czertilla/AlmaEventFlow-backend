@@ -671,44 +671,111 @@ async def test_admin_links_a_person_to_an_account(
     assert unknown_person.json()["detail"] == "INVITE_PERSON_NOT_FOUND"
 
 
-async def test_a_person_created_by_the_account_is_linked_before_its_event_arrives(
+async def _register_id(client: httpx.AsyncClient, email: str, username: str) -> UUID:
+    return UUID((await _register(client, email, username)).json()["id"])
+
+
+async def test_a_link_announced_by_profile_is_applied_before_its_person_event(
     client: httpx.AsyncClient,
     user_engine: AsyncEngine,
     user_sessionmaker: Maker,
     outbox: Outbox,
 ) -> None:
-    from core.schema.message.profile import PersonData
-    from user.exceptions.user import (
-        AccountAlreadyLinked,
-        PersonAlreadyHasAccount,
-        UserNotFound,
-    )
+    from core.schema.message.profile import PersonData, PersonLinkData
     from user.service.person import UserPersonEventService
     from user.service.user import UserService
     from user.uow.person import UserPersonUOW
     from user.uow.user import UserUOW
 
-    bob = UUID((await _register(client, "bob@example.com", "bob")).json()["id"])
-    cid = UUID((await _register(client, "cid@example.com", "cid")).json()["id"])
+    bob = await _register_id(client, "bob@example.com", "bob")
     person_id = uuid4()
     service = UserService(UserUOW(user_sessionmaker))
+    link = [PersonLinkData(user_id=bob, person_id=person_id)]
 
-    linked = await service.link_created_person(bob, person_id)
-    announced = outbox.last("updated")[3]
-    with pytest.raises(AccountAlreadyLinked):
-        await service.link_created_person(bob, uuid4())
-    with pytest.raises(PersonAlreadyHasAccount):
-        await service.link_created_person(cid, person_id)
-    with pytest.raises(UserNotFound):
-        await service.link_created_person(uuid4(), uuid4())
+    await service.apply_link(link)
+    await service.apply_link(link)
     await UserPersonEventService(UserPersonUOW(user_sessionmaker)).create(
         [PersonData(id=person_id, surname="Ivanov", name="Ivan", patronymic=None)]
     )
 
-    assert linked.person_id == person_id
-    assert announced == person_id
-    assert await _count(user_engine, "person") == 1
     assert (await service.get(bob)).person_id == person_id
+    assert outbox.count("updated") == 1
+    assert outbox.last("updated")[3] == person_id
+    assert await _count(user_engine, "person") == 1
+
+
+async def test_a_link_cleared_by_profile_clears_the_account(
+    client: httpx.AsyncClient, user_sessionmaker: Maker, outbox: Outbox
+) -> None:
+    from core.schema.message.profile import PersonLinkData
+    from user.service.user import UserService
+    from user.uow.user import UserUOW
+
+    bob = await _register_id(client, "bob@example.com", "bob")
+    service = UserService(UserUOW(user_sessionmaker))
+    await service.apply_link([PersonLinkData(user_id=bob, person_id=uuid4())])
+
+    await service.apply_link([PersonLinkData(user_id=bob, person_id=None)])
+
+    assert (await service.get(bob)).person_id is None
+    assert outbox.count("updated") == 2
+    assert outbox.last("updated")[3] is None
+
+
+async def test_a_person_that_profile_gives_to_another_account_leaves_the_first(
+    client: httpx.AsyncClient, user_sessionmaker: Maker, outbox: Outbox
+) -> None:
+    from core.schema.message.profile import PersonLinkData
+    from user.service.user import UserService
+    from user.uow.user import UserUOW
+
+    bob = await _register_id(client, "bob@example.com", "bob")
+    cid = await _register_id(client, "cid@example.com", "cid")
+    person_id = uuid4()
+    service = UserService(UserUOW(user_sessionmaker))
+    await service.apply_link([PersonLinkData(user_id=bob, person_id=person_id)])
+
+    await service.apply_link([PersonLinkData(user_id=cid, person_id=person_id)])
+
+    assert (await service.get(bob)).person_id is None
+    assert (await service.get(cid)).person_id == person_id
+    assert outbox.count("updated") == 3
+
+
+async def test_a_link_for_an_unknown_account_is_ignored(
+    user_sessionmaker: Maker, user_engine: AsyncEngine, outbox: Outbox
+) -> None:
+    from core.schema.message.profile import PersonLinkData
+    from user.service.user import UserService
+    from user.uow.user import UserUOW
+
+    await UserService(UserUOW(user_sessionmaker)).apply_link(
+        [PersonLinkData(user_id=uuid4(), person_id=uuid4())]
+    )
+
+    assert outbox.count("updated") == 0
+    assert await _count(user_engine, "person") == 0
+
+
+async def test_the_link_event_subscriber_applies_the_state(
+    client: httpx.AsyncClient, user_sessionmaker: Maker
+) -> None:
+    from core.schema.message.profile import PersonLinkChangedEvent, PersonLinkData
+    from user.api.kafka.sub.link import on_person_link_changed
+    from user.service.user import UserService
+    from user.uow.user import UserUOW
+
+    bob = await _register_id(client, "bob@example.com", "bob")
+    person_id = uuid4()
+
+    await on_person_link_changed(
+        PersonLinkChangedEvent(data=[PersonLinkData(user_id=bob, person_id=person_id)]),
+        UserUOW(user_sessionmaker),
+    )
+
+    assert (await UserService(UserUOW(user_sessionmaker)).get(bob)).person_id == (
+        person_id
+    )
 
 
 async def test_a_refreshed_token_carries_the_person_linked_meanwhile(
@@ -718,6 +785,7 @@ async def test_a_refreshed_token_carries_the_person_linked_meanwhile(
 ) -> None:
     import jwt
 
+    from core.schema.message.profile import PersonLinkData
     from user.service.user import UserService
     from user.uow.user import UserUOW
 
@@ -725,11 +793,11 @@ async def test_a_refreshed_token_carries_the_person_linked_meanwhile(
     await _sql(user_engine, 'UPDATE "user" SET is_verified = true')
     login = await _login(client)
     person_id = uuid4()
-
     unverified = {"verify_signature": False}
+
     before = jwt.decode(login.json()["access_token"], options=unverified)
-    await UserService(UserUOW(user_sessionmaker)).link_created_person(
-        UUID(registered.json()["id"]), person_id
+    await UserService(UserUOW(user_sessionmaker)).apply_link(
+        [PersonLinkData(user_id=UUID(registered.json()["id"]), person_id=person_id)]
     )
     refreshed = await client.post(f"{JWT_PREFIX}/refresh")
     after = jwt.decode(refreshed.json()["access_token"], options=unverified)
@@ -738,69 +806,110 @@ async def test_a_refreshed_token_carries_the_person_linked_meanwhile(
     assert after["per"] == str(person_id)
 
 
-async def test_the_link_person_rpc_goes_through_the_broker(
-    client: httpx.AsyncClient, user_sessionmaker: Maker
+async def test_the_invitation_flows_ask_profile_to_make_the_link(
+    client: httpx.AsyncClient,
+    user_engine: AsyncEngine,
+    outbox: Outbox,
+    profile_links: list[tuple[UUID, UUID, bool]],
 ) -> None:
-    from support.http import bound_sessionmaker
-
-    from core.broker.rpc import RpcError, rpc_call
-    from core.enum.rpc import UserRPC
-    from core.schema.message.core import Ack
-    from core.schema.message.user import LinkPersonRequest
-    from user.service.user import UserService
-    from user.uow.user import UserUOW
-
-    bob = UUID((await _register(client, "bob@example.com", "bob")).json()["id"])
-    person_id = uuid4()
-
-    with bound_sessionmaker(user_sessionmaker):
-        ack = await rpc_call(
-            UserRPC.LINK_PERSON,
-            LinkPersonRequest(user_id=bob, person_id=person_id),
-            Ack,
+    admin = await _verified_session(client, user_engine, superuser=True)
+    invited = await _person(user_engine)
+    joined = await _person(user_engine)
+    moved = await _person(user_engine)
+    token = (
+        await client.post(
+            "/user/v1/users/invite", json={"person_id": str(invited)}, headers=admin
         )
-        with pytest.raises(RpcError) as refused:
-            await rpc_call(
-                UserRPC.LINK_PERSON,
-                LinkPersonRequest(user_id=bob, person_id=uuid4()),
-                Ack,
-            )
+    ).json()["token"]
+    registered = await _register(client, "bob@example.com", "bob", invite_token=token)
+    other = (await _register(client, "cid@example.com", "cid")).json()
+    cid = _bearer(await _login(client, "cid@example.com"))
+    join_token = (
+        await client.post(
+            "/user/v1/users/invite", json={"person_id": str(joined)}, headers=admin
+        )
+    ).json()["token"]
 
-    assert ack.ok
-    assert (refused.value.error.code, refused.value.error.detail) == (
-        400,
-        "ACCOUNT_ALREADY_LINKED",
+    self_linked = await client.post(
+        "/user/v1/users/me/link-invite", json={"token": join_token}, headers=cid
     )
-    assert (await UserService(UserUOW(user_sessionmaker)).get(bob)).person_id == (
-        person_id
+    admin_linked = await client.patch(
+        f"/user/v1/users/{other['id']}/person",
+        json={"person_id": str(moved)},
+        headers=admin,
     )
 
+    assert registered.status_code == 201, registered.text
+    assert registered.json()["person_id"] == str(invited)
+    assert self_linked.json()["person_id"] == str(joined)
+    assert admin_linked.json()["person_id"] == str(moved)
+    assert [(str(p), replace) for _, p, replace in profile_links] == [
+        (str(invited), False),
+        (str(joined), False),
+        (str(moved), True),
+    ]
+    assert outbox.last("updated")[3] == moved
 
-async def test_the_link_person_rpc_answers_with_an_ack_or_the_error(
-    client: httpx.AsyncClient, user_sessionmaker: Maker
+
+async def test_a_refusal_from_profile_reaches_the_caller(
+    client: httpx.AsyncClient,
+    user_engine: AsyncEngine,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from core.schema.message.user import LinkPersonRequest
-    from user.api.kafka.sub.link import on_link_person
-    from user.uow.user import UserUOW
+    from core.broker.rpc import RpcError
+    from core.schema.message.core import MQError
+    from user.utils.profile import link_account
 
-    bob = UUID((await _register(client, "bob@example.com", "bob")).json()["id"])
-    uow = UserUOW(user_sessionmaker)
+    async def refuse(*_: object, **__: object) -> None:
+        raise RpcError(
+            MQError(code=400, detail="PERSON_ALREADY_HAS_ACCOUNT", extra={})
+        )
 
-    linked = await on_link_person(
-        LinkPersonRequest(user_id=bob, person_id=uuid4()), uow
-    )
-    again = await on_link_person(
-        LinkPersonRequest(user_id=bob, person_id=uuid4()), uow
-    )
-    stranger = await on_link_person(
-        LinkPersonRequest(user_id=uuid4(), person_id=uuid4()), uow
+    monkeypatch.setattr("user.service.user.link_account", link_account)
+    monkeypatch.setattr("user.utils.profile.rpc_call", refuse)
+    admin = await _verified_session(client, user_engine, superuser=True)
+    bob = (await _register(client, "bob@example.com", "bob")).json()
+
+    response = await client.patch(
+        f"/user/v1/users/{bob['id']}/person",
+        json={"person_id": str(await _person(user_engine))},
+        headers=admin,
     )
 
-    assert linked.error is None
-    assert again.error is not None
-    assert (again.error.code, again.error.detail) == (400, "ACCOUNT_ALREADY_LINKED")
-    assert stranger.error is not None
-    assert (stranger.error.code, stranger.error.detail) == (404, "USER_NOT_FOUND")
+    assert response.status_code == 400
+    assert response.json()["detail"] == "PERSON_ALREADY_HAS_ACCOUNT"
+
+
+async def test_registration_survives_a_silent_profile_but_linking_does_not(
+    client: httpx.AsyncClient,
+    user_engine: AsyncEngine,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from user.utils.profile import link_account
+
+    async def silent(*_: object, **__: object) -> None:
+        raise TimeoutError
+
+    monkeypatch.setattr("user.service.user.link_account", link_account)
+    monkeypatch.setattr("user.utils.profile.rpc_call", silent)
+    admin = await _verified_session(client, user_engine, superuser=True)
+    person_id = await _person(user_engine)
+    token = (
+        await client.post(
+            "/user/v1/users/invite", json={"person_id": str(person_id)}, headers=admin
+        )
+    ).json()["token"]
+
+    registered = await _register(client, "bob@example.com", "bob", invite_token=token)
+    bob = _bearer(await _login(client, "bob@example.com"))
+    linked = await client.post(
+        "/user/v1/users/me/link-invite", json={"token": token}, headers=bob
+    )
+
+    assert registered.status_code == 201, registered.text
+    assert registered.json()["person_id"] is None
+    assert linked.status_code == 503
+    assert linked.json()["detail"] == "PROFILE_SERVICE_UNAVAILABLE"
 
 
 async def test_telegram_link_token_needs_a_person_and_a_configured_bot(

@@ -6,6 +6,8 @@ from core.schema.message.profile import (
     PersonCreatedEvent,
     PersonData,
     PersonDeletedEvent,
+    PersonLinkChangedEvent,
+    PersonLinkData,
     PersonUpdatedEvent,
 )
 
@@ -24,4 +26,11 @@ async def on_person_deleted(person_ids: list[UUID]):
     await broker.publish(
         PersonDeletedEvent(data=[{"id": person_id} for person_id in person_ids]),
         PersonTopic.DELETED,
+    )
+
+
+@router.publisher(PersonTopic.LINK_CHANGED)
+async def on_person_link_changed(links: list[PersonLinkData]):
+    await broker.publish(
+        PersonLinkChangedEvent(data=links), PersonTopic.LINK_CHANGED
     )

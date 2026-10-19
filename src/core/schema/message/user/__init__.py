@@ -43,11 +43,6 @@ class ResolveUserIdRequest(MQRequest):
     person_id: UUID
 
 
-class LinkPersonRequest(MQRequest):
-    user_id: UUID
-    person_id: UUID
-
-
 class UserIdResponse(MQRequest):
     user_id: UUID
 

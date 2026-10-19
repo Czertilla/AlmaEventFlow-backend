@@ -5,6 +5,7 @@ class PersonTopic(StrEnum):
     CREATED = "person-created"
     UPDATED = "person-updated"
     DELETED = "person-deleted"
+    LINK_CHANGED = "person-link-changed"
 
 
 class OrganizationTopic(StrEnum):

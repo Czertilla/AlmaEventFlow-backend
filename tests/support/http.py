@@ -1,4 +1,4 @@
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
 from contextlib import asynccontextmanager, contextmanager
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -13,6 +13,7 @@ from core.dependencies.sqlalchemy import UOWDep
 from core.schema.user import UserJWT
 
 Maker = async_sessionmaker[AsyncSession]
+AsPerson = Callable[[UUID], Awaitable[dict[str, str]]]
 
 
 @contextmanager
@@ -54,12 +55,13 @@ def mint_token(user: UserJWT) -> str:
 def principal(
     *,
     person_id: UUID | None = None,
+    user_id: UUID | None = None,
     superuser: bool = False,
     verified: bool = True,
     active: bool = True,
 ) -> dict[str, str]:
     user = UserJWT(
-        id=uuid4(),
+        id=user_id or uuid4(),
         person_id=person_id,
         is_active=active,
         is_verified=verified,

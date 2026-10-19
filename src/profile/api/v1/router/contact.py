@@ -11,8 +11,8 @@ from profile.api.v1.schema.contact import (
     ContactPutData,
     ContactRead,
 )
+from profile.dependency.account import CallerPersonDep, RequiredPersonDep
 from profile.dependency.contact import ContactUOWDep, PersonContactUOWDep
-from profile.exc.user import NonPersonalUserException
 from profile.filter.contact import ContactFilter
 from profile.service.contact import ContactService
 from uuid import UUID
@@ -40,15 +40,14 @@ logger = getLogger(__name__)
 )
 async def get_my_contacts(
     user: ActiveUserJWTDep,
+    person_id: RequiredPersonDep,
     uow: ContactUOWDep,
     filter: ContactFilter = FilterDepends(ContactFilter),
     page_params: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[ContactItemRead]:
-    if user.person_id is None:
-        raise NonPersonalUserException()
     return PageV1[ContactItemRead].from_dto(
         await ContactService(uow).search_by_person(
-            user.person_id, filter.to_dto(), page_params.to_dto()
+            person_id, filter.to_dto(), page_params.to_dto()
         )
     )
 
@@ -59,11 +58,10 @@ async def get_my_contacts(
 )
 async def create_my_contact(
     user: UserJWTDep,
+    person_id: RequiredPersonDep,
     contact_data: ContactItemCreate,
     uow: PersonContactUOWDep,
 ) -> ContactRead:
-    if (person_id := user.person_id) is None:
-        raise NonPersonalUserException()
     return ContactRead.from_dto(
         await ContactService(uow).create(
             ContactCreate(person_id=person_id, **contact_data.model_dump()).to_dto()
@@ -79,10 +77,9 @@ async def put_my_contact(
     contact_id: UUID,
     contact_data: ContactItemPutData,
     user: UserJWTDep,
+    person_id: RequiredPersonDep,
     uow: ContactUOWDep,
 ) -> ContactRead:
-    if (person_id := user.person_id) is None:
-        raise NonPersonalUserException()
     contact = ContactPut(
         id=contact_id, person_id=person_id, **contact_data.model_dump()
     )
@@ -97,11 +94,10 @@ async def patch_my_contact(
     contact_id: UUID,
     contact_data: ContactPatchData,
     user: UserJWTDep,
+    person_id: RequiredPersonDep,
     uow: ContactUOWDep,
 ) -> ContactRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
-    await (service := ContactService(uow)).check_ownership(contact_id, user.person_id)
+    await (service := ContactService(uow)).check_ownership(contact_id, person_id)
     contact = ContactPatch.model_validate(
         {"id": contact_id, **contact_data.model_dump()}
     )
@@ -113,11 +109,9 @@ async def patch_my_contact(
     responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
 )
 async def delete_my_contact(
-    contact_id: UUID, user: UserJWTDep, uow: ContactUOWDep
+    contact_id: UUID, user: UserJWTDep, person_id: RequiredPersonDep, uow: ContactUOWDep
 ) -> None:
-    if user.person_id is None:
-        raise NonPersonalUserException()
-    await (service := ContactService(uow)).check_ownership(contact_id, user.person_id)
+    await (service := ContactService(uow)).check_ownership(contact_id, person_id)
     await service.delete(contact_id)
 
 
@@ -139,10 +133,11 @@ async def get_contacts(
 async def get_contact(
     uow: ContactUOWDep,
     user: UserJWTDep,
+    caller: CallerPersonDep,
     id: UUID,
 ) -> ContactRead:
     contact = await ContactService(uow).read(id)
-    ensure_self_or_superuser(user, contact.person_id)
+    ensure_self_or_superuser(user, contact.person_id, caller)
     return ContactRead.from_dto(contact)
 
 
@@ -152,9 +147,10 @@ async def get_contact(
 async def create_contact(
     uow: PersonContactUOWDep,
     user: UserJWTDep,
+    caller: CallerPersonDep,
     contact_data: ContactCreate,
 ) -> ContactRead:
-    ensure_self_or_superuser(user, contact_data.person_id)
+    ensure_self_or_superuser(user, contact_data.person_id, caller)
     return ContactRead.from_dto(await ContactService(uow).create(contact_data.to_dto()))
 
 

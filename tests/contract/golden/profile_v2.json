@@ -1,0 +1,520 @@
+{
+  "profile.MyContactData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": "e07e413a-39ee-5bbc-8aad-8f79b5fc2ef3",
+          "is_main": true,
+          "type": "email",
+          "value": "x"
+        }
+      },
+      "dump": {
+        "id": "e07e413a-39ee-5bbc-8aad-8f79b5fc2ef3",
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "id",
+        "is_main",
+        "type",
+        "value"
+      ],
+      "input": {
+        "id": "e07e413a-39ee-5bbc-8aad-8f79b5fc2ef3",
+        "is_main": true,
+        "type": "email",
+        "value": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "id": null,
+          "is_main": false,
+          "type": "email",
+          "value": "x"
+        }
+      },
+      "dump": {
+        "id": null,
+        "is_main": false,
+        "type": "email",
+        "value": "x"
+      },
+      "fields_set": [
+        "type",
+        "value"
+      ],
+      "input": {
+        "type": "email",
+        "value": "x"
+      }
+    }
+  },
+  "profile.MyProfileRead": {
+    "full": {
+      "dump": {
+        "birthdate": "2026-01-01",
+        "contacts": [
+          {
+            "id": "43e6246b-7308-5034-9b8c-2f737a11bdc0",
+            "is_main": true,
+            "type": "email",
+            "value": "x"
+          }
+        ],
+        "created_at": "2026-01-01T10:00:00Z",
+        "diet": {
+          "description": "x",
+          "id": 1,
+          "name": "x"
+        },
+        "diet_id": 1,
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "ecd82ccd-7995-52c8-9eb8-0155f12883f8",
+        "name": "x",
+        "patronymic": "x",
+        "student": {
+          "faculty_id": "73438f0d-99cd-5534-82ee-1a0077b3a80b",
+          "group": {
+            "degree_id": 1,
+            "faculty_id": "58c2eee5-e3fc-5b26-8444-3ba907c6e657",
+            "grade": 1,
+            "id": 1,
+            "name": "x"
+          },
+          "group_id": 1,
+          "is_active": true,
+          "is_budget": true,
+          "is_full": true,
+          "student_id": "x"
+        },
+        "surname": "x",
+        "workplace_id": "62223720-5e04-5b6d-8a40-173fceea47f8"
+      },
+      "fields_set": [
+        "birthdate",
+        "contacts",
+        "created_at",
+        "diet",
+        "diet_id",
+        "edited_at",
+        "id",
+        "name",
+        "patronymic",
+        "student",
+        "surname",
+        "workplace_id"
+      ],
+      "input": {
+        "birthdate": "2026-01-01",
+        "contacts": [
+          {
+            "id": "43e6246b-7308-5034-9b8c-2f737a11bdc0",
+            "is_main": true,
+            "type": "email",
+            "value": "x"
+          }
+        ],
+        "created_at": "2026-01-01T10:00:00Z",
+        "diet": {
+          "description": "x",
+          "id": 1,
+          "name": "x"
+        },
+        "diet_id": 1,
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "ecd82ccd-7995-52c8-9eb8-0155f12883f8",
+        "name": "x",
+        "patronymic": "x",
+        "student": {
+          "faculty_id": "73438f0d-99cd-5534-82ee-1a0077b3a80b",
+          "group": {
+            "degree_id": 1,
+            "faculty_id": "58c2eee5-e3fc-5b26-8444-3ba907c6e657",
+            "grade": 1,
+            "id": 1,
+            "name": "x"
+          },
+          "group_id": 1,
+          "is_active": true,
+          "is_budget": true,
+          "is_full": true,
+          "student_id": "x"
+        },
+        "surname": "x",
+        "workplace_id": "62223720-5e04-5b6d-8a40-173fceea47f8"
+      }
+    },
+    "required": {
+      "dump": {
+        "birthdate": "2026-01-01",
+        "contacts": [
+          {
+            "id": "43e6246b-7308-5034-9b8c-2f737a11bdc0",
+            "is_main": false,
+            "type": "email",
+            "value": "x"
+          }
+        ],
+        "created_at": "2026-01-01T10:00:00Z",
+        "diet": {
+          "description": null,
+          "id": 1,
+          "name": "x"
+        },
+        "diet_id": 1,
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "ecd82ccd-7995-52c8-9eb8-0155f12883f8",
+        "name": "x",
+        "patronymic": "x",
+        "student": {
+          "faculty_id": "73438f0d-99cd-5534-82ee-1a0077b3a80b",
+          "group": {
+            "degree_id": 1,
+            "faculty_id": "58c2eee5-e3fc-5b26-8444-3ba907c6e657",
+            "grade": 1,
+            "id": 1,
+            "name": "x"
+          },
+          "group_id": 1,
+          "is_active": true,
+          "is_budget": true,
+          "is_full": true,
+          "student_id": "x"
+        },
+        "surname": "x",
+        "workplace_id": "62223720-5e04-5b6d-8a40-173fceea47f8"
+      },
+      "fields_set": [
+        "birthdate",
+        "contacts",
+        "created_at",
+        "diet",
+        "diet_id",
+        "edited_at",
+        "id",
+        "name",
+        "patronymic",
+        "student",
+        "surname",
+        "workplace_id"
+      ],
+      "input": {
+        "birthdate": "2026-01-01",
+        "contacts": [
+          {
+            "id": "43e6246b-7308-5034-9b8c-2f737a11bdc0",
+            "type": "email",
+            "value": "x"
+          }
+        ],
+        "created_at": "2026-01-01T10:00:00Z",
+        "diet": {
+          "id": 1,
+          "name": "x"
+        },
+        "diet_id": 1,
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "ecd82ccd-7995-52c8-9eb8-0155f12883f8",
+        "name": "x",
+        "patronymic": "x",
+        "student": {
+          "faculty_id": "73438f0d-99cd-5534-82ee-1a0077b3a80b",
+          "group": {
+            "degree_id": 1,
+            "faculty_id": "58c2eee5-e3fc-5b26-8444-3ba907c6e657",
+            "grade": 1,
+            "id": 1,
+            "name": "x"
+          },
+          "group_id": 1,
+          "is_active": true,
+          "is_budget": true,
+          "is_full": true,
+          "student_id": "x"
+        },
+        "surname": "x",
+        "workplace_id": "62223720-5e04-5b6d-8a40-173fceea47f8"
+      }
+    }
+  },
+  "profile.MyProfileWrite": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "birthdate": "2026-01-01",
+          "contacts": [
+            {
+              "id": "83c2afa9-ebe0-5c78-ae5e-d31f6e1ec460",
+              "is_main": true,
+              "type": "email",
+              "value": "x"
+            }
+          ],
+          "diet_id": 1,
+          "name": "x",
+          "patronymic": "x",
+          "student": {
+            "faculty_id": "761a49b1-bf78-55b5-9179-28fc3fcf5990",
+            "group_id": 1,
+            "is_active": true,
+            "is_budget": true,
+            "is_full": true,
+            "student_id": "x"
+          },
+          "surname": "x",
+          "workplace_id": "7296a1ce-1fd7-53a4-a897-b4f251c48371"
+        }
+      },
+      "dump": {
+        "birthdate": "2026-01-01",
+        "contacts": [
+          {
+            "id": "83c2afa9-ebe0-5c78-ae5e-d31f6e1ec460",
+            "is_main": true,
+            "type": "email",
+            "value": "x"
+          }
+        ],
+        "diet_id": 1,
+        "name": "x",
+        "patronymic": "x",
+        "student": {
+          "faculty_id": "761a49b1-bf78-55b5-9179-28fc3fcf5990",
+          "group_id": 1,
+          "is_active": true,
+          "is_budget": true,
+          "is_full": true,
+          "student_id": "x"
+        },
+        "surname": "x",
+        "workplace_id": "7296a1ce-1fd7-53a4-a897-b4f251c48371"
+      },
+      "fields_set": [
+        "birthdate",
+        "contacts",
+        "diet_id",
+        "name",
+        "patronymic",
+        "student",
+        "surname",
+        "workplace_id"
+      ],
+      "input": {
+        "birthdate": "2026-01-01",
+        "contacts": [
+          {
+            "id": "83c2afa9-ebe0-5c78-ae5e-d31f6e1ec460",
+            "is_main": true,
+            "type": "email",
+            "value": "x"
+          }
+        ],
+        "diet_id": 1,
+        "name": "x",
+        "patronymic": "x",
+        "student": {
+          "faculty_id": "761a49b1-bf78-55b5-9179-28fc3fcf5990",
+          "group_id": 1,
+          "is_active": true,
+          "is_budget": true,
+          "is_full": true,
+          "student_id": "x"
+        },
+        "surname": "x",
+        "workplace_id": "7296a1ce-1fd7-53a4-a897-b4f251c48371"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "birthdate": null,
+          "contacts": "<generated>",
+          "diet_id": null,
+          "name": "x",
+          "patronymic": null,
+          "student": null,
+          "surname": "x",
+          "workplace_id": null
+        }
+      },
+      "dump": {
+        "birthdate": null,
+        "contacts": "<generated>",
+        "diet_id": null,
+        "name": "x",
+        "patronymic": null,
+        "student": null,
+        "surname": "x",
+        "workplace_id": null
+      },
+      "fields_set": [
+        "name",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "profile.MyStudentData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "faculty_id": "e5095334-cd07-5867-a8bd-9a507d93a1e4",
+          "group_id": 1,
+          "is_active": true,
+          "is_budget": true,
+          "is_full": true,
+          "student_id": "x"
+        }
+      },
+      "dump": {
+        "faculty_id": "e5095334-cd07-5867-a8bd-9a507d93a1e4",
+        "group_id": 1,
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "faculty_id",
+        "group_id",
+        "is_active",
+        "is_budget",
+        "is_full",
+        "student_id"
+      ],
+      "input": {
+        "faculty_id": "e5095334-cd07-5867-a8bd-9a507d93a1e4",
+        "group_id": 1,
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "faculty_id": null,
+          "group_id": 1,
+          "is_active": true,
+          "is_budget": null,
+          "is_full": null,
+          "student_id": "x"
+        }
+      },
+      "dump": {
+        "faculty_id": null,
+        "group_id": 1,
+        "is_active": true,
+        "is_budget": null,
+        "is_full": null,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "group_id",
+        "student_id"
+      ],
+      "input": {
+        "group_id": 1,
+        "student_id": "x"
+      }
+    }
+  },
+  "profile.MyStudentRead": {
+    "full": {
+      "dump": {
+        "faculty_id": "13f9817a-522b-5cad-9b3e-5b5efb234bc9",
+        "group": {
+          "degree_id": 1,
+          "faculty_id": "98a0ef85-6d14-54ff-91e9-3dbb0a99a7f5",
+          "grade": 1,
+          "id": 1,
+          "name": "x"
+        },
+        "group_id": 1,
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "faculty_id",
+        "group",
+        "group_id",
+        "is_active",
+        "is_budget",
+        "is_full",
+        "student_id"
+      ],
+      "input": {
+        "faculty_id": "13f9817a-522b-5cad-9b3e-5b5efb234bc9",
+        "group": {
+          "degree_id": 1,
+          "faculty_id": "98a0ef85-6d14-54ff-91e9-3dbb0a99a7f5",
+          "grade": 1,
+          "id": 1,
+          "name": "x"
+        },
+        "group_id": 1,
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "faculty_id": "13f9817a-522b-5cad-9b3e-5b5efb234bc9",
+        "group": {
+          "degree_id": 1,
+          "faculty_id": "98a0ef85-6d14-54ff-91e9-3dbb0a99a7f5",
+          "grade": 1,
+          "id": 1,
+          "name": "x"
+        },
+        "group_id": 1,
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      },
+      "fields_set": [
+        "faculty_id",
+        "group",
+        "group_id",
+        "is_active",
+        "is_budget",
+        "is_full",
+        "student_id"
+      ],
+      "input": {
+        "faculty_id": "13f9817a-522b-5cad-9b3e-5b5efb234bc9",
+        "group": {
+          "degree_id": 1,
+          "faculty_id": "98a0ef85-6d14-54ff-91e9-3dbb0a99a7f5",
+          "grade": 1,
+          "id": 1,
+          "name": "x"
+        },
+        "group_id": 1,
+        "is_active": true,
+        "is_budget": true,
+        "is_full": true,
+        "student_id": "x"
+      }
+    }
+  }
+}

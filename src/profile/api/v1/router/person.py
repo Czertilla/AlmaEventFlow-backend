@@ -15,9 +15,9 @@ from profile.api.v1.schema.person import (
     PersonPutData,
     PersonRead,
 )
+from profile.dependency.account import CallerPersonDep, RequiredPersonDep
 from profile.dependency.contact import ContactUOWDep, PersonContactUOWDep
 from profile.dependency.person import PersonUOWDep
-from profile.exc.user import NonPersonalUserException
 from profile.filter.contact import ContactFilter
 from profile.filter.person import PersonFilter
 from profile.service.contact import ContactService
@@ -58,10 +58,12 @@ async def search_person(
     "/my",
     responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
 )
-async def get_my_person(user: ActiveUserJWTDep, uow: PersonUOWDep) -> PersonRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
-    return PersonRead.from_dto(await PersonService(uow).read(user.person_id))
+async def get_my_person(
+    user: ActiveUserJWTDep,
+    person_id: RequiredPersonDep,
+    uow: PersonUOWDep,
+) -> PersonRead:
+    return PersonRead.from_dto(await PersonService(uow).read(person_id))
 
 
 @router.put(
@@ -69,13 +71,14 @@ async def get_my_person(user: ActiveUserJWTDep, uow: PersonUOWDep) -> PersonRead
     responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
 )
 async def put_my_person(
-    person_data: PersonPutData, user: UserJWTDep, uow: PersonUOWDep
+    person_data: PersonPutData,
+    user: UserJWTDep,
+    person_id: RequiredPersonDep,
+    uow: PersonUOWDep,
 ) -> PersonRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
     return PersonRead.from_dto(
         await PersonService(uow).put(
-            PersonPut(id=user.person_id, **person_data.model_dump()).to_dto()
+            PersonPut(id=person_id, **person_data.model_dump()).to_dto()
         )
     )
 
@@ -85,13 +88,14 @@ async def put_my_person(
     responses={**auth_responses(), **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED)},
 )
 async def patch_my_person(
-    person_data: PersonPatchData, user: UserJWTDep, uow: PersonUOWDep
+    person_data: PersonPatchData,
+    user: UserJWTDep,
+    person_id: RequiredPersonDep,
+    uow: PersonUOWDep,
 ) -> PersonRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
     return PersonRead.from_dto(
         await PersonService(uow).patch(
-            PersonPatch(id=user.person_id, **person_data.model_dump()).to_dto()
+            PersonPatch(id=person_id, **person_data.model_dump()).to_dto()
         )
     )
 
@@ -106,7 +110,7 @@ async def get_person(person_id: UUID, uow: PersonUOWDep) -> PersonRead:
 
 @router.post("", responses={**auth_responses()})
 async def create_person(
-    person: PersonCreate, user: UserJWTDep, uow: PersonUOWDep
+    person: PersonCreate, user: SuperUserJWTDep, uow: PersonUOWDep
 ) -> PersonRead:
     return PersonRead.from_dto(await PersonService(uow).create(person.to_dto()))
 
@@ -162,11 +166,12 @@ contact_router = APIRouter(prefix="/{person_id}/contacts", tags=["person", "cont
 async def get_person_contacts(
     person_id: UUID,
     user: UserJWTDep,
+    caller: CallerPersonDep,
     uow: ContactUOWDep,
     filter: ContactFilter = FilterDepends(ContactFilter),
     page_params: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[ContactItemRead]:
-    ensure_self_or_superuser(user, person_id)
+    ensure_self_or_superuser(user, person_id, caller)
     return PageV1[ContactItemRead].from_dto(
         await ContactService(uow).search_by_person(
             person_id, filter.to_dto(), page_params.to_dto()

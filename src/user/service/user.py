@@ -13,7 +13,9 @@ from core.dto.base import dto_dict, dto_from_orm
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.enum.notify import NotificationCategory
 from core.schema.message.notify import NotificationRequest
+from core.schema.message.profile import PersonLinkData
 from core.service.base import BaseService, required_transaction
+from core.utils.exc.http import VancedHTTPException
 from core.utils.notify import send_notification
 from user.dto.invite import InviteTokenCreateDTO, InviteTokenDTO
 from user.dto.session import SessionDTO, SessionTokenDTO
@@ -58,6 +60,7 @@ from user.utils.account import (
 )
 from user.utils.mail import send_reset_message, send_verify_message
 from user.utils.password import PasswordHelper
+from user.utils.profile import link_account
 from user.utils.token import generate_refresh_token
 
 logger = getLogger(__name__)
@@ -209,12 +212,20 @@ class UserService(BaseService[UserUOW]):
                     if key not in UNSAFE_USER_FIELDS
                 }
             values["hashed_password"] = self.password_helper.hash(data.password)
-            if person_id is not None:
-                values["person_id"] = person_id
             created = await uow.users.create(values)
             result = await self._flushed(created.id)
             await uow.commit()
         await self._announce_created(result)
+        if person_id is not None:
+            try:
+                await link_account(result.id, person_id)
+            except VancedHTTPException:
+                logger.warning(
+                    "Account %s registered without the person of its invitation",
+                    result.id,
+                )
+            else:
+                result = await self._adopt(result.id, person_id)
         return result
 
     @required_transaction
@@ -532,6 +543,38 @@ class UserService(BaseService[UserUOW]):
             expires_at=expires_at,
         )
 
+    @required_transaction
+    async def _apply_link(
+        self, user_id: UUID, person_id: UUID | None
+    ) -> list[UserDTO]:
+        user = await self.uow.users.get(user_id)
+        if user is None:
+            return []
+        changed: list[UserDTO] = []
+        if person_id is not None:
+            await self.uow.persons.upsert(data={"id": person_id})
+            holder = await self.uow.users.get_by_person_id(person_id)
+            if holder is not None and holder.id != user_id:
+                await self.uow.users.update_one(holder.id, {"person_id": None})
+                changed.append(await self._flushed(holder.id))
+        if user.person_id != person_id:
+            await self.uow.users.update_one(user_id, {"person_id": person_id})
+            changed.append(await self._flushed(user_id))
+        return changed
+
+    async def apply_link(self, links: Iterable[PersonLinkData]) -> None:
+        changed: list[UserDTO] = []
+        async with self.uow as uow:
+            for link in links:
+                changed.extend(await self._apply_link(link.user_id, link.person_id))
+            await uow.commit()
+        for user in changed:
+            await self._announce_updated(user, {"person_id"})
+
+    async def _adopt(self, user_id: UUID, person_id: UUID) -> UserDTO:
+        await self.apply_link([PersonLinkData(user_id=user_id, person_id=person_id)])
+        return await self.get(user_id)
+
     async def admin_link_person(self, user_id: UUID, person_id: UUID) -> UserDTO:
         async with self.uow as uow:
             if await uow.users.get_by_id(user_id) is None:
@@ -540,11 +583,8 @@ class UserService(BaseService[UserUOW]):
                 raise InvitePersonNotExistsException()
             if await uow.users.exists_person(person_id):
                 raise PersonAlreadyHasAccount()
-            await uow.users.update_one(user_id, {"person_id": person_id})
-            result = await self._flushed(user_id)
-            await uow.commit()
-        await self._announce_updated(result, {"person_id"})
-        return result
+        await link_account(user_id, person_id, replace=True)
+        return await self._adopt(user_id, person_id)
 
     async def link_invite(self, user_id: UUID, token: str) -> UserDTO:
         async with self.uow as uow:
@@ -554,27 +594,8 @@ class UserService(BaseService[UserUOW]):
             if user.person_id is not None:
                 raise AccountAlreadyLinked()
             person_id = await self._validate_invite_token(token)
-            await uow.users.update_one(user_id, {"person_id": person_id})
-            result = await self._flushed(user_id)
-            await uow.commit()
-        await self._announce_updated(result, {"person_id"})
-        return result
-
-    async def link_created_person(self, user_id: UUID, person_id: UUID) -> UserDTO:
-        async with self.uow as uow:
-            user = await uow.users.get(user_id)
-            if user is None:
-                raise UserNotFound()
-            if user.person_id is not None:
-                raise AccountAlreadyLinked()
-            if await uow.users.exists_person(person_id):
-                raise PersonAlreadyHasAccount()
-            await uow.persons.upsert(data={"id": person_id})
-            await uow.users.update_one(user_id, {"person_id": person_id})
-            result = await self._flushed(user_id)
-            await uow.commit()
-        await self._announce_updated(result, {"person_id"})
-        return result
+        await link_account(user_id, person_id)
+        return await self._adopt(user_id, person_id)
 
     async def announce_login(self, user_id: UUID, device_info: str | None) -> None:
         body = f"Выполнен вход с устройства: {device_info}" if device_info else ""

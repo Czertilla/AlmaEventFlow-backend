@@ -18,6 +18,22 @@ class PersonCreatedEvent(MQEvent[PersonData]): ...
 class PersonUpdatedEvent(PersonCreatedEvent): ...
 
 
+class PersonLinkData(MQRequest):
+    user_id: UUID
+    person_id: UUID | None = Field(
+        description="The person the account stands for now, none when it has no one."
+    )
+
+
+class PersonLinkChangedEvent(MQEvent[PersonLinkData]): ...
+
+
+class LinkAccountRequest(MQRequest):
+    user_id: UUID
+    person_id: UUID
+    replace: bool = False
+
+
 class PersonDelete(MQRequest):
     id: UUID
 

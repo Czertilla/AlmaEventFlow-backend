@@ -8,7 +8,11 @@ class UserRPC(StrEnum):
     RESOLVE_USER_ID = "resolve-user-id"
     LINK_TELEGRAM_OAUTH = "link-telegram-oauth"
     UNLINK_TELEGRAM_OAUTH = "unlink-telegram-oauth"
-    LINK_PERSON = "link-person"
+
+
+@prefix("rpc.profile.")
+class ProfileRPC(StrEnum):
+    LINK_ACCOUNT = "link-account"
 
 
 @prefix("rpc.event.")

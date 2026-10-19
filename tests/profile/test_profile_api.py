@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 import httpx
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine
-from support.http import principal
+from support.http import AsPerson, principal
 
 BASE = "/profile/v1"
 ADMIN = principal(superuser=True)
@@ -24,10 +24,6 @@ async def _profile(api: httpx.AsyncClient, person_id: UUID) -> None:
     assert response.status_code == 200, response.text
 
 
-def _as(person_id: UUID) -> dict[str, str]:
-    return principal(person_id=person_id)
-
-
 async def test_person_read_exposes_timestamps(api: httpx.AsyncClient) -> None:
     person_id = await _person(api)
 
@@ -43,9 +39,11 @@ async def test_person_read_exposes_timestamps(api: httpx.AsyncClient) -> None:
     assert patched.json()["edited_at"] is not None
 
 
-async def test_my_contact_lifecycle(api: httpx.AsyncClient) -> None:
+async def test_my_contact_lifecycle(
+    api: httpx.AsyncClient, as_person: AsPerson
+) -> None:
     person_id = await _person(api)
-    me = _as(person_id)
+    me = await as_person(person_id)
 
     created = await api.post(
         f"{BASE}/contacts/my",
@@ -104,7 +102,7 @@ async def test_contact_endpoints_take_json_bodies(api: httpx.AsyncClient) -> Non
 
 
 async def test_contacts_are_visible_only_to_their_owner_and_superusers(
-    api: httpx.AsyncClient,
+    api: httpx.AsyncClient, as_person: AsPerson
 ) -> None:
     owner_id = await _person(api)
     stranger_id = await _person(api, "Petrov")
@@ -115,18 +113,22 @@ async def test_contacts_are_visible_only_to_their_owner_and_superusers(
     )
     contact_id = contact.json()["id"]
 
-    own = await api.get(f"{BASE}/contacts/{contact_id}", headers=_as(owner_id))
-    foreign = await api.get(f"{BASE}/contacts/{contact_id}", headers=_as(stranger_id))
+    own = await api.get(
+        f"{BASE}/contacts/{contact_id}", headers=await as_person(owner_id)
+    )
+    foreign = await api.get(
+        f"{BASE}/contacts/{contact_id}", headers=await as_person(stranger_id)
+    )
     own_list = await api.get(
-        f"{BASE}/persons/{owner_id}/contacts", headers=_as(owner_id)
+        f"{BASE}/persons/{owner_id}/contacts", headers=await as_person(owner_id)
     )
     foreign_list = await api.get(
-        f"{BASE}/persons/{owner_id}/contacts", headers=_as(stranger_id)
+        f"{BASE}/persons/{owner_id}/contacts", headers=await as_person(stranger_id)
     )
     forged = await api.post(
         f"{BASE}/contacts",
         json={"person_id": str(owner_id), "type": "email", "value": "x@y.z"},
-        headers=_as(stranger_id),
+        headers=await as_person(stranger_id),
     )
 
     assert own.status_code == 200
@@ -171,7 +173,7 @@ async def test_diets_use_integer_ids_and_id_free_bodies(
 
 
 async def test_my_profile_cannot_be_used_to_edit_somebody_elses(
-    api: httpx.AsyncClient,
+    api: httpx.AsyncClient, as_person: AsPerson
 ) -> None:
     mine = await _person(api)
     theirs = await _person(api, "Petrov")
@@ -181,10 +183,12 @@ async def test_my_profile_cannot_be_used_to_edit_somebody_elses(
     replaced = await api.put(
         f"{BASE}/profiles/my",
         json={"id": str(theirs), "birthdate": "2000-01-02"},
-        headers=_as(mine),
+        headers=await as_person(mine),
     )
     patched = await api.patch(
-        f"{BASE}/profiles/my", json={"birthdate": "2001-02-03"}, headers=_as(mine)
+        f"{BASE}/profiles/my",
+        json={"birthdate": "2001-02-03"},
+        headers=await as_person(mine),
     )
     own = await api.get(f"{BASE}/profiles/{mine}", headers=ADMIN)
     other = await api.get(f"{BASE}/profiles/{theirs}", headers=ADMIN)
@@ -196,10 +200,12 @@ async def test_my_profile_cannot_be_used_to_edit_somebody_elses(
     assert own.json()["created_at"]
 
 
-async def test_my_passport_lifecycle(api: httpx.AsyncClient) -> None:
+async def test_my_passport_lifecycle(
+    api: httpx.AsyncClient, as_person: AsPerson
+) -> None:
     person_id = await _person(api)
     await _profile(api, person_id)
-    me = _as(person_id)
+    me = await as_person(person_id)
     body = {
         "number": "1234",
         "expire_date": "2030-01-01",
@@ -241,7 +247,9 @@ async def test_my_passport_lifecycle(api: httpx.AsyncClient) -> None:
     assert after.json()["items"] == []
 
 
-async def test_a_passport_belongs_to_its_owner(api: httpx.AsyncClient) -> None:
+async def test_a_passport_belongs_to_its_owner(
+    api: httpx.AsyncClient, as_person: AsPerson
+) -> None:
     owner = await _person(api)
     stranger = await _person(api, "Petrov")
     await _profile(api, owner)
@@ -249,18 +257,20 @@ async def test_a_passport_belongs_to_its_owner(api: httpx.AsyncClient) -> None:
     created = await api.post(
         f"{BASE}/passports/my",
         json={"number": "1", "expire_date": "2030-01-01", "is_foreign": False},
-        headers=_as(owner),
+        headers=await as_person(owner),
     )
     passport_id = created.json()["id"]
 
-    read = await api.get(f"{BASE}/passports/my/{passport_id}", headers=_as(stranger))
+    read = await api.get(
+        f"{BASE}/passports/my/{passport_id}", headers=await as_person(stranger)
+    )
     patched = await api.patch(
         f"{BASE}/passports/my/{passport_id}",
         json={"number": "2"},
-        headers=_as(stranger),
+        headers=await as_person(stranger),
     )
     deleted = await api.delete(
-        f"{BASE}/passports/my/{passport_id}", headers=_as(stranger)
+        f"{BASE}/passports/my/{passport_id}", headers=await as_person(stranger)
     )
     as_admin = await api.get(f"{BASE}/passports/{passport_id}", headers=ADMIN)
 
@@ -270,13 +280,15 @@ async def test_a_passport_belongs_to_its_owner(api: httpx.AsyncClient) -> None:
     assert as_admin.json()["number"] == "1"
 
 
-async def test_name_variant_endpoints(api: httpx.AsyncClient) -> None:
+async def test_name_variant_endpoints(
+    api: httpx.AsyncClient, as_person: AsPerson
+) -> None:
     person_id = await _person(api)
     await _profile(api, person_id)
     passport = await api.post(
         f"{BASE}/passports/my",
         json={"number": "1", "expire_date": "2030-01-01", "is_foreign": False},
-        headers=_as(person_id),
+        headers=await as_person(person_id),
     )
     passport_id = passport.json()["id"]
     url = f"{BASE}/passports/{passport_id}/name-variant"
@@ -322,14 +334,16 @@ async def _classroom(profile_engine: AsyncEngine, api: httpx.AsyncClient) -> int
 
 
 async def test_student_enrolment_lifecycle(
-    api: httpx.AsyncClient, profile_engine: AsyncEngine
+    api: httpx.AsyncClient, profile_engine: AsyncEngine, as_person: AsPerson
 ) -> None:
     group_id = await _classroom(profile_engine, api)
     person_id = await _person(api)
     await _profile(api, person_id)
     body = {"id": str(person_id), "student_id": "S-1", "group_id": group_id}
 
-    forbidden = await api.post(f"{BASE}/students", json=body, headers=_as(person_id))
+    forbidden = await api.post(
+        f"{BASE}/students", json=body, headers=await as_person(person_id)
+    )
     created = await api.post(f"{BASE}/students", json=body, headers=ADMIN)
     again = await api.post(f"{BASE}/students", json=body, headers=ADMIN)
     patched = await api.patch(
@@ -340,9 +354,13 @@ async def test_student_enrolment_lifecycle(
         json={"student_id": "S-2", "group_id": group_id},
         headers=ADMIN,
     )
-    read = await api.get(f"{BASE}/students/{person_id}", headers=_as(person_id))
+    read = await api.get(
+        f"{BASE}/students/{person_id}", headers=await as_person(person_id)
+    )
     deleted = await api.delete(f"{BASE}/students/{person_id}", headers=ADMIN)
-    gone = await api.get(f"{BASE}/students/{person_id}", headers=_as(person_id))
+    gone = await api.get(
+        f"{BASE}/students/{person_id}", headers=await as_person(person_id)
+    )
     profile = await api.get(f"{BASE}/profiles/{person_id}", headers=ADMIN)
 
     assert forbidden.status_code == 403

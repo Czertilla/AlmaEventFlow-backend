@@ -9,6 +9,7 @@ SCHEMA_PACKAGES = {
     "notify_v1": "notify.api.v1.schema",
     "org_v1": "org.api.v1.schema",
     "profile_v1": "profile.api.v1.schema",
+    "profile_v2": "profile.api.v2.schema",
     "user_v1": "user.api.v1.schema",
 }
 
@@ -131,6 +132,13 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "student.StudentDegreeRead": "profile.dto.student:StudentDegreeDTO",
             "student.StudentGroupRead": "profile.dto.student:StudentGroupDTO",
             "student.StudentRead": "profile.dto.student:StudentDTO",
+        },
+    ),
+    "profile_v2": (
+        "profile.api.v2.schema",
+        {
+            "profile.MyProfileRead": "profile.dto.my_profile:MyProfileDTO",
+            "profile.MyStudentRead": "profile.dto.my_profile:MyStudentReadDTO",
         },
     ),
     "user_v1": (

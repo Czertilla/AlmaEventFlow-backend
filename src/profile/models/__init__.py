@@ -1,3 +1,4 @@
+from .account import PersonAccountORM
 from .contact import ContactORM
 from .diet import DietORM
 from .organization import OrganizationORM
@@ -12,6 +13,7 @@ __all__ = [
     "NameVariantORM",
     "OrganizationORM",
     "PassportORM",
+    "PersonAccountORM",
     "PersonORM",
     "ProfileORM",
     "StudentDegree",

@@ -14,9 +14,9 @@ from profile.api.v1.schema.passport import (
     PassportPutData,
     PassportRead,
 )
+from profile.dependency.account import RequiredPersonDep
 from profile.dependency.passport import PassportUOWDep
 from profile.dependency.profile import ProfilePassportUOWDep
-from profile.exc.user import NonPersonalUserException
 from profile.filter.passport import PassportFilter
 from profile.service.passport import NameVariantService, PassportService
 from profile.service.profile import ProfileService
@@ -68,31 +68,31 @@ NAME_VARIANT_RESPONSES: dict[int | str, dict[str, Any]] = {
 @router.get("/my", responses=MY_RESPONSES)
 async def get_my_passports(
     user: UserJWTDep,
+    person_id: RequiredPersonDep,
     uow: ProfilePassportUOWDep,
     filter: PassportFilter = FilterDepends(PassportFilter),
     page_params: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[PassportItemRead]:
-    if user.person_id is None:
-        raise NonPersonalUserException()
-    await ProfileService(uow).ensure_existance(user.person_id)
+    await ProfileService(uow).ensure_existance(person_id)
     return PageV1[PassportItemRead].from_dto(
         await PassportService(uow).search_by_profile(
-            user.person_id, filter.to_dto(), page_params.to_dto()
+            person_id, filter.to_dto(), page_params.to_dto()
         )
     )
 
 
 @router.post("/my", responses=MY_RESPONSES)
 async def create_my_passport(
-    passport_data: PassportItemCreate, user: UserJWTDep, uow: ProfilePassportUOWDep
+    passport_data: PassportItemCreate,
+    user: UserJWTDep,
+    person_id: RequiredPersonDep,
+    uow: ProfilePassportUOWDep,
 ) -> PassportRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
-    await ProfileService(uow).ensure_existance(user.person_id)
+    await ProfileService(uow).ensure_existance(person_id)
     return PassportRead.from_dto(
         await PassportService(uow).create(
             PassportCreate(
-                profile_id=user.person_id, **passport_data.model_dump()
+                profile_id=person_id, **passport_data.model_dump()
             ).to_dto()
         )
     )
@@ -100,11 +100,12 @@ async def create_my_passport(
 
 @router.get("/my/{passport_id}", responses=MY_PASSPORT_RESPONSES)
 async def get_my_passport(
-    passport_id: UUID, user: UserJWTDep, uow: ProfilePassportUOWDep
+    passport_id: UUID,
+    user: UserJWTDep,
+    person_id: RequiredPersonDep,
+    uow: ProfilePassportUOWDep,
 ) -> PassportRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
-    await (service := PassportService(uow)).check_ownership(passport_id, user.person_id)
+    await (service := PassportService(uow)).check_ownership(passport_id, person_id)
     return PassportRead.from_dto(await service.read(passport_id))
 
 
@@ -113,17 +114,16 @@ async def put_my_passport(
     passport_id: UUID,
     passport_data: PassportItemCreate,
     user: UserJWTDep,
+    person_id: RequiredPersonDep,
     uow: ProfilePassportUOWDep,
 ) -> PassportRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
-    await ProfileService(uow).ensure_existance(user.person_id)
+    await ProfileService(uow).ensure_existance(person_id)
     return PassportRead.from_dto(
         await PassportService(uow).put(
             PassportPut.model_validate(
                 {
                     "id": passport_id,
-                    "profile_id": user.person_id,
+                    "profile_id": person_id,
                     **passport_data.model_dump(),
                 }
             ).to_dto()
@@ -136,11 +136,10 @@ async def patch_my_passport(
     passport_id: UUID,
     passport_data: PassportPatchData,
     user: UserJWTDep,
+    person_id: RequiredPersonDep,
     uow: ProfilePassportUOWDep,
 ) -> PassportRead:
-    if user.person_id is None:
-        raise NonPersonalUserException()
-    await (service := PassportService(uow)).check_ownership(passport_id, user.person_id)
+    await (service := PassportService(uow)).check_ownership(passport_id, person_id)
     return PassportRead.from_dto(
         await service.patch(
             PassportPatch.model_validate(
@@ -152,11 +151,12 @@ async def patch_my_passport(
 
 @router.delete("/my/{passport_id}", responses=MY_PASSPORT_RESPONSES)
 async def delete_my_passport(
-    passport_id: UUID, user: UserJWTDep, uow: ProfilePassportUOWDep
+    passport_id: UUID,
+    user: UserJWTDep,
+    person_id: RequiredPersonDep,
+    uow: ProfilePassportUOWDep,
 ) -> None:
-    if user.person_id is None:
-        raise NonPersonalUserException()
-    await (service := PassportService(uow)).check_ownership(passport_id, user.person_id)
+    await (service := PassportService(uow)).check_ownership(passport_id, person_id)
     await service.delete(passport_id)
 
 
