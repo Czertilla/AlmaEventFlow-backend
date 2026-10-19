@@ -173,7 +173,7 @@ async def test_events_sort_by_lookup_rank(api: httpx.AsyncClient) -> None:
     assert await names("-status,name") == ["Beta", "Alpha", "Delta", "Gamma"]
     assert await names("status,name") == ["Alpha", "Delta", "Gamma", "Beta"]
     assert await names("level") == ["Gamma", "Alpha", "Beta", "Delta"]
-    assert await names("-level,name") == ["Delta", "Beta", "Alpha", "Gamma"]
+    assert await names("-level,name") == ["Beta", "Alpha", "Gamma", "Delta"]
 
 
 async def test_event_writes_are_for_superusers(api: httpx.AsyncClient) -> None:

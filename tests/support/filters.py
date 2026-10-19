@@ -44,6 +44,9 @@ def filter_cases(filter_cls: Any) -> list[Any]:
     for name, field in filter_cls.model_fields.items():
         if name != ordering:
             cases.append(filter_cls(**{name: sample(field.annotation)}))
+    if "search" in filter_cls.model_fields:
+        for term in (str(uuid4()), "3f2a9c41", "12345"):
+            cases.append(filter_cls(search=term))
     return cases
 
 

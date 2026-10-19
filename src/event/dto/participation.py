@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
+from core.dto.base import FieldsSetDTOMixin, IdentityFilterDTOMixin
 from event.enum.priority import EventPriorityEnumV1
 
 
@@ -45,8 +45,9 @@ class ParticipationDTO:
 
 
 @dataclass(frozen=True, slots=True)
-class ParticipationFilterDTO(TimestampFilterDTOMixin):
+class ParticipationFilterDTO(IdentityFilterDTOMixin):
     order_by: list[str] | None = None
+    search: str | None = None
     collective_id: UUID | None = None
     collective_id__in: list[UUID] | None = None
     event_id: UUID | None = None

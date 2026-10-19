@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass, field
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
+from core.dto.base import FieldsSetDTOMixin, IdentityFilterDTOMixin
 from event.dto.role import RolePreviewDTO
 
 
@@ -53,11 +53,14 @@ class MemberDTO:
 
 
 @dataclass(frozen=True, slots=True)
-class MemberFilterDTO(TimestampFilterDTOMixin):
+class MemberFilterDTO(IdentityFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
     is_active: bool = True
+    include_inactive: bool = False
     collective_id: UUID | None = None
     collective_id__in: list[UUID] | None = None
     person_id: UUID | None = None
     person_id__in: list[UUID] | None = None
+    role_id: UUID | None = None
+    role_id__in: list[UUID] | None = None

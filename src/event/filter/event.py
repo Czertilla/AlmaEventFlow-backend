@@ -2,9 +2,8 @@ from datetime import date
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import asc, desc
-
-from core.filter.ordered import OrderedFilter
+from core.filter.ordered import OrderedFilter, ordered
+from core.filter.identity import IdentityFilterMixin
 from core.filter.timestamps import TimestampFilterMixin
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from event.dto.event import EventFilterDTO
@@ -39,7 +38,13 @@ LOOKUP_ORDER = {
 }
 
 
-class EventFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1):
+class EventFilter(
+    OrderedFilter,
+    TimestampFilterMixin,
+    IdentityFilterMixin,
+    FromDTOMixinV1,
+    ToDTOMixinV1,
+):
     __dto_cls__ = EventFilterDTO
 
     order_by: list[str] | None = ["date"]
@@ -84,8 +89,7 @@ class EventFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixi
             column = LOOKUP_ORDER.get(name)
             if column is None:
                 column = getattr(EventORM, name)
-            direction = desc if entry.startswith("-") else asc
-            query = query.order_by(direction(column))
+            query = query.order_by(ordered(column, entry.startswith("-")))
         return query
 
     def filter(self, query: Any) -> Any:

@@ -3,6 +3,9 @@ from typing import Any, ClassVar
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import Field, ValidationInfo, field_validator
 from pydantic.fields import FieldInfo
+from sqlalchemy import or_
+
+from core.filter.identity import id_search_clause
 
 ORDER_HELP = (
     "Comma-separated fields, prefix a field with `-` for descending order. "
@@ -10,11 +13,50 @@ ORDER_HELP = (
 )
 
 
+def ordered(column: Any, descending: bool) -> Any:
+    """A sort key that puts rows without a value last in both directions."""
+    return (column.desc() if descending else column.asc()).nulls_last()
+
+
 class OrderedFilter(Filter):
-    """Sorts only by ``Constants.order_fields`` and documents them on ``order_by``."""
+    """Sorts only by ``Constants.order_fields``; ``search`` also finds a row by id."""
 
     class Constants(Filter.Constants):
         order_fields: ClassVar[tuple[str, ...]] = ()
+
+    def sort(self, query: Any) -> Any:
+        entries: list[str] = self.ordering_values or []
+        for entry in entries:
+            column = getattr(self.Constants.model, entry.lstrip("+-"))
+            query = query.order_by(ordered(column, entry.startswith("-")))
+        return query
+
+    def _search_clauses(self, term: str) -> list[Any]:
+        model = self.Constants.model
+        pattern = f"%{term}%"
+        clauses: list[Any] = [
+            getattr(model, name).ilike(pattern)
+            for name in getattr(self.Constants, "search_model_fields", [])
+        ]
+        by_id = id_search_clause(model, term)
+        if by_id is not None:
+            clauses.append(by_id)
+        return clauses
+
+    def filter(self, query: Any) -> Any:
+        name = self.Constants.search_field_name
+        term = getattr(self, name, None)
+        if term is not None:
+            setattr(self, name, None)
+        if term:
+            clauses = self._search_clauses(term)
+            if clauses:
+                query = query.where(or_(*clauses))
+        try:
+            return super().filter(query)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
+        finally:
+            if term is not None:
+                setattr(self, name, term)
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:

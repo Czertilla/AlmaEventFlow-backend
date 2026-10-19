@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
+from core.dto.base import FieldsSetDTOMixin, IdentityFilterDTOMixin
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,7 +48,7 @@ class CollectiveDTO:
 
 
 @dataclass(frozen=True, slots=True)
-class CollectiveFilterDTO(TimestampFilterDTOMixin):
+class CollectiveFilterDTO(IdentityFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
     principal_id: UUID | None = None

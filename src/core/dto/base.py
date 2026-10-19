@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from dataclasses import fields as dataclass_fields
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
+from uuid import UUID
 
 if TYPE_CHECKING:
     from _typeshed import DataclassInstance
@@ -45,3 +46,9 @@ class TimestampFilterDTOMixin:
     edited_at__gte: datetime | None = None
     edited_at__lte: datetime | None = None
     edited_at__isnull: bool | None = None
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class IdentityFilterDTOMixin(TimestampFilterDTOMixin):
+    id: UUID | None = None
+    id__in: list[UUID] | None = None

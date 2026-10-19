@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from core.filter.ordered import OrderedFilter
+from core.filter.identity import IdentityFilterMixin
 from core.filter.timestamps import TimestampFilterMixin
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from org.dto.collective import CollectiveFilterDTO
@@ -8,7 +9,11 @@ from org.models.collective import CollectiveORM
 
 
 class CollectiveFilter(
-    OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1
+    OrderedFilter,
+    TimestampFilterMixin,
+    IdentityFilterMixin,
+    FromDTOMixinV1,
+    ToDTOMixinV1,
 ):
     __dto_cls__ = CollectiveFilterDTO
 

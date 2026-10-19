@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 from uuid import UUID
 
-from core.dto.base import FieldsSetDTOMixin, TimestampFilterDTOMixin
+from core.dto.base import FieldsSetDTOMixin, IdentityFilterDTOMixin
 from event.enum.format import EventFormatEnumV1
 from event.enum.level import EventLevelEnumV1
 from event.enum.status import EventStatusEnumV1
@@ -67,7 +67,7 @@ class EventPutDTO:
 
 
 @dataclass(frozen=True, slots=True)
-class EventFilterDTO(TimestampFilterDTOMixin):
+class EventFilterDTO(IdentityFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None
     status: EventStatusEnumV1 | None = None

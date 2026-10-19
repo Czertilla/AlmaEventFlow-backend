@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import httpx
 from support.http import principal
 
@@ -145,3 +147,23 @@ async def test_timestamp_filters_accept_plain_dates(api: httpx.AsyncClient) -> N
     assert since.json()["pagination"]["total"] == 1
     assert until.status_code == 200, until.text
     assert until.json()["pagination"]["total"] == 0
+
+
+async def test_search_finds_a_row_by_its_id_or_the_start_of_it(
+    api: httpx.AsyncClient,
+) -> None:
+    url = f"{BASE}/organizations"
+    first = await api.post(url, json={"name": "Alpha"}, headers=ADMIN)
+    second = await api.post(url, json={"name": "Beta"}, headers=ADMIN)
+    first_id = first.json()["id"]
+
+    async def found(term: str) -> list[str]:
+        response = await api.get(url, params={"search": term}, headers=USER)
+        assert response.status_code == 200, response.text
+        return [item["id"] for item in response.json()["items"]]
+
+    assert await found(first_id) == [first_id]
+    assert await found(first_id.upper()) == [first_id]
+    assert await found(first_id[:8]) == [first_id]
+    assert await found("Beta") == [second.json()["id"]]
+    assert await found(str(uuid4())) == []

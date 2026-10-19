@@ -1,13 +1,20 @@
 from uuid import UUID
 
 from core.filter.ordered import OrderedFilter
+from core.filter.identity import IdentityFilterMixin
 from core.filter.timestamps import TimestampFilterMixin
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from event.dto.role import RoleFilterDTO
 from event.models.role import RoleORM
 
 
-class RoleFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1):
+class RoleFilter(
+    OrderedFilter,
+    TimestampFilterMixin,
+    IdentityFilterMixin,
+    FromDTOMixinV1,
+    ToDTOMixinV1,
+):
     __dto_cls__ = RoleFilterDTO
 
     order_by: list[str] | None = ["name"]

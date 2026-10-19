@@ -148,4 +148,6 @@ class SearchRepositoryMixin(Generic[Model], AbstractRepository):
         if scope:
             stmt = stmt.where(*scope)
         stmt = self._apply_filter(filter, stmt)
+        if (key := getattr(self.model, "id", None)) is not None:
+            stmt = stmt.order_by(key)  # pyright: ignore[reportUnknownVariableType]
         return (await self.execute(stmt)).unique().scalars(), total
