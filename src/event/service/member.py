@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import delete, select
@@ -79,7 +80,7 @@ class MemberService(BaseService[MemberUOW]):
 
     @required_transaction
     async def _patch_roles(
-        self, member_id: UUID, member_data: dict
+        self, member_id: UUID, member_data: dict[str, Any]
     ) -> MemberORM:
         member = await self.uow.members.get_by_id(member_id)
         if not member:
@@ -140,8 +141,8 @@ class MemberService(BaseService[MemberUOW]):
 
     async def patch(self, member_patch: MemberPatchDTO) -> MemberDTO:
         async with self.uow as uow:
-            member_data = dto_dict(member_patch, only_set=True)
-            member = await self._update(member_patch.id, member_data)
+            member_data = dto_dict(member_patch, only_set=True, exclude={"id"})
+            member = await self._patch_roles(member_patch.id, member_data)
             result = self._to_dto(member)
             await uow.commit()
         return result
@@ -160,7 +161,7 @@ class MemberService(BaseService[MemberUOW]):
     async def put(self, member_put: MemberPutDTO) -> MemberDTO:
         async with self.uow as uow:
             member_data = dto_dict(member_put, exclude={"id"})
-            member = await self._update(member_put.id, member_data)
+            member = await self._patch_roles(member_put.id, member_data)
             result = self._to_dto(member)
             await uow.commit()
         return result
