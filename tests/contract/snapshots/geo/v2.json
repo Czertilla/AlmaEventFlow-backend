@@ -974,6 +974,106 @@
       }
     },
     "/geo/v2/locations": {
+      "get": {
+        "description": "The locations with these ids, in the order given. An id nobody has\nis left out, so a list of remembered places never fails on a deleted one.",
+        "operationId": "get_locations_geo_v2_locations_get",
+        "parameters": [
+          {
+            "description": "Ids of the locations to read; repeat the parameter.",
+            "in": "query",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "description": "Ids of the locations to read; repeat the parameter.",
+              "items": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "maxItems": 50,
+              "minItems": 1,
+              "title": "Id",
+              "type": "array"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LocationReadV2"
+                  },
+                  "title": "Response Get Locations Geo V2 Locations Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Locations",
+        "tags": [
+          "location"
+        ]
+      },
       "post": {
         "description": "Same as the v1 create, plus a `name` alone: a location that is only an\naddress written as text, for when nothing about the place is on the map.\nPosting the same name again returns the location that exists.",
         "operationId": "create_location_geo_v2_locations_post",

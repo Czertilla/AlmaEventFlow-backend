@@ -39,6 +39,7 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "calendar.AvailableFeeds": "event.dto.calendar:AvailableFeedsDTO",
             "calendar.FeedDescriptor": "event.dto.calendar:FeedDescriptorDTO",
             "calendar.SubscriptionRead": ("event.dto.calendar:CalendarSubscriptionDTO"),
+            "location.RecentLocationRead": "event.dto.location:RecentLocationDTO",
             "member_profile.AttendanceByMonth": (
                 "event.dto.member_profile:AttendanceByMonthDTO"
             ),

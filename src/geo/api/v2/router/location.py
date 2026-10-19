@@ -1,6 +1,7 @@
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from core.dependencies.auth import UserJWTDep
 from core.schema.error import auth_responses, entity_not_found_responses
@@ -9,6 +10,28 @@ from geo.dependency.location import LocationUOWDep
 from geo.service.location import LocationService
 
 router = APIRouter(prefix="/locations", tags=["location"])
+
+
+@router.get("", responses={**auth_responses()})
+async def get_locations(
+    ids: Annotated[
+        list[UUID],
+        Query(
+            alias="id",
+            min_length=1,
+            max_length=50,
+            description="Ids of the locations to read; repeat the parameter.",
+        ),
+    ],
+    user: UserJWTDep,
+    uow: LocationUOWDep,
+) -> list[LocationReadV2]:
+    """The locations with these ids, in the order given. An id nobody has
+    is left out, so a list of remembered places never fails on a deleted one."""
+    return [
+        LocationReadV2.from_dto(location)
+        for location in await LocationService(uow).read_many(ids)
+    ]
 
 
 @router.get(

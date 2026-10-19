@@ -41,6 +41,12 @@
       "type": "personal_all"
     }
   },
+  "location.RecentLocationRead": {
+    "response": {
+      "location_id": "2390bb3b-fd1f-5227-bda1-a0feacccd626",
+      "used_at": "2026-01-01T10:00:00Z"
+    }
+  },
   "member_profile.AttendanceByMonth": {
     "response": {
       "absent": 1,

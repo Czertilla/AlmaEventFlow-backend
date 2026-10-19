@@ -59,6 +59,12 @@ class LocationRepo(
         self.dump_spot(data)
         return super().upsert(data, options)
 
+    async def get_by_ids(
+        self, ids: Sequence[UUID], options: Sequence[ExecutableOption] = ()
+    ) -> list[Model]:
+        stmt = select(self.model).where(self.model.id.in_(ids)).options(*options)
+        return list((await self.execute(stmt)).unique().scalars())
+
     async def search(
         self,
         filter: Filter,

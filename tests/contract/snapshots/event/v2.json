@@ -539,6 +539,26 @@
         "title": "MemberRead",
         "type": "object"
       },
+      "RecentLocationRead": {
+        "properties": {
+          "location_id": {
+            "format": "uuid",
+            "title": "Location Id",
+            "type": "string"
+          },
+          "used_at": {
+            "format": "date-time",
+            "title": "Used At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "location_id",
+          "used_at"
+        ],
+        "title": "RecentLocationRead",
+        "type": "object"
+      },
       "RolePreview": {
         "properties": {
           "id": {
@@ -1213,6 +1233,113 @@
         "summary": "Rotate Subscription Token",
         "tags": [
           "calendar"
+        ]
+      }
+    },
+    "/event/v2/collectives/{collective_id}/recent-locations": {
+      "get": {
+        "description": "Where the collective held its events lately, the latest first.\n\nA place counts from the time its event was last edited (created, when it\nnever was). For the leader of the collective and superusers; meant to\nseed a place picker, the ids are read from geo.",
+        "operationId": "get_recent_locations_event_v2_collectives__collective_id__recent_locations_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collective_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Collective Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RecentLocationRead"
+                  },
+                  "title": "Response Get Recent Locations Event V2 Collectives  Collective Id  Recent Locations Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NOT_COLLECTIVE_PRINCIPAL": {
+                    "summary": "NOT_COLLECTIVE_PRINCIPAL",
+                    "value": {
+                      "detail": "NOT_COLLECTIVE_PRINCIPAL"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "NOT_COLLECTIVE_PRINCIPAL"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Recent Locations",
+        "tags": [
+          "location"
         ]
       }
     },

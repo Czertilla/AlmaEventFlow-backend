@@ -5,6 +5,7 @@ from sqlalchemy import update
 
 from core.service.base import required_transaction
 from core.service.event.location import LocationEventService as BaseService
+from event.dto.location import RecentLocationDTO
 from event.models.event import EventORM
 from event.uow.location import LocationUOW
 
@@ -20,3 +21,12 @@ class LocationService(BaseService[LocationUOW]):
             .values(location_id=None)
         )
         await super()._delete(location_id)
+
+    @required_transaction
+    async def _recent(self, collective_id: UUID, limit: int) -> list[RecentLocationDTO]:
+        rows = await self.uow.locations.recent_for_collective(collective_id, limit)
+        return [RecentLocationDTO(location_id=i, used_at=at) for i, at in rows]
+
+    async def recent(self, collective_id: UUID, limit: int) -> list[RecentLocationDTO]:
+        async with self.uow:
+            return await self._recent(collective_id, limit)

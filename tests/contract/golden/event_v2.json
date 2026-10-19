@@ -249,6 +249,36 @@
       }
     }
   },
+  "location.RecentLocationRead": {
+    "full": {
+      "dump": {
+        "location_id": "d94320c8-975c-55cf-a133-ec85c7550338",
+        "used_at": "2026-01-01T10:00:00Z"
+      },
+      "fields_set": [
+        "location_id",
+        "used_at"
+      ],
+      "input": {
+        "location_id": "d94320c8-975c-55cf-a133-ec85c7550338",
+        "used_at": "2026-01-01T10:00:00Z"
+      }
+    },
+    "required": {
+      "dump": {
+        "location_id": "d94320c8-975c-55cf-a133-ec85c7550338",
+        "used_at": "2026-01-01T10:00:00Z"
+      },
+      "fields_set": [
+        "location_id",
+        "used_at"
+      ],
+      "input": {
+        "location_id": "d94320c8-975c-55cf-a133-ec85c7550338",
+        "used_at": "2026-01-01T10:00:00Z"
+      }
+    }
+  },
   "member_profile.AttendanceByMonth": {
     "full": {
       "dump": {

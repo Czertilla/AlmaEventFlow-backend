@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from logging import getLogger
 from typing import Any
 from uuid import UUID
@@ -55,6 +56,12 @@ class LocationService(BaseService[LocationUOW]):
         if location is None:
             raise LocationNotExistsException()
         return location
+
+    @required_transaction
+    async def _read_many(self, location_ids: Sequence[UUID]) -> list[LocationORM]:
+        rows = await self.uow.locations.get_by_ids(location_ids, _WITH_ADDRESS)
+        found = {location.id: location for location in rows}
+        return [found[i] for i in dict.fromkeys(location_ids) if i in found]
 
     @required_transaction
     async def _find_address_proxy(self, address_id: UUID) -> LocationORM:
@@ -134,6 +141,10 @@ class LocationService(BaseService[LocationUOW]):
     async def read(self, location_id: UUID) -> LocationDTO:
         async with self.uow:
             return self._to_dto(await self._read(location_id))
+
+    async def read_many(self, location_ids: Sequence[UUID]) -> list[LocationDTO]:
+        async with self.uow:
+            return [self._to_dto(row) for row in await self._read_many(location_ids)]
 
     async def patch(self, location_patch: LocationPatchDTO) -> LocationDTO:
         async with self.uow as uow:
