@@ -17,25 +17,25 @@ def get_organization_event_router(
 ) -> KafkaRouter:
     router = KafkaRouter()
 
-    OrganizationUOWDep: OrganizationAUOW = Depends(uow_dep)
-    OrganizationService = service_cls
+    organization_uow: OrganizationAUOW = Depends(uow_dep)
+    organization_service = service_cls
 
     @router.subscriber(OrganizationTopic.CREATED)
     async def on_organization_created(
-        event: OrganizationCreatedEvent, uow=OrganizationUOWDep
+        event: OrganizationCreatedEvent, uow=organization_uow
     ):
-        await OrganizationService(uow).create(event.data)
+        await organization_service(uow).create(event.data)
 
     @router.subscriber(OrganizationTopic.UPDATED)
     async def on_organization_updated(
-        event: OrganizationUpdatedEvent, uow=OrganizationUOWDep
+        event: OrganizationUpdatedEvent, uow=organization_uow
     ):
-        await OrganizationService(uow).update(event.data)
+        await organization_service(uow).update(event.data)
 
     @router.subscriber(OrganizationTopic.DELETED)
     async def on_organization_deleted(
-        event: OrganizationDeletedEvent, uow=OrganizationUOWDep
+        event: OrganizationDeletedEvent, uow=organization_uow
     ):
-        await OrganizationService(uow).delete(event.data)
+        await organization_service(uow).delete(event.data)
 
     return router

@@ -7,7 +7,7 @@ from aiogram3_di import Depends
 T = TypeVar("T")
 
 
-def Parse[T](parser: Callable[[str], T]) -> Depends:
+def Parse[T](parser: Callable[[str], T]) -> Depends:  # noqa: N802  # a DI factory named like a class
     def dependency(event: CallbackQuery) -> T:
         return parser(event.data)
 

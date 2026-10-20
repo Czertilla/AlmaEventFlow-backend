@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Protocol, TypeVar
+from typing import Any, ClassVar, Protocol, TypeVar
 from uuid import UUID, uuid4
 
 from sqlalchemy import BigInteger, Integer, SmallInteger, func
@@ -8,7 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 class TimestampMixin:
-    __mapper_args__ = {"eager_defaults": True}
+    __mapper_args__: ClassVar[dict[str, Any]] = {"eager_defaults": True}
 
     @declared_attr
     def created_at(cls) -> Mapped[datetime]:  # noqa: N805

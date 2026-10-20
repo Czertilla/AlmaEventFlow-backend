@@ -1,4 +1,3 @@
-# ruff: noqa: RUF001
 from contextlib import asynccontextmanager
 from typing import Any
 

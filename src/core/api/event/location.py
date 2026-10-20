@@ -17,25 +17,25 @@ def get_location_event_router(
 ) -> KafkaRouter:
     router = KafkaRouter()
 
-    LocationUOWDep: LocationAUOW = Depends(uow_dep)
-    LocationService = service_cls
+    location_uow: LocationAUOW = Depends(uow_dep)
+    location_service = service_cls
 
     @router.subscriber(LocationTopic.CREATED)
     async def on_location_created(
-        event: LocationCreatedEvent, uow=LocationUOWDep
+        event: LocationCreatedEvent, uow=location_uow
     ):
-        await LocationService(uow).create(event.data)
+        await location_service(uow).create(event.data)
 
     @router.subscriber(LocationTopic.UPDATED)
     async def on_location_updated(
-        event: LocationUpdatedEvent, uow=LocationUOWDep
+        event: LocationUpdatedEvent, uow=location_uow
     ):
-        await LocationService(uow).update(event.data)
+        await location_service(uow).update(event.data)
 
     @router.subscriber(LocationTopic.DELETED)
     async def on_location_deleted(
-        event: LocationDeletedEvent, uow=LocationUOWDep
+        event: LocationDeletedEvent, uow=location_uow
     ):
-        await LocationService(uow).delete(event.data)
+        await location_service(uow).delete(event.data)
 
     return router

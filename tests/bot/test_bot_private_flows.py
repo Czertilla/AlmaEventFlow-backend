@@ -120,8 +120,8 @@ async def test_a_celebration_effect_that_telegram_refuses_is_dropped(
     calls = {"count": 0}
     original = tg.session.make_request
 
-    async def refuse_effect(  # noqa: ASYNC109
-        bot: Any, method: Any, timeout: Any = None
+    async def refuse_effect(
+        bot: Any, method: Any, timeout: Any = None  # noqa: ASYNC109
     ) -> Any:
         if isinstance(method, SendMessage) and method.message_effect_id:
             calls["count"] += 1

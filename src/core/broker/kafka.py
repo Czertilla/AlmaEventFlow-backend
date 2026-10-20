@@ -83,7 +83,9 @@ if not settings.IN_MEMORY_BROKER:
             security_cls = _SASL_MECHANISMS.get(mechanism)
             if security_cls is None:
                 raise ValueError(
-                    "KAFKA_SASL_MECHANISM={!r} is not supported; choose one of {}".format(settings.KAFKA_SASL_MECHANISM, ", ".join(_SASL_MECHANISMS))
+                    f"KAFKA_SASL_MECHANISM={settings.KAFKA_SASL_MECHANISM!r} "
+                    "is not supported; "
+                    f"choose one of {', '.join(_SASL_MECHANISMS)}"
                 )
             use_ssl = protocol != "SASL_PLAINTEXT"
             return security_cls(
@@ -96,7 +98,8 @@ if not settings.IN_MEMORY_BROKER:
         context = _ssl_context(protocol)
         if not context and protocol not in {"", "SSL"}:
             raise ValueError(
-                f"KAFKA_SECURITY_PROTOCOL={settings.KAFKA_SECURITY_PROTOCOL!r} is not supported; configure "
+                f"KAFKA_SECURITY_PROTOCOL={settings.KAFKA_SECURITY_PROTOCOL!r} "
+                "is not supported; configure "
                 "KAFKA_SSL_CA for TLS, KAFKA_SASL_USERNAME/PASSWORD for SASL, "
                 "or leave it unset for PLAINTEXT"
             )
@@ -125,7 +128,9 @@ if not settings.IN_MEMORY_BROKER:
                     await super().start()
                 except Exception as e:
                     logger.error(
-                        "Error starting broker, reconnecting in %s seconds (e=%r)", self.reconnect_interval, e
+                        "Error starting broker, reconnecting in %s seconds (e=%r)",
+                        self.reconnect_interval,
+                        e,
                     )
                     await asyncio.sleep(self.reconnect_interval)
                     self.reconnect_interval = next_reconnect_interval(
@@ -139,6 +144,8 @@ if not settings.IN_MEMORY_BROKER:
             await self._rpc_reply.stop()
             await super().stop(*args, **kwargs)
 
+    _default_security = _kafka_security()
+
     class KafkaStreamRouter(BaseKafkaStreamRouter):
         # StreamRouter builds its broker from this attribute; without it the
         # request/reply patch above is skipped
@@ -147,7 +154,7 @@ if not settings.IN_MEMORY_BROKER:
         def __init__(
             self,
             url: str = kafka_uri(),
-            security: BaseSecurity | None = _kafka_security(),
+            security: BaseSecurity | None = _default_security,
             *args: Any,
             **kwargs: Any,
         ):
@@ -167,7 +174,7 @@ if not settings.IN_MEMORY_BROKER:
             return cast("Any", super().subscriber(*topics, **kwargs))
 
     @lru_cache
-    def geStreamRouter() -> KafkaStreamRouter:
+    def get_stream_router() -> KafkaStreamRouter:
         uri = kafka_uri()
         logger.debug("Creating KafkaStreamRouter with URI: kafka://%s", uri)
         return KafkaStreamRouter(url=uri)
@@ -184,15 +191,15 @@ else:
     )
 
     @lru_cache
-    def geStreamRouter() -> KafkaStreamRouter:
+    def get_stream_router() -> KafkaStreamRouter:
         logger.warning("MONOLITE=True, using in-process event transport")
         return KafkaStreamRouter()
 
 
 @lru_cache
-def getBroker():
-    return geStreamRouter().broker
+def get_broker():
+    return get_stream_router().broker
 
 
-stream_router = geStreamRouter()
-broker = getBroker()
+stream_router = get_stream_router()
+broker = get_broker()

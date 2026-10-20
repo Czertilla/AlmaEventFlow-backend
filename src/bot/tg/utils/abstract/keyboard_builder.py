@@ -1,12 +1,14 @@
-from typing import Generic, cast
+from typing import cast
 
-from aiogram.types import InlineKeyboardMarkup
-from aiogram.utils.keyboard import ButtonType, KeyboardBuilder
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton
+from aiogram.utils.keyboard import KeyboardBuilder
 
 from bot.tg.text.builder.builder import TextBuilder
 
 
-class ABCKeyboardBuilder(KeyboardBuilder[ButtonType], Generic[ButtonType]):
+class ABCKeyboardBuilder[ButtonType: (InlineKeyboardButton, KeyboardButton)](
+    KeyboardBuilder[ButtonType]
+):
     text_builder: TextBuilder
 
     def inline(self) -> InlineKeyboardMarkup:

@@ -13,7 +13,7 @@ class OrganizationFilter(
 ):
     __dto_cls__ = OrganizationFilterDTO
 
-    order_by: list[str] | None = ["name"]
+    order_by: list[str] | None = ["name"]  # noqa: RUF012  # pydantic field default
     search: str | None = None
     type: OrganizationTypeEnum | None = None
     type__in: list[OrganizationTypeEnum] | None = None
@@ -24,5 +24,5 @@ class OrganizationFilter(
 
     class Constants(OrderedFilter.Constants):
         model = OrganizationORM
-        search_model_fields = ["name", "acronym"]
+        search_model_fields = ["name", "acronym"]  # noqa: RUF012  # read-only constant of a plain class
         order_fields = ("name", "acronym", "type", "created_at", "edited_at")

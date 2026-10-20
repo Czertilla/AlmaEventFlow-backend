@@ -10,8 +10,8 @@ from user.models.user import UserORM
 class UserFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1):
     __dto_cls__ = UserFilterDTO
 
-    order_by: list[str] | None = ["created_at"]
-    search: None | str = None
+    order_by: list[str] | None = ["created_at"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
     is_active: bool | None = None
     is_verified: bool | None = None
     is_superuser: bool | None = None
@@ -20,7 +20,7 @@ class UserFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixin
 
     class Constants(OrderedFilter.Constants):
         model = UserORM
-        search_model_fields = ["username", "email"]
+        search_model_fields = ["username", "email"]  # noqa: RUF012  # read-only constant of a plain class
         order_fields = (
             "username",
             "email",

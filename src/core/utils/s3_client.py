@@ -35,7 +35,8 @@ class S3Client:
                     Bucket=self.bucket_name, Key=file_name, Body=data, **headers
                 )
                 logger.debug(
-                    f"File {file_name} uploaded to {self.bucket_name} ({len(data) / 1024**2:.4} MB)"
+                    f"File {file_name} uploaded to {self.bucket_name} "
+                    f"({len(data) / 1024**2:.4} MB)"
                 )
         except ClientError as e:
             logger.error("Error uploading file: %s", e)

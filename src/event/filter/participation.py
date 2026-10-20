@@ -20,15 +20,15 @@ class ParticipationFilter(
 ):
     __dto_cls__ = ParticipationFilterDTO
 
-    order_by: list[str] | None = ["collective_id"]
+    order_by: list[str] | None = ["collective_id"]  # noqa: RUF012  # pydantic field default
     search: str | None = None
-    collective_id: None | UUID = None
-    collective_id__in: None | list[UUID] = None
-    event_id: None | UUID = None
-    event_id__in: None | list[UUID] = None
-    priority_degree: None | EventPriorityEnumV1 = None
-    priority_degree__in: None | list[EventPriorityEnumV1] = None
-    priority_degree__isnull: None | bool = None
+    collective_id: UUID | None = None
+    collective_id__in: list[UUID] | None = None
+    event_id: UUID | None = None
+    event_id__in: list[UUID] | None = None
+    priority_degree: EventPriorityEnumV1 | None = None
+    priority_degree__in: list[EventPriorityEnumV1] | None = None
+    priority_degree__isnull: bool | None = None
 
     class Constants(RelatedSearchFilter.Constants):
         model = ParticipationORM

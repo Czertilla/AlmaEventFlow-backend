@@ -132,7 +132,7 @@ class MonolithBroker(SingletonMixin):
         message: Any,
         topic: str,
         *args: Any,
-        timeout: float = 5.0,
+        timeout: float = 5.0,  # noqa: ASYNC109  # same keyword as the faststream broker
         **kwargs: Any,
     ) -> Any:
         handlers = self._handlers.get(topic, [])
@@ -145,8 +145,8 @@ class MonolithBroker(SingletonMixin):
 
 
 class MonolithRouter:
-    def __init__(self, broker: MonolithBroker = MonolithBroker()):
-        self.broker = broker
+    def __init__(self, broker: MonolithBroker | None = None):
+        self.broker = broker if broker is not None else MonolithBroker()
 
     def subscriber(
         self, topic: str, *args: Any, **kwargs: Any

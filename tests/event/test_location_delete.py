@@ -15,7 +15,12 @@ async def test_deleting_a_location_detaches_events_instead_of_failing(event_engi
     )
     await service.create([LocationData(id=location_id, name=None)])
     async with event_engine.begin() as conn:
-        await conn.execute(text("INSERT INTO event_status (id, name) VALUES (1, 's') ON CONFLICT DO NOTHING"))
+        await conn.execute(
+            text(
+                "INSERT INTO event_status (id, name) VALUES (1, 's') "
+                "ON CONFLICT DO NOTHING"
+            )
+        )
         await conn.execute(
             text(
                 "INSERT INTO event (id, name, location_id, status_id, created_at) "
@@ -28,6 +33,11 @@ async def test_deleting_a_location_detaches_events_instead_of_failing(event_engi
 
     async with event_engine.connect() as conn:
         assert (
-            await conn.execute(text("SELECT location_id FROM event WHERE id = :id"), {"id": event_id})
+            await conn.execute(
+                text("SELECT location_id FROM event WHERE id = :id"),
+                {"id": event_id},
+            )
         ).scalar_one() is None
-        assert (await conn.execute(text("SELECT count(*) FROM location"))).scalar_one() == 0
+        assert (
+            await conn.execute(text("SELECT count(*) FROM location"))
+        ).scalar_one() == 0

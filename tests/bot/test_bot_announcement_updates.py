@@ -365,8 +365,8 @@ async def test_a_notice_that_cannot_be_sent_does_not_fail_the_edit(
     await announced(_request())
     original = tg.session.make_request
 
-    async def refuse_replies(  # noqa: ASYNC109
-        bot: Any, method: Any, timeout: Any = None
+    async def refuse_replies(
+        bot: Any, method: Any, timeout: Any = None  # noqa: ASYNC109
     ) -> Any:
         if isinstance(method, SendMessage) and method.reply_parameters:
             raise TelegramBadRequest(method, "Bad Request: have no rights")

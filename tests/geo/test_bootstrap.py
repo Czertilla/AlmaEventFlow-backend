@@ -61,7 +61,13 @@ async def _fetch_all(source: OverpassSource) -> list:
 
 
 def _source(urls: list[str], **kwargs) -> OverpassSource:
-    return OverpassSource(urls=urls, timeout=5, attempts=kwargs.pop("attempts", 4), cooldown=0.01, **kwargs)
+    return OverpassSource(
+        urls=urls,
+        timeout=5,
+        attempts=kwargs.pop("attempts", 4),
+        cooldown=0.01,
+        **kwargs,
+    )
 
 
 GOOD = {"elements": [_node(1, "Тверская улица", "7")]}
@@ -79,7 +85,10 @@ async def test_fails_over_from_a_broken_mirror():
 
 async def test_soft_runtime_errors_are_treated_as_failures_not_empty_results():
     timed_out = FakeMirror(
-        {"elements": [], "remark": "runtime error: Query timed out in \"query\" at line 4"},
+        {
+            "elements": [],
+            "remark": "runtime error: Query timed out in \"query\" at line 4",
+        },
         fallback={"elements": [], "remark": "runtime error: Query timed out"},
     )
     healthy = FakeMirror(fallback=GOOD)
@@ -90,7 +99,8 @@ async def test_soft_runtime_errors_are_treated_as_failures_not_empty_results():
 
 
 async def test_client_errors_are_not_retried_on_other_mirrors():
-    bad_query, untouched = FakeMirror(web.Response(status=400)), FakeMirror(fallback=GOOD)
+    bad_query = FakeMirror(web.Response(status=400))
+    untouched = FakeMirror(fallback=GOOD)
     async with serving(bad_query, untouched) as urls:
         with pytest.raises(OverpassError):
             await _fetch_all(_source(urls))
@@ -211,7 +221,9 @@ def _args(urls: list[str], state, **overrides) -> Namespace:
 
 async def _address_count(sessionmaker_) -> int:
     async with sessionmaker_() as session:
-        return (await session.execute(select(func.count()).select_from(AddressORM))).scalar_one()
+        return (
+            await session.execute(select(func.count()).select_from(AddressORM))
+        ).scalar_one()
 
 
 async def test_run_imports_dedupes_and_resumes_from_checkpoint(sessionmaker_, tmp_path):

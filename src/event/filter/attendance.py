@@ -32,24 +32,24 @@ class AttendanceFilter(
 ):
     __dto_cls__ = AttendanceFilterDTO
 
-    order_by: list[str] | None = ["created_at"]
-    search: None | str = None
-    participation_id: None | UUID = None
-    participation_id__in: None | list[UUID] = None
-    collective_id: None | UUID = None
-    collective_id__in: None | list[UUID] = None
-    event_id: None | UUID = None
-    event_id__in: None | list[UUID] = None
-    member_id: None | UUID = None
-    member_id__in: None | list[UUID] = None
-    person_id: None | UUID = None
-    person_id__in: None | list[UUID] = None
-    is_attended: None | bool = None
-    is_verified: None | bool = None
+    order_by: list[str] | None = ["created_at"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
+    participation_id: UUID | None = None
+    participation_id__in: list[UUID] | None = None
+    collective_id: UUID | None = None
+    collective_id__in: list[UUID] | None = None
+    event_id: UUID | None = None
+    event_id__in: list[UUID] | None = None
+    member_id: UUID | None = None
+    member_id__in: list[UUID] | None = None
+    person_id: UUID | None = None
+    person_id__in: list[UUID] | None = None
+    is_attended: bool | None = None
+    is_verified: bool | None = None
 
     class Constants(RelatedSearchFilter.Constants):
         model = AttendanceORM
-        search_model_fields = ["comment"]
+        search_model_fields = ["comment"]  # noqa: RUF012  # list[str] in fastapi-filter
         search_paths = (
             (
                 (AttendanceORM.member, MemberORM.person),

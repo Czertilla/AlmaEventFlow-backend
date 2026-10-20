@@ -1,5 +1,6 @@
 from collections.abc import Iterable, Sequence
-from typing import Any, Generic
+from typing import Any, ClassVar
+from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from sqlalchemy import ColumnElement, Select, delete, exists, func, select, update
@@ -17,12 +18,11 @@ from ....utils.abstract.repository import (
     AbstractIdRepository,
     AbstractRepository,
 )
-from ..mixins.models import ID
-from ..mixins.models import IDMixin as Model
+from ..mixins.models import IdMixinProtocol
 
 
-class IDRepositoryMixin(
-    Generic[Model, ID], AbstractIdRepository, AbstractRepository
+class IDRepositoryMixin[Model: IdMixinProtocol, ID: (int, UUID, str)](
+    AbstractIdRepository, AbstractRepository
 ):
     model: type[Model]
 
@@ -71,10 +71,10 @@ class IDRepositoryMixin(
         await self.execute(delete(self.model).where(self.model.id == id))
 
 
-class UpsertRepositoryMixin(
-    Generic[Model, ID], AbstractIdRepository, AbstractRepository
+class UpsertRepositoryMixin[Model: IdMixinProtocol, ID: (int, UUID, str)](
+    AbstractIdRepository, AbstractRepository
 ):
-    conflict_index_elements = ["id"]
+    conflict_index_elements: ClassVar[list[str]] = ["id"]
     model: type[Model]
 
     def _get_set_data(self, data: dict[str, Any]) -> dict[str, Any]:
@@ -123,7 +123,7 @@ class UpsertRepositoryMixin(
         return (await self.execute(stmt)).scalars()
 
 
-class SearchRepositoryMixin(Generic[Model], AbstractRepository):
+class SearchRepositoryMixin[Model: IdMixinProtocol](AbstractRepository):
     model: type[Model]
 
     @staticmethod

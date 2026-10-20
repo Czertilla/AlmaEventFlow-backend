@@ -8,8 +8,8 @@ from geo.models.address import AddressORM
 class AddressFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1):
     __dto_cls__ = AddressFilterDTO
 
-    order_by: list[str] | None = ["name"]
-    search: None | str = None
+    order_by: list[str] | None = ["name"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
     city_id: int | None = None
     city_id__in: list[int] | None = None
     source: str | None = None
@@ -18,5 +18,5 @@ class AddressFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMi
 
     class Constants(OrderedFilter.Constants):
         model = AddressORM
-        search_model_fields = ["name"]
+        search_model_fields = ["name"]  # noqa: RUF012  # read-only constant of a plain class
         order_fields = ("name", "created_at", "edited_at")

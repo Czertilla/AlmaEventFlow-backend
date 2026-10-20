@@ -1,6 +1,6 @@
 from datetime import datetime
 from logging import Logger, getLogger
-from typing import Any, Generic, TypeVar
+from typing import Any, ClassVar
 
 from sqlalchemy import (
     Executable,
@@ -25,7 +25,7 @@ else:
 
 class BasePreference:
     
-    type_annotation_map = {
+    type_annotation_map: ClassVar[dict[Any, Any]] = {
         dict[str, Any]: JSON,
         datetime: DateTime(timezone=True),
     }
@@ -36,10 +36,7 @@ class Base(BasePreference, DeclarativeBase):
     type_annotation_map = BasePreference.type_annotation_map
 
 
-Model = TypeVar("Model", bound=Base)
-
-
-class SQLAlchemyRepository(Generic[Model], AbstractRepository):
+class SQLAlchemyRepository[Model: Base](AbstractRepository):
     """
     Asynchronous repository for performing database operations using SQLAlchemy.
 

@@ -20,5 +20,7 @@ class EventComposeUOW(
 ): ...
 
 
-class ParticipationComposeUOW(UnitOfWork, ParticipationMixin, MemberMixin, AttendanceMixin):
+class ParticipationComposeUOW(
+    UnitOfWork, ParticipationMixin, MemberMixin, AttendanceMixin
+):
     ...

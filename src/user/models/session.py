@@ -23,8 +23,12 @@ class SessionORM(ModuleBase, Base, UUIDMixin):
     )
     device_info: Mapped[str | None] = mapped_column(Text, default=None)
     ip_address: Mapped[str | None] = mapped_column(String(45), default=None)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
-    last_used_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=func.now()
+    )
+    last_used_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=func.now()
+    )
 
     user: Mapped["UserORM"] = relationship()
     refresh_tokens: Mapped[list["RefreshTokenORM"]] = relationship(

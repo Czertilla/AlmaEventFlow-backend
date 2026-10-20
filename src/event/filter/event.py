@@ -2,8 +2,8 @@ from datetime import date
 from typing import Any
 from uuid import UUID
 
-from core.filter.ordered import OrderedFilter, ordered
 from core.filter.identity import IdentityFilterMixin
+from core.filter.ordered import OrderedFilter, ordered
 from core.filter.timestamps import TimestampFilterMixin
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from event.dto.event import EventFilterDTO
@@ -47,30 +47,30 @@ class EventFilter(
 ):
     __dto_cls__ = EventFilterDTO
 
-    order_by: list[str] | None = ["date"]
-    search: None | str = None
-    status: None | EventStatusEnumV1 = None
-    status__in: None | list[EventStatusEnumV1] = None
-    level: None | EventLevelEnumV1 = None
-    type: None | EventTypeEnumV1 = None
-    format: None | EventFormatEnumV1 = None
-    date__gte: None | date = None
-    date__lte: None | date = None
-    date__isnull: None | bool = None
-    level__in: None | list[EventLevelEnumV1] = None
-    type__in: None | list[EventTypeEnumV1] = None
-    format__in: None | list[EventFormatEnumV1] = None
-    participant_id: None | UUID = None
-    participant_id__in: None | list[UUID] = None
-    organizer_id: None | UUID = None
-    organizer_id__in: None | list[UUID] = None
-    location_id: None | UUID = None
-    location_id__in: None | list[UUID] = None
-    location_id__isnull: None | bool = None
+    order_by: list[str] | None = ["date"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
+    status: EventStatusEnumV1 | None = None
+    status__in: list[EventStatusEnumV1] | None = None
+    level: EventLevelEnumV1 | None = None
+    type: EventTypeEnumV1 | None = None
+    format: EventFormatEnumV1 | None = None
+    date__gte: date | None = None
+    date__lte: date | None = None
+    date__isnull: bool | None = None
+    level__in: list[EventLevelEnumV1] | None = None
+    type__in: list[EventTypeEnumV1] | None = None
+    format__in: list[EventFormatEnumV1] | None = None
+    participant_id: UUID | None = None
+    participant_id__in: list[UUID] | None = None
+    organizer_id: UUID | None = None
+    organizer_id__in: list[UUID] | None = None
+    location_id: UUID | None = None
+    location_id__in: list[UUID] | None = None
+    location_id__isnull: bool | None = None
 
     class Constants(OrderedFilter.Constants):
         model = EventORM
-        search_model_fields = ["name", "description"]
+        search_model_fields = ["name", "description"]  # noqa: RUF012  # list[str] in fastapi-filter
         order_fields = (
             "date",
             "name",

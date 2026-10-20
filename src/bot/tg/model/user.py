@@ -10,7 +10,7 @@ from core.database.sqlalchemy.mixins.models import TimestampMixin
 
 class TGUserORM(Base, TimestampMixin):
     __tablename__ = "user"
-    __table_args__ = {"schema": "tg"}
+    __table_args__ = {"schema": "tg"}  # noqa: RUF012  # DeclarativeBase types it as an instance attribute
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     user_id: Mapped[UUID | None] = mapped_column(

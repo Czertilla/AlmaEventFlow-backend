@@ -67,8 +67,8 @@ async def test_a_private_reply_falls_back_to_an_ordinary_one(
 ) -> None:
     original = tg.session.make_request
 
-    async def no_ephemeral(  # noqa: ASYNC109
-        bot: Any, method: Any, timeout: Any = None
+    async def no_ephemeral(
+        bot: Any, method: Any, timeout: Any = None  # noqa: ASYNC109
     ) -> Any:
         if isinstance(method, SendMessage) and method.ephemeral_message_parameters:
             raise TelegramBadRequest(method, "Bad Request: ephemeral not supported")

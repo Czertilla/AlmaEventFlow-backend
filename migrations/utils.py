@@ -25,14 +25,16 @@ def set_enum_values(
         ), [('advertisement_sale_package', 'promo_type')])
     ```
     """
+    values = ", ".join(f"'{value}'" for value in new_values)
     query_str = f"""
             ALTER TYPE {enum_name} RENAME TO {enum_name}_old;
-            CREATE TYPE {enum_name} AS ENUM({", ".join(f"'{value}'" for value in new_values)});
+            CREATE TYPE {enum_name} AS ENUM({values});
             """
     for table_name, column_name in references:
         query_str += f"""
             ALTER TABLE {table_name} ALTER {column_name} DROP DEFAULT;
-            ALTER TABLE {table_name} ALTER COLUMN {column_name} TYPE {enum_name} USING {column_name}::text::{enum_name};
+            ALTER TABLE {table_name} ALTER COLUMN {column_name} TYPE {enum_name}
+                USING {column_name}::text::{enum_name};
         """
     query_str += f"""DROP TYPE {enum_name}_old;"""
     for q in query_str.split(";")[:-1]:

@@ -1,6 +1,6 @@
 import datetime
 from collections.abc import Collection, Sequence
-from typing import Any
+from typing import Any, ClassVar
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -27,7 +27,11 @@ class AttendanceRepo(
     SearchRepositoryMixin[Model],
 ):
     model = Model
-    conflict_index_elements = ["id", "member_id", "participation_id"]
+    conflict_index_elements: ClassVar[list[str]] = [
+        "id",
+        "member_id",
+        "participation_id",
+    ]
 
     async def search(
         self,

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, ClassVar
 from uuid import UUID
 
 from sqlalchemy import ForeignKey
@@ -20,7 +20,7 @@ class CollectiveORM(OrganizationORM):
         ForeignKey("university.id", ondelete="SET NULL")
     )
 
-    __mapper_args__ = {
+    __mapper_args__: ClassVar[dict[str, Any]] = {
         "polymorphic_identity": "collective",
         "eager_defaults": True,
     }

@@ -25,7 +25,7 @@ class MemberFilter(
 ):
     __dto_cls__ = MemberFilterDTO
 
-    order_by: list[str] | None = [
+    order_by: list[str] | None = [  # noqa: RUF012  # pydantic field default
         "person__surname",
         "person__name",
         "person__patronymic",

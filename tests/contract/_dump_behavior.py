@@ -44,7 +44,9 @@ def _rejected_nulls(model: type, dto_cls: type) -> list[str]:
         try:
             cast("Any", model).from_dto(variant)
         except ValidationError as exc:
-            codes = sorted({f"{'.'.join(str(p) for p in err['loc'])}" for err in exc.errors()})
+            codes = sorted(
+                {".".join(str(p) for p in err["loc"]) for err in exc.errors()}
+            )
             failures.append(f"{name}:{','.join(codes)}")
     return failures
 

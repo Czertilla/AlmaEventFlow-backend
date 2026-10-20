@@ -19,19 +19,19 @@ def get_person_event_router(
 ) -> KafkaRouter:
     router = KafkaRouter()
 
-    PersonUOWDep: PersonAUOW = Depends(uow_depends)
-    PersonService = service_cls
+    person_uow: PersonAUOW = Depends(uow_depends)
+    person_service = service_cls
 
     @router.subscriber(PersonTopic.CREATED)
-    async def on_person_created(event: PersonCreatedEvent, uow=PersonUOWDep):
-        await PersonService(uow).create(event.data)
+    async def on_person_created(event: PersonCreatedEvent, uow=person_uow):
+        await person_service(uow).create(event.data)
 
     @router.subscriber(PersonTopic.UPDATED)
-    async def on_person_updated(event: PersonUpdatedEvent, uow=PersonUOWDep):
-        await PersonService(uow).update(event.data)
+    async def on_person_updated(event: PersonUpdatedEvent, uow=person_uow):
+        await person_service(uow).update(event.data)
 
     @router.subscriber(PersonTopic.DELETED)
-    async def on_person_deleted(event: PersonDeletedEvent, uow=PersonUOWDep):
-        await PersonService(uow).delete(event.data)
+    async def on_person_deleted(event: PersonDeletedEvent, uow=person_uow):
+        await person_service(uow).delete(event.data)
 
     return router

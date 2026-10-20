@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, ClassVar
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
@@ -7,7 +7,7 @@ from fastapi import HTTPException
 class VancedHTTPException(HTTPException):
     status_code: int = None
     detail: Any | dict[str, Any] = None
-    headers: dict[str, Any] = {}
+    headers: ClassVar[dict[str, Any]] = {}
 
     def __init__(
         self,

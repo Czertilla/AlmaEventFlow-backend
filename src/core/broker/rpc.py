@@ -14,9 +14,13 @@ class RpcError(Exception):
 
 
 async def rpc_call[T](
-    topic: str, request: MQRequest, response_model: type[T], *, timeout: float = 5.0
+    topic: str,
+    request: MQRequest,
+    response_model: type[T],
+    *,
+    timeout_s: float = 5.0,
 ) -> T:
-    raw = await broker.request(request, topic, timeout=timeout)
+    raw = await broker.request(request, topic, timeout=timeout_s)
     if hasattr(raw, "body"):
         body = raw.body
         if isinstance(body, (bytes, str)):

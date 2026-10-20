@@ -89,7 +89,7 @@ def resolve_mirror_urls(servers: str) -> list[str]:
 class OverpassError(Exception): ...
 
 
-class _Retryable(Exception): ...
+class _RetryableError(Exception): ...
 
 
 _SETTLEMENT_PREFIXES = (
@@ -178,20 +178,22 @@ class OverpassSource:
 
     async def _request(self, url: str, query: str) -> dict[str, Any]:
         timeout = aiohttp.ClientTimeout(total=self.timeout)
-        async with aiohttp.ClientSession(timeout=timeout, trust_env=True) as session:
-            async with session.post(
+        async with (
+            aiohttp.ClientSession(timeout=timeout, trust_env=True) as session,
+            session.post(
                 url,
                 data={"data": query},
                 headers={"User-Agent": self.USER_AGENT},
-            ) as response:
-                if response.status in _RETRYABLE_STATUSES:
-                    raise _Retryable(f"HTTP {response.status}")
-                if response.status >= 400:
-                    raise OverpassError(f"HTTP {response.status} from {url}")
-                payload = await response.json(content_type=None)
+            ) as response,
+        ):
+            if response.status in _RETRYABLE_STATUSES:
+                raise _RetryableError(f"HTTP {response.status}")
+            if response.status >= 400:
+                raise OverpassError(f"HTTP {response.status} from {url}")
+            payload = await response.json(content_type=None)
         remark = payload.get("remark") or ""
         if "runtime error" in remark:
-            raise _Retryable(remark)
+            raise _RetryableError(remark)
         return payload
 
     async def _post(self, query: str) -> dict[str, Any]:
@@ -200,7 +202,7 @@ class OverpassSource:
             url = await self._idle.get()
             try:
                 payload = await self._request(url, query)
-            except (TimeoutError, _Retryable, aiohttp.ClientError) as exc:
+            except (TimeoutError, _RetryableError, aiohttp.ClientError) as exc:
                 last_error = exc
                 self._strikes[url] += 1
                 delay = min(self.cooldown * self._strikes[url], 300.0)

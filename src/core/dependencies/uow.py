@@ -7,7 +7,7 @@ from core.database.sqlalchemy.engine.pgsql import get_engine, get_url
 from core.dependencies.sqlalchemy import UOWDep as Base
 
 
-def ModuleUOWDep(module_name: str) -> type[Base]:
+def ModuleUOWDep(module_name: str) -> type[Base]:  # noqa: N802  # a DI factory named like a class
     class Cls(Base):
         if settings.MONOLITH:
             sessionmaker = async_sessionmaker(

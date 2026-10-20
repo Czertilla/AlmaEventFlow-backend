@@ -18,8 +18,8 @@ class StudentFilter(
 ):
     __dto_cls__ = StudentFilterDTO
 
-    order_by: list[str] | None = ["student_id"]
-    search: None | str = None
+    order_by: list[str] | None = ["student_id"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
     group_id: int | None = None
     group_id__in: list[int] | None = None
     faculty_id: UUID | None = None
@@ -30,7 +30,7 @@ class StudentFilter(
 
     class Constants(RelatedSearchFilter.Constants):
         model = StudentORM
-        search_model_fields = ["student_id"]
+        search_model_fields = ["student_id"]  # noqa: RUF012  # read-only constant of a plain class
         search_relation = StudentORM.person
         search_related = (PersonORM.surname, PersonORM.name, PersonORM.patronymic)
         order_fields = (
@@ -46,8 +46,8 @@ class StudentFilter(
 class StudentGroupFilter(OrderedFilter, FromDTOMixinV1, ToDTOMixinV1):
     __dto_cls__ = StudentGroupFilterDTO
 
-    order_by: list[str] | None = ["name"]
-    search: None | str = None
+    order_by: list[str] | None = ["name"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
     degree_id: int | None = None
     degree_id__in: list[int] | None = None
     faculty_id: UUID | None = None
@@ -56,17 +56,17 @@ class StudentGroupFilter(OrderedFilter, FromDTOMixinV1, ToDTOMixinV1):
 
     class Constants(OrderedFilter.Constants):
         model = StudentGroupORM
-        search_model_fields = ["name"]
+        search_model_fields = ["name"]  # noqa: RUF012  # read-only constant of a plain class
         order_fields = ("name", "grade")
 
 
 class StudentDegreeFilter(OrderedFilter, FromDTOMixinV1, ToDTOMixinV1):
     __dto_cls__ = StudentDegreeFilterDTO
 
-    order_by: list[str] | None = ["name"]
-    search: None | str = None
+    order_by: list[str] | None = ["name"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
 
     class Constants(OrderedFilter.Constants):
         model = StudentDegree
-        search_model_fields = ["name"]
+        search_model_fields = ["name"]  # noqa: RUF012  # read-only constant of a plain class
         order_fields = ("name",)

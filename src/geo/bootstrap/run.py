@@ -231,7 +231,8 @@ async def _run(
             pending.put_nowait(index)
     progress = Progress(total=pending.qsize())
     logger.info(
-        "city_id=%s bbox=%s grid=%dx%d: %d cell(s) to fetch, %d already done, %d mirror(s), %d worker(s)",
+        "city_id=%s bbox=%s grid=%dx%d: %d cell(s) to fetch, %d already done, "
+        "%d mirror(s), %d worker(s)",
         city_id,
         bbox,
         args.grid,
@@ -341,13 +342,19 @@ def _build_parser() -> argparse.ArgumentParser:
         "--concurrency",
         type=int,
         default=3,
-        help="cells fetched in parallel (each mirror still serves one request at a time)",
+        help=(
+            "cells fetched in parallel "
+            "(each mirror still serves one request at a time)"
+        ),
     )
     parser.add_argument(
         "--timeout",
         type=float,
         default=60.0,
-        help="per-request timeout in seconds; short on purpose, a slow mirror is skipped",
+        help=(
+            "per-request timeout in seconds; "
+            "short on purpose, a slow mirror is skipped"
+        ),
     )
     parser.add_argument(
         "--attempts",
@@ -388,7 +395,9 @@ def main() -> None:
     try:
         progress = asyncio.run(_run(args))
     except KeyboardInterrupt:
-        logger.warning("interrupted -- finished cells are saved, rerun the same command to resume")
+        logger.warning(
+            "interrupted -- finished cells are saved, rerun the same command to resume"
+        )
         sys.exit(130)
 
     logger.info(

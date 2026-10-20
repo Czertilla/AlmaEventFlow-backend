@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from core.filter.ordered import OrderedFilter
 from core.filter.identity import IdentityFilterMixin
+from core.filter.ordered import OrderedFilter
 from core.filter.timestamps import TimestampFilterMixin
 from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 from event.dto.role import RoleFilterDTO
@@ -17,12 +17,12 @@ class RoleFilter(
 ):
     __dto_cls__ = RoleFilterDTO
 
-    order_by: list[str] | None = ["name"]
-    search: None | str = None
+    order_by: list[str] | None = ["name"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
     collective_id: UUID | None = None
     collective_id__in: list[UUID] | None = None
 
     class Constants(OrderedFilter.Constants):
         model = RoleORM
-        search_model_fields = ["name"]
+        search_model_fields = ["name"]  # noqa: RUF012  # list[str] in fastapi-filter
         order_fields = ("name", "created_at", "edited_at")

@@ -76,7 +76,8 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: EmailStr | None = None
 
     APP_NAME: str = "Simple App"
-    """Name of the FastAPI application that will be displayed in places such as Swagger."""
+    """Name of the FastAPI application that will be displayed in places such as
+    Swagger."""
 
     APP_HOST: str
     """Host of the application that will be displayed in places such as Swagger."""
@@ -240,7 +241,7 @@ class Settings(BaseSettings):
 
 
 @lru_cache
-def getSettings[T](settings_class: type[T] = Settings) -> T:
+def getSettings[T](settings_class: type[T] = Settings) -> T:  # noqa: N802  # imported by every service config
     """
     Returns a cached instance of the application settings.
 

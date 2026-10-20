@@ -180,6 +180,7 @@ def not_found_response(code: ErrorCode) -> OpenAPIResponseType:
 
 
 def auth_responses() -> OpenAPIResponseType:
+    invalid_credentials = ErrorCode.INVALID_AUTHENTICATION_CREDENTIALS
     return {
         status.HTTP_401_UNAUTHORIZED: {
             "model": ErrorModel,
@@ -191,8 +192,8 @@ def auth_responses() -> OpenAPIResponseType:
                             ErrorCode.NOT_AUTHENTICATED,
                             "Missing or invalid authentication token",
                         ),
-                        ErrorCode.INVALID_AUTHENTICATION_CREDENTIALS.value: _example_dict(
-                            ErrorCode.INVALID_AUTHENTICATION_CREDENTIALS,
+                        invalid_credentials.value: _example_dict(
+                            invalid_credentials,
                             "Token decode failed",
                         ),
                     }

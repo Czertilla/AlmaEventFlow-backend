@@ -14,8 +14,8 @@ class ProfileFilter(
 ):
     __dto_cls__ = ProfileFilterDTO
 
-    order_by: list[str] | None = ["created_at"]
-    search: None | str = None
+    order_by: list[str] | None = ["created_at"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
     birthdate__gte: date | None = None
     birthdate__lte: date | None = None
     birthdate__isnull: bool | None = None

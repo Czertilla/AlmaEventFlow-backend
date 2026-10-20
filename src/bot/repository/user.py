@@ -1,3 +1,4 @@
+from typing import ClassVar
 from uuid import UUID
 
 from bot.model.user import UserORM as Model
@@ -14,7 +15,7 @@ class UserRepo(
     UpsertRepositoryMixin[Model, UUID],
 ):
     model = Model
-    conflict_index_elements = ["person_id"]
+    conflict_index_elements: ClassVar[list[str]] = ["person_id"]
 
     async def get_by_person_id(self, person_id: UUID) -> Model | None:
         return await self.get_one(person_id=person_id)

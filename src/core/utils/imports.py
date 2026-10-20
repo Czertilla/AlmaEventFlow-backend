@@ -10,9 +10,11 @@ def load_common[T](
     with a specified attribute name.
 
     Args:
-        package_name (str): Name of the package (e.g., "bot.routers" or "app.api.v1"), use __name__.
+        package_name (str): Name of the package (e.g., "bot.routers" or
+            "app.api.v1"), use __name__.
         attr_name (str): Name of the attribute in each module (e.g., "router").
-        expected_type (T): Expected type of the attribute (e.g., aiogram.Router or fastapi.APIRouter).
+        expected_type (T): Expected type of the attribute (e.g., aiogram.Router
+            or fastapi.APIRouter).
 
     Returns:
         List of found objects matching the expected type.

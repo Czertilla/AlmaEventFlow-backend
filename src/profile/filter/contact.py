@@ -11,8 +11,8 @@ from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 class ContactFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1):
     __dto_cls__ = ContactFilterDTO
 
-    order_by: list[str] | None = ["type", "value"]
-    search: None | str = None
+    order_by: list[str] | None = ["type", "value"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
     person_id: UUID | None = None
     type: ContactType | None = None
     type__in: list[ContactType] | None = None
@@ -20,5 +20,5 @@ class ContactFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMi
 
     class Constants(OrderedFilter.Constants):
         model = ContactORM
-        search_model_fields = ["value"]
+        search_model_fields = ["value"]  # noqa: RUF012  # read-only constant of a plain class
         order_fields = ("type", "value", "is_main", "created_at", "edited_at")

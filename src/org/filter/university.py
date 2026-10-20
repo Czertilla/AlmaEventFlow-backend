@@ -12,7 +12,7 @@ class UniversityFilter(
 ):
     __dto_cls__ = UniversityFilterDTO
 
-    order_by: list[str] | None = ["name"]
+    order_by: list[str] | None = ["name"]  # noqa: RUF012  # pydantic field default
     search: str | None = None
     principal_id: UUID | None = None
     principal_id__isnull: bool | None = None
@@ -21,5 +21,5 @@ class UniversityFilter(
 
     class Constants(OrderedFilter.Constants):
         model = UniversityORM
-        search_model_fields = ["name", "acronym"]
+        search_model_fields = ["name", "acronym"]  # noqa: RUF012  # read-only constant of a plain class
         order_fields = ("name", "acronym", "created_at", "edited_at")

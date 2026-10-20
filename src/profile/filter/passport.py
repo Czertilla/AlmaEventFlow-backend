@@ -11,8 +11,8 @@ from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 class PassportFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1):
     __dto_cls__ = PassportFilterDTO
 
-    order_by: list[str] | None = ["expire_date"]
-    search: None | str = None
+    order_by: list[str] | None = ["expire_date"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
     profile_id: UUID | None = None
     is_foreign: bool | None = None
     expire_date__gte: date | None = None
@@ -22,7 +22,7 @@ class PassportFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOM
 
     class Constants(OrderedFilter.Constants):
         model = PassportORM
-        search_model_fields = ["number", "issued_authority"]
+        search_model_fields = ["number", "issued_authority"]  # noqa: RUF012  # read-only constant of a plain class
         order_fields = (
             "expire_date",
             "issued_date",

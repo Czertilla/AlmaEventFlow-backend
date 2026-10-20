@@ -1,4 +1,3 @@
-# ruff: noqa: RUF001
 import re
 from math import asin, cos, radians, sin, sqrt
 

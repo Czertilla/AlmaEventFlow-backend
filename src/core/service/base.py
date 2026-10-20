@@ -14,7 +14,7 @@ class BaseService[T: ABCUnitOfWork]:
         self.uow: T = uow
 
 
-class RequiredTransactionException(Exception): ...
+class RequiredTransactionException(Exception): ...  # noqa: N818  # name used across the repo
 
 
 def required_transaction[S: BaseService[Any], **P, R](

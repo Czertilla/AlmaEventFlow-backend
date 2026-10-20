@@ -71,7 +71,7 @@ _REGION_NOISE = frozenset({"республика", "область", "край",
 
 
 def _region_key(name: str) -> str:
-    words = name.casefold().replace("ё", "е").split()  # noqa: RUF001
+    words = name.casefold().replace("ё", "е").split()
     return " ".join(word for word in words if word not in _REGION_NOISE)
 
 

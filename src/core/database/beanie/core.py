@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import Any, Generic, TypeVar
+from typing import Any
 from uuid import UUID
 
 from beanie import BulkWriter, DeleteRules, Document, SortDirection, WriteRules
@@ -18,12 +18,7 @@ from core.utils.abstract.repository import (
 Base = Document
 
 
-Model = TypeVar("Model", bound=Base)
-ID = TypeVar("ID", int, UUID, str)
-
-
-class BeanieRepository(
-    Generic[Model, ID],
+class BeanieRepository[Model: Base, ID: (int, UUID, str)](
     AbstractRepository,
     AbstractIdRepository,
     AbstractSetRepository,

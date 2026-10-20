@@ -10,7 +10,10 @@ logger = getLogger(__name__)
 async def send_notification(
     notification_request: NotificationRequest, broker: KafkaBroker = broker
 ) -> None:
-    logger.debug("Sending notification request notification_request=%r", notification_request)
+    logger.debug(
+        "Sending notification request notification_request=%r",
+        notification_request,
+    )
     await broker.publish(
         notification_request,
         NotifyQueue.SEND,

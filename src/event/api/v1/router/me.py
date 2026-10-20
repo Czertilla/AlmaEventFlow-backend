@@ -299,7 +299,9 @@ async def get_my_collective_attendance(
     collective_id: UUID,
     attendance_id: UUID,
     uow: AttendanceUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_attendance_of_collective),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(
+        verify_attendance_of_collective
+    ),
 ) -> AttendanceRead:
     return AttendanceRead.from_dto(
         await AttendanceService(uow).read(attendance_id)
@@ -315,7 +317,9 @@ async def patch_my_collective_attendance(
     attendance_id: UUID,
     attendance_data: AttendancePrincipalPatchData,
     uow: AttendanceUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_attendance_of_collective),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(
+        verify_attendance_of_collective
+    ),
 ) -> AttendanceRead:
     result = await AttendanceService(uow).patch(
         AttendancePatch(id=attendance_id, **attendance_data.model_dump()).to_dto()
@@ -331,7 +335,9 @@ async def delete_my_collective_attendance(
     collective_id: UUID,
     attendance_id: UUID,
     uow: AttendanceUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_attendance_of_collective),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(
+        verify_attendance_of_collective
+    ),
 ) -> None:
     await AttendanceService(uow).delete(attendance_id)
 
@@ -344,7 +350,9 @@ async def verify_my_collective_attendance(
     collective_id: UUID,
     participation_id: UUID,
     uow: AttendanceUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_participation_of_collective),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(
+        verify_participation_of_collective
+    ),
 ) -> list[AttendanceRead]:
     attendances = await AttendanceService(uow).verify_by_participation(
         participation_id

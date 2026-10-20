@@ -56,7 +56,9 @@ async def _side(
         principal=person,
     )
     await _sql(
-        engine, "INSERT INTO collective (id, is_verified) VALUES (:id, true)", id=collective
+        engine,
+        "INSERT INTO collective (id, is_verified) VALUES (:id, true)",
+        id=collective,
     )
     member = await _post(
         api, "/members", {"collective_id": str(collective), "person_id": str(person)}
@@ -153,7 +155,9 @@ async def test_a_principal_still_manages_their_own_collective(
     base = f"{BASE}/me/collectives/{choir.collective}"
 
     member = await api.patch(
-        f"{base}/members/{choir.member}", json={"is_active": False}, headers=choir.headers
+        f"{base}/members/{choir.member}",
+        json={"is_active": False},
+        headers=choir.headers,
     )
     role = await api.patch(
         f"{base}/roles/{choir.role}", json={"name": "Lead"}, headers=choir.headers

@@ -15,7 +15,7 @@ from user.models.user import UserORM
 
 
 class SampleFilter(OrderedFilter):
-    order_by: list[str] | None = ["created_at"]
+    order_by: list[str] | None = ["created_at"]  # noqa: RUF012  # pydantic field default
 
     class Constants(OrderedFilter.Constants):
         model = UserORM

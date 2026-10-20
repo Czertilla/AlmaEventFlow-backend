@@ -15,7 +15,7 @@ from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
 class AccountLinkChangeFilter(OrderedFilter, FromDTOMixinV1, ToDTOMixinV1):
     __dto_cls__ = AccountLinkChangeFilterDTO
 
-    order_by: list[str] | None = ["-created_at"]
+    order_by: list[str] | None = ["-created_at"]  # noqa: RUF012  # pydantic field default
     search: str | None = None
     user_id: UUID | None = None
     person_id: UUID | None = None

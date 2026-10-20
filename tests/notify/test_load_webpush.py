@@ -2,14 +2,11 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
+from datetime import UTC
 from statistics import median
 from uuid import UUID, uuid4
 
 import pytest
-
-logger = logging.getLogger(__name__)
-
-from datetime import UTC
 
 from core.enum.notify import DeliveryStatus, TransportTypeEnum
 from core.schema.message.notify import WebPushDeliveryBatch
@@ -21,6 +18,8 @@ from notify.service.webpush import WebPushWorkerService
 from notify.transport import registry
 from notify.transport.webpush import WebPushDeliveryError
 from notify.uow.delivery import WebPushDeliveryUOW
+
+logger = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.load
 
@@ -90,7 +89,9 @@ class LoadTestStats:
             f"    deliveries          : {self.count}",
             f"    page_size           : {self.page_size}",
             f"    concurrency_limit   : {self.concurrency_limit}",
-            f"    simulated_delay     : {self.simulated_delay*1000:.1f}ms" if self.simulated_delay else "    simulated_delay     : none",
+            f"    simulated_delay     : {self.simulated_delay * 1000:.1f}ms"
+            if self.simulated_delay
+            else "    simulated_delay     : none",
             "  Timing:",
             f"    total elapsed       : {self.elapsed:.4f}s",
             f"    db seed             : {self.db_seed_elapsed:.4f}s",
@@ -99,7 +100,11 @@ class LoadTestStats:
             f"    deliveries/sec      : {self.throughput:.1f}",
         ]
         if self.send_calls:
-            lines.append(f"    sends/sec           : {self.send_calls / self.elapsed:.1f}" if self.elapsed else "")
+            lines.append(
+                f"    sends/sec           : {self.send_calls / self.elapsed:.1f}"
+                if self.elapsed
+                else ""
+            )
         lines += [
             "  Send Latency:",
             f"    avg                 : {self.avg_send*1000:.3f}ms",
@@ -110,14 +115,17 @@ class LoadTestStats:
             f"    peak concurrent     : {self.concurrency_peak}",
         ]
         if self.concurrency_limit:
-            lines.append(f"    efficiency          : {self.concurrency_peak / self.concurrency_limit * 100:.1f}%")
+            efficiency = self.concurrency_peak / self.concurrency_limit * 100
+            lines.append(f"    efficiency          : {efficiency:.1f}%")
         lines.append("  Outcomes:")
         if self.transport_unavailable:
             lines.append("    transport_unavailable: true")
-            lines.append(f"    retry_scheduled     : {self.outcomes.get(DeliveryStatus.retry_scheduled, 0)}")
+            retry_scheduled = self.outcomes.get(DeliveryStatus.retry_scheduled, 0)
+            lines.append(f"    retry_scheduled     : {retry_scheduled}")
         elif self.notification_expired:
             lines.append("    notification_expired : true")
-            lines.append(f"    expired             : {self.outcomes.get(DeliveryStatus.expired, 0)}")
+            expired = self.outcomes.get(DeliveryStatus.expired, 0)
+            lines.append(f"    expired             : {expired}")
         else:
             for status in (DeliveryStatus.sent, DeliveryStatus.failed,
                            DeliveryStatus.skipped, DeliveryStatus.retry_scheduled):
@@ -130,7 +138,8 @@ class LoadTestStats:
             f"    pages_processed     : {self.pages_processed}",
         ]
         if self.pages_processed:
-            lines.append(f"    avg page time       : {self.elapsed / self.pages_processed:.4f}s")
+            avg_page = self.elapsed / self.pages_processed
+            lines.append(f"    avg page time       : {avg_page:.4f}s")
         lines += [sep, ""]
         logger.info("\n".join(lines))
 
@@ -183,7 +192,9 @@ async def _seed_webpush(sessionmaker_, endpoints: list[str]):
     return notification_id, delivery_ids
 
 
-async def _read_outcomes(sessionmaker_, delivery_ids: list[UUID]) -> dict[DeliveryStatus, int]:
+async def _read_outcomes(
+    sessionmaker_, delivery_ids: list[UUID]
+) -> dict[DeliveryStatus, int]:
     outcomes: dict[DeliveryStatus, int] = {}
     async with sessionmaker_() as session:
         from sqlalchemy import func, select
@@ -286,7 +297,8 @@ async def test_concurrent_fan_out(
 
     expected_serial = count * delay
     assert stats.elapsed < expected_serial, (
-        f"Total time {stats.elapsed:.2f}s exceeds serial estimate {expected_serial:.2f}s"
+        f"Total time {stats.elapsed:.2f}s exceeds "
+        f"serial estimate {expected_serial:.2f}s"
     )
 
     stats.print()
@@ -408,7 +420,8 @@ async def test_concurrency_limit_respected(
     stats.db_read_elapsed = time.perf_counter() - t_read
 
     assert stats.concurrency_peak <= concurrency_limit, (
-        f"Concurrency exceeded: peak={stats.concurrency_peak} > limit={concurrency_limit}"
+        f"Concurrency exceeded: peak={stats.concurrency_peak} "
+        f"> limit={concurrency_limit}"
     )
 
     stats.print()

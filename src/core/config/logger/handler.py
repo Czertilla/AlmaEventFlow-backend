@@ -17,7 +17,7 @@ from core.utils.tasks import track
 class GzipTimedRotatingFileHandler(TimedRotatingFileHandler):
     """Timed rotating file handler with automatic gzip compression."""
 
-    def doRollover(self):
+    def doRollover(self):  # noqa: N802  # overrides the stdlib method
         """Compresses the rotated log file using gzip."""
         super().doRollover()
 

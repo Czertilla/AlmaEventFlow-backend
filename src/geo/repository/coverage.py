@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from sqlalchemy import exists, select
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
@@ -14,7 +16,11 @@ class CoverageRepo(
     UpsertRepositoryMixin[Model, int],
 ):
     model = Model
-    conflict_index_elements = ["cell_row", "cell_col", "source"]
+    conflict_index_elements: ClassVar[list[str]] = [
+        "cell_row",
+        "cell_col",
+        "source",
+    ]
 
     async def covered(self, row: int, col: int, source: str = "osm") -> bool:
         stmt = select(

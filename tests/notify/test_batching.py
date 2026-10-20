@@ -113,6 +113,7 @@ def test_message_envelope_shape(monkeypatch):
     monkeypatch.setattr(settings, "EMAIL_DELIVERY_BATCH_SIZE", 100)
     drafts = {TransportTypeEnum.email: [_email_draft()]}
     payload = _rows(drafts)[0].payload
-    for key in ("message_id", "notification_id", "transport", "delivery_ids", "created_at"):
+    keys = ("message_id", "notification_id", "transport", "delivery_ids", "created_at")
+    for key in keys:
         assert key in payload
     assert payload["notification_id"] == str(NOTIFICATION_ID)

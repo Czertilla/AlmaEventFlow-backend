@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import ClassVar
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -24,7 +25,7 @@ class ParticipationRepo(
     SearchRepositoryMixin[Model],
 ):
     model = Model
-    conflict_index_elements = ["collective_id", "event_id"]
+    conflict_index_elements: ClassVar[list[str]] = ["collective_id", "event_id"]
 
     async def search(
         self,

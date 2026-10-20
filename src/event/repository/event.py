@@ -35,7 +35,11 @@ class EventRepo(
         options: Sequence[ExecutableOption] | None = None,
         scope: list[ColumnElement[bool]] | None = None,
     ):
-        _options = (selectinload(Model.status_rel), selectinload(Model.level_rel), selectinload(Model.type_rel))
+        _options = (
+            selectinload(Model.status_rel),
+            selectinload(Model.level_rel),
+            selectinload(Model.type_rel),
+        )
         if options:
             _options = (*_options, *options)
         return await super().search(

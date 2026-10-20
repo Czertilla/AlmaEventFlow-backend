@@ -29,7 +29,7 @@ class OrganizationORM(ModuleBase, Base, TimestampMixin):
         back_populates="principal_of",
     )
 
-    __mapper_args__ = {
+    __mapper_args__ = {  # noqa: RUF012  # DeclarativeBase types it as an instance attribute
         "polymorphic_identity": "organization",
         "polymorphic_on": "type",
         "eager_defaults": True,

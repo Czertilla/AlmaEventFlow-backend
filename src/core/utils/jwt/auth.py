@@ -146,7 +146,13 @@ def create_jwt_auth(
         else:
             secret = settings.USER_SECRET.get_secret_value()
             algorithm = "HS256"
-    return JWTAuth(secret=secret, algorithm=algorithm, active=active, verified=verified, superuser=superuser)
+    return JWTAuth(
+        secret=secret,
+        algorithm=algorithm,
+        active=active,
+        verified=verified,
+        superuser=superuser,
+    )
 
 
 def create_optional_jwt_auth(

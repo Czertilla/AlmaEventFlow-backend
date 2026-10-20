@@ -11,8 +11,8 @@ from event.models.stage import EventStageORM
 class StageFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1):
     __dto_cls__ = StageFilterDTO
 
-    order_by: list[str] | None = ["name"]
-    search: None | str = None
+    order_by: list[str] | None = ["name"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
     event_id: UUID | None = None
     event_id__in: list[UUID] | None = None
     start_at__gte: datetime | None = None
@@ -23,5 +23,5 @@ class StageFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixi
 
     class Constants(OrderedFilter.Constants):
         model = EventStageORM
-        search_model_fields = ["name", "description"]
+        search_model_fields = ["name", "description"]  # noqa: RUF012  # list[str] in fastapi-filter
         order_fields = ("name", "start_at", "end_at", "created_at", "edited_at")

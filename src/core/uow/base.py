@@ -22,7 +22,8 @@ class BaseUOW(ABCUnitOfWork):
 
     def __init_subclass__(cls, **kwargs):
         """
-        Scans the subclass for repository type annotations and prepares them for registration.
+        Scans the subclass for repository type annotations and prepares them
+        for registration.
         """
         super().__init_subclass__(**kwargs)
         cls._repository_types = {
@@ -53,7 +54,8 @@ class BaseUOW(ABCUnitOfWork):
         exc_tb: TracebackType | None,
     ) -> None:
         """
-        Exits the asynchronous context, rolling back the transaction and closing the session.
+        Exits the asynchronous context, rolling back the transaction and
+        closing the session.
         Automatically cleans up all repositories.
         """
         self.transacting = False

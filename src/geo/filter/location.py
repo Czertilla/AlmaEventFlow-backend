@@ -10,8 +10,8 @@ from geo.models.location import LocationORM
 class LocationFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOMixinV1):
     __dto_cls__ = LocationFilterDTO
 
-    order_by: list[str] | None = ["name"]
-    search: None | str = None
+    order_by: list[str] | None = ["name"]  # noqa: RUF012  # pydantic field default
+    search: str | None = None
     address_id: UUID | None = None
     address_id__in: list[UUID] | None = None
     name__isnull: bool | None = None
@@ -19,5 +19,5 @@ class LocationFilter(OrderedFilter, TimestampFilterMixin, FromDTOMixinV1, ToDTOM
 
     class Constants(OrderedFilter.Constants):
         model = LocationORM
-        search_model_fields = ["name"]
+        search_model_fields = ["name"]  # noqa: RUF012  # read-only constant of a plain class
         order_fields = ("name", "created_at", "edited_at")

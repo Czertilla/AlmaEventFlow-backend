@@ -245,7 +245,8 @@ class UserService(BaseService[UserUOW]):
         )
         if not verified:
             logger.debug(
-                "Rejected password change for user %s: current password mismatch", user.id
+                "Rejected password change for user %s: current password mismatch",
+                user.id,
             )
             raise InvalidCurrentPassword()
 
@@ -743,7 +744,9 @@ class UserService(BaseService[UserUOW]):
     ) -> list[SessionDTO]:
         async with self.uow as uow:
             sessions = await uow.sessions.list_active_for_user(user_id)
-            logger.debug("Listing %s active sessions for user %s", len(sessions), user_id)
+            logger.debug(
+                "Listing %s active sessions for user %s", len(sessions), user_id
+            )
             items = [
                 SessionDTO(
                     id=session.id,

@@ -10,4 +10,6 @@ class ProfileExtendedMixin:
     profiles: ProfileRepo
 
 
-class ProfileExtendedUOW(UnitOfWork, ProfileExtendedMixin, PersonMixin, ContactMixin, PassportMixin): ...
+class ProfileExtendedUOW(
+    UnitOfWork, ProfileExtendedMixin, PersonMixin, ContactMixin, PassportMixin
+): ...
