@@ -10,9 +10,8 @@ from core.database.sqlalchemy.mixins.repositories import (
     UpsertRepositoryMixin,
 )
 from event.enum.status import EventStatusEnumV1
-from event.models.event import EventLevelORM
+from event.models.event import EventLevelORM, EventStatusORM, EventTypeORM
 from event.models.event import EventORM as Model
-from event.models.event import EventStatusORM, EventTypeORM
 from event.models.participation import ParticipationORM
 
 
