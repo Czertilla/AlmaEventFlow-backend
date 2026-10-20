@@ -1,9 +1,12 @@
+from collections.abc import Sequence
 from profile.models.contact import ContactORM
 from profile.models.person import PersonORM as Model
 from uuid import UUID
 
-from sqlalchemy import select, update
+from fastapi_filter.contrib.sqlalchemy import Filter
+from sqlalchemy import ColumnElement, select, update
 from sqlalchemy.orm import selectinload, with_loader_criteria
+from sqlalchemy.sql.base import ExecutableOption
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -11,6 +14,7 @@ from core.database.sqlalchemy.mixins.repositories import (
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
+from core.dto.pagination import PageParams
 
 
 class PersonRepo(
@@ -63,9 +67,19 @@ class PersonRepo(
             await self.count(),
         )
 
-    async def search(self, filter, pagination, *, options=None):
+    async def search(
+        self,
+        filter: Filter,
+        pagination: PageParams,
+        *,
+        options: Sequence[ExecutableOption] | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
+    ):
         return await super().search(
-            filter, pagination, options=options or self.all_options
+            filter,
+            pagination,
+            options=options or self.all_options,
+            scope=scope,
         )
 
     async def upsert(self, data, options=all_options):

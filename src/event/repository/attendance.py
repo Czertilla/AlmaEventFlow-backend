@@ -3,7 +3,9 @@ from collections.abc import Collection, Sequence
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import Row, Select, extract, select
+from fastapi_filter.contrib.sqlalchemy import Filter
+from sqlalchemy import ColumnElement, Row, Select, extract, select
+from sqlalchemy.sql.base import ExecutableOption
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -11,6 +13,7 @@ from core.database.sqlalchemy.mixins.repositories import (
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
+from core.dto.pagination import PageParams
 from event.models.attendance import AttendanceORM as Model
 from event.models.event import EventORM, EventStatusORM, EventTypeORM
 from event.models.member import MemberORM
@@ -26,8 +29,17 @@ class AttendanceRepo(
     model = Model
     conflict_index_elements = ["id", "member_id", "participation_id"]
 
-    async def search(self, filter, pagination, *, options=None):
-        return await super().search(filter, pagination)
+    async def search(
+        self,
+        filter: Filter,
+        pagination: PageParams,
+        *,
+        options: Sequence[ExecutableOption] | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
+    ):
+        return await super().search(
+            filter, pagination, options=options, scope=scope
+        )
 
     async def collective_id_of(self, attendance_id: UUID) -> UUID | None:
         stmt = (

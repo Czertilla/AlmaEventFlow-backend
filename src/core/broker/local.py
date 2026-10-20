@@ -4,7 +4,7 @@ from collections.abc import Awaitable, Callable
 from functools import wraps
 from inspect import signature
 from logging import getLogger
-from typing import Any
+from typing import Any, TypeVar
 
 from fastapi.params import Depends as FastAPIDepends
 from faststream import apply_types
@@ -14,6 +14,7 @@ from core.utils.mixin.singleton import SingletonMixin
 logger = getLogger()
 
 Handler = Callable[[Any], Awaitable[Any]]
+HandlerT = TypeVar("HandlerT", bound=Callable[..., Awaitable[Any]])
 
 
 async def _resolve_fastapi_dependency(
@@ -46,7 +47,7 @@ def _bind_fastapi_depends(func: Handler) -> Handler:
         return func
 
     @wraps(func)
-    async def bound(*args, **kwargs):
+    async def bound(*args: Any, **kwargs: Any):
         cache: dict[int, Any] = {}
         for name in depends_names:
             kwargs[name] = await _resolve_fastapi_dependency(
@@ -71,8 +72,10 @@ class MonolithBroker(SingletonMixin):
         logger.info("Monolith broker started")
         return None
 
-    def subscriber(self, topic: str, *args, **kwargs):
-        def decorator(func: Handler):
+    def subscriber(
+        self, topic: str, *args: Any, **kwargs: Any
+    ) -> Callable[[HandlerT], HandlerT]:
+        def decorator(func: HandlerT) -> HandlerT:
             wrapped = apply_types(_bind_fastapi_depends(func))
             self._handlers[topic].append(wrapped)
             logger.info(
@@ -84,13 +87,15 @@ class MonolithBroker(SingletonMixin):
 
         return decorator
 
-    def publisher(self, topic: str, *args, **kwargs):
-        def decorator(func: Handler):
+    def publisher(
+        self, topic: str, *args: Any, **kwargs: Any
+    ) -> Callable[[HandlerT], HandlerT]:
+        def decorator(func: HandlerT) -> HandlerT:
             return func
 
         return decorator
 
-    async def publish(self, message: Any, topic: str, *args, **kwargs):
+    async def publish(self, message: Any, topic: str, *args: Any, **kwargs: Any):
         handlers = self._handlers.get(topic, [])
         if not handlers and topic.endswith(".dlq"):
             logger.error(
@@ -123,7 +128,12 @@ class MonolithBroker(SingletonMixin):
             )
 
     async def request(
-        self, message: Any, topic: str, *args, timeout: float = 5.0, **kwargs
+        self,
+        message: Any,
+        topic: str,
+        *args: Any,
+        timeout: float = 5.0,
+        **kwargs: Any,
     ) -> Any:
         handlers = self._handlers.get(topic, [])
         if len(handlers) != 1:
@@ -138,18 +148,24 @@ class MonolithRouter:
     def __init__(self, broker: MonolithBroker = MonolithBroker()):
         self.broker = broker
 
-    def subscriber(self, topic: str, *args, **kwargs):
+    def subscriber(
+        self, topic: str, *args: Any, **kwargs: Any
+    ) -> Callable[[HandlerT], HandlerT]:
         return self.broker.subscriber(topic, *args, **kwargs)
 
-    def publisher(self, topic: str, *args, **kwargs):
+    def publisher(
+        self, topic: str, *args: Any, **kwargs: Any
+    ) -> Callable[[HandlerT], HandlerT]:
         return self.broker.publisher(topic, *args, **kwargs)
 
-    def include_router(self, *args, **kwargs): ...
+    def include_router(self, *args: Any, **kwargs: Any): ...
 
 
 class MonolithStreamRouter:
     def __init__(self) -> None:
         self.broker = MonolithBroker()
 
-    def subscriber(self, topic: str, *args, **kwargs):
+    def subscriber(
+        self, topic: str, *args: Any, **kwargs: Any
+    ) -> Callable[[HandlerT], HandlerT]:
         return self.broker.subscriber(topic, *args, **kwargs)

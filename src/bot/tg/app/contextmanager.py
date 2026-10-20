@@ -98,7 +98,7 @@ class TGBotContextManager(AppContextManager):
         if self.bot is None or self.dp is None:
             return
         await self.bot.delete_webhook()
-        polling = create_task(self.dp.start_polling(self.bot))
+        polling = create_task(self.dp.start_polling(self.bot))  # pyright: ignore[reportUnknownMemberType]
         track(polling)
 
     async def stop_polling(self):

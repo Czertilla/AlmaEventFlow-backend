@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -141,9 +141,9 @@ class AddressAlchemyRepo(
         pagination: PageParams,
         *,
         options: Sequence[ExecutableOption] | None = None,
-        scope: list | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
         near: PointDTO | None = None,
-    ) -> tuple[list[Model], int]:
+    ) -> tuple[Iterable[Model], int]:
         match = (
             text_match(
                 filter.search,

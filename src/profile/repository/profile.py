@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from profile.models.contact import ContactORM
 from profile.models.passport import PassportORM
 from profile.models.person import PersonORM
@@ -5,8 +6,10 @@ from profile.models.profile import ProfileORM as Model
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import update
+from fastapi_filter.contrib.sqlalchemy import Filter
+from sqlalchemy import ColumnElement, update
 from sqlalchemy.orm import joinedload, selectinload, with_loader_criteria
+from sqlalchemy.sql.base import ExecutableOption
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -14,6 +17,7 @@ from core.database.sqlalchemy.mixins.repositories import (
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
+from core.dto.pagination import PageParams
 
 
 class ProfileRepo(
@@ -63,7 +67,17 @@ class ProfileRepo(
     async def upsert(self, data, options=all_options):
         return await super().upsert(data, options)
 
-    async def search(self, filter, pagination, *, options=None):
+    async def search(
+        self,
+        filter: Filter,
+        pagination: PageParams,
+        *,
+        options: Sequence[ExecutableOption] | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
+    ):
         return await super().search(
-            filter, pagination, options=options or self.all_options
+            filter,
+            pagination,
+            options=options or self.all_options,
+            scope=scope,
         )

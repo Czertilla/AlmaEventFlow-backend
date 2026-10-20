@@ -1,10 +1,12 @@
+from collections.abc import Sequence
 from profile.models.passport import NameVariantORM
 from profile.models.passport import PassportORM as Model
-from typing import Any
 from uuid import UUID
 
-from sqlalchemy import delete
+from fastapi_filter.contrib.sqlalchemy import Filter
+from sqlalchemy import ColumnElement, delete
 from sqlalchemy.orm import joinedload
+from sqlalchemy.sql.base import ExecutableOption
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -12,6 +14,7 @@ from core.database.sqlalchemy.mixins.repositories import (
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
+from core.dto.pagination import PageParams
 
 
 class PassportRepo(
@@ -25,7 +28,12 @@ class PassportRepo(
     with_name_variant = joinedload(Model.name_variant)
 
     async def search(
-        self, filter, pagination, *, options=None, scope: list[Any] | None = None
+        self,
+        filter: Filter,
+        pagination: PageParams,
+        *,
+        options: Sequence[ExecutableOption] | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
     ):
         return await super().search(
             filter,

@@ -1,7 +1,8 @@
 from profile.models.profile import ProfileORM
 from typing import TYPE_CHECKING
+from uuid import UUID
 
-from sqlalchemy import UUID, ForeignKey, SmallInteger, String
+from sqlalchemy import ForeignKey, SmallInteger, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.core import Base

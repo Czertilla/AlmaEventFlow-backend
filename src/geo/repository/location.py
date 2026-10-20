@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -71,9 +71,9 @@ class LocationRepo(
         pagination: PageParams,
         *,
         options: Sequence[ExecutableOption] | None = None,
-        scope: list | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
         near: PointDTO | None = None,
-    ) -> tuple[list[Model], int]:
+    ) -> tuple[Iterable[Model], int]:
         haystack = self._haystack()
         match = (
             text_match(

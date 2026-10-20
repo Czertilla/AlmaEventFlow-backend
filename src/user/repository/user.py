@@ -1,16 +1,20 @@
+from collections.abc import Sequence
 from typing import Any
 from uuid import UUID
 
+from fastapi_filter.contrib.sqlalchemy import Filter
 from fastapi_users.models import UOAP, UP
 from fastapi_users_db_sqlalchemy import BaseUserDatabase
 from pydantic import EmailStr
-from sqlalchemy import select
+from sqlalchemy import ColumnElement, select
+from sqlalchemy.sql.base import ExecutableOption
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
     SearchRepositoryMixin,
 )
+from core.dto.pagination import PageParams
 from user.models.user import OAuthAccountORM as OauthModel
 from user.models.user import UserORM as Model
 
@@ -98,5 +102,14 @@ class UserRepo(
         await self.session.delete(oauth_account)
         return user
 
-    async def search(self, filter, pagination, *, options=None):
-        return await super().search(filter, pagination)
+    async def search(
+        self,
+        filter: Filter,
+        pagination: PageParams,
+        *,
+        options: Sequence[ExecutableOption] | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
+    ):
+        return await super().search(
+            filter, pagination, options=options, scope=scope
+        )

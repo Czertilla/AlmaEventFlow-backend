@@ -1,7 +1,10 @@
+from collections.abc import Sequence
 from uuid import UUID
 
-from sqlalchemy import func, select
+from fastapi_filter.contrib.sqlalchemy import Filter
+from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import selectinload
+from sqlalchemy.sql.base import ExecutableOption
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -9,6 +12,7 @@ from core.database.sqlalchemy.mixins.repositories import (
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
+from core.dto.pagination import PageParams
 from event.models.member import MemberORM
 from event.models.participation import ParticipationORM as Model
 
@@ -22,10 +26,19 @@ class ParticipationRepo(
     model = Model
     conflict_index_elements = ["collective_id", "event_id"]
 
-    async def search(self, filter, pagination, *, options=None):
+    async def search(
+        self,
+        filter: Filter,
+        pagination: PageParams,
+        *,
+        options: Sequence[ExecutableOption] | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
+    ):
         if options is None:
             options = (selectinload(Model.collective),)
-        return await super().search(filter, pagination, options=options)
+        return await super().search(
+            filter, pagination, options=options, scope=scope
+        )
 
     async def get_of_collective(
         self, collective_id: UUID, event_id: UUID

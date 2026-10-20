@@ -1,7 +1,10 @@
+from collections.abc import Sequence
 from uuid import UUID
 
-from sqlalchemy import select
+from fastapi_filter.contrib.sqlalchemy import Filter
+from sqlalchemy import ColumnElement, select
 from sqlalchemy.orm import selectinload
+from sqlalchemy.sql.base import ExecutableOption
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -9,6 +12,7 @@ from core.database.sqlalchemy.mixins.repositories import (
     SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
+from core.dto.pagination import PageParams
 from event.enum.status import EventStatusEnumV1
 from event.models.event import EventLevelORM, EventStatusORM, EventTypeORM
 from event.models.event import EventORM as Model
@@ -23,11 +27,20 @@ class EventRepo(
 ):
     model = Model
 
-    async def search(self, filter, pagination, *, options=None):
+    async def search(
+        self,
+        filter: Filter,
+        pagination: PageParams,
+        *,
+        options: Sequence[ExecutableOption] | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
+    ):
         _options = (selectinload(Model.status_rel), selectinload(Model.level_rel), selectinload(Model.type_rel))
         if options:
-            _options = _options + options
-        return await super().search(filter, pagination, options=_options)
+            _options = (*_options, *options)
+        return await super().search(
+            filter, pagination, options=_options, scope=scope
+        )
 
     async def status_id(self, name: str) -> int:
         stmt = select(EventStatusORM.id).where(EventStatusORM.name == name)

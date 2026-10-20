@@ -10,59 +10,59 @@ class AbstractRepository(ABC):
         raise NotImplementedError
     
     @abstractmethod
-    def add_one() -> None:
+    async def add_one(self, *args: Any, **kwargs: Any) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def get_one() -> Any | None:
+    async def get_one(self, *args: Any, **kwargs: Any) -> Any | None:
         raise NotImplementedError
 
 
 class AbstractSetRepository(ABC):
     @abstractmethod
-    def get_many() -> list[Any]:
+    async def get_many(self, *args: Any, **kwargs: Any) -> list[Any]:
         raise NotImplementedError
 
 
 class AbstractIdRepository(ABC):
     @abstractmethod
-    def get_by_id() -> Any | None:
+    async def get_by_id(self, *args: Any, **kwargs: Any) -> Any | None:
         raise NotImplementedError
 
     @abstractmethod
-    def exists_id() -> bool:
+    async def exists_id(self, *args: Any, **kwargs: Any) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    def update_one() -> Any:
+    async def update_one(self, *args: Any, **kwargs: Any) -> Any:
         raise NotImplementedError
 
     @abstractmethod
-    def delete_one() -> bool:
+    async def delete_one(self, *args: Any, **kwargs: Any) -> None:
         raise NotImplementedError
 
 
 class AbstractORMRepository(ABC):
     @abstractmethod
-    def merge() -> None:
+    async def merge(self, *args: Any, **kwargs: Any) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def flush() -> None:
+    async def flush(self) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def commit() -> None:
+    async def commit(self) -> None:
         raise NotImplementedError
 
 
 class AbstractReturningRepository(ABC):
     @abstractmethod
-    def add_n_return() -> Any:
+    async def add_n_return(self, *args: Any, **kwargs: Any) -> Any:
         raise NotImplementedError
 
 
 class AbstractCountingRepository(ABC):
     @abstractmethod
-    def count() -> int:
+    async def count(self, *args: Any, **kwargs: Any) -> int:
         raise NotImplementedError

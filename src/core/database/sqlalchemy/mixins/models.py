@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Protocol, TypeVar
+from typing import Any, Protocol, TypeVar
 from uuid import UUID, uuid4
 
 from sqlalchemy import BigInteger, Integer, SmallInteger, func
@@ -23,7 +23,7 @@ ID = TypeVar('ID', int, UUID, str)
 
 
 class IdMixinProtocol(Protocol):
-    id: Mapped[ID]
+    id: Any
 
 
 IDMixin = TypeVar('IDMixin', bound=IdMixinProtocol)

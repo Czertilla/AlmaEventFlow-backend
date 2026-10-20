@@ -2,6 +2,7 @@ import asyncio
 import ssl
 from functools import lru_cache
 from logging import getLogger
+from typing import Any, cast
 
 from faststream.kafka import (
     KafkaBroker as BaseKafkaBroker,
@@ -104,7 +105,7 @@ if not settings.IN_MEMORY_BROKER:
         return BaseSecurity(ssl_context=context, use_ssl=True)
 
     class KafkaBroker(BaseKafkaBroker):
-        def __init__(self, *args, **kwargs):
+        def __init__(self, *args: Any, **kwargs: Any):
             super().__init__(*args, **kwargs)
             self.reconnect_interval = 0.8
             # request/reply over Kafka: see core.broker.kafka_rpc
@@ -134,7 +135,7 @@ if not settings.IN_MEMORY_BROKER:
                     logger.info("Kafka broker started")
                     return
 
-        async def stop(self, *args, **kwargs) -> None:
+        async def stop(self, *args: Any, **kwargs: Any) -> None:
             await self._rpc_reply.stop()
             await super().stop(*args, **kwargs)
 
@@ -146,24 +147,24 @@ if not settings.IN_MEMORY_BROKER:
         def __init__(
             self,
             url: str = kafka_uri(),
-            security: BaseSecurity = _kafka_security(),
-            *args,
-            **kwargs,
+            security: BaseSecurity | None = _kafka_security(),
+            *args: Any,
+            **kwargs: Any,
         ):
             logger.debug("KafkaStreamRouter initializing with URL: %s", url)
             super().__init__(url, *args, security=security, **kwargs)
 
     class KafkaRouter(BaseKafkaRouter):
-        def __init__(self, *args, **kwargs):
+        def __init__(self, *args: Any, **kwargs: Any):
             logger.info("KafkaRouter initializing")
             super().__init__(*args, **kwargs)
 
-        def subscriber(self, *args, **kwargs):
+        def subscriber(self, *topics: str, **kwargs: Any) -> Any:
             """Injects the configured consumer group when the caller did not set
             one and ``KAFKA_CONSUMER_GROUP`` is configured."""
             if settings.KAFKA_CONSUMER_GROUP and "group_id" not in kwargs:
                 kwargs["group_id"] = settings.KAFKA_CONSUMER_GROUP
-            return super().subscriber(*args, **kwargs)
+            return cast("Any", super().subscriber(*topics, **kwargs))
 
     @lru_cache
     def geStreamRouter() -> KafkaStreamRouter:

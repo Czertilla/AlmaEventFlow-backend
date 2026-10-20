@@ -1,7 +1,8 @@
+from collections.abc import Iterable, Sequence
 from typing import Any, Generic
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from sqlalchemy import Select, delete, exists, func, select, update
+from sqlalchemy import ColumnElement, Select, delete, exists, func, select, update
 from sqlalchemy.sql.base import ExecutableOption
 
 from core.config.settings import settings
@@ -102,7 +103,7 @@ class UpsertRepositoryMixin(
         self,
         data: list[dict[str, Any]],
         options: tuple[ExecutableOption, ...] = (),
-    ) -> Model | None:
+    ) -> Iterable[Model]:
         if not data:
             return iter(())
         statement = insert(self.model).values(data)
@@ -134,9 +135,9 @@ class SearchRepositoryMixin(Generic[Model], AbstractRepository):
         filter: Filter,
         pagination: PageParams,
         *,
-        options=None,
-        scope: list | None = None,
-    ) -> tuple[list[Model], int]:
+        options: Sequence[ExecutableOption] | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
+    ) -> tuple[Iterable[Model], int]:
         total_stmt = select(func.count()).select_from(self.model)
         if scope:
             total_stmt = total_stmt.where(*scope)
