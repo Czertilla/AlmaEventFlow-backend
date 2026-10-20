@@ -750,30 +750,22 @@ after every update, so it has to read like news, not like release notes for the 
   `test_database` need Docker: it starts `docker-compose.test.yml` (PostGIS) and migrates every
   service database (geo, notify, bot and the event location test do; unit tests, `tests/core` and
   `tests/contract` do not). New tests should not need a database unless they exercise SQL.
-- **Lint/type-check are strict by config, not by current codebase state.** `[tool.ruff.lint]`
-  selects `E, F, I, UP, B, SIM, C4, RUF, ASYNC, N` (not just the bare `E, F, I` this repo started
-  with); a full run has ~300 pre-existing, non-auto-fixable findings that are accepted debt, not
-  something to silently "clean up" as a drive-by in an unrelated change. `[tool.basedpyright]` sets `typeCheckingMode = "strict"` — `basedpyright` (a pyright
-  fork; replaced plain `pyright` specifically for this feature) supports a baseline file,
-  `.basedpyright/baseline.json`, that grandfathers every finding that existed when it was
-  generated (currently ~3800, covering the whole repo — `src/`, `tests/`, `migrations/`,
-  `scripts/` — matching the bare `uv run basedpyright` command's own default scope, not just
-  `src/`), so a clean `uv run basedpyright` run means **zero new findings**, not zero findings
-  ever. Consequences for how you work:
-  - A file you touch may still show pre-existing ruff/basedpyright findings outside the lines you
-    changed — that's expected, not a regression to fix unless asked.
-  - If your change introduces a genuinely new finding (in a new file, or a line the baseline
-    doesn't cover), both tools report it normally — the baseline only suppresses what was already
-    there, it does not go slack for new code.
-  - If you fix something that happened to be in the baseline, regenerate it (`uv run basedpyright
-    --writebaseline`, no path — matching the bare check command's scope) in the same change so the
-    fix is actually reflected, rather than leaving a stale baseline entry pointing at code that no
-    longer has the problem.
-  - Regenerate the baseline against a fully-synced environment (`uv sync --all-groups`) — a
-    partially-installed venv (e.g. missing one service's extras) produces spurious
-    "type is unknown" findings from unresolved imports that have nothing to do with real type
-    errors, and poisons the baseline with noise specific to that venv.
-  - **`ruff --fix` is not blindly safe here, even for "safe" fixes** — two of its rules have
+- **Lint and type-check are clean and stay clean.** `uv run ruff check .` ends with "All checks passed!"
+  (`[tool.ruff.lint]` selects `E, F, I, UP, B, SIM, C4, RUF, ASYNC, N`) and `uv run basedpyright`
+  (`typeCheckingMode = "strict"`, whole repo: `src/`, `tests/`, `migrations/`, `scripts/`) reports 0
+  errors with an empty `.basedpyright/baseline.json`. A new finding is a regression of your change:
+  fix it, do not baseline it. Where a suppression is the honest answer, keep it narrow:
+  - a systematic false positive goes into `pyproject.toml` with a comment saying why (FastAPI `Depends`
+    as a B008 immutable call, the Cyrillic look-alikes in `allowed-confusables`, the relaxed
+    `executionEnvironments` for `tests` and `migrations`, `reportMissingTypeStubs` for packages without
+    stubs, generated files exempt from E501);
+  - a single place gets `# noqa: CODE` or `# pyright: ignore[oneRule]` plus a short reason when a third
+    party fixes the shape (pydantic field defaults and `Constants` of fastapi-filter, aiogram's
+    `start_polling`, faststream's overloaded `subscriber`); never a bare ignore, never `# type: ignore`.
+  - `uv run basedpyright` rewrites the baseline file when findings disappear; commit that rewrite.
+    Run it in a fully synced environment (`uv sync --all-groups`), a partial venv invents "unknown
+    type" findings from unresolved imports.
+- **`ruff --fix` is not blindly safe here, even for "safe" fixes** — two of its rules have
     already produced real regressions once, caught only by re-running `basedpyright` afterward:
     `N805` renames a `@declared_attr` method's first parameter `cls` → `self` (SQLAlchemy's
     declarative-attribute convention genuinely wants `cls` there — this isn't a real instance
