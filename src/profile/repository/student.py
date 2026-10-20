@@ -9,7 +9,7 @@ from profile.models.student import (
 from typing import Any, cast
 from uuid import UUID
 
-from sqlalchemy import CursorResult, Table, delete, insert, update
+from sqlalchemy import CursorResult, Table, delete, func, insert, select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import selectinload
 
@@ -75,6 +75,13 @@ class StudentGroupRepo(
 ):
     model = StudentGroupORM
 
+    async def find(self, name: str, faculty_id: UUID) -> StudentGroupORM | None:
+        stmt = select(self.model).where(
+            func.lower(self.model.name) == name.lower(),
+            self.model.faculty_id == faculty_id,
+        )
+        return (await self.execute(stmt)).scalars().first()
+
 
 class StudentDegreeRepo(
     SQLAlchemyRepository[StudentDegree],
@@ -83,3 +90,7 @@ class StudentDegreeRepo(
     SearchRepositoryMixin[StudentDegree],
 ):
     model = StudentDegree
+
+    async def find_by_name(self, name: str) -> StudentDegree | None:
+        stmt = select(self.model).where(func.lower(self.model.name) == name.lower())
+        return (await self.execute(stmt)).scalars().first()

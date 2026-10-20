@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from support.http import AsPerson, api_client, principal
+from support.org import FakeOrg
 
 _PUBLISHERS = {
     "on_person_created": ("person", "my_profile"),
@@ -20,6 +21,13 @@ _PUBLISHERS = {
     "on_person_deleted": ("person",),
     "on_person_link_changed": ("person", "account", "my_profile"),
 }
+
+
+@pytest.fixture(autouse=True)
+def org(monkeypatch: pytest.MonkeyPatch) -> FakeOrg:
+    fake = FakeOrg()
+    monkeypatch.setattr("profile.utils.org.rpc_call", fake)
+    return fake
 
 
 @pytest.fixture

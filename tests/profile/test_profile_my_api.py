@@ -97,7 +97,7 @@ async def test_a_user_makes_the_whole_profile_in_one_request(
     assert body["student"]["group"]["name"] == "G-1"
     assert [(c["type"], c["is_main"]) for c in body["contacts"]] == [
         ("email", True),
-        ("tg", False),
+        ("tg", True),
     ]
     assert [name for name, _ in published] == [
         "on_person_created",
@@ -242,9 +242,9 @@ async def test_the_profile_is_replaced_as_a_whole(
     assert body["birthdate"] is None and body["diet"] is None
     assert body["student"] is None
     assert body["edited_at"] is not None
-    assert [(c["type"], c["value"]) for c in body["contacts"]] == [
-        ("phone", "+7000"),
-        ("vk", "anna"),
+    assert [(c["type"], c["value"], c["is_main"]) for c in body["contacts"]] == [
+        ("phone", "+7000", True),
+        ("vk", "anna", True),
     ]
     assert body["contacts"][0]["id"] == kept["id"]
     assert [name for name, _ in published if name != "on_person_link_changed"] == [
@@ -368,3 +368,47 @@ async def test_only_superusers_make_a_person_directly(
 
     assert ordinary.status_code == 403
     assert admin.status_code == 200
+
+
+async def test_each_type_of_contact_has_exactly_one_main(
+    api: httpx.AsyncClient, profile_engine: AsyncEngine
+) -> None:
+    seed = await _classroom(profile_engine, api)
+    _, headers = _newcomer()
+    contacts = [
+        {"type": "email", "value": "a@example.com"},
+        {"type": "email", "value": "b@example.com", "is_main": True},
+        {"type": "email", "value": "c@example.com", "is_main": True},
+        {"type": "phone", "value": "+7000"},
+        {"type": "phone", "value": "+7111"},
+    ]
+
+    created = await api.post(V2, json=_form(seed, contacts=contacts), headers=headers)
+
+    assert [(c["value"], c["is_main"]) for c in created.json()["contacts"]] == [
+        ("a@example.com", False),
+        ("b@example.com", True),
+        ("c@example.com", False),
+        ("+7000", True),
+        ("+7111", False),
+    ]
+
+
+def test_the_main_contact_of_a_type_is_the_first_one_marked_else_the_first() -> None:
+    from profile.dto.my_profile import MyContactDTO
+    from profile.enum.contact import ContactType
+    from profile.service.my_profile import main_flags
+
+    def contact(kind: ContactType, main: bool = False) -> MyContactDTO:
+        return MyContactDTO(type=kind, value="x", is_main=main)
+
+    assert main_flags([]) == []
+    assert main_flags([contact(ContactType.vk)]) == [True]
+    assert main_flags(
+        [
+            contact(ContactType.tg),
+            contact(ContactType.vk),
+            contact(ContactType.tg, True),
+            contact(ContactType.vk, True),
+        ]
+    ) == [False, False, True, True]

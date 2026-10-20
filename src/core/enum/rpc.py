@@ -10,6 +10,14 @@ class UserRPC(StrEnum):
     UNLINK_TELEGRAM_OAUTH = "unlink-telegram-oauth"
 
 
+@prefix("rpc.org.")
+class OrgRPC(StrEnum):
+    RESOLVE_UNIVERSITY = "resolve-university"
+    RESOLVE_FACULTY = "resolve-faculty"
+    RESOLVE_ORGANIZATION = "resolve-organization"
+    GET_ORGANIZATION = "get-organization"
+
+
 @prefix("rpc.profile.")
 class ProfileRPC(StrEnum):
     LINK_ACCOUNT = "link-account"

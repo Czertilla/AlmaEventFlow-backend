@@ -516,5 +516,185 @@
         "student_id": "x"
       }
     }
+  },
+  "reference.DegreeReference": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "reference.DietReference": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "reference.FacultyReference": {
+    "full": {
+      "dump": {
+        "name": "x",
+        "university_id": "4d5e8ad0-a23e-5e27-9a8d-8695c70645d3"
+      },
+      "fields_set": [
+        "name",
+        "university_id"
+      ],
+      "input": {
+        "name": "x",
+        "university_id": "4d5e8ad0-a23e-5e27-9a8d-8695c70645d3"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x",
+        "university_id": "4d5e8ad0-a23e-5e27-9a8d-8695c70645d3"
+      },
+      "fields_set": [
+        "name",
+        "university_id"
+      ],
+      "input": {
+        "name": "x",
+        "university_id": "4d5e8ad0-a23e-5e27-9a8d-8695c70645d3"
+      }
+    }
+  },
+  "reference.OrganizationRefRead": {
+    "full": {
+      "dump": {
+        "id": "2afde6a6-74a0-53f5-9d23-89641b92250e",
+        "name": "x",
+        "type": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "type"
+      ],
+      "input": {
+        "id": "2afde6a6-74a0-53f5-9d23-89641b92250e",
+        "name": "x",
+        "type": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "2afde6a6-74a0-53f5-9d23-89641b92250e",
+        "name": "x",
+        "type": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "type"
+      ],
+      "input": {
+        "id": "2afde6a6-74a0-53f5-9d23-89641b92250e",
+        "name": "x",
+        "type": "x"
+      }
+    }
+  },
+  "reference.ReferenceName": {
+    "full": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x"
+      },
+      "fields_set": [
+        "name"
+      ],
+      "input": {
+        "name": "x"
+      }
+    }
+  },
+  "reference.StudentGroupReference": {
+    "full": {
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "b3cfef09-952e-5cb7-a1ef-15c0c3e514bc",
+        "grade": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "b3cfef09-952e-5cb7-a1ef-15c0c3e514bc",
+        "grade": 1,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "degree_id": 1,
+        "faculty_id": "b3cfef09-952e-5cb7-a1ef-15c0c3e514bc",
+        "grade": 1,
+        "name": "x"
+      },
+      "fields_set": [
+        "degree_id",
+        "faculty_id",
+        "grade",
+        "name"
+      ],
+      "input": {
+        "degree_id": 1,
+        "faculty_id": "b3cfef09-952e-5cb7-a1ef-15c0c3e514bc",
+        "grade": 1,
+        "name": "x"
+      }
+    }
   }
 }

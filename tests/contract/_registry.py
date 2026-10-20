@@ -139,6 +139,9 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
         {
             "profile.MyProfileRead": "profile.dto.my_profile:MyProfileDTO",
             "profile.MyStudentRead": "profile.dto.my_profile:MyStudentReadDTO",
+            "reference.OrganizationRefRead": (
+                "profile.dto.reference:OrganizationRefDTO"
+            ),
         },
     ),
     "user_v1": (

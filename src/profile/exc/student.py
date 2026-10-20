@@ -14,6 +14,11 @@ class StudentGroupNotExistsException(VancedHTTPException):
     detail = ErrorCode.STUDENT_GROUP_NOT_FOUND
 
 
+class StudentDegreeNotExistsException(VancedHTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = ErrorCode.STUDENT_DEGREE_NOT_FOUND
+
+
 class StudentAlreadyExistsException(VancedHTTPException):
     status_code = status.HTTP_400_BAD_REQUEST
     detail = ErrorCode.STUDENT_ALREADY_EXISTS

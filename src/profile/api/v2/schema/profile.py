@@ -38,7 +38,13 @@ class MyContactData(BaseModel, ToDTOMixinV1):
     )
     type: ContactType
     value: str = Field(min_length=1, max_length=256)
-    is_main: bool = False
+    is_main: bool = Field(
+        default=False,
+        description=(
+            "The main contact of its type. Exactly one of a type is main: the "
+            "first one marked, else the first of that type."
+        ),
+    )
 
     model_config = ConfigDict(str_strip_whitespace=True)
 

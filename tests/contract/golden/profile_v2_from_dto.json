@@ -56,5 +56,12 @@
       "is_full": true,
       "student_id": "x"
     }
+  },
+  "reference.OrganizationRefRead": {
+    "response": {
+      "id": "e97b0b17-7e26-5b33-88c6-cb0118b984f5",
+      "name": "x",
+      "type": "x"
+    }
   }
 }

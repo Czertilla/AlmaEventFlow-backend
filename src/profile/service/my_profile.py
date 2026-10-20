@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+from datetime import UTC, datetime, timedelta
 from profile.api.kafka.pub.person import (
     on_person_created,
     on_person_link_changed,
@@ -6,11 +8,13 @@ from profile.api.kafka.pub.person import (
 from profile.dto.contact import ContactDTO
 from profile.dto.diet import DietDTO
 from profile.dto.my_profile import (
+    MyContactDTO,
     MyProfileDTO,
     MyProfileWriteDTO,
     MyStudentReadDTO,
 )
 from profile.dto.student import StudentGroupDTO
+from profile.enum.contact import ContactType
 from profile.exc.account import (
     AccountLinkOutOfSyncException,
     ProfileAlreadyExistsException,
@@ -22,6 +26,7 @@ from profile.exc.person import PersonNotExistsException
 from profile.exc.student import StudentGroupNotExistsException
 from profile.models.student import StudentORM
 from profile.repository.profile import ProfileRepo
+from profile.service.reference import ensure_organizations
 from profile.uow.my_profile import MyProfileUOW
 from uuid import UUID
 
@@ -31,6 +36,18 @@ from sqlalchemy.orm import selectinload
 from core.dto.base import dto_from_orm
 from core.schema.message.profile import PersonData, PersonLinkData
 from core.service.base import BaseService, required_transaction
+
+
+def main_flags(contacts: Sequence[MyContactDTO]) -> list[bool]:
+    chosen: dict[ContactType, int] = {}
+    for position, contact in enumerate(contacts):
+        if contact.is_main and contact.type not in chosen:
+            chosen[contact.type] = position
+    for position, contact in enumerate(contacts):
+        chosen.setdefault(contact.type, position)
+    return [
+        chosen[contact.type] == position for position, contact in enumerate(contacts)
+    ]
 
 
 class MyProfileService(BaseService[MyProfileUOW]):
@@ -43,25 +60,27 @@ class MyProfileService(BaseService[MyProfileUOW]):
             patronymic=profile.patronymic,
         )
 
+    async def _ensure_organizations(self, data: MyProfileWriteDTO) -> None:
+        faculty_id = data.student.faculty_id if data.student else None
+        await ensure_organizations(self.uow, [data.workplace_id, faculty_id])
+
     @required_transaction
     async def _check_references(self, data: MyProfileWriteDTO) -> None:
         if data.diet_id is not None and not await self.uow.diets.exists_id(
             data.diet_id
         ):
             raise DietNotExistsException()
-        organizations = {data.workplace_id}
+        organizations: set[UUID | None] = {data.workplace_id}
         if data.student is not None:
             organizations.add(data.student.faculty_id)
             if not await self.uow.student_groups.exists_id(data.student.group_id):
                 raise StudentGroupNotExistsException()
-        for organization_id in organizations - {None}:
+        for organization_id in filter(None, organizations):
             if not await self.uow.organizations.exists_id(organization_id):
                 raise OrganizationNotExistsException()
 
     @required_transaction
-    async def _ensure_free(
-        self, user_id: UUID, claimed_person_id: UUID | None
-    ) -> None:
+    async def _ensure_free(self, user_id: UUID, claimed_person_id: UUID | None) -> None:
         if await self.uow.account_links.get_by_user(user_id) is not None:
             raise ProfileAlreadyExistsException()
         if claimed_person_id is not None and await self.uow.persons.exists_id(
@@ -91,14 +110,22 @@ class MyProfileService(BaseService[MyProfileUOW]):
     async def _write_contacts(self, person_id: UUID, data: MyProfileWriteDTO) -> None:
         existing = {c.id for c in await self.uow.contacts.by_person(person_id)}
         kept: set[UUID] = set()
-        for contact in data.contacts:
+        now = datetime.now(UTC)
+        mains = main_flags(data.contacts)
+        for position, contact in enumerate(data.contacts):
             values = {
                 "type": contact.type,
                 "value": contact.value,
-                "is_main": contact.is_main,
+                "is_main": mains[position],
             }
             if contact.id is None:
-                await self.uow.contacts.add_one({"person_id": person_id, **values})
+                await self.uow.contacts.add_one(
+                    {
+                        "person_id": person_id,
+                        "created_at": now + timedelta(microseconds=position),
+                        **values,
+                    }
+                )
                 continue
             if contact.id not in existing:
                 raise ContactNotExistsException()
@@ -125,9 +152,7 @@ class MyProfileService(BaseService[MyProfileUOW]):
         person = await self.uow.persons.get_by_id(person_id)
         if person is None:
             raise PersonNotExistsException()
-        profile = await self.uow.profiles.get_by_id(
-            person_id, (ProfileRepo.with_diet,)
-        )
+        profile = await self.uow.profiles.get_by_id(person_id, (ProfileRepo.with_diet,))
         student = await self.uow.students.get_by_id(
             person_id, (selectinload(StudentORM.group),)
         )
@@ -172,6 +197,7 @@ class MyProfileService(BaseService[MyProfileUOW]):
         *,
         claimed_person_id: UUID | None = None,
     ) -> MyProfileDTO:
+        await self._ensure_organizations(data)
         try:
             async with self.uow as uow:
                 await self._ensure_free(user_id, claimed_person_id)
@@ -198,6 +224,7 @@ class MyProfileService(BaseService[MyProfileUOW]):
         return result
 
     async def replace(self, person_id: UUID, data: MyProfileWriteDTO) -> MyProfileDTO:
+        await self._ensure_organizations(data)
         async with self.uow as uow:
             await self._check_references(data)
             person = await self.uow.persons.update_one(
