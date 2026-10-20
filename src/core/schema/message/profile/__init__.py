@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from core.enum.profile import PersonLinkSource
 from core.schema.message.core import MQEvent, MQRequest

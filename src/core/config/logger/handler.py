@@ -11,6 +11,7 @@ from aiogram import Bot
 from aiogram.types import BufferedInputFile, InputMediaDocument
 
 from core.config.settings import settings
+from core.utils.tasks import track
 
 
 class GzipTimedRotatingFileHandler(TimedRotatingFileHandler):
@@ -22,9 +23,11 @@ class GzipTimedRotatingFileHandler(TimedRotatingFileHandler):
 
         for old_log in glob.glob(self.baseFilename + ".*"):
             if not old_log.endswith(".gz"):
-                with open(old_log, "rb") as f_in:
-                    with gzip.open(f"{old_log}.gz", "wb") as f_out:
-                        shutil.copyfileobj(f_in, f_out)
+                with (
+                    open(old_log, "rb") as f_in,
+                    gzip.open(f"{old_log}.gz", "wb") as f_out,
+                ):
+                    shutil.copyfileobj(f_in, f_out)
                 os.remove(old_log)
 
 
@@ -46,7 +49,7 @@ class TelegramLogHandler(Handler):
             event_loop = asyncio.get_event_loop()
             task = self._send_to_telegram(log_entry, record.exc_info)
             if event_loop.is_running():
-                event_loop.create_task(task)
+                track(event_loop.create_task(task))
             else:
                 asyncio.run(task)
         except Exception:

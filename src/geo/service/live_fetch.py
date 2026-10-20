@@ -15,6 +15,7 @@ from logging import getLogger
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from core.config.settings import settings
+from core.utils.tasks import track
 from geo.bootstrap.coverage import bbox_of_cell, cell_of
 from geo.bootstrap.run import _address_id, _import_cell, resolve_city_for_point
 from geo.bootstrap.sources import (
@@ -114,4 +115,4 @@ def schedule_live_fetch(
     if cell in _inflight:
         return
     _inflight.add(cell)
-    asyncio.create_task(_guarded_live_fetch(cell, near, sessionmaker))
+    track(asyncio.create_task(_guarded_live_fetch(cell, near, sessionmaker)))

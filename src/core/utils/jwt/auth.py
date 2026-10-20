@@ -76,15 +76,11 @@ class JWTAuth:
             )
             return payload
         except jwt.PyJWTError as exc:
-            err_id = logger.error(
-                "Invalid authentication credentials",
-                exc_info=exc,
-            )
+            logger.error("Invalid authentication credentials", exc_info=exc)
             raise VancedHTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=ErrorCode.INVALID_AUTHENTICATION_CREDENTIALS,
-                err_id=err_id,
-            )
+            ) from exc
 
     def verify_requires(self, user: UserJWT):
         if self.active > user.is_active:

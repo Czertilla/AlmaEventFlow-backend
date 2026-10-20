@@ -35,7 +35,7 @@ def verify_telegram_widget_payload(data: dict[str, Any]) -> None:
 
     try:
         auth_date = int(data["auth_date"])
-    except (KeyError, TypeError, ValueError):
-        raise TelegramAuthInvalid()
+    except (KeyError, TypeError, ValueError) as exc:
+        raise TelegramAuthInvalid() from exc
     if time.time() - auth_date > AUTH_MAX_AGE_SECONDS:
         raise TelegramAuthInvalid()

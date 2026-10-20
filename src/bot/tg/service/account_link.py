@@ -34,8 +34,8 @@ class AccountLinkService(BaseService[AccountLinkUOW]):
             raise LinkTokenExpiredException()
         try:
             return UUID(raw.decode() if isinstance(raw, bytes) else raw)
-        except (ValueError, TypeError, AttributeError):
-            raise InvalidLinkTokenException()
+        except (ValueError, TypeError, AttributeError) as exc:
+            raise InvalidLinkTokenException() from exc
 
     async def link(self, tgid: int, token: str) -> TGUser:
         person_id = await self._resolve(token)

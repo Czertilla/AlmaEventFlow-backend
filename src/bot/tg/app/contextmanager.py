@@ -13,6 +13,7 @@ from bot.tg.text.description import get_bot_profile_texts
 from core.app.contextmanager import AppContextManager
 from core.config.settings import settings
 from core.enum.config import TgBotFeedType
+from core.utils.tasks import track
 
 logger = getLogger(__name__)
 
@@ -94,7 +95,7 @@ class TGBotContextManager(AppContextManager):
 
     async def start_polling(self):
         await self.bot.delete_webhook()
-        create_task(self.dp.start_polling(self.bot))
+        track(create_task(self.dp.start_polling(self.bot)))
 
     async def stop_polling(self):
         await self.dp.stop_polling()

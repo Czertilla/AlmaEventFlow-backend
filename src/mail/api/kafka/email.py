@@ -39,42 +39,41 @@ async def _report(
     )
 
 
-@router.subscriber(EmailQueue.VERIFY)
-async def send_verify_message(request: SendVerifyMessageRequest) -> None:
-    with open(
-        "templates/email/verify_message.html", encoding="utf-8"
-    ) as f:
-        html = f.read().replace("{{token}}", request.token)
+async def _send(subject: str, recipients: list[str], html: str, what: str) -> None:
     message = MessageSchema(
-        subject="Alma Event Flow email confirmation",
-        recipients=[request.email],
+        subject=subject,
+        recipients=recipients,
         body=html,
         subtype=MessageType.html,
     )
     try:
         await get_fastmail().send_message(message)
     except Exception as e:
-        logger.error("Error sending verify message: %s", e)
+        logger.error("Error sending %s: %s", what, e)
+
+
+@router.subscriber(EmailQueue.VERIFY)
+async def send_verify_message(request: SendVerifyMessageRequest) -> None:
+    html = render_template("verify_message", {"token": request.token})
+    await _send(
+        "Alma Event Flow email confirmation",
+        [request.email],
+        html,
+        "verify message",
+    )
 
 
 @router.subscriber(EmailQueue.RESET)
 async def send_reset_password_message(
     request: SendResetPasswordMessageRequest,
 ) -> None:
-    with open(
-        "templates/email/reset_message.html", encoding="utf-8"
-    ) as f:
-        html = f.read().replace("{{token}}", request.token)
-    message = MessageSchema(
-        subject="Alma Event Flow password reset",
-        recipients=[request.email],
-        body=html,
-        subtype=MessageType.html,
+    html = render_template("reset_message", {"token": request.token})
+    await _send(
+        "Alma Event Flow password reset",
+        [request.email],
+        html,
+        "password reset message",
     )
-    try:
-        await get_fastmail().send_message(message)
-    except Exception as e:
-        logger.error("Error sending password reset message: %s", e)
 
 
 @router.subscriber(EmailQueue.SEND)
@@ -85,16 +84,7 @@ async def send_templated_message(request: SendTemplatedEmailRequest) -> None:
     except Exception as e:
         logger.error("Error rendering template %r: %s", request.template, e)
         return
-    message = MessageSchema(
-        subject=request.subject,
-        recipients=request.recipients,
-        body=html,
-        subtype=MessageType.html,
-    )
-    try:
-        await get_fastmail().send_message(message)
-    except Exception as e:
-        logger.error("Error sending templated message: %s", e)
+    await _send(request.subject, request.recipients, html, "templated message")
 
 
 def _is_expired(item: EmailDeliveryItem) -> bool:

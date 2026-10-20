@@ -5,7 +5,6 @@ from .location import LocationService
 from .member import MemberService
 from .participation import ParticipationService
 from .reward import RewardService
-
 from .role import RoleService
 from .stage import StageService
 

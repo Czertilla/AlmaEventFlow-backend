@@ -586,10 +586,11 @@ async def build_update_notice(
     lines = await describe_changes(previous, request, lang) if previous else []
     if len(lines) > MAX_CHANGE_LINES:
         rest = len(lines) - MAX_CHANGE_LINES
-        lines = lines[:MAX_CHANGE_LINES] + [
+        lines = [
+            *lines[:MAX_CHANGE_LINES],
             await i18n_manager.get(
                 "announcement.changes_more", lang=lang, rest=rest
-            )
+            ),
         ]
     cta = await i18n_manager.get("announcement.update_cta", lang=lang)
     return "\n".join([title, *lines]) + "\n\n" + cta

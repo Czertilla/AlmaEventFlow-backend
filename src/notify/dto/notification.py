@@ -13,7 +13,7 @@ class _ContentSource(Protocol):
     data: dict[str, Any]
 
 
-@dataclass
+@dataclass(frozen=True, slots=True)
 class NotificationContent:
     """Normalized notification content for a single recipient."""
 
