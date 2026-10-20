@@ -44,6 +44,14 @@ class ParticipationRepo(
         )
         return (await self.execute(stmt)).scalar_one()
 
+    async def members_of(
+        self, collective_id: UUID, member_ids: list[UUID]
+    ) -> set[UUID]:
+        stmt = select(MemberORM.id).where(
+            MemberORM.collective_id == collective_id, MemberORM.id.in_(member_ids)
+        )
+        return set((await self.execute(stmt)).scalars().all())
+
     async def active_member_ids(self, collective_id: UUID) -> list[UUID]:
         """Members who attend by default when a collective joins an event."""
         stmt = select(MemberORM.id).where(

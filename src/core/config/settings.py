@@ -170,6 +170,7 @@ class Settings(BaseSettings):
 
     PASS_SECRET: Secret[str] = "SECRET"
     USER_SECRET: Secret[str] = "SECRET"
+    """The defaults are public: ``AppContextManager`` warns while they are in use."""
 
     AUTH_COOKIE_MAX_AGE: int = 3600
     AUTH_COOKIE_NAME: str = "auth"

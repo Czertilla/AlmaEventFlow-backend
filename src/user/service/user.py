@@ -682,7 +682,9 @@ class UserService(BaseService[UserUOW]):
         ip_address: str | None,
     ) -> SessionTokenDTO | None:
         token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
-        stored = await self.uow.refresh_tokens.get_by_token_hash(token_hash)
+        stored = await self.uow.refresh_tokens.get_by_token_hash(
+            token_hash, for_update=True
+        )
         if stored is None:
             return None
         if stored.expires_at < datetime.now(UTC):
@@ -690,6 +692,10 @@ class UserService(BaseService[UserUOW]):
         if stored.is_revoked:
             return None
         if stored.is_used:
+            await self.uow.refresh_tokens.revoke_all_by_session(stored.session_id)
+            return None
+        user = await self.uow.users.get_by_id(stored.user_id)
+        if user is None or not user.is_active:
             await self.uow.refresh_tokens.revoke_all_by_session(stored.session_id)
             return None
         stored.is_used = True

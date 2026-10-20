@@ -16,7 +16,7 @@ from event.dto.participation import (
     ParticipationPatchDTO,
     ParticipationPutDTO,
 )
-from event.exc.event import ParticipationNotExistsException
+from event.exc.event import MemberNotExistsException, ParticipationNotExistsException
 from event.filter.participation import ParticipationFilter
 from event.models.participation import ParticipationORM
 from event.service.attendance import AttendanceService
@@ -126,6 +126,18 @@ class ParticipationService(BaseService[ParticipationUOW]):
             await self._delete(participation_id)
             await uow.commit()
 
+    @required_transaction
+    async def attendees_for(
+        self, collective_id: UUID, member_ids: list[UUID] | None
+    ) -> list[UUID]:
+        """Every active member by default; explicit ids must be the collective's own."""
+        if member_ids is None:
+            return await self.uow.participations.active_member_ids(collective_id)
+        known = await self.uow.participations.members_of(collective_id, member_ids)
+        if known != set(member_ids):
+            raise MemberNotExistsException()
+        return member_ids
+
     async def create_with_attendance(
         self, collective_id: UUID, participation_data: MeParticipationCreateDTO
     ) -> ParticipationDTO:
@@ -138,11 +150,9 @@ class ParticipationService(BaseService[ParticipationUOW]):
                 )
             )
 
-            member_ids = participation_data.member_ids
-            if member_ids is None:
-                member_ids = await uow.participations.active_member_ids(
-                    collective_id
-                )
+            member_ids = await self.attendees_for(
+                collective_id, participation_data.member_ids
+            )
 
             if member_ids:
                 attendance_service = AttendanceService(self.uow)

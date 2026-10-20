@@ -52,8 +52,12 @@ from event.dependency.collective import CollectiveUOWDep
 from event.dependency.me import EventComposeUOWDep, ParticipationComposeUOWDep
 from event.dependency.member import MemberUOWDep
 from event.dependency.principal import (
+    verify_attendance_of_collective,
     verify_collective_principal,
+    verify_member_of_collective,
     verify_member_person,
+    verify_participation_of_collective,
+    verify_role_of_collective,
 )
 from event.dependency.role import RoleUOWDep
 from event.dto.principal import CollectivePrincipalDTO, MemberIdentityDTO
@@ -135,7 +139,7 @@ async def patch_my_collective_member(
     member_id: UUID,
     member_data: MemberPatchData,
     uow: MemberUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_collective_principal),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_member_of_collective),
 ) -> MemberRead:
     result = await MemberService(uow).patch_roles(
         member_id, member_data.to_dto()
@@ -151,7 +155,7 @@ async def delete_my_collective_member(
     collective_id: UUID,
     member_id: UUID,
     uow: MemberUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_collective_principal),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_member_of_collective),
 ) -> None:
     await MemberService(uow).delete(member_id)
 
@@ -198,7 +202,7 @@ async def patch_my_collective_role(
     role_id: UUID,
     role_data: RolePatchData,
     uow: RoleUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_collective_principal),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_role_of_collective),
 ) -> RoleRead:
     result = await RoleService(uow).patch(
         RolePatch(id=role_id, **role_data.model_dump()).to_dto()
@@ -214,7 +218,7 @@ async def delete_my_collective_role(
     collective_id: UUID,
     role_id: UUID,
     uow: RoleUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_collective_principal),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_role_of_collective),
 ) -> None:
     await RoleService(uow).delete(role_id)
 
@@ -295,7 +299,7 @@ async def get_my_collective_attendance(
     collective_id: UUID,
     attendance_id: UUID,
     uow: AttendanceUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_collective_principal),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_attendance_of_collective),
 ) -> AttendanceRead:
     return AttendanceRead.from_dto(
         await AttendanceService(uow).read(attendance_id)
@@ -311,7 +315,7 @@ async def patch_my_collective_attendance(
     attendance_id: UUID,
     attendance_data: AttendancePrincipalPatchData,
     uow: AttendanceUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_collective_principal),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_attendance_of_collective),
 ) -> AttendanceRead:
     result = await AttendanceService(uow).patch(
         AttendancePatch(id=attendance_id, **attendance_data.model_dump()).to_dto()
@@ -327,7 +331,7 @@ async def delete_my_collective_attendance(
     collective_id: UUID,
     attendance_id: UUID,
     uow: AttendanceUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_collective_principal),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_attendance_of_collective),
 ) -> None:
     await AttendanceService(uow).delete(attendance_id)
 
@@ -340,7 +344,7 @@ async def verify_my_collective_attendance(
     collective_id: UUID,
     participation_id: UUID,
     uow: AttendanceUOWDep,
-    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_collective_principal),
+    _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_participation_of_collective),
 ) -> list[AttendanceRead]:
     attendances = await AttendanceService(uow).verify_by_participation(
         participation_id

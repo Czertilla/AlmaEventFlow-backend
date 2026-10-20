@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from sqlalchemy import delete, update
+from sqlalchemy import delete, select, update
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin
@@ -14,8 +14,13 @@ class RefreshTokenRepo(
 ):
     model = Model
 
-    async def get_by_token_hash(self, token_hash: str) -> Model | None:
-        return await self.get_one(Model.token_hash == token_hash)
+    async def get_by_token_hash(
+        self, token_hash: str, *, for_update: bool = False
+    ) -> Model | None:
+        stmt = select(Model).where(Model.token_hash == token_hash)
+        if for_update:
+            stmt = stmt.with_for_update()
+        return (await self.execute(stmt)).unique().scalar_one_or_none()
 
     async def get_active_by_session(self, session_id: UUID) -> list[Model]:
         return await self.get_many(

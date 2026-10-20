@@ -29,6 +29,14 @@ class AttendanceRepo(
     async def search(self, filter, pagination, *, options=None):
         return await super().search(filter, pagination)
 
+    async def collective_id_of(self, attendance_id: UUID) -> UUID | None:
+        stmt = (
+            select(ParticipationORM.collective_id)
+            .join(self.model, self.model.participation_id == ParticipationORM.id)
+            .where(self.model.id == attendance_id)
+        )
+        return (await self.execute(stmt)).scalar_one_or_none()
+
     async def of_participation(self, participation_id: UUID) -> list[Model]:
         stmt = select(self.model).where(
             self.model.participation_id == participation_id

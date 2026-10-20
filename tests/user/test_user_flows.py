@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import time
+from typing import Any
 from uuid import UUID, uuid4
 
 import httpx
@@ -373,6 +374,20 @@ async def test_refresh_rotates_the_token_and_detects_reuse(
     assert second_refresh != first_refresh
     assert replay.status_code == 401
     assert replay.json()["detail"] == "INVALID_REFRESH_TOKEN"
+
+
+async def test_a_deactivated_account_cannot_refresh(
+    client: httpx.AsyncClient, user_engine: AsyncEngine
+) -> None:
+    await _register(client)
+    await _login(client)
+    async with user_engine.begin() as conn:
+        await conn.execute(text('UPDATE "user" SET is_active = false'))
+
+    refreshed = await client.post(f"{JWT_PREFIX}/refresh")
+
+    assert refreshed.status_code == 401
+    assert refreshed.json()["detail"] == "INVALID_REFRESH_TOKEN"
 
 
 async def test_refresh_without_a_cookie_is_rejected(
@@ -795,7 +810,7 @@ async def test_a_refreshed_token_carries_the_person_linked_meanwhile(
     await _sql(user_engine, 'UPDATE "user" SET is_verified = true')
     login = await _login(client)
     person_id = uuid4()
-    unverified = {"verify_signature": False}
+    unverified: Any = {"verify_signature": False}
 
     before = jwt.decode(login.json()["access_token"], options=unverified)
     await UserService(UserUOW(user_sessionmaker)).apply_link(
