@@ -447,6 +447,12 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
 - Time in announcements is a `<tg-time>` entity (each reader sees their own zone); delivery falls
   back to plain text and to link-less buttons when Telegram rejects either. Ephemeral replies
   (`reply_to_sender`) are for hints and refusals only and fall back to an ordinary reply.
+- **The text inside `<tg-time>` is a fallback the bot formats itself**, so it must not depend on the
+  host zone: `core/utils/tz.py` (`as_aware`, `localize`) reads a naive datetime as UTC and shows it in
+  the stage's `timezone`, else in `DISPLAY_TIMEZONE` (IANA name, unset = the value's own zone). The
+  `unix` attribute comes from `as_aware(...).timestamp()`, never from a naive `.timestamp()`. The
+  event service's text notifications go through the same helper; set `DISPLAY_TIMEZONE` for `bot` and
+  `event` (or `aef`) when users live in one zone.
 - An announcement is a **rich message** (Bot API 10.1, `sendRichMessage`; `build_announcement_rich`
   → `TelegramDeliveryItem.rich_html`): a stage is one `▫️ time <b>name</b>` line (the same
   `announcement.stage_line` phrase as the text fallback, time first so the ranges start at one
