@@ -104,17 +104,55 @@ sharing one codebase and one dependency-resolution graph:
 
 ## Profile (`src/profile`)
 
-- A user without a person creates their own: `POST /profile/v2/persons/my` creates the row, then asks
-  `user` over RPC (`rpc.user.link-person`, `LinkPersonRequest`) to attach it to the caller's account;
-  `user` upserts its `person` projection in the same transaction as the link, so the later
-  `person-created` event finds the row (`UserPersonEventService._create` is an upsert). `person-created`
-  is published only after the link. A refused link (`RpcError`) deletes the person again and answers with
-  the refusal; an unanswered one keeps the person and announces it, since the link may have happened.
-  The id the token carries changes only at the next refresh, so the client refreshes after the call.
-- The user's own data goes through `/my` endpoints: v1 for person, profile and contacts, v2
-  (`/profile/v2/students/my`) for the student card, which has no mutation open to a non-superuser in v1.
-  A student card needs the profile first (`PROFILE_NOT_FOUND`), the profile is made with `PUT
-  /profile/v1/profiles/my`. Passports stay for superusers until their storage and encryption are designed.
+- **`profile` owns the link of an account with its person** (`person_account`: `person_id` primary
+  key, unique `user_id`). `user` still signs the JWT (`sub`/`per` carry `person_id`) and every other
+  service trusts it; `user` follows profile through the state event `person-link-changed`
+  (`PersonLinkData`, `user/api/kafka/sub/link.py`, `UserService.apply_link`), which upserts its
+  `person` projection, moves the person off another holder and announces `account.updated`. Profile
+  reads the identity of the caller for personal data from its own table (`CallerPersonDep`,
+  `RequiredPersonDep`); a JWT whose `per` disagrees makes it announce the link again (throttled,
+  `PersonAccountService.announce`), and a person the token claims but profile has no link for is a
+  409 `ACCOUNT_LINK_OUT_OF_SYNC`. The event goes out once per account, keyed by `user_id`
+  (`on_person_link_changed`), so Kafka keeps the events of one account in order. `user` applies it
+  asynchronously: after the first save of a profile the UI asks `GET /user/v1/users/me` until the
+  account shows the person (`auth.refreshWhenLinked`, 3 s at most) and only then refreshes the token,
+  or the new token would come without `per`.
+- `user` asks profile for a link over `rpc.profile.link-account` (`LinkAccountRequest`; `replace` is
+  the admin relink). Registration with an invite still succeeds when profile does not answer (the
+  account stays unlinked, a warning is logged); the endpoints that need the link answer 503
+  `PROFILE_SERVICE_UNAVAILABLE`. `POST /profile/v1/persons` is superuser-only and deleting a person
+  announces the unlink first. **Run `python -m profile.bootstrap.links` once before profile serves**:
+  it copies the links the user database already has; nothing runs it by itself.
+- **Every change of the link is kept** in `person_account_history` (append-only; no FK, so a row
+  outlives the person): the account (`user_id`), `old_person_id` and `new_person_id`, the `action`
+  (`linked`, `replaced`, `unlinked`, derived from the two ids by `PersonLinkAction.of`), the `source`
+  (`core.enum.profile.PersonLinkSource`: `own_profile`, `invite`, `admin`, `person_deleted`,
+  `bootstrap`), `actor_id` (the account that asked, none for the system) and `created_at`. It is
+  written in the transaction of the change by `PersonAccountHistoryRepo.record` (`_link`,
+  `MyProfileService.create`, `PersonService.delete`, the bootstrap job), so a new code path that
+  touches `person_account` must record too. `LinkAccountRequest` carries `source` and `actor_id`;
+  `user` fills them (the account itself for an invite, the admin for a relink). A repeated request
+  that changes nothing and a refused one leave no row. A trigger rejects `UPDATE` and `DELETE` of its
+  rows (`TRUNCATE` and the owner of the table, who can drop the trigger, are not stopped). Superusers
+  read it at `GET /profile/v2/account-links/history` (newest first; filters `user_id`, `person_id`,
+  which matches either end of a change, `actor_id`, `action`, `source`, `created_at__gte|lte`). The
+  history of access to sensitive data is meant to sit next to it.
+- **The own profile is one aggregate**: `GET/POST/PUT /profile/v2/profiles/my` (`MyProfileWrite`,
+  `MyProfileRead`, `service/my_profile.py`) writes person, profile, student card, diet, workplace and
+  contacts in one transaction. A second `POST` is 403 `PROFILE_ALREADY_EXISTS`. `PUT` replaces: a
+  contact that carries its `id` is kept, one left out is deleted, `student: null` removes the card.
+  Every contact type has exactly one main contact (`main_flags`). The user's UI knows an account and a
+  profile, never a person.
+- **Reference find-or-create** (`POST /profile/v2/{universities,faculties,student-degrees,
+  student-groups,diets,organizations}`, `service/reference.py`): a row is the same one when its
+  normalised name is (`core.utils.names.normalize_name`, case-insensitive), a group within its
+  faculty, a faculty within its university. University, faculty and organization belong to `org`, so
+  profile asks it over `rpc.org.*` (`OrgRPC`, `org/api/kafka/sub/reference.py`) and projects the answer
+  into its own `organization` table; `ensure_organizations` fetches a missing one lazily
+  (`get-organization`). The UI sends its drafts only on submit, so an abandoned form leaves nothing.
+  Any verified user may create them and the only dedupe is the name (no unique index): watch it for spam.
+- The old `/my` endpoints stay: v1 for person, profile and contacts, v2 `/profile/v2/students/my` for
+  the student card. Passports stay for superusers until their storage and encryption are designed.
 
 ## Event-driven sync between services (EDA)
 
@@ -445,7 +483,8 @@ is a defect, not a style choice.
   `ui-option-icon` when the option has an `icon`), `ui-select-pill`
   (+ `--sm`, `--set`: the compact select of a toolbar, with a leading icon and room for a
   direction button) and the `ui-pop` transition,
-  `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-chips` and `ui-chip` (+ `--active`),
+  `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-help` (the round «?» button of a hint,
+  drawn by `common/HelpTip`, its bubble is `ui-help-tip`), `ui-chips` and `ui-chip` (+ `--active`),
   `ui-btn` (+ `--primary`, `--ghost`, `--sm`); `ui-card`, `ui-card-head` and `ui-card-title` (a section
   card; `HomePage`'s own `.section-card` is a copy of it, see the debt below), `ui-count` (the number
   badge in a card head) and `ui-banner` (a tinted line with a close button: the day picked on a
@@ -471,14 +510,14 @@ is a defect, not a style choice.
 - **Fields** — `common/UiField` draws the box, the border with the label on it (the label sits inside
   an empty field, floats onto the border with a gap cut in it on focus or when there is a value, and
   is always floated where something is always shown), the error, hint and counter lines and the
-  `prefix`/`suffix` slots. On top of it: `UiInput`, `UiTextarea`, `UiSelect` (a custom
+  `prefix`/`suffix` slots and the `help` button (`HelpTip` before the suffix). On top of it: `UiInput`, `UiTextarea`, `UiSelect` (a custom
   dropdown on `useSelect`, see Dropdowns below), `PasswordField`,
   `DateTimeField`, `EntityPickerField` (search a reference, shows the pick as a value),
-  `admin/SearchPicker`, `geo/LocationField` and `geo/AddressSearchSelect`.
+  `admin/SearchPicker` (+ `creatable`, `browse`, `locked`), `geo/LocationField` and `geo/AddressSearchSelect`.
 - **Shared components** — `frontend/src/components/common/` and friends: `DateTimeField` (built on
   `TimeSpinner` and `TimeDrum`), `TimestampsMeta`, `event/StageFields` (one stage of an event, used
   by the create form and the event page), `common/SlidingTabs` (a row of tabs whose
-  active pill slides to the chosen one; the principal panel uses it), `common/UiSelectPill`,
+  active pill slides to the chosen one; a tab takes `badge`, `invalid` and the list `shake`; the principal panel and the profile form use it), `common/UiSelectPill`,
   `event/EventCreateModal` (the new-event form, opened from the events list and the dashboard),
   `event/EventEditModal` and `event/EventStagesModal` (the event and its stages, shared by the
   event page and the admin: the caller passes the API adapter, `save` or `StageApi`),
@@ -494,9 +533,7 @@ is a defect, not a style choice.
   and `MemberEditorModal` / `MemberDeleteAlert`, the one add/edit dialog and delete confirmation
   shared by the member list and the profile), `collective/CollectiveEventList` and
   `CollectiveMemberList`, `common/PageState` (the error or not-found card with actions) and
-  `common/BackLink`, `profile/PersonFile` (the personal file: person, profile, student card and
-  contacts; the caller passes a `PersonFileApi` from `profile/personFileApi`: `myPersonFileApi` for
-  the user's own file, `adminPersonFileApi(personId)` for the admin dossier) and
+  `common/BackLink`, `profile/PersonFile` (the admin dossier: person, profile, student card and contacts, fed by `adminPersonFileApi(personId)` from `profile/personFileApi`) and
   `calendar/CalendarGrid` (takes `dayMarks`, a list of dots per `yyyy-MM-dd`, to colour the day).
   New screens compose these.
 
@@ -525,6 +562,18 @@ Rules:
   `ui-field-control` class, or put its content in `ui-field-value`) instead of getting its own border.
   A heading over a group of controls (`План мероприятия`, `Роли`) is `ui-field-title`. A message about
   a field (error, hint, counter) goes in its `error`, `hint` and `counter`, not in a `<p>` next to it.
+- **Copy is short and does not hand-hold.** A label, a button or a heading says what it is and the
+  person is trusted to work out the rest: no "Что вы хотите добавить?" under "Добавить контакт", no
+  "Начните вводить…", "Выберите…" or "Нажмите…" as a placeholder, no sentence that repeats the title
+  above it, no subtitle that repeats the tab (the login page has none). A name is the plain Russian
+  one ("Электронная почта", not "Email" or "Адрес почты"; "Имя пользователя", not "Username"). An
+  error says what is wrong in a few words. What is left to explain (what a switch does to other data,
+  who sees the data, why a step is needed) is a `HelpTip`: a round «?» beside the title or inside the
+  field (`help` of `UiField`, `UiInput`, `PasswordField`, `SearchPicker`), text as a prop or as `<p>`s
+  in the slot. A message the person needs to act now (an error, a blocked button, a warning that
+  appears on a change) is not a help: it stays visible as `error` or `hint`. The hints are a setting
+  (`useSettingsStore().showHints`, «Подсказки» on the settings page, on by default): when it is off
+  `HelpTip` draws nothing, so nothing a screen needs may live only in one.
 - **Dates and times** go through `DateTimeField` only: typeable, with the `ДД.ММ.ГГГГ ЧЧ:ММ`
   template always visible, and a picker with a calendar and the two-drum `TimeSpinner`. Never use
   `<input type="date|time|datetime-local">` and never give such a field a placeholder text. A field
@@ -587,9 +636,21 @@ Rules:
   by the share of the declared roster that came, `attended / (attended + absent)` of the day's places
   (`collectiveDays`), and unmarked places only hatch the day. The member profile reached from it goes
   back to the tab through `principalReturnTo`.
-- **A user makes their own personal file** at `/profile/file` (`views/PersonalFilePage.vue`): no person
-  yet means a name form, which posts `/profile/v2/persons/my`; the access token carries the person id,
-  so the page refreshes it (`auth.tryRefresh()`) before it loads the file. Passport data is not in it.
+- **A user makes their own profile** at `/profile/data` (`views/ProfileFormPage.vue`); `/profile/edit`
+  is the account (email, password). One form builds person, profile, student card, diet, workplace and
+  contacts through `/profile/v2/profiles/my` (`stores/myProfile`); the token carries the person id, so
+  the page refreshes it (`auth.tryRefresh()`) after creating. A new profile is one continuous form; an
+  existing one is `SlidingTabs` sections (`utils/profileFormDiff`: `SECTIONS`, the count of changed
+  fields per section as the tab `badge`, a section with a missing required field `invalid` and
+  `shake`n after a failed save), swiped on a phone with `composables/useSwipe` (`data-no-swipe` opts a
+  region out), and one save button for all of them. A reference shared by profiles (university,
+  faculty, group, degree, diet, workplace) is a `SearchPicker` with `creatable` (a typed name nobody
+  has comes out as a `draft`, made by `POST /profile/v2/...` at submit, not before) and `browse` (the
+  list opens on focus); a picked group fills its faculty, university, degree and grade and `locked`
+  closes them. Contacts go through `profile/ContactsEditor` (the "Добавить контакт" selector turns into a
+  field named after the kind and built for it, `utils/contactTypes`; the first contact of a kind becomes
+  the main one, a star in the field tells which is). Passport data is
+  not in it. The admin dossier is `profile/PersonFile` (admin only).
 - **A new primitive** is added to `components.css` and to the list above in the same change.
 - **Sub-pages of the principal and admin panels** (`/principal/members/<id>`, `/admin/persons/<id>`)
   are in-place routes: the layout matches a path prefix and renders the page itself, and a child page
