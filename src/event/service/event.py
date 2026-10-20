@@ -92,6 +92,14 @@ class EventSnapshot:
         )
 
 
+# status/level/type are read through these relationships, which async cannot lazy-load
+_LOOKUP_OPTIONS = (
+    selectinload(EventORM.status_rel),
+    selectinload(EventORM.level_rel),
+    selectinload(EventORM.type_rel),
+)
+
+
 class EventService(BaseService[EventUOW]):
     @staticmethod
     def _orm_to_dto(event: EventORM) -> EventDTO:
@@ -164,6 +172,7 @@ class EventService(BaseService[EventUOW]):
                 ParticipationORM.collective_id == collective_id,
                 EventStatusORM.name == EventStatusEnumV1.template.value,
             )
+            .options(*_LOOKUP_OPTIONS)
         )
         template = (
             (await self.uow.session.execute(stmt)).unique().scalar_one_or_none()
@@ -349,6 +358,7 @@ class EventService(BaseService[EventUOW]):
                     ParticipationORM.collective_id == collective_id,
                     EventStatusORM.name == EventStatusEnumV1.template.value,
                 )
+                .options(*_LOOKUP_OPTIONS)
             )
             events = (
                 (await self.uow.session.execute(stmt)).unique().scalars()
