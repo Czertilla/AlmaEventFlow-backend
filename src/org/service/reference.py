@@ -37,6 +37,7 @@ class ReferenceService(BaseService[ReferenceUOW]):
         await self.uow.session.flush()
         return organization
 
+    @required_transaction
     async def _resolved(
         self, found: OrganizationORM | None, make: OrganizationORM
     ) -> OrganizationRef:
@@ -48,31 +49,44 @@ class ReferenceService(BaseService[ReferenceUOW]):
         await on_organization_created([event])
         return ref
 
+    @required_transaction
+    async def _university(self, name: str) -> OrganizationRef:
+        found = await self.uow.universities.find_by_name(name)
+        return await self._resolved(found, UniversityORM(name=name))
+
+    @required_transaction
+    async def _faculty(self, name: str, university_id: UUID) -> OrganizationRef:
+        if await self.uow.universities.get_by_id(university_id) is None:
+            raise UniversityNotExistsException()
+        found = await self.uow.faculties.find_by_name(name, university_id)
+        return await self._resolved(
+            found, FacultyORM(name=name, university_id=university_id)
+        )
+
+    @required_transaction
+    async def _organization(self, name: str) -> OrganizationRef:
+        found = await self.uow.organizations.find_workplace(name)
+        return await self._resolved(found, OrganizationORM(name=name))
+
+    @required_transaction
+    async def _get(self, organization_id: UUID) -> OrganizationRef:
+        found = await self.uow.organizations.get_by_id(organization_id)
+        if found is None:
+            raise OrganizationNotExistsException()
+        return _ref(found)
+
     async def university(self, name: str) -> OrganizationRef:
-        name = normalize_name(name)
         async with self.uow:
-            found = await self.uow.universities.find_by_name(name)
-            return await self._resolved(found, UniversityORM(name=name))
+            return await self._university(normalize_name(name))
 
     async def faculty(self, name: str, university_id: UUID) -> OrganizationRef:
-        name = normalize_name(name)
         async with self.uow:
-            if await self.uow.universities.get_by_id(university_id) is None:
-                raise UniversityNotExistsException()
-            found = await self.uow.faculties.find_by_name(name, university_id)
-            return await self._resolved(
-                found, FacultyORM(name=name, university_id=university_id)
-            )
+            return await self._faculty(normalize_name(name), university_id)
 
     async def organization(self, name: str) -> OrganizationRef:
-        name = normalize_name(name)
         async with self.uow:
-            found = await self.uow.organizations.find_workplace(name)
-            return await self._resolved(found, OrganizationORM(name=name))
+            return await self._organization(normalize_name(name))
 
     async def get(self, organization_id: UUID) -> OrganizationRef:
         async with self.uow:
-            found = await self.uow.organizations.get_by_id(organization_id)
-            if found is None:
-                raise OrganizationNotExistsException()
-            return _ref(found)
+            return await self._get(organization_id)

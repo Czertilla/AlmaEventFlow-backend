@@ -120,12 +120,10 @@ def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, Any]]:
 
         return record
 
-    for case in CASES.values():
-        for kind in ("created", "updated", "deleted"):
-            monkeypatch.setattr(
-                f"org.service.{case.module}.on_organization_{kind}",
-                recorder(kind),
-            )
+    for kind in ("created", "updated", "deleted"):
+        monkeypatch.setattr(
+            f"org.service.base.on_organization_{kind}", recorder(kind)
+        )
     return calls
 
 

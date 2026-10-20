@@ -44,8 +44,7 @@ async def api(
     async def publish(payload: object) -> None:
         return None
 
-    for module in ("organization", "university", "faculty", "collective"):
-        for kind in ("created", "updated", "deleted"):
-            monkeypatch.setattr(f"org.service.{module}.on_organization_{kind}", publish)
+    for kind in ("created", "updated", "deleted"):
+        monkeypatch.setattr(f"org.service.base.on_organization_{kind}", publish)
     async with api_client(app, org_sessionmaker) as client:
         yield client
