@@ -31,6 +31,12 @@ async def on_person_deleted(person_ids: list[UUID]):
 
 @router.publisher(PersonTopic.LINK_CHANGED)
 async def on_person_link_changed(links: list[PersonLinkData]):
-    await broker.publish(
-        PersonLinkChangedEvent(data=links), PersonTopic.LINK_CHANGED
-    )
+    by_user: dict[UUID, list[PersonLinkData]] = {}
+    for link in links:
+        by_user.setdefault(link.user_id, []).append(link)
+    for user_id, user_links in by_user.items():
+        await broker.publish(
+            PersonLinkChangedEvent(data=user_links),
+            PersonTopic.LINK_CHANGED,
+            key=str(user_id).encode(),
+        )
