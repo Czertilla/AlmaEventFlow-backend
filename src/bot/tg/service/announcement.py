@@ -1,11 +1,9 @@
-import contextlib
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import date, datetime
 from html import escape
 from logging import getLogger
 from typing import Any
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import ValidationError
 
@@ -14,6 +12,7 @@ from bot.tg.text.localization import i18n_manager
 from bot.tg.utils.links import map_url
 from core.schema.message.announcement import AnnouncementRequest, AnnouncementStage
 from core.schema.message.notify import TelegramButton
+from core.utils.tz import as_aware, localize
 
 logger = getLogger(__name__)
 
@@ -85,10 +84,7 @@ def _format_date(value: date, lang: str) -> str:
 
 
 def _localize(value: datetime, tz_name: str | None) -> datetime:
-    if tz_name:
-        with contextlib.suppress(ZoneInfoNotFoundError, ValueError):
-            return value.astimezone(ZoneInfo(tz_name))
-    return value
+    return localize(value, tz_name)
 
 
 def _format_time(value: datetime, tz_name: str | None) -> str:
@@ -99,7 +95,7 @@ def _tg_time(value: datetime, fmt: str, fallback: str) -> str:
     """A date/time Telegram shows in each reader's own zone. ``fallback`` is
     what clients without support, and the plain text, show: the time in the
     zone the stage's creator meant."""
-    unix = int(value.timestamp())
+    unix = int(as_aware(value).timestamp())
     return f'<tg-time unix="{unix}" format="{fmt}">{fallback}</tg-time>'
 
 

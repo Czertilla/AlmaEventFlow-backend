@@ -1,11 +1,9 @@
-import contextlib
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from datetime import date, datetime
 from logging import getLogger
 from typing import Any, cast
 from uuid import UUID
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from sqlalchemy import Row, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,6 +15,7 @@ from core.schema.message.notify import NotificationRequest
 from core.uow.sqlalchemy import UnitOfWork
 from core.utils.announcement import send_announcement
 from core.utils.notify import send_notification
+from core.utils.tz import localize
 from event.models.attendance import AttendanceORM
 from event.models.event import EventORM, EventStatusORM
 from event.models.location import LocationORM
@@ -61,13 +60,8 @@ def _format_date(value: date) -> str:
 
 
 def _format_time(value: datetime, tz_name: str | None = None) -> str:
-    """Renders the wall-clock time in ``tz_name`` when given and valid --
-    falling back to whatever zone ``value`` already carries (the DB session's,
-    for a stage with no recorded creator zone) otherwise."""
-    if tz_name:
-        with contextlib.suppress(ZoneInfoNotFoundError, ValueError):
-            value = value.astimezone(ZoneInfo(tz_name))
-    return value.strftime("%H:%M")
+    """Wall-clock time in ``tz_name``; see ``core.utils.tz.localize`` without one."""
+    return localize(value, tz_name).strftime("%H:%M")
 
 
 def _format_date_time(
