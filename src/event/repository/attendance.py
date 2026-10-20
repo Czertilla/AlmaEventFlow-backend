@@ -13,6 +13,7 @@ from core.database.sqlalchemy.mixins.repositories import (
 )
 from event.models.attendance import AttendanceORM as Model
 from event.models.event import EventORM, EventStatusORM, EventTypeORM
+from event.models.member import MemberORM
 from event.models.participation import ParticipationORM
 
 
@@ -27,6 +28,29 @@ class AttendanceRepo(
 
     async def search(self, filter, pagination, *, options=None):
         return await super().search(filter, pagination)
+
+    async def of_participation(self, participation_id: UUID) -> list[Model]:
+        stmt = select(self.model).where(
+            self.model.participation_id == participation_id
+        )
+        return list((await self.execute(stmt)).unique().scalars().all())
+
+    async def of_person_in_event(
+        self, person_id: UUID, event_id: UUID
+    ) -> list[Model]:
+        stmt = (
+            select(self.model)
+            .join(
+                ParticipationORM,
+                self.model.participation_id == ParticipationORM.id,
+            )
+            .join(MemberORM, MemberORM.id == self.model.member_id)
+            .where(
+                ParticipationORM.event_id == event_id,
+                MemberORM.person_id == person_id,
+            )
+        )
+        return list((await self.execute(stmt)).unique().scalars().all())
 
     def _member_scope(
         self,

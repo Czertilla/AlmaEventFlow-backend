@@ -191,6 +191,54 @@ class MyProfileService(BaseService[MyProfileUOW]):
         async with self.uow:
             return await self._read(person_id)
 
+    @required_transaction
+    async def _create(
+        self,
+        user_id: UUID,
+        data: MyProfileWriteDTO,
+        claimed_person_id: UUID | None,
+    ) -> MyProfileDTO:
+        await self._ensure_free(user_id, claimed_person_id)
+        await self._check_references(data)
+        person = await self.uow.persons.add_n_return(
+            {
+                "surname": data.surname,
+                "name": data.name,
+                "patronymic": data.patronymic,
+            }
+        )
+        await self.uow.account_links.add_one(
+            {"person_id": person.id, "user_id": user_id}
+        )
+        await self.uow.account_history.record(
+            user_id,
+            old_person_id=None,
+            new_person_id=person.id,
+            source=PersonLinkSource.OWN_PROFILE,
+            actor_id=user_id,
+        )
+        await self._write_profile(person.id, data)
+        return await self._read(person.id)
+
+    @required_transaction
+    async def _replace(
+        self, person_id: UUID, data: MyProfileWriteDTO
+    ) -> MyProfileDTO:
+        await self._check_references(data)
+        person = await self.uow.persons.update_one(
+            person_id,
+            {
+                "surname": data.surname,
+                "name": data.name,
+                "patronymic": data.patronymic,
+            },
+            flush=True,
+        )
+        if person is None:
+            raise PersonNotExistsException()
+        await self._write_profile(person_id, data)
+        return await self._read(person_id)
+
     async def create(
         self,
         user_id: UUID,
@@ -201,27 +249,7 @@ class MyProfileService(BaseService[MyProfileUOW]):
         await self._ensure_organizations(data)
         try:
             async with self.uow as uow:
-                await self._ensure_free(user_id, claimed_person_id)
-                await self._check_references(data)
-                person = await self.uow.persons.add_n_return(
-                    {
-                        "surname": data.surname,
-                        "name": data.name,
-                        "patronymic": data.patronymic,
-                    }
-                )
-                await self.uow.account_links.add_one(
-                    {"person_id": person.id, "user_id": user_id}
-                )
-                await self.uow.account_history.record(
-                    user_id,
-                    old_person_id=None,
-                    new_person_id=person.id,
-                    source=PersonLinkSource.OWN_PROFILE,
-                    actor_id=user_id,
-                )
-                await self._write_profile(person.id, data)
-                result = await self._read(person.id)
+                result = await self._create(user_id, data, claimed_person_id)
                 await uow.commit()
         except IntegrityError as exc:
             raise ProfileAlreadyExistsException() from exc
@@ -234,20 +262,7 @@ class MyProfileService(BaseService[MyProfileUOW]):
     async def replace(self, person_id: UUID, data: MyProfileWriteDTO) -> MyProfileDTO:
         await self._ensure_organizations(data)
         async with self.uow as uow:
-            await self._check_references(data)
-            person = await self.uow.persons.update_one(
-                person_id,
-                {
-                    "surname": data.surname,
-                    "name": data.name,
-                    "patronymic": data.patronymic,
-                },
-                flush=True,
-            )
-            if person is None:
-                raise PersonNotExistsException()
-            await self._write_profile(person_id, data)
-            result = await self._read(person_id)
+            result = await self._replace(person_id, data)
             await uow.commit()
         await on_person_updated([self._event(result)])
         return result

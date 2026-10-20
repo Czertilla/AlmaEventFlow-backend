@@ -2,7 +2,6 @@ from logging import getLogger
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import delete, select
 from sqlalchemy.orm import selectinload
 
 from core.dto.base import dto_dict
@@ -19,8 +18,7 @@ from event.dto.member import (
 from event.dto.role import RolePreviewDTO
 from event.exc.event import MemberNotExistsException
 from event.filter.member import MemberFilter
-from event.models.member import MemberORM, MemberRoleAssociation
-from event.models.role import RoleORM
+from event.models.member import MemberORM
 from event.uow.member import MemberUOW
 
 logger = getLogger(__name__)
@@ -51,21 +49,14 @@ class MemberService(BaseService[MemberUOW]):
 
     @required_transaction
     async def _read(self, member_id: UUID) -> MemberORM | None:
-        member = await self.uow.members.get_by_id(
-            member_id, options=(selectinload(MemberORM.roles),)
-        )
-        return member
+        return await self.uow.members.with_roles(member_id)
 
     @required_transaction
     async def _update(
         self, member_id: UUID, member_data: dict, *, flush: bool = False
     ) -> MemberORM:
         await self.uow.members.update_one(member_id, member_data, flush)
-        member = await self.uow.session.scalar(
-            select(MemberORM)
-            .options(selectinload(MemberORM.roles))
-            .where(MemberORM.id == member_id)
-        )
+        member = await self.uow.members.with_roles(member_id)
         if member is None:
             raise MemberNotExistsException()
         return member
@@ -88,42 +79,16 @@ class MemberService(BaseService[MemberUOW]):
 
         roles = member_data.pop("roles", None)
         if roles is not None:
-            await self.uow.session.execute(
-                delete(MemberRoleAssociation).where(
-                    MemberRoleAssociation.member_id == member_id
-                )
+            await self.uow.members.replace_roles(
+                member_id, member.collective_id, roles
             )
-            if roles:
-                role_objs = (
-                    (
-                        await self.uow.session.execute(
-                            select(RoleORM).where(RoleORM.id.in_(roles))
-                        )
-                    )
-                    .unique()
-                    .scalars()
-                    .all()
-                )
-                self.uow.session.add_all(
-                    [
-                        MemberRoleAssociation(role_id=r.id, member_id=member_id)
-                        for r in role_objs
-                        if r.collective_id == member.collective_id
-                    ]
-                )
-            await self.uow.session.flush()
 
         if member_data:
             await self.uow.members.update_one(
                 member_id, member_data, flush=False
             )
 
-        member = await self.uow.session.scalar(
-            select(MemberORM)
-            .options(selectinload(MemberORM.roles))
-            .where(MemberORM.id == member_id)
-        )
-        return member
+        return await self.uow.members.with_roles(member_id)
 
     async def create(self, member_create: MemberCreateDTO) -> MemberDTO:
         async with self.uow as uow:

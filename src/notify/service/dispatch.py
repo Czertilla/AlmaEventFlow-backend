@@ -66,6 +66,7 @@ class NotificationService(BaseService[NotifyUOW]):
         await self._enqueue_batches(notification.id, drafts)
         return True
 
+    @required_transaction
     async def _resolve_user_ids(
         self, request: NotificationRequest
     ) -> list[UUID]:
@@ -190,6 +191,7 @@ class NotificationService(BaseService[NotifyUOW]):
             }
         )
 
+    @required_transaction
     async def _targets(
         self, transport: BaseTransport, ctx: PlanContext
     ) -> list[DeliveryTarget]:
@@ -203,10 +205,12 @@ class NotificationService(BaseService[NotifyUOW]):
             return []
         return [DeliveryTarget(client=None)]
 
+    @required_transaction
     async def _account(self, user_id: UUID) -> AccountDTO | None:
         row = await self.uow.accounts.get_by_id(user_id)
         return dto_from_orm(row, AccountDTO) if row is not None else None
 
+    @required_transaction
     async def _resolve_prefs(
         self, user_id: UUID
     ) -> dict[TransportTypeEnum, bool]:

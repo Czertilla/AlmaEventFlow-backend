@@ -3,7 +3,6 @@ import datetime
 from logging import getLogger
 from uuid import UUID
 
-from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from core.dto.base import dto_dict, dto_from_orm
@@ -37,12 +36,8 @@ from event.exc.event import (
 from event.filter.event import EventFilter
 from event.models.calendar import CalendarChangeLogORM
 from event.models.event import (
-    EventLevelORM,
     EventORM,
-    EventStatusORM,
-    EventTypeORM,
 )
-from event.models.member import MemberORM
 from event.models.participation import ParticipationORM
 from event.service.attendance import AttendanceService
 from event.service.notification import (
@@ -128,46 +123,26 @@ class EventService(BaseService[EventUOW]):
                 detail=ErrorCode.EVENT_ACTIVE_REQUIRES_DATE,
             )
 
+    @required_transaction
     async def _resolve_status_id(self, status: EventStatusEnumV1) -> int:
-        stmt = select(EventStatusORM.id).where(
-            EventStatusORM.name == status.value
-        )
-        result = await self.uow.session.execute(stmt)
-        return result.scalar_one()
+        return await self.uow.events.status_id(status.value)
 
+    @required_transaction
     async def _resolve_level_id(self, level: EventLevelEnumV1) -> int:
-        stmt = select(EventLevelORM.id).where(EventLevelORM.name == level.value)
-        result = await self.uow.session.execute(stmt)
-        return result.scalar_one()
+        return await self.uow.events.level_id(level.value)
 
+    @required_transaction
     async def _resolve_type_id(self, type: EventTypeEnumV1) -> int:
-        stmt = select(EventTypeORM.id).where(EventTypeORM.name == type.value)
-        result = await self.uow.session.execute(stmt)
-        return result.scalar_one()
+        return await self.uow.events.type_id(type.value)
 
+    @required_transaction
     async def _resolve_template(
         self, template_id: UUID, collective_id: UUID
     ) -> EventORM:
-        """Scoped to the caller's own collective (via the same
-        ``ParticipationORM`` join every collective-owned query uses) so a
-        principal can't probe another collective's event ids through this
-        endpoint -- not found, wrong collective, and "isn't a template" all
-        collapse to the same 404."""
-        stmt = (
-            select(EventORM)
-            .join(
-                ParticipationORM, ParticipationORM.event_id == EventORM.id
-            )
-            .join(EventStatusORM, EventStatusORM.id == EventORM.status_id)
-            .where(
-                EventORM.id == template_id,
-                ParticipationORM.collective_id == collective_id,
-                EventStatusORM.name == EventStatusEnumV1.template.value,
-            )
-        )
-        template = (
-            (await self.uow.session.execute(stmt)).unique().scalar_one_or_none()
-        )
+        """Scoped to the caller's own collective so a principal cannot probe
+        another collective's event ids: missing, foreign and "not a template"
+        all answer the same 404."""
+        template = await self.uow.events.get_template(template_id, collective_id)
         if template is None:
             raise EventTemplateNotExistsException()
         return template
@@ -331,28 +306,9 @@ class EventService(BaseService[EventUOW]):
     async def get_templates_for_collective(
         self, collective_id: UUID
     ) -> list[EventDTO]:
-        """The list a principal picks from when starting a new event
-        ``from`` a template -- same collective-scoping join as everywhere
-        else, filtered to ``status=template`` instead of the active/trigger
-        statuses."""
+        """The templates a principal picks from when starting a new event."""
         async with self.uow:
-            stmt = (
-                select(EventORM)
-                .join(
-                    ParticipationORM,
-                    ParticipationORM.event_id == EventORM.id,
-                )
-                .join(
-                    EventStatusORM, EventStatusORM.id == EventORM.status_id
-                )
-                .where(
-                    ParticipationORM.collective_id == collective_id,
-                    EventStatusORM.name == EventStatusEnumV1.template.value,
-                )
-            )
-            events = (
-                (await self.uow.session.execute(stmt)).unique().scalars()
-            )
+            events = await self.uow.events.templates_of(collective_id)
             return [self._orm_to_dto(event) for event in events]
 
     async def _validate_patch_active_date(
@@ -492,23 +448,9 @@ class EventService(BaseService[EventUOW]):
 
             member_ids = event_data.member_ids
             if member_ids is None:
-                rows = (
-                    (
-                        await uow.session.execute(
-                            select(MemberORM).where(
-                                MemberORM.collective_id
-                                == event_data.collective_id,
-                                MemberORM.is_active,
-                            )
-                        )
-                    )
-                    .unique()
-                    .scalars()
-                    .all()
+                member_ids = await uow.participations.active_member_ids(
+                    event_data.collective_id
                 )
-                member_ids = [m.id for m in rows]
-            elif len(member_ids) == 0:
-                member_ids = []
 
             if member_ids:
                 attendance_service = AttendanceService(self.uow)
@@ -531,17 +473,14 @@ class EventService(BaseService[EventUOW]):
                 participation_id=participation_orm.id,
             )
 
+    @required_transaction
     async def _require_collective_participation(
         self, collective_id: UUID, event_id: UUID
     ) -> ParticipationORM:
-        """Руководитель действует от лица коллектива только если тот участвует."""
-        stmt = select(ParticipationORM).where(
-            ParticipationORM.collective_id == collective_id,
-            ParticipationORM.event_id == event_id,
+        """A principal acts for a collective only while it takes part in the event."""
+        participation = await self.uow.participations.get_of_collective(
+            collective_id, event_id
         )
-        participation = (
-            await self.uow.session.execute(stmt)
-        ).scalar_one_or_none()
         if not participation:
             raise VancedHTTPException(
                 status_code=403,
@@ -620,6 +559,26 @@ class EventService(BaseService[EventUOW]):
             await self._publish_activation(old, event)
         return result
 
+    @required_transaction
+    async def _log_removal(
+        self, collective_id: UUID, event_id: UUID, participation_id: UUID
+    ) -> bool:
+        """Records the removal for the calendar feeds; False when the event is gone."""
+        event = await self.uow.events.get_by_id(event_id)
+        if event is None:
+            return False
+        self.uow.session.add(
+            CalendarChangeLogORM(
+                change_type=CalendarChangeTypeEnum.removed.value,
+                event_id=event_id,
+                collective_id=collective_id,
+                participation_id=participation_id,
+                event_name=event.name,
+                event_date=event.date,
+            )
+        )
+        return True
+
     async def delete_for_collective(
         self, collective_id: UUID, event_id: UUID
     ) -> None:
@@ -627,24 +586,7 @@ class EventService(BaseService[EventUOW]):
             participation = await self._require_collective_participation(
                 collective_id, event_id
             )
-            event = await self.uow.events.get_by_id(event_id)
-            if event is not None:
-                logger.debug(
-                    "Recording calendar removal log for event %s "
-                    "(collective %s)",
-                    event_id,
-                    collective_id,
-                )
-                self.uow.session.add(
-                    CalendarChangeLogORM(
-                        change_type=CalendarChangeTypeEnum.removed.value,
-                        event_id=event_id,
-                        collective_id=collective_id,
-                        participation_id=participation.id,
-                        event_name=event.name,
-                        event_date=event.date,
-                    )
-                )
+            await self._log_removal(collective_id, event_id, participation.id)
             await self._delete(event_id)
             await uow.commit()
 
@@ -665,32 +607,15 @@ class EventService(BaseService[EventUOW]):
             await uow.participations.delete_one(participation.id)
             await uow.session.flush()
 
-            remaining = (
-                await uow.session.execute(
-                    select(func.count())
-                    .select_from(ParticipationORM)
-                    .where(ParticipationORM.event_id == event_id)
+            if await uow.participations.count_for_event(event_id) == 0:
+                logger.debug(
+                    "Last collective %s left event %s; deleting event",
+                    collective_id,
+                    event_id,
                 )
-            ).scalar_one()
-
-            if remaining == 0:
-                event = await uow.events.get_by_id(event_id)
-                if event is not None:
-                    logger.debug(
-                        "Last collective %s left event %s; deleting event",
-                        collective_id,
-                        event_id,
-                    )
-                    uow.session.add(
-                        CalendarChangeLogORM(
-                            change_type=CalendarChangeTypeEnum.removed.value,
-                            event_id=event_id,
-                            collective_id=collective_id,
-                            participation_id=participation.id,
-                            event_name=event.name,
-                            event_date=event.date,
-                        )
-                    )
+                if await self._log_removal(
+                    collective_id, event_id, participation.id
+                ):
                     await self._delete(event_id)
             await uow.commit()
 

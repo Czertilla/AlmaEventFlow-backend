@@ -1,7 +1,7 @@
 import datetime
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -39,3 +39,11 @@ class LocationRepo(
             (location_id, used)
             for location_id, used in (await self.execute(stmt)).all()
         ]
+
+    async def detach_events(self, location_id: UUID) -> None:
+        stmt = (
+            update(EventORM)
+            .where(EventORM.location_id == location_id)
+            .values(location_id=None)
+        )
+        await self.execute(stmt)

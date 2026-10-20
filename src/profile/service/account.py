@@ -95,10 +95,10 @@ class PersonAccountService(BaseService[PersonUOW]):
     async def resolve(self, user: UserJWT) -> UUID | None:
         person_id = await self.person_of(user.id)
         if person_id is not None and person_id != user.person_id:
-            await self._refute(user.id)
+            await self.reannounce(user.id)
         return person_id
 
-    async def _refute(self, user_id: UUID) -> None:
+    async def reannounce(self, user_id: UUID) -> None:
         now = monotonic()
         if now - _announced.get(user_id, -REANNOUNCE_INTERVAL) < REANNOUNCE_INTERVAL:
             return

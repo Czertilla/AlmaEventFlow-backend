@@ -132,7 +132,7 @@ class AddressService(BaseService[AddressUOW]):
             result = self._to_dto(await self._update(address_patch.id, address_data))
             await uow.commit()
         await on_address_updated([AddressData(id=result.id, name=result.name)])
-        await self._tell_locations(result.id)
+        await self.tell_locations(result.id)
         return result
 
     async def put(self, address_put: AddressPutDTO) -> AddressDTO:
@@ -141,10 +141,10 @@ class AddressService(BaseService[AddressUOW]):
             result = self._to_dto(await self._read(upserted.id))
             await uow.commit()
         await on_address_updated([AddressData(id=result.id, name=result.name)])
-        await self._tell_locations(result.id)
+        await self.tell_locations(result.id)
         return result
 
-    async def _tell_locations(self, address_id: UUID) -> None:
+    async def tell_locations(self, address_id: UUID) -> None:
         """The locations at an address show its name and point elsewhere."""
         async with self.uow:
             rows = await self.uow.locations.anchored_to(address_id)

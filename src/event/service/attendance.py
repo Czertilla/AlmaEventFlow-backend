@@ -1,7 +1,6 @@
 from logging import getLogger
 from uuid import UUID
 
-from sqlalchemy import select
 
 from core.dto.base import dto_dict, dto_from_orm
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
@@ -24,8 +23,6 @@ from event.exc.event import (
 )
 from event.filter.attendance import AttendanceFilter
 from event.models.attendance import AttendanceORM
-from event.models.member import MemberORM
-from event.models.participation import ParticipationORM
 from event.service.notification import notify_event_targets
 from event.uow.attendance import AttendanceUOW
 from event.uow.me import ParticipationComposeUOW
@@ -167,19 +164,12 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
         self, participation_id: UUID
     ) -> list[AttendanceDTO]:
         async with self.uow as uow:
-            stmt = select(AttendanceORM).where(
-                AttendanceORM.participation_id == participation_id
-            )
-            result = await uow.session.execute(stmt)
-            attendances = result.unique().scalars().all()
-
-            for att in attendances:
+            for att in await uow.attendances.of_participation(participation_id):
                 att.is_verified = True
 
             await uow.commit()
 
-            result = await uow.session.execute(stmt)
-            attendances = result.unique().scalars().all()
+            attendances = await uow.attendances.of_participation(participation_id)
             return [self._to_dto(att) for att in attendances]
 
     async def get_mine_for_event(
@@ -191,19 +181,7 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
         knowing member_id/attendance_id — a person is usually in one
         collective participating in a given event, but not guaranteed to be."""
         async with self.uow as uow:
-            stmt = (
-                select(AttendanceORM)
-                .join(
-                    ParticipationORM,
-                    AttendanceORM.participation_id == ParticipationORM.id,
-                )
-                .join(MemberORM, MemberORM.id == AttendanceORM.member_id)
-                .where(
-                    ParticipationORM.event_id == event_id,
-                    MemberORM.person_id == person_id,
-                )
-            )
-            rows = (await uow.session.execute(stmt)).unique().scalars().all()
+            rows = await uow.attendances.of_person_in_event(person_id, event_id)
             return [self._to_dto(row) for row in rows]
 
     async def search(

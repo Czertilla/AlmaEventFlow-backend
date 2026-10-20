@@ -9,7 +9,7 @@ from profile.utils import org
 from uuid import UUID
 
 from core.dto.base import dto_from_orm
-from core.service.base import BaseService
+from core.service.base import BaseService, required_transaction
 from core.utils.names import normalize_name
 
 
@@ -28,57 +28,78 @@ async def ensure_organizations(
 
 
 class ReferenceService(BaseService[ReferenceUOW]):
+    @required_transaction
     async def _project(self, ref: OrganizationRefDTO) -> OrganizationRefDTO:
-        async with self.uow:
-            await self.uow.organizations.upsert({"id": ref.id, "type": ref.type})
-            await self.uow.commit()
+        await self.uow.organizations.upsert({"id": ref.id, "type": ref.type})
+        return ref
+
+    @required_transaction
+    async def _diet(self, name: str) -> DietDTO:
+        found = await self.uow.diets.find_by_name(name)
+        if found is None:
+            found = await self.uow.diets.add_n_return({"name": name})
+        return dto_from_orm(found, DietDTO)
+
+    @required_transaction
+    async def _degree(self, name: str) -> StudentDegreeDTO:
+        found = await self.uow.student_degrees.find_by_name(name)
+        if found is None:
+            found = await self.uow.student_degrees.add_n_return({"name": name})
+        return dto_from_orm(found, StudentDegreeDTO)
+
+    @required_transaction
+    async def _group(
+        self, name: str, degree_id: int, faculty_id: UUID, grade: int
+    ) -> StudentGroupDTO:
+        found = await self.uow.student_groups.find(name, faculty_id)
+        if found is None:
+            if not await self.uow.student_degrees.exists_id(degree_id):
+                raise StudentDegreeNotExistsException()
+            found = await self.uow.student_groups.add_n_return(
+                {
+                    "name": name,
+                    "degree_id": degree_id,
+                    "faculty_id": faculty_id,
+                    "grade": grade,
+                }
+            )
+        return dto_from_orm(found, StudentGroupDTO)
+
+    async def project(self, ref: OrganizationRefDTO) -> OrganizationRefDTO:
+        async with self.uow as uow:
+            ref = await self._project(ref)
+            await uow.commit()
         return ref
 
     async def diet(self, name: str) -> DietDTO:
-        name = normalize_name(name)
-        async with self.uow:
-            found = await self.uow.diets.find_by_name(name)
-            if found is None:
-                found = await self.uow.diets.add_n_return({"name": name})
-                await self.uow.commit()
-            return dto_from_orm(found, DietDTO)
+        async with self.uow as uow:
+            result = await self._diet(normalize_name(name))
+            await uow.commit()
+        return result
 
     async def degree(self, name: str) -> StudentDegreeDTO:
-        name = normalize_name(name)
-        async with self.uow:
-            found = await self.uow.student_degrees.find_by_name(name)
-            if found is None:
-                found = await self.uow.student_degrees.add_n_return({"name": name})
-                await self.uow.commit()
-            return dto_from_orm(found, StudentDegreeDTO)
+        async with self.uow as uow:
+            result = await self._degree(normalize_name(name))
+            await uow.commit()
+        return result
 
     async def group(
         self, name: str, degree_id: int, faculty_id: UUID, grade: int
     ) -> StudentGroupDTO:
-        name = normalize_name(name)
         await ensure_organizations(self.uow, [faculty_id])
-        async with self.uow:
-            found = await self.uow.student_groups.find(name, faculty_id)
-            if found is None:
-                if not await self.uow.student_degrees.exists_id(degree_id):
-                    raise StudentDegreeNotExistsException()
-                found = await self.uow.student_groups.add_n_return(
-                    {
-                        "name": name,
-                        "degree_id": degree_id,
-                        "faculty_id": faculty_id,
-                        "grade": grade,
-                    }
-                )
-                await self.uow.commit()
-            return dto_from_orm(found, StudentGroupDTO)
+        async with self.uow as uow:
+            result = await self._group(
+                normalize_name(name), degree_id, faculty_id, grade
+            )
+            await uow.commit()
+        return result
 
     async def university(self, name: str) -> OrganizationRefDTO:
-        return await self._project(await org.resolve_university(normalize_name(name)))
+        return await self.project(await org.resolve_university(normalize_name(name)))
 
     async def faculty(self, name: str, university_id: UUID) -> OrganizationRefDTO:
         ref = await org.resolve_faculty(normalize_name(name), university_id)
-        return await self._project(ref)
+        return await self.project(ref)
 
     async def organization(self, name: str) -> OrganizationRefDTO:
-        return await self._project(await org.resolve_organization(normalize_name(name)))
+        return await self.project(await org.resolve_organization(normalize_name(name)))

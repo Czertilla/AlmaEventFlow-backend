@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import selectinload
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
@@ -51,6 +51,38 @@ class MemberRepo(
         )
         return (await self.execute(stmt)).unique().scalar_one_or_none()
 
+    async def with_roles(self, member_id: UUID) -> Model | None:
+        return await self.get_by_id(
+            member_id, options=(selectinload(self.model.roles),)
+        )
+
+    async def _assign_roles(
+        self, member_id: UUID, collective_id: UUID, role_ids: list[UUID]
+    ) -> None:
+        stmt = select(RoleORM).where(RoleORM.id.in_(role_ids))
+        roles = (await self.execute(stmt)).unique().scalars().all()
+        self.session.add_all(
+            [
+                MemberRoleAssociation(role_id=role.id, member_id=member_id)
+                for role in roles
+                if role.collective_id == collective_id
+            ]
+        )
+        await self.session.flush()
+
+    async def replace_roles(
+        self, member_id: UUID, collective_id: UUID, role_ids: list[UUID]
+    ) -> None:
+        await self.execute(
+            delete(MemberRoleAssociation).where(
+                MemberRoleAssociation.member_id == member_id
+            )
+        )
+        if role_ids:
+            await self._assign_roles(member_id, collective_id, role_ids)
+        else:
+            await self.session.flush()
+
     async def create_member_with_roles(
         self, member_data: dict, role_ids: list[UUID]
     ) -> Model:
@@ -59,27 +91,6 @@ class MemberRepo(
         await self.session.flush()
 
         if role_ids:
-            roles: list[RoleORM] = (
-                (
-                    await self.execute(
-                        select(RoleORM).where(RoleORM.id.in_(role_ids))
-                    )
-                )
-                .unique()
-                .scalars()
-                .all()
-            )
-            self.session.add_all(
-                [
-                    MemberRoleAssociation(role_id=role.id, member_id=member.id)
-                    for role in roles
-                    if role.collective_id == member.collective_id
-                ]
-            )
-            await self.session.flush()
+            await self._assign_roles(member.id, member.collective_id, role_ids)
 
-        return await self.session.scalar(
-            select(Model)
-            .options(selectinload(Model.roles))
-            .where(Model.id == member.id)
-        )
+        return await self.with_roles(member.id)

@@ -62,6 +62,7 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
             )
         return sub
 
+    @required_transaction
     async def _resolve_title(
         self,
         type_: CalendarSubscriptionTypeEnum,
@@ -80,6 +81,7 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
             return _principal_title(collective.name)
         return _member_title(collective.name)
 
+    @required_transaction
     async def _authorize(
         self, user: UserJWT, data: SubscriptionCreateDTO
     ) -> None:

@@ -2,7 +2,6 @@ from logging import getLogger
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from core.dto.base import dto_dict
@@ -19,7 +18,6 @@ from event.dto.participation import (
 )
 from event.exc.event import ParticipationNotExistsException
 from event.filter.participation import ParticipationFilter
-from event.models.member import MemberORM
 from event.models.participation import ParticipationORM
 from event.service.attendance import AttendanceService
 from event.service.notification import notify_event_targets
@@ -142,22 +140,9 @@ class ParticipationService(BaseService[ParticipationUOW]):
 
             member_ids = participation_data.member_ids
             if member_ids is None:
-                rows = (
-                    (
-                        await uow.session.execute(
-                            select(MemberORM).where(
-                                MemberORM.collective_id == collective_id,
-                                MemberORM.is_active,
-                            )
-                        )
-                    )
-                    .unique()
-                    .scalars()
-                    .all()
+                member_ids = await uow.participations.active_member_ids(
+                    collective_id
                 )
-                member_ids = [m.id for m in rows]
-            elif len(member_ids) == 0:
-                member_ids = []
 
             if member_ids:
                 attendance_service = AttendanceService(self.uow)

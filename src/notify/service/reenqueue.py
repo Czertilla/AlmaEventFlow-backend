@@ -92,6 +92,7 @@ class RetryReenqueueService(BaseService[RetryUOW]):
         await self.uow.deliveries.mark_pending(ready)
         return len(ready)
 
+    @required_transaction
     async def _draft(
         self,
         delivery: NotificationDeliveryORM,
@@ -118,6 +119,7 @@ class RetryReenqueueService(BaseService[RetryUOW]):
             delivery_id=delivery.id, ctx=ctx, target=DeliveryTarget()
         )
 
+    @required_transaction
     async def _account(
         self, user_id: UUID, cache: dict[UUID, AccountDTO | None]
     ) -> AccountDTO | None:

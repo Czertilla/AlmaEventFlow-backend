@@ -30,6 +30,9 @@ class EmptyRepo:
     async def update_one(self, *args: Any, **kwargs: Any) -> None:
         return None
 
+    async def with_roles(self, *args: Any, **kwargs: Any) -> None:
+        return None
+
 
 class EmptySession:
     async def scalar(self, *args: Any, **kwargs: Any) -> None:
