@@ -7,7 +7,7 @@ from core.config.settings import settings
 from core.database.sqlalchemy.session import get_engine, get_url
 from core.dependencies.session import get_session_maker
 from user.api.manager import UserManager
-from user.repositories.user import UserRepo
+from user.repository.user import UserRepo
 from user.service.user import UserService
 from user.uow.user import UserUOW
 from user.utils.password import PasswordHelper

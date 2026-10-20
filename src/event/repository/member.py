@@ -93,4 +93,5 @@ class MemberRepo(
         if role_ids:
             await self._assign_roles(member.id, member.collective_id, role_ids)
 
-        return await self.with_roles(member.id)
+        await self.session.refresh(member, ["roles"])
+        return member

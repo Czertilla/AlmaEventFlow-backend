@@ -33,9 +33,7 @@ def _announced(organization: OrganizationORM) -> OrganizationData:
 class ReferenceService(BaseService[ReferenceUOW]):
     @required_transaction
     async def _add(self, organization: OrganizationORM) -> OrganizationORM:
-        self.uow.session.add(organization)
-        await self.uow.session.flush()
-        return organization
+        return await self.uow.organizations.add_entity(organization)
 
     @required_transaction
     async def _resolved(

@@ -5,7 +5,7 @@ from core.dto.base import dto_dict, dto_from_orm
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.schema.message.org import OrganizationData
 from core.service.base import BaseService, required_transaction
-from core.utils.abstract.unit_of_work import ABCUnitOfWork
+from core.uow.sqlalchemy import UnitOfWork
 from org.api.kafka.pub.organization import (
     on_organization_created,
     on_organization_deleted,
@@ -13,7 +13,7 @@ from org.api.kafka.pub.organization import (
 )
 
 
-class OrgEntityService[U: ABCUnitOfWork](BaseService[U]):
+class OrgEntityService[U: UnitOfWork](BaseService[U]):
     """CRUD of an organization-like entity; every change is announced as an
     organization event after the commit.
 
@@ -41,10 +41,7 @@ class OrgEntityService[U: ABCUnitOfWork](BaseService[U]):
 
     @required_transaction
     async def _create(self, create: Any) -> Any:
-        entity = self.model(**dto_dict(create))
-        self.uow.session.add(entity)
-        await self.uow.session.flush()
-        return entity
+        return await self._repo.add_entity(self.model(**dto_dict(create)))
 
     @required_transaction
     async def _read(self, entity_id: UUID) -> Any:
@@ -59,8 +56,7 @@ class OrgEntityService[U: ABCUnitOfWork](BaseService[U]):
         entity = await self._read(entity_id)
         for key, value in data.items():
             setattr(entity, key, value)
-        await self.uow.session.flush()
-        return entity
+        return await self._repo.add_entity(entity)
 
     @required_transaction
     async def _upsert(self, put: Any) -> Any:
@@ -68,12 +64,10 @@ class OrgEntityService[U: ABCUnitOfWork](BaseService[U]):
         data = dto_dict(put, exclude={"id"})
         if entity is None:
             entity = self.model(id=put.id, **data)
-            self.uow.session.add(entity)
         else:
             for key, value in data.items():
                 setattr(entity, key, value)
-        await self.uow.session.flush()
-        return entity
+        return await self._repo.add_entity(entity)
 
     @required_transaction
     async def _delete(self, entity_id: UUID) -> None:

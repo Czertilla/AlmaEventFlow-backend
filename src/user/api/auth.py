@@ -8,7 +8,7 @@ from fastapi_users.authentication import (
 )
 
 from user.config.settings import settings
-from user.dependencies.user import get_user_manager
+from user.dependency.user import get_user_manager
 from user.utils.jwt import AccessStrategy
 
 bearer_transport = BearerTransport(tokenUrl="/user/v1/auth/jwt/login")

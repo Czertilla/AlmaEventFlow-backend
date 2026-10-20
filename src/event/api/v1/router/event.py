@@ -18,7 +18,7 @@ from event.api.v1.schema.event import (
 from event.api.v1.schema.stage import (
     StageRead,
 )
-from event.dependency.event import EventUOWDep
+from event.dependency.me import EventComposeUOWDep
 from event.dependency.stage import StageUOWDep
 from event.filter.event import EventFilter
 from event.filter.stage import StageFilter
@@ -37,7 +37,7 @@ logger = getLogger(__name__)
     },
 )
 async def get_events(
-    uow: EventUOWDep,
+    uow: EventComposeUOWDep,
     user: UserJWTDep,
     filter: EventFilter = FilterDepends(EventFilter),
     page_param: PageParamV1 = Depends(PageParamV1),
@@ -54,7 +54,7 @@ async def get_events(
     },
 )
 async def create_event(
-    event: EventCreate, user: SuperUserJWTDep, uow: EventUOWDep
+    event: EventCreate, user: SuperUserJWTDep, uow: EventComposeUOWDep
 ) -> EventRead:
     return EventRead.from_dto(await EventService(uow).create(event.to_dto()))
 
@@ -67,7 +67,7 @@ async def create_event(
     },
 )
 async def get_event(
-    event_id: UUID, user: UserJWTDep, uow: EventUOWDep
+    event_id: UUID, user: UserJWTDep, uow: EventComposeUOWDep
 ) -> EventRead:
     return EventRead.from_dto(await EventService(uow).read(event_id))
 
@@ -80,7 +80,7 @@ async def get_event(
     },
 )
 async def put_event(
-    event_id: UUID, event: EventPutData, user: SuperUserJWTDep, uow: EventUOWDep
+    event_id: UUID, event: EventPutData, user: SuperUserJWTDep, uow: EventComposeUOWDep
 ) -> EventRead:
     result = await EventService(uow).put(
         EventPut(id=event_id, **event.model_dump()).to_dto()
@@ -99,7 +99,7 @@ async def patch_event(
     event_id: UUID,
     event: EventPatchData,
     user: SuperUserJWTDep,
-    uow: EventUOWDep,
+    uow: EventComposeUOWDep,
 ) -> EventRead:
     result = await EventService(uow).patch(
         EventPatch(id=event_id, **event.model_dump()).to_dto()
@@ -135,6 +135,6 @@ async def get_event_stages(
     },
 )
 async def delete_event(
-    event_id: UUID, user: SuperUserJWTDep, uow: EventUOWDep
+    event_id: UUID, user: SuperUserJWTDep, uow: EventComposeUOWDep
 ) -> None:
     await EventService(uow).delete(event_id)

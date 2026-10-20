@@ -47,7 +47,7 @@ from event.service.notification import (
 )
 from event.service.participation import ParticipationService
 from event.service.stage import StageService
-from event.uow.event import EventUOW
+from event.uow.me import EventComposeUOW
 
 logger = getLogger(__name__)
 
@@ -87,7 +87,7 @@ class EventSnapshot:
         )
 
 
-class EventService(BaseService[EventUOW]):
+class EventService(BaseService[EventComposeUOW]):
     @staticmethod
     def _orm_to_dto(event: EventORM) -> EventDTO:
         return EventDTO(
@@ -446,11 +446,9 @@ class EventService(BaseService[EventUOW]):
                 )
             )
 
-            member_ids = event_data.member_ids
-            if member_ids is None:
-                member_ids = await uow.participations.active_member_ids(
-                    event_data.collective_id
-                )
+            member_ids = await participation_service.attendees_for(
+                event_data.collective_id, event_data.member_ids
+            )
 
             if member_ids:
                 attendance_service = AttendanceService(self.uow)
@@ -567,7 +565,7 @@ class EventService(BaseService[EventUOW]):
         event = await self.uow.events.get_by_id(event_id)
         if event is None:
             return False
-        self.uow.session.add(
+        await self.uow.calendar_change_logs.add_entity(
             CalendarChangeLogORM(
                 change_type=CalendarChangeTypeEnum.removed.value,
                 event_id=event_id,

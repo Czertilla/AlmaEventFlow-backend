@@ -1,8 +1,10 @@
 import asyncio
 from datetime import UTC, datetime
 from logging import getLogger
+from typing import cast
 
 from fastapi_mail import MessageSchema, MessageType
+from pydantic import NameEmail
 
 from core.broker.kafka import KafkaRouter, broker
 from core.enum.mq import EmailQueue, NotifyDeliveryQueue
@@ -42,7 +44,7 @@ async def _report(
 async def _send(subject: str, recipients: list[str], html: str, what: str) -> None:
     message = MessageSchema(
         subject=subject,
-        recipients=recipients,
+        recipients=cast("list[NameEmail]", recipients),
         body=html,
         subtype=MessageType.html,
     )

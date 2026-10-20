@@ -11,7 +11,8 @@ from sqlalchemy import (
     insert,
     select,
 )
-from sqlalchemy.orm import DeclarativeBase, Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.types import DateTime
 
 from ...utils.abstract.repository import AbstractRepository
@@ -55,9 +56,9 @@ class SQLAlchemyRepository(Generic[Model], AbstractRepository):
             cls.logger = getLogger(f"SQL.{cls.__name__}")
         return super().__new__(cls)
 
-    def __init__(self, session: Session) -> None:
+    def __init__(self, session: AsyncSession) -> None:
         super().__init__()
-        self.session: Session = session
+        self.session: AsyncSession = session
 
     async def execute(self, stmt: Executable, flush: bool = False) -> Result[Any]:
         self.logger.debug(str(stmt))
@@ -80,6 +81,12 @@ class SQLAlchemyRepository(Generic[Model], AbstractRepository):
     async def add_one(self, data: dict[str, Any]) -> None:
         stmt = insert(self.model).values(**data)
         await self.execute(stmt, flush=True)
+
+    async def add_entity(self, entity: Model) -> Model:
+        """Adds an ORM instance and flushes it, so its defaults are filled in."""
+        self.session.add(entity)
+        await self.session.flush()
+        return entity
 
     async def add_n_return(
         self, data: dict[str, Any], options: tuple[Any, ...] = ()

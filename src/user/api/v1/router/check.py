@@ -15,7 +15,7 @@ from core.schema.v1.pagination import PageParamV1, PageV1
 from user.api.v1.schema.check import CheckResponse
 from user.api.v1.schema.invite import InviteTokenCreate, InviteTokenRead
 from user.api.v1.schema.user import LinkInviteData, PersonLinkRequest, UserRead
-from user.dependencies.user import get_user_uow
+from user.dependency.user import get_user_uow
 from user.filter.user import UserFilter
 from user.service.user import UserService
 from user.uow.user import UserUOW

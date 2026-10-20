@@ -25,11 +25,15 @@ class IDRepositoryMixin(
 ):
     model: type[Model]
 
-    async def _get_with_options(self, id: ID, options: tuple) -> Model | None:
+    async def _get_with_options(
+        self, id: ID, options: tuple[Any, ...]
+    ) -> Model | None:
         stmt = select(self.model).where(self.model.id == id).options(*options)
         return (await self.execute(stmt)).unique().scalar_one_or_none()
 
-    async def get_by_id(self, id: ID, options: tuple | None = None) -> Model | None:
+    async def get_by_id(
+        self, id: ID, options: tuple[Any, ...] | None = None
+    ) -> Model | None:
         if options:
             return await self._get_with_options(id, options)
         stmt = select(self.model).where(self.model.id == id)

@@ -6,6 +6,7 @@ from aiogram.exceptions import TelegramAPIError
 from aiogram.types import ChatAdministratorRights
 from aiogram3_di import setup_di
 from fastapi import FastAPI
+from faststream import FastStream
 
 from bot.tg.api.router import register_routers
 from bot.tg.service.commands import CommandMenuService
@@ -94,8 +95,11 @@ class TGBotContextManager(AppContextManager):
             logger.exception("could not update the bot profile")
 
     async def start_polling(self):
+        if self.bot is None or self.dp is None:
+            return
         await self.bot.delete_webhook()
-        track(create_task(self.dp.start_polling(self.bot)))
+        polling = create_task(self.dp.start_polling(self.bot))
+        track(polling)
 
     async def stop_polling(self):
         await self.dp.stop_polling()
@@ -118,7 +122,7 @@ class TGBotContextManager(AppContextManager):
             settings.BOT_TG_FEED_TYPE,
         )
 
-    async def startup(self, app: FastAPI):
+    async def startup(self, app: FastAPI | FastStream):
         await super().startup(app)
         await self.check_identity()
         self.register_handlers()
@@ -130,7 +134,7 @@ class TGBotContextManager(AppContextManager):
         elif feed_type == TgBotFeedType.POLLING:
             await self.start_polling()
 
-    async def shutdown(self, app: FastAPI):
+    async def shutdown(self, app: FastAPI | FastStream):
         await super().shutdown(app)
         if (feed_type := settings.BOT_TG_FEED_TYPE) == TgBotFeedType.WEBHOOK:
             await self.bot.delete_webhook()

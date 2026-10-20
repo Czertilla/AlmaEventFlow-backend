@@ -88,7 +88,10 @@ class MemberService(BaseService[MemberUOW]):
                 member_id, member_data, flush=False
             )
 
-        return await self.uow.members.with_roles(member_id)
+        member = await self.uow.members.with_roles(member_id)
+        if member is None:
+            raise MemberNotExistsException()
+        return member
 
     async def create(self, member_create: MemberCreateDTO) -> MemberDTO:
         async with self.uow as uow:

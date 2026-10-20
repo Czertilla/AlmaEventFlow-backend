@@ -7,7 +7,7 @@ from core.dependencies.auth import UserJWTDep
 from core.schema.error import auth_responses
 from user.api.v1.schema.session import SessionRead
 from user.config.settings import settings
-from user.dependencies.user import get_user_service
+from user.dependency.user import get_user_service
 from user.exceptions.user import SessionNotFound
 from user.service.user import UserService
 

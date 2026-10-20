@@ -106,7 +106,7 @@ async def client(
     user_sessionmaker: Maker, outbox: Outbox
 ) -> AsyncIterator[httpx.AsyncClient]:
     from user.app.app import app
-    from user.dependencies.user import get_session_maker
+    from user.dependency.user import get_session_maker
 
     app.dependency_overrides[get_session_maker] = lambda: user_sessionmaker
     transport = httpx.ASGITransport(app=app)

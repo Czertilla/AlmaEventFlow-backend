@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from core.dependencies.auth import ActiveUserJWTDep
 from core.schema.error import auth_responses
 from user.api.v1.schema.telegram import TelegramLinkTokenRead
-from user.dependencies.user import get_user_service
+from user.dependency.user import get_user_service
 from user.service.user import UserService
 
 router = APIRouter(prefix="/v1/users/me/telegram", tags=["telegram"])

@@ -7,7 +7,7 @@ from core.utils.exc.http import VancedHTTPException
 from user.api.auth import get_jwt_strategy
 from user.api.v1.schema.telegram import TelegramWidgetAuth
 from user.config.settings import settings
-from user.dependencies.user import get_user_service
+from user.dependency.user import get_user_service
 from user.exceptions.user import TelegramAccountNotLinked
 from user.service.user import UserService
 from user.utils.auth_response import finish_login
