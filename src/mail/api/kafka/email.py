@@ -2,6 +2,7 @@ import asyncio
 from datetime import UTC, datetime
 from logging import getLogger
 from typing import cast
+from uuid import UUID
 
 from fastapi_mail import MessageSchema, MessageType
 from pydantic import NameEmail
@@ -33,7 +34,7 @@ not open one SMTP connection per recipient at once."""
 
 
 async def _report(
-    delivery_id, status: DeliveryStatus, error: str | None = None
+    delivery_id: UUID, status: DeliveryStatus, error: str | None = None
 ) -> None:
     await broker.publish(
         DeliveryResult(delivery_id=delivery_id, status=status, error=error),
@@ -110,7 +111,7 @@ async def _deliver_item(item: EmailDeliveryItem) -> None:
         return
     message = MessageSchema(
         subject=item.subject,
-        recipients=[item.recipient],
+        recipients=cast("list[NameEmail]", [item.recipient]),
         body=html,
         subtype=MessageType.html,
     )

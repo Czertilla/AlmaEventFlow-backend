@@ -4,7 +4,7 @@ from typing import Any
 
 
 class ABCTextBuilder(ABC):
-    lang: str
+    lang: str | None
 
     @abstractmethod
     async def get_phrase(self, key: str | Enum, **kwargs: Any) -> str:

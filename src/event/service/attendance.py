@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Any, cast
 from uuid import UUID
 
 from core.dto.base import dto_dict, dto_from_orm
@@ -24,12 +25,14 @@ from event.filter.attendance import AttendanceFilter
 from event.models.attendance import AttendanceORM
 from event.service.notification import notify_event_targets
 from event.uow.attendance import AttendanceUOW
-from event.uow.me import ParticipationComposeUOW
+from event.uow.me import EventComposeUOW, ParticipationComposeUOW
 
 logger = getLogger(__name__)
 
 
-class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
+class AttendanceService(
+    BaseService[AttendanceUOW | ParticipationComposeUOW | EventComposeUOW]
+):
     @staticmethod
     def _to_dto(attendance: AttendanceORM) -> AttendanceDTO:
         return dto_from_orm(attendance, AttendanceDTO)
@@ -42,7 +45,7 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
         attendance = await self.uow.attendances.add_n_return(
             data=attendance_data
         )
-        await self.uow.session.flush(objects=[attendance])
+        await self.uow.attendances.session.flush(objects=[attendance])
         return attendance
 
     @required_transaction
@@ -52,7 +55,11 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
 
     @required_transaction
     async def _update(
-        self, attendance_id: UUID, attendance_data: dict, *, flush: bool = False
+        self,
+        attendance_id: UUID,
+        attendance_data: dict[str, Any],
+        *,
+        flush: bool = False,
     ) -> AttendanceORM:
         attendance = await self.uow.attendances.update_one(
             attendance_id, attendance_data, flush
@@ -63,7 +70,9 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
 
     @required_transaction
     async def _upsert(self, attendance_put: AttendancePutDTO) -> AttendanceORM:
-        return await self.uow.attendances.upsert(dto_dict(attendance_put))
+        attendance = await self.uow.attendances.upsert(dto_dict(attendance_put))
+        assert attendance is not None
+        return attendance
 
     @required_transaction
     async def _delete(self, attendance_id: UUID) -> None:
@@ -138,11 +147,12 @@ class AttendanceService(BaseService[AttendanceUOW | ParticipationComposeUOW]):
         data: MeAttendanceCreateDataDTO,
     ) -> AttendanceDTO:
         async with self.uow as uow:
-            participation = await uow.participations.get_by_id(participation_id)
+            compose = cast("ParticipationComposeUOW | EventComposeUOW", uow)
+            participation = await compose.participations.get_by_id(participation_id)
             if not participation or participation.collective_id != collective_id:
                 raise ParticipationNotExistsException()
 
-            member = await uow.members.get_by_id(data.member_id)
+            member = await compose.members.get_by_id(data.member_id)
             if not member or member.collective_id != collective_id:
                 raise MemberNotExistsException()
 

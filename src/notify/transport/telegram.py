@@ -46,9 +46,11 @@ class TelegramTransport(BaseTransport):
 
     def _item(self, draft: DeliveryDraft) -> TelegramDeliveryItem:
         content = draft.ctx.content
+        client = draft.target.client
+        assert client is not None
         return TelegramDeliveryItem(
             delivery_id=draft.delivery_id,
-            chat_id=draft.target.client.endpoint,
+            chat_id=client.endpoint,
             text=self._render_text(content),
             buttons=self._render_buttons(content),
             correlation_key=content.data.get("event_id"),

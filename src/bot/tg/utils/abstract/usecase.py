@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Any, Self
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.context import FSMContext
@@ -47,7 +47,7 @@ class BotUseCase:
                 used to generate message texts.
             user (TGUser): The user for whom the bot actions are performed.
         """
-        super().__init__(text_builder)
+        super().__init__(text_builder)  # pyright: ignore[reportCallIssue]  # the next class in the MRO is InlineBuilderMixin, not object
         self.state = state
         self.text_builder = text_builder
         self.message = message
@@ -58,7 +58,7 @@ class BotUseCase:
 
     @required_state
     async def edit_state(
-        self: Self, state: State, clear: bool = False, **data: dict
+        self: Self, state: State, clear: bool = False, **data: Any
     ) -> None:
         """
         Edit the state and update the data.
@@ -71,20 +71,22 @@ class BotUseCase:
             - state (FSMContext): The state to set.
             - **data (dict): The data to update.
         """
-        self.state: FSMContext
-        clear and await self.state.clear()
+        assert self.state is not None
+        if clear:
+            await self.state.clear()
         await self.state.set_state(state)
         await self.state.update_data(**data)
 
     @required_message
     def get_reply_params(self) -> ReplyParameters:
+        assert self.message is not None
         return ReplyParameters(message_id=self.message.message_id)
 
 
 class InlineBuilderMixin:
     text_builder: TextBuilder
 
-    def __init__(self, text_builder: TextBuilder, *args, **kwargs):
+    def __init__(self, text_builder: TextBuilder, *args: Any, **kwargs: Any):
         super().__init__()
 
     @property

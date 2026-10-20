@@ -21,7 +21,7 @@ if settings.MONOLITH:
 
 
 async def get_async_session(
-    sessionmaker: async_sessionmaker = Depends(get_session_maker),
+    sessionmaker: async_sessionmaker[AsyncSession] = Depends(get_session_maker),
 ) -> AsyncGenerator[AsyncSession]:
     async with sessionmaker() as session:
         yield session

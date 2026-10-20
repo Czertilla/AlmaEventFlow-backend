@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from core.enum.notify import DeliveryStatus, TransportTypeEnum
 from core.schema.message.notify import WebPushDeliveryBatch
@@ -14,7 +14,7 @@ from notify.uow.delivery import WebPushDeliveryUOW
 
 async def _seed_webpush(sessionmaker_, endpoints: list[str]):
     notification_id = uuid4()
-    delivery_ids: list[uuid4] = []
+    delivery_ids: list[UUID] = []
     async with sessionmaker_() as session:
         session.add(
             NotificationORM(

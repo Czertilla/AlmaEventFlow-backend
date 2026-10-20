@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from profile.models.contact import ContactORM
 from profile.models.person import PersonORM as Model
+from typing import Any
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -35,11 +36,15 @@ class PersonRepo(
         )
 
     async def add_n_return(
-        self, data, options=(with_contacts, with_main_contacts)
-    ):
+        self,
+        data: dict[str, Any],
+        options: tuple[Any, ...] = (with_contacts, with_main_contacts),
+    ) -> Model:
         return await super().add_n_return(data, options)
 
-    async def update_one(self, id, data, flush=False):
+    async def update_one(
+        self, id: UUID, data: dict[str, Any], flush: bool = False
+    ) -> Model | None:
         stmt = (
             update(self.model)
             .where(self.model.id == id)
@@ -82,5 +87,9 @@ class PersonRepo(
             scope=scope,
         )
 
-    async def upsert(self, data, options=all_options):
+    async def upsert(
+        self,
+        data: dict[str, Any],
+        options: tuple[ExecutableOption, ...] = all_options,
+    ) -> Model | None:
         return await super().upsert(data, options)

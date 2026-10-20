@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 from uuid import UUID
 
 from geoalchemy2 import Geometry, WKBElement, WKTElement
@@ -6,9 +6,6 @@ from geoalchemy2.shape import to_shape
 from sqlalchemy.orm import Mapped, declared_attr, mapped_column
 
 from geo.dto.point import PointDTO
-
-if TYPE_CHECKING:
-    from core.database.sqlalchemy.core import Base
 
 
 def point_from_geometry(spot: WKBElement | WKTElement | None) -> PointDTO | None:
@@ -43,11 +40,11 @@ def spot_column():
 
 class SpotMixin:
     @declared_attr
-    def spot(cls: "Base") -> Mapped[UUID]:  # noqa: N805
+    def spot(cls) -> Mapped[UUID]:  # noqa: N805
         return spot_column()
 
 
 class OptionalSpotMixin:
     @declared_attr
-    def spot(cls: "Base") -> Mapped[WKBElement | None]:  # noqa: N805
+    def spot(cls) -> Mapped[WKBElement | None]:  # noqa: N805
         return spot_column()

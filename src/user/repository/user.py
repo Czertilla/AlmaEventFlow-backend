@@ -1,12 +1,12 @@
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from fastapi_users.models import UOAP, UP
-from fastapi_users_db_sqlalchemy import BaseUserDatabase
+from fastapi_users.db import BaseUserDatabase
 from pydantic import EmailStr
 from sqlalchemy import ColumnElement, select
+from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.base import ExecutableOption
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
@@ -23,7 +23,7 @@ class UserRepo(
     SQLAlchemyRepository[Model],
     IDRepositoryMixin[Model, UUID],
     SearchRepositoryMixin[Model],
-    BaseUserDatabase[Model, UUID],
+    BaseUserDatabase[Model, UUID],  # pyright: ignore[reportInvalidTypeArguments]
 ):
     model = Model
     oauth_account_table = OauthModel
@@ -52,30 +52,27 @@ class UserRepo(
     async def get_by_oauth_account(
         self, oauth: str, account_id: str
     ) -> Model | None:
-        if self.oauth_account_table is None:
-            raise NotImplementedError()
-
+        table = self.oauth_account_table
+        oauth_name = cast("InstrumentedAttribute[str]", table.oauth_name)
+        account_column = cast("InstrumentedAttribute[str]", table.account_id)
         stmt = (
             select(self.model)
-            .join(self.oauth_account_table)
-            .where(
-                self.oauth_account_table.oauth_name == oauth,
-                self.oauth_account_table.account_id == account_id,
-            )
+            .join(table)
+            .where(oauth_name == oauth, account_column == account_id)
         )
         return (await self.execute(stmt)).unique().scalar_one_or_none()
 
     async def create(self, create_dict: dict[str, Any]) -> Model:
         return await self.add_n_return(create_dict)
 
-    async def update(self, user: UP, update_dict: dict[str, Any]) -> Model:
-        return await self.update_one(user.id, update_dict)
+    async def update(self, user: Model, update_dict: dict[str, Any]) -> Model:
+        return cast("Model", await self.update_one(user.id, update_dict))
 
-    async def delete(self, user: UP) -> None:
+    async def delete(self, user: Model) -> None:
         await self.delete_one(user.id)
 
-    async def add_oauth_account(
-        self, user: UOAP, create_dict: dict[str, Any]
+    async def add_oauth_account(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self, user: Model, create_dict: dict[str, Any]
     ) -> Model:
         await self.session.refresh(user)
         oauth_account = self.oauth_account_table(**create_dict)
@@ -84,9 +81,9 @@ class UserRepo(
         self.session.add(user)
         return user
 
-    async def update_oauth_account(
+    async def update_oauth_account(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
-        user: UP,
+        user: Model,
         oauth_account: OauthModel,
         update_dict: dict[str, Any],
     ) -> Model:
@@ -96,7 +93,7 @@ class UserRepo(
         return user
 
     async def remove_oauth_account(
-        self, user: UP, oauth_account: OauthModel
+        self, user: Model, oauth_account: OauthModel
     ) -> Model:
         user.oauth_accounts.remove(oauth_account)
         await self.session.delete(oauth_account)

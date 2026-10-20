@@ -5,5 +5,5 @@ This module should be imported only once to prevent overwriting global data.
 from asyncio import Lock
 from uuid import UUID
 
-_memory_locks: dict[str, Lock] = {}
-_state_debounces: dict[str, UUID] = {}
+memory_locks: dict[str, Lock] = {}
+state_debounces: dict[str, UUID] = {}

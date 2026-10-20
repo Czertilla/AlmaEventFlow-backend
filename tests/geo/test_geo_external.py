@@ -593,7 +593,7 @@ async def test_a_place_that_does_not_exist_is_an_empty_ok_answer():
 
 
 async def test_a_geocoder_that_cannot_do_it_is_skipped_not_failed():
-    external = ExternalSearch(_Searches())  # type: ignore[arg-type]
+    external = ExternalSearch(_Searches())  # pyright: ignore[reportArgumentType]
 
     nearby = await external.nearby(Point(lat=1, lon=1), radius_km=1.0, limit=5)
     place = await external.place("суздаль", near=None)

@@ -1,4 +1,5 @@
 import datetime
+from uuid import UUID
 
 from core.config.settings import settings
 from event.enum.status import EventStatusEnumV1
@@ -60,6 +61,7 @@ class CalendarEventMapper:
             body = "Мероприятие содержит несколько этапов."
         else:
             body = event.description or ""
+        assert event.date is not None
         dtstart = event.date
         dtend = (event.date + datetime.timedelta(days=1)) if event.date else None
         return self._build(
@@ -135,8 +137,8 @@ class CalendarEventMapper:
         *,
         uid: str,
         summary: str,
-        dtstart,
-        dtend,
+        dtstart: datetime.date | datetime.datetime,
+        dtend: datetime.date | datetime.datetime | None,
         all_day: bool,
         description: str,
         location: str | None = None,
@@ -194,7 +196,7 @@ class CalendarEventMapper:
         item: FeedItem,
         event: EventORM,
         *,
-        stage_id,
+        stage_id: UUID | None,
         summary: bool,
     ) -> str:
         prefix = f"almaeventflow-{item.owner_kind}-{item.owner_id}-event-{event.id}"
@@ -204,7 +206,7 @@ class CalendarEventMapper:
             prefix = f"{prefix}-summary"
         return f"{prefix}@{UID_DOMAIN}"
 
-    def _event_url(self, event_id) -> str:
+    def _event_url(self, event_id: UUID) -> str:
         return f"{self._base_url}/event/{event_id}"
 
     def _description(self, parts: list[str], url: str | None = None) -> str:
@@ -214,7 +216,7 @@ class CalendarEventMapper:
             return f"{body}\n\n{open_line}" if body else open_line
         return body
 
-    def _description_with_url(self, body: str, event_id) -> str:
+    def _description_with_url(self, body: str, event_id: UUID) -> str:
         url = self._event_url(event_id)
         open_line = _OPEN_LINE.format(url=url)
         return f"{body}\n\n{open_line}" if body else open_line

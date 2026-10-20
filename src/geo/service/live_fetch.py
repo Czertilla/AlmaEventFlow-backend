@@ -12,12 +12,12 @@ import asyncio
 from datetime import UTC, datetime
 from logging import getLogger
 
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from core.config.settings import settings
 from core.utils.tasks import track
 from geo.bootstrap.coverage import bbox_of_cell, cell_of
-from geo.bootstrap.run import _address_id, _import_cell, resolve_city_for_point
+from geo.bootstrap.run import address_id, import_cell, resolve_city_for_point
 from geo.bootstrap.sources import (
     OverpassError,
     OverpassSource,
@@ -51,7 +51,7 @@ async def live_fetch(
     cell: tuple[int, int],
     near: PointDTO,
     *,
-    sessionmaker: async_sessionmaker | None = None,
+    sessionmaker: async_sessionmaker[AsyncSession] | None = None,
     source: OverpassSource | None = None,
 ) -> None:
     """Awaitable core, independent of the fire-and-forget wrapper below --
@@ -61,14 +61,14 @@ async def live_fetch(
     try:
         async with AddressUOW(sessionmaker) as uow:
             city_id = await resolve_city_for_point(uow, src, near.lat, near.lon)
-        await _import_cell(
+        await import_cell(
             src,
             bbox_of_cell(*cell),
             city_id,
             _LIVE_BATCH_SIZE,
             asyncio.Lock(),
             sessionmaker,
-            id_fn=lambda s, h: _address_id(city_id, s, h),
+            id_fn=lambda s, h: address_id(city_id, s, h),
             synced_at=datetime.now(UTC),
         )
     except OverpassError as exc:
@@ -92,7 +92,7 @@ async def live_fetch(
 async def _guarded_live_fetch(
     cell: tuple[int, int],
     near: PointDTO,
-    sessionmaker: async_sessionmaker | None,
+    sessionmaker: async_sessionmaker[AsyncSession] | None,
     *,
     source: OverpassSource | None = None,
 ) -> None:
@@ -106,7 +106,7 @@ async def _guarded_live_fetch(
 
 
 def schedule_live_fetch(
-    near: PointDTO, *, sessionmaker: async_sessionmaker | None = None
+    near: PointDTO, *, sessionmaker: async_sessionmaker[AsyncSession] | None = None
 ) -> None:
     """Fire-and-forget: never awaited by the caller, must not raise."""
     if not settings.GEO_LIVE_FETCH:

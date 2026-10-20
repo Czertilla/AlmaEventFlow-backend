@@ -65,14 +65,14 @@ NOW = datetime.datetime(2026, 1, 1, tzinfo=datetime.UTC)
 
 def test_location_combining_address_and_spot_requires_a_name():
     with pytest.raises(ValidationError):
-        LocationCreate(address_id=uuid4(), spot={"lat": 55.75, "lon": 37.6})
+        LocationCreate(address_id=uuid4(), spot=Point(lat=55.75, lon=37.6))
 
 
 def test_location_can_combine_address_and_spot_when_named():
     location = LocationCreate(
         name="Служебный вход",
         address_id=uuid4(),
-        spot={"lat": 55.75, "lon": 37.6},
+        spot=Point(lat=55.75, lon=37.6),
     )
     assert location.address_id is not None and location.spot is not None
 

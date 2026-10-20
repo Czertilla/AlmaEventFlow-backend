@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class CollectiveORM(OrganizationORM):
     __tablename__ = "collective"
 
-    id: Mapped[UUID] = mapped_column(
+    id: Mapped[UUID] = mapped_column(  # pyright: ignore[reportIncompatibleVariableOverride]
         ForeignKey("organization.id", ondelete="CASCADE"), primary_key=True
     )
     university_id: Mapped[UUID | None] = mapped_column(

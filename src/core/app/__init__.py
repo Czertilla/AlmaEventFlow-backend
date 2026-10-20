@@ -1,3 +1,3 @@
 from .config import AppConfig
 
-__all__ = ["AppConfig", "app"]
+__all__ = ["AppConfig"]

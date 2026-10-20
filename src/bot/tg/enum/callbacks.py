@@ -17,7 +17,7 @@ class CBPrefix(StrEnum):
     account_notify = "AC/n"
     link = "LK"
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: object) -> str:
         return self + "/" + str(other)
 
 

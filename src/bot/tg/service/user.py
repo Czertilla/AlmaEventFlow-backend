@@ -63,11 +63,14 @@ class TelegramUserService(BaseService[UserUOW]):
         return response
 
     async def set_lang(
-        self, user: TGUser, lang: str, is_default: bool = False
+        self, user: TGUser, lang: str | None, is_default: bool = False
     ) -> TGUser:
         async with self.uow:
             user_model = await self.uow.users.get_by_id(user.id)
-            user_model.language_code = lang if is_default else lang.upper()
+            assert user_model is not None
+            user_model.language_code = (
+                lang if is_default or lang is None else lang.upper()
+            )
             await self.uow.commit()
             return TGUser.model_validate(user_model)
 

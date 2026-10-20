@@ -30,7 +30,7 @@ class CollectiveRead(FromDTOMixinV1, CollectiveBase, UUIDMixinV1, TimestampMixin
 
 
 class CollectivePatchData(CollectiveBase, PatchModelV1):
-    name: str | None = Field(max_length=128, default=None)
+    name: str | None = Field(max_length=128, default=None)  # pyright: ignore[reportIncompatibleVariableOverride]
     acronym: str | None = Field(max_length=16, default=None)
     university_id: UUID | None = None
 

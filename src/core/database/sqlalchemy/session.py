@@ -1,11 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from core.config.settings import settings
+from core.enum.config import DBManagerType
 
 match settings.DB_DBMS:
-    case "sqlite":
+    case DBManagerType.sqlite:
         from .engine.sqlite import engine, get_engine, get_url
-    case "postgres":
+    case DBManagerType.postgres:
         from .engine.pgsql import engine, get_engine, get_url
 
 new_session = async_sessionmaker(engine, expire_on_commit=False)

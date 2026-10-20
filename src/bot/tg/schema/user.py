@@ -29,6 +29,10 @@ class TGUser(BaseModel, FromAttributesV1):
         self.language_code = self.language_code.lower()
         return self
 
+    @property
+    def is_lang_modified(self) -> bool:
+        return self._is_lang_modified
+
 
 class AdminViewUser(TGUser):
     created_at: datetime

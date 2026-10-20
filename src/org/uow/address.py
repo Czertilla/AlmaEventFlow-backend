@@ -7,4 +7,4 @@ class AddressMixin:
     addresses: AddressRepo
 
 
-class AddressUOW(UnitOfWork, AddressMixin, AddressAUOW): ...
+class AddressUOW(UnitOfWork, AddressMixin, AddressAUOW): ...  # pyright: ignore[reportIncompatibleVariableOverride]

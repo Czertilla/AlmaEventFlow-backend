@@ -1,8 +1,11 @@
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 from core.enum.notify import NotificationCategory
 from core.schema.message.notify import NotificationRequest
+
+if TYPE_CHECKING:
+    from notify.models.notification import NotificationORM
 
 
 class _ContentSource(Protocol):
@@ -28,8 +31,8 @@ class NotificationContent:
         return cls._from(request)
 
     @classmethod
-    def from_model(cls, model: _ContentSource) -> "NotificationContent":
-        return cls._from(model)
+    def from_model(cls, model: "NotificationORM") -> "NotificationContent":
+        return cls._from(cast("_ContentSource", model))
 
     @classmethod
     def _from(cls, source: _ContentSource) -> "NotificationContent":

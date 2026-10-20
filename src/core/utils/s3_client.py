@@ -1,7 +1,11 @@
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from logging import getLogger
+from typing import Any
 
-from aiobotocore.session import get_session
+from aiobotocore.session import (
+    get_session,  # pyright: ignore[reportUnknownVariableType]
+)
 from botocore.exceptions import ClientError
 
 logger = getLogger(__name__)
@@ -21,14 +25,14 @@ class S3Client:
             "endpoint_url": endpoint_url,
         }
         self.bucket_name = bucket_name
-        self.session = get_session()
+        self.session: Any = get_session()
 
     @asynccontextmanager
-    async def get_client(self):
+    async def get_client(self) -> AsyncGenerator[Any]:
         async with self.session.create_client("s3", **self.config) as client:
             yield client
 
-    async def put_file(self, file_name: str, data: bytes, **headers):
+    async def put_file(self, file_name: str, data: bytes, **headers: Any):
         try:
             async with self.get_client() as client:
                 await client.put_object(
@@ -58,21 +62,23 @@ class S3Client:
     async def get_file(self, file_name: str) -> bytes:
         try:
             async with self.get_client() as client:
-                response: dict = await client.get_object(
+                response: dict[str, Any] = await client.get_object(
                     Bucket=self.bucket_name, Key=file_name
                 )
                 logger.debug(
                     "File %s downloaded from %s", file_name, self.bucket_name
                 )
-                return await response.get("Body").read()
+                body = response.get("Body")
+                assert body is not None
+                return await body.read()
         except ClientError as e:
             logger.error("Error downloading file: %s", e)
             raise e
 
-    async def get_file_meta(self, file_name: str):
+    async def get_file_meta(self, file_name: str) -> dict[str, Any]:
         try:
             async with self.get_client() as client:
-                response: dict = await client.get_object_acl(
+                response: dict[str, Any] = await client.get_object_acl(
                     Bucket=self.bucket_name, Key=file_name
                 )
                 logger.debug(

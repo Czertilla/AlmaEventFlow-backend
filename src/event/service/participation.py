@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from sqlalchemy.orm import selectinload
@@ -21,12 +21,15 @@ from event.filter.participation import ParticipationFilter
 from event.models.participation import ParticipationORM
 from event.service.attendance import AttendanceService
 from event.service.notification import notify_event_targets
+from event.uow.me import EventComposeUOW, ParticipationComposeUOW
 from event.uow.participation import ParticipationUOW
 
 logger = getLogger(__name__)
 
 
-class ParticipationService(BaseService[ParticipationUOW]):
+class ParticipationService(
+    BaseService[ParticipationUOW | ParticipationComposeUOW | EventComposeUOW]
+):
     @staticmethod
     def _to_dto(participation: ParticipationORM) -> ParticipationDTO:
         collective = getattr(participation, "collective", None)
@@ -48,7 +51,7 @@ class ParticipationService(BaseService[ParticipationUOW]):
         participation = await self.uow.participations.add_n_return(
             data=participation_data
         )
-        await self.uow.session.flush(objects=[participation])
+        await self.uow.participations.session.flush(objects=[participation])
         return participation
 
     @required_transaction
@@ -155,9 +158,11 @@ class ParticipationService(BaseService[ParticipationUOW]):
             )
 
             if member_ids:
-                attendance_service = AttendanceService(self.uow)
+                attendance_service = AttendanceService(
+                    cast("ParticipationComposeUOW | EventComposeUOW", self.uow)
+                )
                 for member_id in member_ids:
-                    await attendance_service._create(
+                    await attendance_service._create(  # pyright: ignore[reportPrivateUsage]
                         AttendanceCreateDTO(
                             member_id=member_id,
                             participation_id=participation_orm.id,

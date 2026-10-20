@@ -53,7 +53,7 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
 
     @required_transaction
     async def _terminate(
-        self, delivery_ids, status: DeliveryStatus, reason: str
+        self, delivery_ids: list[UUID], status: DeliveryStatus, reason: str
     ) -> None:
         await self.uow.deliveries.bulk_set_status(
             delivery_ids,
@@ -64,7 +64,7 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
 
     @required_transaction
     async def _dispatch(
-        self, delivery_ids, notification: NotificationORM
+        self, delivery_ids: list[UUID], notification: NotificationORM
     ) -> None:
         transport = registry.get(TransportTypeEnum.webpush)
         if not isinstance(transport, WebPushTransport) or not transport.is_available():
@@ -199,7 +199,9 @@ class WebPushWorkerService(BaseService[WebPushDeliveryUOW]):
         if decision.status is DeliveryStatus.failed:
             failed.append(delivery.id)
         else:
-            retries[decision.next_attempt_at].append(delivery.id)
+            next_attempt_at = decision.next_attempt_at
+            assert next_attempt_at is not None
+            retries[next_attempt_at].append(delivery.id)
 
     @staticmethod
     def _flat_retry_at() -> datetime:

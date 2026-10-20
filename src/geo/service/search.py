@@ -35,7 +35,7 @@ from geo.service.external import (
 )
 from geo.service.geography import resolve_city_loose
 from geo.service.live_fetch import (
-    schedule_live_fetch,  # pyright: ignore[reportUnknownVariableType]
+    schedule_live_fetch,
 )
 from geo.service.mapping import address_to_dto, location_to_dto
 from geo.uow.address import AddressUOW
@@ -415,7 +415,7 @@ class SearchService(BaseService[AddressUOW]):
                 status = around or status
                 schedule_live_fetch(
                     centre,
-                    sessionmaker=self.uow.session_factory,  # pyright: ignore[reportUnknownMemberType]
+                    sessionmaker=self.uow.session_factory,
                 )
 
         if place is None:
@@ -439,6 +439,6 @@ class SearchService(BaseService[AddressUOW]):
         if query.near is not None and query.external and not text:
             schedule_live_fetch(
                 query.near,
-                sessionmaker=self.uow.session_factory,  # pyright: ignore[reportUnknownMemberType]
+                sessionmaker=self.uow.session_factory,
             )
         return SearchResultDTO(items=hits, external=status, place=place)

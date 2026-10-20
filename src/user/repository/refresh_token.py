@@ -1,7 +1,8 @@
 from datetime import UTC, datetime
+from typing import Any, cast
 from uuid import UUID
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import CursorResult, delete, select, update
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import IDRepositoryMixin
@@ -50,5 +51,5 @@ class RefreshTokenRepo(
 
     async def delete_expired(self) -> int:
         stmt = delete(Model).where(Model.expires_at < datetime.now(UTC))
-        result = await self.execute(stmt)
+        result = cast("CursorResult[Any]", await self.execute(stmt))
         return result.rowcount

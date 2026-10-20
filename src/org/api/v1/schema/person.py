@@ -19,8 +19,8 @@ class PersonRead(PersonItemRead): ...
 
 
 class PersonPatchData(PersonCreate, PatchModelV1):
-    surname: str | None = Field(max_length=128, default=None)
-    name: str | None = Field(max_length=128, default=None)
+    surname: str | None = Field(max_length=128, default=None)  # pyright: ignore[reportIncompatibleVariableOverride]
+    name: str | None = Field(max_length=128, default=None)  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class PersonPatch(PersonPatchData, UUIDMixinV1): ...

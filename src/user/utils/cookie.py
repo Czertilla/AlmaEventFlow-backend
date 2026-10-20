@@ -1,3 +1,4 @@
+from typing import Literal, cast
 from uuid import UUID
 
 from fastapi import Response
@@ -11,6 +12,12 @@ other routes. The session-id cookie carries no credential and is served on the
 whole app so endpoints (e.g. the session manager) can identify the caller's own
 session."""
 
+SameSite = Literal["lax", "strict", "none"]
+
+
+def _samesite() -> SameSite:
+    return cast("SameSite", settings.AUTH_COOKIE_SAMESITE)
+
 
 def set_refresh_cookie(response: Response, token: str) -> None:
     response.set_cookie(
@@ -18,7 +25,7 @@ def set_refresh_cookie(response: Response, token: str) -> None:
         value=token,
         max_age=settings.REFRESH_TOKEN_EXPIRE_SECONDS,
         httponly=True,
-        samesite=settings.AUTH_COOKIE_SAMESITE,
+        samesite=_samesite(),
         secure=settings.AUTH_COOKIE_SECURE,
         domain=settings.AUTH_COOKIE_DOMAIN,
         path=REFRESH_COOKIE_PATH,
@@ -31,7 +38,7 @@ def unset_refresh_cookie(response: Response) -> None:
         value="",
         max_age=0,
         httponly=True,
-        samesite=settings.AUTH_COOKIE_SAMESITE,
+        samesite=_samesite(),
         secure=settings.AUTH_COOKIE_SECURE,
         domain=settings.AUTH_COOKIE_DOMAIN,
         path=REFRESH_COOKIE_PATH,
@@ -44,7 +51,7 @@ def set_session_cookie(response: Response, session_id: UUID) -> None:
         value=str(session_id),
         max_age=settings.REFRESH_TOKEN_EXPIRE_SECONDS,
         httponly=True,
-        samesite=settings.AUTH_COOKIE_SAMESITE,
+        samesite=_samesite(),
         secure=settings.AUTH_COOKIE_SECURE,
         domain=settings.AUTH_COOKIE_DOMAIN,
         path=SESSION_COOKIE_PATH,
@@ -57,7 +64,7 @@ def unset_session_cookie(response: Response) -> None:
         value="",
         max_age=0,
         httponly=True,
-        samesite=settings.AUTH_COOKIE_SAMESITE,
+        samesite=_samesite(),
         secure=settings.AUTH_COOKIE_SECURE,
         domain=settings.AUTH_COOKIE_DOMAIN,
         path=SESSION_COOKIE_PATH,

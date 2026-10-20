@@ -78,8 +78,8 @@ async def put_participation(
     uow: ParticipationUOWDep,
 ) -> ParticipationRead:
     result = await ParticipationService(uow).put(
-        ParticipationPut(
-            id=participation_id, **participation.model_dump()
+        ParticipationPut.model_validate(
+            {"id": participation_id, **participation.model_dump()}
         ).to_dto()
     )
     return ParticipationRead.from_dto(result)
@@ -99,8 +99,8 @@ async def patch_participation(
     uow: ParticipationUOWDep,
 ) -> ParticipationRead:
     result = await ParticipationService(uow).patch(
-        ParticipationPatch(
-            id=participation_id, **participation.model_dump()
+        ParticipationPatch.model_validate(
+            {"id": participation_id, **participation.model_dump()}
         ).to_dto()
     )
     return ParticipationRead.from_dto(result)

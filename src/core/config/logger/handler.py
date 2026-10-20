@@ -6,6 +6,7 @@ import shutil
 import traceback
 from logging import Handler, LogRecord, getLogger
 from logging.handlers import TimedRotatingFileHandler
+from types import TracebackType
 
 from aiogram import Bot
 from aiogram.types import BufferedInputFile, InputMediaDocument
@@ -34,8 +35,8 @@ class GzipTimedRotatingFileHandler(TimedRotatingFileHandler):
 class TelegramLogHandler(Handler):
     """Custom log handler to send critical logs to Telegram."""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, level: int | str = 0) -> None:
+        super().__init__(level)
         if settings.BOT_TG_TOKEN:
             self.bot = Bot(token=settings.BOT_TG_TOKEN)
             self.chat_id_list = settings.DEV_ID_LIST
@@ -55,7 +56,16 @@ class TelegramLogHandler(Handler):
         except Exception:
             self.handleError(record)
 
-    async def _send_to_telegram(self, message: str, exc_info):
+    async def _send_to_telegram(
+        self,
+        message: str,
+        exc_info: tuple[
+            type[BaseException] | None,
+            BaseException | None,
+            TracebackType | None,
+        ]
+        | None,
+    ) -> None:
         """Asynchronously sends a message to Telegram."""
         message_text = f"🔥 CRITICAL LOG:\n{message}"
         parse_mode = "HTML"

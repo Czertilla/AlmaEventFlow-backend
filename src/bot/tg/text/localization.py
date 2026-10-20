@@ -2,7 +2,7 @@ import json
 import logging
 from hashlib import sha256
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Protocol, cast
 from uuid import UUID
 
 import aiocache
@@ -11,6 +11,27 @@ import i18n
 from core.config.settings import settings
 
 logger = logging.getLogger(__name__)
+
+
+class TranslationCache(Protocol):
+    async def get(self, key: str) -> str | None: ...
+
+    async def set(
+        self, key: str, value: str, ttl: int, namespace: str
+    ) -> object: ...
+
+
+class I18nConfig(Protocol):
+    def set(self, key: str, value: object) -> None: ...
+
+
+class I18nModule(Protocol):
+    config: I18nConfig
+
+    def t(self, key: str, **kwargs: Any) -> str: ...
+
+
+typed_i18n = cast(I18nModule, i18n)
 
 
 class Localization:
@@ -23,7 +44,10 @@ class Localization:
             Defaults to `LOCALIZATION_CACHE_TTL` from settings
     """
 
-    cache: aiocache.RedisCache = aiocache.Cache.from_url(settings.REDIS_URL)
+    cache: TranslationCache = cast(
+        TranslationCache,
+        aiocache.Cache.from_url(settings.REDIS_URL),  # pyright: ignore[reportUnknownMemberType]  # aiocache has no type hints
+    )
     TTL: int = settings.LOCALIZATION_CACHE_TTL
     DEFAULT_LANG = settings.LOCALIZATION_DEFAULT_LANG
 
@@ -45,8 +69,8 @@ class Localization:
         self.translations_path: Path = Path() / "res/locales"
         self.ttl: int = ttl
 
-        i18n.config.set("load_path", [str(self.translations_path)])
-        i18n.config.set("fallback", self.default_lang)
+        typed_i18n.config.set("load_path", [str(self.translations_path)])
+        typed_i18n.config.set("fallback", self.default_lang)
 
         logger.debug("Localization initialized: %s", self)
 
@@ -63,7 +87,7 @@ class Localization:
         )
 
     @staticmethod
-    def hash_kwargs(kwargs: dict) -> str:
+    def hash_kwargs(kwargs: dict[str, Any]) -> str:
         """
         Creates a SHA256 hash from the passed dictionary, previously by
         sorting keys and processing UUID values.
@@ -109,9 +133,7 @@ class Localization:
 
         cached_translation: str | None = None
         try:
-            cached_translation = cast(
-                "str | None", await self.cache.get(cache_key)
-            )
+            cached_translation = await self.cache.get(cache_key)
         except Exception as exc:
             logger.warning(
                 "Translation cache read failed for %s, translating without "
@@ -125,7 +147,7 @@ class Localization:
 
         logger.debug("Cache miss: %s. Fetching translation.", cache_key)
 
-        text: str = i18n.t(f"{markup}.{key}", locale=lang, **kwargs)
+        text = typed_i18n.t(f"{markup}.{key}", locale=lang, **kwargs)
 
         try:
             await self.cache.set(

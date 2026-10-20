@@ -2,16 +2,43 @@ from logging import CRITICAL, DEBUG, ERROR, INFO, WARNING
 
 from colorama import Back, Fore, Style
 
-cb = lambda x: Fore.BLUE + x + Fore.RESET  # noqa: E731
-cg = lambda x: Fore.GREEN + x + Fore.RESET  # noqa: E731
-cr = lambda x: Fore.RED + x + Fore.RESET  # noqa: E731
-cc = lambda x: Fore.CYAN + x + Fore.RESET  # noqa: E731
-cy = lambda x: Fore.YELLOW + x + Fore.RESET  # noqa: E731
-cm = lambda x: Fore.MAGENTA + x + Fore.RESET  # noqa: E731
-br = lambda x: Back.RED + x + Back.RESET  # noqa: E731
+
+def cb(x: str) -> str:
+    return Fore.BLUE + x + Fore.RESET
+
+
+def cg(x: str) -> str:
+    return Fore.GREEN + x + Fore.RESET
+
+
+def cr(x: str) -> str:
+    return Fore.RED + x + Fore.RESET
+
+
+def cc(x: str) -> str:
+    return Fore.CYAN + x + Fore.RESET
+
+
+def cy(x: str) -> str:
+    return Fore.YELLOW + x + Fore.RESET
+
+
+def cm(x: str) -> str:
+    return Fore.MAGENTA + x + Fore.RESET
+
+
+def br(x: str) -> str:
+    return Back.RED + x + Back.RESET
+
+
 c_ = Fore.RESET
 s_ = Style.RESET_ALL
-sb = lambda x: Style.BRIGHT + x + Style.NORMAL  # noqa: E731
+
+
+def sb(x: str) -> str:
+    return Style.BRIGHT + x + Style.NORMAL
+
+
 act = cg("%(asctime)s")
 prc = f"[{cc('%(process)s')}]"
 lvl = "%(levelname)-8s"

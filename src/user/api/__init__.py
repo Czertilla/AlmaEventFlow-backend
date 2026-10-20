@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import FastAPI
 
 from core.broker.kafka import stream_router
 from core.utils.broker.router import include_mq_routers
@@ -6,7 +6,7 @@ from core.utils.broker.router import include_mq_routers
 PREFIX = "/user"
 
 
-def include_routers(app: APIRouter):
+def include_routers(app: FastAPI):
     from user.api.kafka.sub.person import router as person_router
     from user.api.kafka.sub.telegram import router as telegram_rpc_router
     from user.api.v1 import include_routers as include_v1_routers

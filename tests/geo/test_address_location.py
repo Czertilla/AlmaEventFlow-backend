@@ -97,6 +97,7 @@ async def test_patch_updates_name_spot_and_recomposes_name_from_parsed(
         )
     )
     assert renamed.name == "Новое имя"
+    assert renamed.spot is not None
     assert renamed.spot.lat == pytest.approx(55.75)
 
     reparsed = await service.patch(
@@ -107,6 +108,7 @@ async def test_patch_updates_name_spot_and_recomposes_name_from_parsed(
         )
     )
     assert reparsed.name == "Арбат, 11"
+    assert reparsed.spot is not None
     assert reparsed.spot.lon == pytest.approx(37.6)
 
 
@@ -139,6 +141,7 @@ async def test_address_proxy_location_is_idempotent_and_publishes_once(
     third = await service.create(LocationCreateDTO(address_id=address.id))
 
     assert first.id == second.id == third.id
+    assert first.address is not None
     assert first.name is None and first.address.name == "Арбат, 10"
     assert [name for name, _ in published].count("on_location_created") == 1
     [(_, [sent])] = [
@@ -229,6 +232,7 @@ async def test_location_can_refine_an_address_with_its_own_spot(
     )
 
     assert entrance.address_id == address.id
+    assert entrance.spot is not None
     assert entrance.spot.lat == pytest.approx(55.7501)
     assert entrance.spot.lon == pytest.approx(37.6001)
 
@@ -258,4 +262,5 @@ async def test_upsert_many_inserts_then_updates_in_place(
     async with AddressUOW(sessionmaker_) as uow:
         stored = [await uow.addresses.get_by_id(address_id) for address_id in ids]
 
-    assert [address.name for address in stored] == ["Новая 0", "Новая 1"]
+    names = [address.name for address in stored if address is not None]
+    assert names == ["Новая 0", "Новая 1"]

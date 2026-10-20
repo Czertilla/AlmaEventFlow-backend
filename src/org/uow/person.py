@@ -7,4 +7,4 @@ class PersonMixin:
     persons: PersonRepo
 
 
-class PersonUOW(UnitOfWork, PersonMixin, PersonAUOW): ...
+class PersonUOW(UnitOfWork, PersonMixin, PersonAUOW): ...  # pyright: ignore[reportIncompatibleVariableOverride]

@@ -8,7 +8,7 @@ class UserSettings(Settings):
 
     OAUTH_GOOGLE_CLIENT_ID: str
     OAUTH_GOOGLE_CLIENT_SECRET: Secret[str]
-    OAUTH_STATE_SECRET: Secret[str] = "SECRET"
+    OAUTH_STATE_SECRET: Secret[str] = Secret("SECRET")
 
 
 

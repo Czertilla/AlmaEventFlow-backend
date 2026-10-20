@@ -33,9 +33,11 @@ class EmailTransport(DelegatedTransport):
 
     def _item(self, draft: DeliveryDraft) -> EmailDeliveryItem:
         content = draft.ctx.content
+        account = draft.ctx.account
+        assert account is not None
         return EmailDeliveryItem(
             delivery_id=draft.delivery_id,
-            recipient=draft.ctx.account.email,
+            recipient=account.email,
             subject=content.title,
             template=self.template,
             context={

@@ -16,15 +16,20 @@ class ABCUnitOfWork(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def __aexit__(self, *args) -> None:
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def _init_repo(self, repo_type: type[AbstractRepository]):
+    def _init_repo(self, repo_type: type[AbstractRepository]) -> AbstractRepository:
         raise NotImplementedError
 
     @abstractmethod
-    async def _on_aenter(self):
+    async def _on_aenter(self) -> None:
         raise NotImplementedError
 
     @abstractmethod
@@ -33,7 +38,7 @@ class ABCUnitOfWork(ABC):
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
-    ):
+    ) -> None:
         raise NotImplementedError
 
     @abstractmethod
@@ -41,7 +46,7 @@ class ABCUnitOfWork(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def _on_aexit(self):
+    async def _on_aexit(self) -> None:
         raise NotImplementedError
 
     @abstractmethod

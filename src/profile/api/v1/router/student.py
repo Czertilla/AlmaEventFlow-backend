@@ -85,7 +85,9 @@ async def put_student(
 ) -> StudentRead:
     return StudentRead.from_dto(
         await StudentService(uow).put(
-            StudentPut(id=student_id, **student.model_dump()).to_dto()
+            StudentPut.model_validate(
+                {"id": student_id, **student.model_dump()}
+            ).to_dto()
         )
     )
 
@@ -102,7 +104,9 @@ async def patch_student(
 ) -> StudentRead:
     return StudentRead.from_dto(
         await StudentService(uow).patch(
-            StudentPatch(id=student_id, **student.model_dump()).to_dto()
+            StudentPatch.model_validate(
+                {"id": student_id, **student.model_dump()}
+            ).to_dto()
         )
     )
 
@@ -163,7 +167,9 @@ async def put_student_degree(
 ) -> StudentDegreeRead:
     return StudentDegreeRead.from_dto(
         await StudentDegreeService(uow).put(
-            StudentDegreePut(id=degree_id, **degree.model_dump()).to_dto()
+            StudentDegreePut.model_validate(
+                {"id": degree_id, **degree.model_dump()}
+            ).to_dto()
         )
     )
 
@@ -180,7 +186,9 @@ async def patch_student_degree(
 ) -> StudentDegreeRead:
     return StudentDegreeRead.from_dto(
         await StudentDegreeService(uow).patch(
-            StudentDegreePatch(id=degree_id, **degree.model_dump()).to_dto()
+            StudentDegreePatch.model_validate(
+                {"id": degree_id, **degree.model_dump()}
+            ).to_dto()
         )
     )
 
@@ -241,7 +249,9 @@ async def put_student_group(
 ) -> StudentGroupRead:
     return StudentGroupRead.from_dto(
         await StudentGroupService(uow).put(
-            StudentGroupPut(id=group_id, **group.model_dump()).to_dto()
+            StudentGroupPut.model_validate(
+                {"id": group_id, **group.model_dump()}
+            ).to_dto()
         )
     )
 
@@ -258,7 +268,9 @@ async def patch_student_group(
 ) -> StudentGroupRead:
     return StudentGroupRead.from_dto(
         await StudentGroupService(uow).patch(
-            StudentGroupPatch(id=group_id, **group.model_dump()).to_dto()
+            StudentGroupPatch.model_validate(
+                {"id": group_id, **group.model_dump()}
+            ).to_dto()
         )
     )
 

@@ -1,10 +1,11 @@
 from datetime import datetime
 from logging import Logger, getLogger
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Self, cast
 
 from sqlalchemy import (
     Executable,
     Result,
+    ScalarResult,
     SQLColumnExpression,
     exists,
     func,
@@ -13,6 +14,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.sql.base import ExecutableOption
 from sqlalchemy.types import DateTime
 
 from ...utils.abstract.repository import AbstractRepository
@@ -48,7 +50,7 @@ class SQLAlchemyRepository[Model: Base](AbstractRepository):
     model: type[Model]
     logger: Logger
 
-    def __new__(cls, *args: Any, **kwargs: Any) -> "SQLAlchemyRepository":
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
         if not hasattr(cls, "logger"):
             cls.logger = getLogger(f"SQL.{cls.__name__}")
         return super().__new__(cls)
@@ -59,7 +61,7 @@ class SQLAlchemyRepository[Model: Base](AbstractRepository):
 
     async def execute(self, stmt: Executable, flush: bool = False) -> Result[Any]:
         self.logger.debug(str(stmt))
-        result: Result = await self.session.execute(statement=stmt)
+        result: Result[Any] = await self.session.execute(statement=stmt)
         if flush:
             await self.session.flush()
         return result
@@ -97,8 +99,8 @@ class SQLAlchemyRepository[Model: Base](AbstractRepository):
         return (await self.execute(stmt, flush=True)).unique().scalar_one()
     
     async def add_many(
-        self, data: list[dict[str, Any]], options: tuple = ()
-    ) -> Model:
+        self, data: list[dict[str, Any]], options: tuple[ExecutableOption, ...] = ()
+    ) -> ScalarResult[Model]:
         stmt = (
             insert(self.model)
             .values(data)
@@ -109,12 +111,12 @@ class SQLAlchemyRepository[Model: Base](AbstractRepository):
 
     async def get_many(
         self,
-        *criterias: list[SQLColumnExpression],
+        *criterias: SQLColumnExpression[bool],
         offset_: int | None = None,
         limit_: int | None = None,
-        options_: tuple = (),
-        order_by_: list[SQLColumnExpression] | None = None,
-        **filters: dict[str, Any],
+        options_: tuple[ExecutableOption, ...] = (),
+        order_by_: list[SQLColumnExpression[Any]] | None = None,
+        **filters: Any,
     ) -> list[Model]:
         stmt = (
             select(self.model)
@@ -134,13 +136,13 @@ class SQLAlchemyRepository[Model: Base](AbstractRepository):
                 + "async defining the limit_ parameter can lead to memory overflow"
             )
         result = await self.execute(stmt)
-        return result.scalars().all()
+        return cast("list[Model]", result.scalars().all())
 
     async def get_one(
         self,
-        *criterias: list[SQLColumnExpression],
-        options_: list[SQLColumnExpression] | None = None,
-        **filters: dict[str, Any],
+        *criterias: SQLColumnExpression[bool],
+        options_: list[ExecutableOption] | None = None,
+        **filters: Any,
     ) -> Model | None:
         stmt = (
             select(self.model)
@@ -150,10 +152,10 @@ class SQLAlchemyRepository[Model: Base](AbstractRepository):
         )
         return (await self.execute(stmt)).unique().scalar_one_or_none()
 
-    async def exists(self, *criterias: list[SQLColumnExpression]) -> bool:
+    async def exists(self, *criterias: SQLColumnExpression[bool]) -> bool:
         return (await self.execute(select(exists().where(*criterias)))).scalar()
 
-    async def count(self, *criterias: list[SQLColumnExpression]) -> int:
+    async def count(self, *criterias: SQLColumnExpression[bool]) -> int:
         stmt = select(func.count()).select_from(self.model)
         if criterias:
             stmt = stmt.where(*criterias)

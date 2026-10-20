@@ -78,7 +78,9 @@ async def put_my_person(
 ) -> PersonRead:
     return PersonRead.from_dto(
         await PersonService(uow).put(
-            PersonPut(id=person_id, **person_data.model_dump()).to_dto()
+            PersonPut.model_validate(
+                {"id": person_id, **person_data.model_dump()}
+            ).to_dto()
         )
     )
 
@@ -95,7 +97,9 @@ async def patch_my_person(
 ) -> PersonRead:
     return PersonRead.from_dto(
         await PersonService(uow).patch(
-            PersonPatch(id=person_id, **person_data.model_dump()).to_dto()
+            PersonPatch.model_validate(
+                {"id": person_id, **person_data.model_dump()}
+            ).to_dto()
         )
     )
 
@@ -127,7 +131,7 @@ async def put_person(
 ) -> PersonRead:
     return PersonRead.from_dto(
         await PersonService(uow).put(
-            PersonPut(id=person_id, **person.model_dump()).to_dto()
+            PersonPut.model_validate({"id": person_id, **person.model_dump()}).to_dto()
         )
     )
 
@@ -144,7 +148,9 @@ async def patch_person(
 ) -> PersonRead:
     return PersonRead.from_dto(
         await PersonService(uow).patch(
-            PersonPatch(id=person_id, **person.model_dump()).to_dto()
+            PersonPatch.model_validate(
+                {"id": person_id, **person.model_dump()}
+            ).to_dto()
         )
     )
 

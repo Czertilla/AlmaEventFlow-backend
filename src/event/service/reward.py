@@ -1,9 +1,10 @@
 from logging import getLogger
+from typing import Any, cast
 from urllib.parse import quote
 from uuid import UUID, uuid4
 
 from fastapi import UploadFile
-from redis import Redis
+from redis.asyncio import Redis
 
 from core.dependencies.redis import redis
 from core.dto.base import dto_dict
@@ -30,10 +31,25 @@ class RewardService(BaseService[RewardUOW]):
     required_redis = required_field("redis")
     required_s3 = required_field("s3")
 
-    def __init__(self, uow, redis: Redis = None, s3: S3Client = None):
+    def __init__(
+        self,
+        uow: RewardUOW,
+        redis: Redis | None = None,
+        s3: S3Client | None = None,
+    ):
         super().__init__(uow)
         self.redis = redis
         self.s3 = s3
+
+    @property
+    def _s3(self) -> S3Client:
+        assert self.s3 is not None
+        return self.s3
+
+    @staticmethod
+    def _file_id(reward: RewardORM) -> UUID:
+        assert reward.file_id is not None
+        return reward.file_id
 
     @required_redis
     @required_s3
@@ -41,22 +57,24 @@ class RewardService(BaseService[RewardUOW]):
         self, file_id: UUID, cached: bool = True
     ) -> str:
         if cached and (url := await redis.get(f"event:file_url:{file_id}")):
-            return url
+            return cast("str", url)
         expired = 3600
         await redis.setex(
             f"event:file_url:{file_id}",
             expired - 100,
-            url := await self.s3.get_presigned_url(file_id, expired),
+            url := await self._s3.get_presigned_url(str(file_id), expired),
         )
         return url
 
     @required_s3
     async def _put_file(self, file: UploadFile, file_id: UUID):
-        await self.s3.put_file(
-            (file_id := str(file_id)),
+        filename = file.filename
+        assert filename is not None
+        await self._s3.put_file(
+            str(file_id),
             await file.read(),
             ContentType=file.content_type,
-            ContentDisposition='filename="' f'{quote(file.filename)}"',
+            ContentDisposition='filename="' f'{quote(filename)}"',
         )
 
     @staticmethod
@@ -91,7 +109,7 @@ class RewardService(BaseService[RewardUOW]):
 
     @required_transaction
     async def _update(
-        self, reward_id: UUID, reward_data: dict, *, flush: bool = False
+        self, reward_id: UUID, reward_data: dict[str, Any], *, flush: bool = False
     ) -> RewardORM:
         reward_data.pop("file", None)
         reward = await self.uow.rewards.update_one(reward_id, reward_data, flush)
@@ -108,8 +126,9 @@ class RewardService(BaseService[RewardUOW]):
             reward = await self._create(reward_create)
             file_link = None
             if reward_create.file:
-                await self._put_file(reward_create.file, reward.file_id)
-                file_link = await self._get_presigned_file(reward.file_id)
+                file_id = self._file_id(reward)
+                await self._put_file(reward_create.file, file_id)
+                file_link = await self._get_presigned_file(file_id)
             result = await self._to_dto(reward, file_link)
             await uow.commit()
         return result
@@ -128,8 +147,9 @@ class RewardService(BaseService[RewardUOW]):
             reward = await self._update(reward_patch.id, reward_data)
             file_link = None
             if reward_patch.file:
-                await self._put_file(reward_patch.file, reward.file_id)
-                file_link = await self._get_presigned_file(reward.file_id)
+                file_id = self._file_id(reward)
+                await self._put_file(reward_patch.file, file_id)
+                file_link = await self._get_presigned_file(file_id)
             result = await self._to_dto(reward, file_link)
             await uow.commit()
         return result
@@ -146,10 +166,12 @@ class RewardService(BaseService[RewardUOW]):
     @required_s3
     async def delete(self, reward_id: UUID) -> None:
         async with self.uow as uow:
-            file_id = (await self._read(reward_id)).file_id
+            reward = await self._read(reward_id)
+            assert reward is not None
+            file_id = reward.file_id
             await self._delete(reward_id)
             if file_id:
-                await self.s3.delete_file(str(file_id))
+                await self._s3.delete_file(str(file_id))
             await uow.commit()
 
     async def search(

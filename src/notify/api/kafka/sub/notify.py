@@ -17,7 +17,7 @@ NotifyUOWDep = Depends(ModuleUOWDep("notify")(NotifyUOW))
 
 
 @router.subscriber(NotifyQueue.SEND)
-async def on_notification(request: NotificationRequest, uow=NotifyUOWDep):
+async def on_notification(request: NotificationRequest, uow: NotifyUOW = NotifyUOWDep):
     """Single inbound async API: producers publish a ``NotificationRequest``.
     Ingest runs in one transaction, so a failure leaves nothing persisted and
     the request is dead-lettered for inspection."""

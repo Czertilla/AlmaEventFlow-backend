@@ -1,4 +1,7 @@
+from typing import Any
+
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.sql.base import ExecutableOption
 
 from core.repository.person import PersonBaseRepo
 from user.models.person import PersonORM
@@ -7,7 +10,9 @@ from user.models.person import PersonORM
 class PersonRepo(PersonBaseRepo[PersonORM]):
     model = PersonORM
 
-    async def upsert(self, data, options = ()):
+    async def upsert(
+        self, data: dict[str, Any], options: tuple[ExecutableOption, ...] = ()
+    ) -> PersonORM | None:
         stmt = (
             insert(self.model)
             .values(**data)

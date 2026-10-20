@@ -3,7 +3,7 @@ from typing import Any
 
 from aiogram import BaseMiddleware
 from aiogram.enums import ChatType
-from aiogram.types import Message, Update
+from aiogram.types import Message, TelegramObject, Update
 
 from bot.tg.schema.user import TGUser
 from bot.tg.text.builder import TextBuilder
@@ -39,13 +39,13 @@ class UsernameWarningMiddleware(
 
     async def __call__(
         self,
-        handler: Callable[[Update, dict[str, Any]], Awaitable[Any]],
-        update: Update,
+        handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
+        update: TelegramObject,
         data: dict[str, Any],
     ) -> object:
         result: object = await handler(update, data)
         user = data.get("user")
-        event = update.message
+        event = update.message if isinstance(update, Update) else None
         if (
             isinstance(user, TGUser)
             and user.username is None

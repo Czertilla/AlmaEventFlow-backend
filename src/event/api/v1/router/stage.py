@@ -66,7 +66,7 @@ async def put_stage(
     stage_id: UUID, stage: StagePutData, user: SuperUserJWTDep, uow: StageUOWDep
 ) -> StageRead:
     result = await StageService(uow).put(
-        StagePut(id=stage_id, **stage.model_dump()).to_dto()
+        StagePut.model_validate({"id": stage_id, **stage.model_dump()}).to_dto()
     )
     async with uow as scope:
         await notify_collective_chats(scope, event_ids=[result.event_id])
@@ -81,7 +81,7 @@ async def patch_stage(
     stage_id: UUID, stage: StagePatchData, user: SuperUserJWTDep, uow: StageUOWDep
 ) -> StageRead:
     result = await StageService(uow).patch(
-        StagePatch(id=stage_id, **stage.model_dump()).to_dto()
+        StagePatch.model_validate({"id": stage_id, **stage.model_dump()}).to_dto()
     )
     async with uow as scope:
         await notify_collective_chats(scope, event_ids=[result.event_id])

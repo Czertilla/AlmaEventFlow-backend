@@ -61,7 +61,7 @@ async def put_member(
     member_id: UUID, member: MemberPutData, user: SuperUserJWTDep, uow: MemberUOWDep
 ) -> MemberRead:
     result = await MemberService(uow).put(
-        MemberPut(id=member_id, **member.model_dump()).to_dto()
+        MemberPut.model_validate({"id": member_id, **member.model_dump()}).to_dto()
     )
     return MemberRead.from_dto(result)
 
@@ -77,7 +77,7 @@ async def patch_member(
     uow: MemberUOWDep,
 ) -> MemberRead:
     result = await MemberService(uow).patch(
-        MemberPatch(id=member_id, **member.model_dump()).to_dto()
+        MemberPatch.model_validate({"id": member_id, **member.model_dump()}).to_dto()
     )
     return MemberRead.from_dto(result)
 

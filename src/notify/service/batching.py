@@ -1,6 +1,6 @@
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import Any, TypeVar
 from uuid import UUID
 
 from core.enum.notify import TransportTypeEnum
@@ -15,7 +15,7 @@ class OutboxRow:
     """A transport batch ready to be written to the outbox."""
 
     topic: str
-    payload: dict
+    payload: dict[str, Any]
 
 
 def chunked[T](items: Sequence[T], size: int) -> Iterator[Sequence[T]]:

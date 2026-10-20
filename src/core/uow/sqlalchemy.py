@@ -1,10 +1,12 @@
 from logging import getLogger
-from typing import Self
+from typing import Any, Self, cast
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from core.database.sqlalchemy import new_session
+from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.uow.base import BaseUOW
+from core.utils.abstract.repository import AbstractRepository
 
 logger = getLogger(__name__)
 
@@ -16,12 +18,14 @@ class UnitOfWork(BaseUOW):
     Manages database sessions and transactions.
     """
 
-    def __init__(self, sessionmaker: async_sessionmaker | None = None):
+    def __init__(self, sessionmaker: async_sessionmaker[AsyncSession] | None = None):
         """
         Initializes the UnitOfWork with a new session factory.
         """
         super().__init__()
-        self.session_factory: async_sessionmaker = sessionmaker or new_session
+        self.session_factory: async_sessionmaker[AsyncSession] = (
+            sessionmaker or new_session
+        )
         self.session: AsyncSession | None = None
 
     def __call__(self) -> Self:
@@ -30,10 +34,11 @@ class UnitOfWork(BaseUOW):
         """
         return self.__class__(self.session_factory)
 
-    def _init_repo(self, repo_type):
-        return repo_type(self.session)
+    def _init_repo(self, repo_type: type[AbstractRepository]) -> AbstractRepository:
+        assert self.session is not None
+        return cast("type[SQLAlchemyRepository[Any]]", repo_type)(self.session)
 
-    async def _on_aenter(self) -> Self:
+    async def _on_aenter(self) -> None:
         """
         Enters the asynchronous context and creates a new database session.
         Automatically initializes all declared repositories.

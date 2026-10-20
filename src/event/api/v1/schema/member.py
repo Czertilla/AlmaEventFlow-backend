@@ -31,7 +31,7 @@ class MemberCreate(MemberCreateData, ToDTOMixinV1):
 
 
 class MemberRead(FromDTOMixinV1, MemberCreate, UUIDMixinV1, TimestampMixinV1):
-    roles: list[RolePreview]
+    roles: list[RolePreview]  # pyright: ignore[reportGeneralTypeIssues, reportIncompatibleVariableOverride]
 
 
 class MemberPatchData(PatchModelV1, ToDTOMixinV1):

@@ -7,6 +7,7 @@ from bot.tg.utils.abstract.usecase import BotUseCase, InlineBuilderMixin
 class MenuUseCase(BotUseCase, InlineBuilderMixin):
     @BotUseCase.required_state
     async def on_start(self, actor: ActorDTO) -> MessageArgs:
+        assert self.state is not None
         await self.state.set_state(MenuStateGroup._)
         return MessageArgs(
             text=await self.text_builder.on_main(actor),
@@ -18,6 +19,7 @@ class MenuUseCase(BotUseCase, InlineBuilderMixin):
 
     @BotUseCase.required_state
     async def on_info(self) -> MessageArgs:
+        assert self.state is not None
         await self.state.set_state(MenuStateGroup.Help._)
         return MessageArgs(
             text=await self.text_builder.on_info(),
@@ -33,10 +35,12 @@ class MenuUseCase(BotUseCase, InlineBuilderMixin):
     @BotUseCase.required_state
     @BotUseCase.required_user
     async def language(self) -> MessageArgs:
+        assert self.state is not None
+        assert self.user is not None
         await self.state.set_state(MenuStateGroup.Settings.Language._)
         return MessageArgs(
             text=await self.text_builder.on_edit_language(
-                self.user._is_lang_modified
+                self.user.is_lang_modified
             ),
             reply_markup=await self.inline_builder.language_kb(),
         )

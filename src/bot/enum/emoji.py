@@ -114,5 +114,5 @@ class Emoji(StrEnum):
 
 
     @classmethod
-    def get_lang_emoji(cls, key: str):
-        return {"en": cls.gb, "ru": cls.ru}.get(key, "")
+    def get_lang_emoji(cls, key: str | None):
+        return {"en": cls.gb, "ru": cls.ru}.get(key or "", "")

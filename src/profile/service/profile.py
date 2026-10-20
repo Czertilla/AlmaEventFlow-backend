@@ -12,7 +12,7 @@ from profile.dto.profile import (
 from profile.exc.profile import ProfileNotExistsException
 from profile.filter.profile import ProfileFilter
 from profile.models.profile import ProfileORM
-from profile.uow.profile import ProfileExtendedUOW
+from profile.uow.profile import ProfileExtendedUOW, ProfilePassportUOW, ProfileUOW
 from typing import Any
 from uuid import UUID
 
@@ -40,7 +40,9 @@ def profile_to_dto(profile: ProfileORM) -> ProfileDTO:
     )
 
 
-class ProfileService(BaseService[ProfileExtendedUOW]):
+class ProfileService(
+    BaseService[ProfileUOW | ProfilePassportUOW | ProfileExtendedUOW]
+):
     @staticmethod
     def _to_dto(profile: ProfileORM) -> ProfileDTO:
         return profile_to_dto(profile)

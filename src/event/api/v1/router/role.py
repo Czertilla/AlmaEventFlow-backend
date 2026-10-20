@@ -59,7 +59,7 @@ async def put_role(
     role_id: UUID, role: RolePutData, user: SuperUserJWTDep, uow: RoleUOWDep
 ) -> RoleRead:
     result = await RoleService(uow).put(
-        RolePut(id=role_id, **role.model_dump()).to_dto()
+        RolePut.model_validate({"id": role_id, **role.model_dump()}).to_dto()
     )
     return RoleRead.from_dto(result)
 
@@ -71,7 +71,7 @@ async def patch_role(
     role_id: UUID, role: RolePatchData, user: SuperUserJWTDep, uow: RoleUOWDep
 ) -> RoleRead:
     result = await RoleService(uow).patch(
-        RolePatch(id=role_id, **role.model_dump()).to_dto()
+        RolePatch.model_validate({"id": role_id, **role.model_dump()}).to_dto()
     )
     return RoleRead.from_dto(result)
 

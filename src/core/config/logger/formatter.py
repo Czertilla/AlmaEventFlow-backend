@@ -5,6 +5,8 @@ import logging.config
 import sys
 import traceback
 from pathlib import Path
+from types import TracebackType
+from typing import Any
 
 from .format import FORMATS
 
@@ -30,15 +32,17 @@ class JSONFormatter(logging.Formatter):
         """Formats the log record as a JSON string."""
         if not hasattr(record, "err_id"):
             record.err_id = None
-        log_entry = {
+        log_entry: dict[str, Any] = {
             "timestamp": self.formatTime(record),
             "level": record.levelname,
             "module": record.module,
             "message": record.getMessage(),
         }
         if record.exc_info:
+            exc_type = record.exc_info[0]
+            assert exc_type is not None
             log_entry["exception"] = {
-                "type": str(record.exc_info[0].__name__),
+                "type": str(exc_type.__name__),
                 "message": str(record.exc_info[1]),
                 "traceback": "".join(
                     traceback.format_exception(*record.exc_info)
@@ -53,14 +57,13 @@ class TGFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         err_id = html.escape(str(getattr(record, "err_id", "-")))
         message = html.escape(record.getMessage())
-        exc_type = (
-            "" if record.exc_info is None else html.escape(record.exc_info[0].__name__)
-        )
-        exc_message = (
-            ""
-            if record.exc_info is None
-            else html.escape(str(record.exc_info[1]))
-        )
+        exc_type = ""
+        exc_message = ""
+        if record.exc_info is not None:
+            exc_class = record.exc_info[0]
+            assert exc_class is not None
+            exc_type = html.escape(exc_class.__name__)
+            exc_message = html.escape(str(record.exc_info[1]))
         return (
             f"<b>timestamp</b>: <code>{html.escape(self.formatTime(record))}</code>\n"
             f"<b>logger</b>: {html.escape(record.name)}\n"
@@ -72,7 +75,11 @@ class TGFormatter(logging.Formatter):
         )
 
 
-def handle_exception(exc_type, exc_value, exc_traceback):
+def handle_exception(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+    exc_traceback: TracebackType | None,
+) -> None:
     """Глобальный обработчик необработанных исключений."""
     if issubclass(exc_type, KeyboardInterrupt):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)

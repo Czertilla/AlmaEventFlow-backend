@@ -2,7 +2,7 @@ import asyncio
 import ssl
 from functools import lru_cache
 from logging import getLogger
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from faststream.kafka import (
     KafkaBroker as BaseKafkaBroker,
@@ -31,7 +31,8 @@ def next_reconnect_interval(current: float) -> float:
     return min(current * 2, MAX_RECONNECT_INTERVAL)
 
 
-if not settings.IN_MEMORY_BROKER:
+# statically the Kafka classes; IN_MEMORY_BROKER swaps in the duck-typed doubles
+if TYPE_CHECKING or not settings.IN_MEMORY_BROKER:
 
     def kafka_uri(
         host: str = settings.KAFKA_HOST,
@@ -197,8 +198,8 @@ else:
 
 
 @lru_cache
-def get_broker():
-    return get_stream_router().broker
+def get_broker() -> KafkaBroker:
+    return cast("KafkaBroker", get_stream_router().broker)
 
 
 stream_router = get_stream_router()

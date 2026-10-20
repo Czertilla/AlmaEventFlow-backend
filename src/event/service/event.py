@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 from logging import getLogger
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy.orm import selectinload
@@ -110,7 +111,9 @@ class EventService(BaseService[EventComposeUOW]):
         )
 
     @staticmethod
-    def _ensure_active_has_date(status, date) -> None:
+    def _ensure_active_has_date(
+        status: EventStatusEnumV1 | str | None, date: datetime.date | None
+    ) -> None:
         """Бизнес-правило: мероприятие не может быть active без даты."""
         status_value = (
             status.value
@@ -194,7 +197,7 @@ class EventService(BaseService[EventComposeUOW]):
                 event_create.type
             )
         event = await self.uow.events.add_n_return(data=event_data)
-        await self.uow.session.flush(objects=[event])
+        await self.uow.events.session.flush(objects=[event])
         event = await self.uow.events.get_by_id(
             event.id,
             options=(
@@ -203,6 +206,7 @@ class EventService(BaseService[EventComposeUOW]):
                 selectinload(EventORM.type_rel),
             ),
         )
+        assert event is not None
         return event
 
     @required_transaction
@@ -219,7 +223,7 @@ class EventService(BaseService[EventComposeUOW]):
 
     @required_transaction
     async def _update(
-        self, event_id: UUID, event_data: dict, *, flush: bool = False
+        self, event_id: UUID, event_data: dict[str, Any], *, flush: bool = False
     ) -> EventORM:
         event = await self.uow.events.update_one(event_id, event_data, flush)
         if event is None:
@@ -235,6 +239,7 @@ class EventService(BaseService[EventComposeUOW]):
                 selectinload(EventORM.type_rel),
             ),
         )
+        assert event is not None
         return event
 
     @required_transaction
@@ -432,14 +437,14 @@ class EventService(BaseService[EventComposeUOW]):
             if event_data.stages:
                 stage_service = StageService(self.uow)
                 for stage_data in event_data.stages:
-                    await stage_service._create(
+                    await stage_service._create(  # pyright: ignore[reportPrivateUsage]
                         StageCreateDTO(
                             event_id=event_orm.id, **dto_dict(stage_data)
                         )
                     )
 
             participation_service = ParticipationService(self.uow)
-            participation_orm = await participation_service._create(
+            participation_orm = await participation_service._create(  # pyright: ignore[reportPrivateUsage]
                 ParticipationCreateDTO(
                     collective_id=event_data.collective_id,
                     event_id=event_orm.id,
@@ -453,7 +458,7 @@ class EventService(BaseService[EventComposeUOW]):
             if member_ids:
                 attendance_service = AttendanceService(self.uow)
                 for member_id in member_ids:
-                    await attendance_service._create(
+                    await attendance_service._create(  # pyright: ignore[reportPrivateUsage]
                         AttendanceCreateDTO(
                             member_id=member_id,
                             participation_id=participation_orm.id,
@@ -603,7 +608,7 @@ class EventService(BaseService[EventComposeUOW]):
                 collective_id, event_id
             )
             await uow.participations.delete_one(participation.id)
-            await uow.session.flush()
+            await uow.participations.flush()
 
             if await uow.participations.count_for_event(event_id) == 0:
                 logger.debug(
@@ -624,7 +629,7 @@ class EventService(BaseService[EventComposeUOW]):
             await self._require_collective_participation(
                 collective_id, event_id
             )
-            stage = await StageService(self.uow)._create(
+            stage = await StageService(self.uow)._create(  # pyright: ignore[reportPrivateUsage]
                 StageCreateDTO(event_id=event_id, **dto_dict(stage_data))
             )
             result = dto_from_orm(stage, StageDTO)
@@ -644,7 +649,7 @@ class EventService(BaseService[EventComposeUOW]):
             )
             event_id = stage.event_id
             stage_data = dto_dict(stage_patch, only_set=True)
-            stage = await StageService(self.uow)._update(
+            stage = await StageService(self.uow)._update(  # pyright: ignore[reportPrivateUsage]
                 stage_patch.id, stage_data
             )
             result = dto_from_orm(stage, StageDTO)
@@ -663,7 +668,7 @@ class EventService(BaseService[EventComposeUOW]):
                 collective_id, stage.event_id
             )
             event_id = stage.event_id
-            await StageService(self.uow)._delete(stage_id)
+            await StageService(self.uow)._delete(stage_id)  # pyright: ignore[reportPrivateUsage]
             await uow.commit()
             await notify_collective_chats(uow, event_ids=[event_id])
 

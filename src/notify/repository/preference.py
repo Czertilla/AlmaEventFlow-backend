@@ -15,7 +15,7 @@ class PreferenceRepo(
 
     async def get_by_user(self, user_id: UUID) -> list[Model]:
         stmt = select(self.model).where(self.model.user_id == user_id)
-        return (await self.execute(stmt)).scalars().all()
+        return list((await self.execute(stmt)).scalars().all())
 
     async def delete_by_user(self, user_id: UUID) -> None:
         await self.execute(delete(self.model).where(self.model.user_id == user_id))

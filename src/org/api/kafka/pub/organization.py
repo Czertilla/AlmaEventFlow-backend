@@ -5,6 +5,7 @@ from core.enum.topic import OrganizationTopic
 from core.schema.message.org import (
     OrganizationCreatedEvent,
     OrganizationData,
+    OrganizationDelete,
     OrganizationDeletedEvent,
     OrganizationUpdatedEvent,
 )
@@ -30,7 +31,10 @@ async def on_organization_updated(organizations: list[OrganizationData]):
 async def on_organization_deleted(organization_ids: list[UUID]):
     await broker.publish(
         OrganizationDeletedEvent(
-            data=[{"id": organization_id} for organization_id in organization_ids]
+            data=[
+                OrganizationDelete(id=organization_id)
+                for organization_id in organization_ids
+            ]
         ),
         OrganizationTopic.DELETED,
     )

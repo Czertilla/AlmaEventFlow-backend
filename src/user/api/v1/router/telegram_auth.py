@@ -1,6 +1,7 @@
 from typing import Any
 
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 
 from core.schema.error import ErrorCode, auth_responses, detail_400, detail_404
 from core.utils.exc.http import VancedHTTPException
@@ -25,6 +26,7 @@ async def get_telegram_login_config() -> dict[str, str | None]:
 
 @router.post(
     "/login",
+    response_model=dict[str, Any],
     responses={
         **detail_400(ErrorCode.TELEGRAM_AUTH_INVALID),
         **detail_404(ErrorCode.TELEGRAM_ACCOUNT_NOT_LINKED),
@@ -35,7 +37,7 @@ async def login_with_telegram(
     payload: TelegramWidgetAuth,
     request: Request,
     user_service: UserService = Depends(get_user_service),
-) -> dict[str, Any]:
+) -> JSONResponse:
     """Alternative to password login: verifies the signed payload from
     Telegram's Login Widget and looks up the AEF user already linked via the
     bot's ``/start`` deep-link flow. Never creates an account -- a payload for

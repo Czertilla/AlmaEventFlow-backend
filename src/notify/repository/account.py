@@ -37,4 +37,4 @@ class AccountRepo(
         stmt = select(self.model.id).where(
             self.model.person_id.in_(person_ids)
         )
-        return (await self.execute(stmt)).scalars().all()
+        return list((await self.execute(stmt)).scalars().all())

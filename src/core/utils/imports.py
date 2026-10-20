@@ -19,7 +19,7 @@ def load_common[T](
     Returns:
         List of found objects matching the expected type.
     """
-    found_objects = []
+    found_objects: list[T] = []
 
     package = importlib.import_module(package_name)
 

@@ -47,7 +47,7 @@ class ProfileRepo(
         id: UUID,
         data: dict[str, Any],
         flush: bool = False,
-        options=all_options,
+        options: tuple[ExecutableOption, ...] = all_options,
     ) -> Model | None:
         stmt = (
             update(self.model)
@@ -58,13 +58,21 @@ class ProfileRepo(
         )
         return (await self.execute(stmt, flush)).unique().scalar_one_or_none()
 
-    async def get_by_id(self, id, options=all_options):
+    async def get_by_id(
+        self, id: UUID, options: tuple[Any, ...] | None = all_options
+    ) -> Model | None:
         return await super().get_by_id(id, options)
 
-    async def add_n_return(self, data, options=all_options):
+    async def add_n_return(
+        self, data: dict[str, Any], options: tuple[Any, ...] = all_options
+    ) -> Model:
         return await super().add_n_return(data, options)
 
-    async def upsert(self, data, options=all_options):
+    async def upsert(
+        self,
+        data: dict[str, Any],
+        options: tuple[ExecutableOption, ...] = all_options,
+    ) -> Model | None:
         return await super().upsert(data, options)
 
     async def search(

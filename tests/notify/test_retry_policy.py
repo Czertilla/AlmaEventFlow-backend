@@ -13,6 +13,8 @@ def test_retry_scheduled_with_growing_backoff():
 
     assert first.status is DeliveryStatus.retry_scheduled
     assert second.status is DeliveryStatus.retry_scheduled
+    assert first.next_attempt_at is not None
+    assert second.next_attempt_at is not None
     first_delay = (first.next_attempt_at - before).total_seconds()
     second_delay = (second.next_attempt_at - before).total_seconds()
     assert first_delay < second_delay
@@ -22,6 +24,7 @@ def test_backoff_is_capped():
     policy = RetryPolicy(base_seconds=60, cap_seconds=120)
     before = datetime.now(UTC)
     decision = policy.after_failure(attempts_done=4, max_attempts=10)
+    assert decision.next_attempt_at is not None
     delay = (decision.next_attempt_at - before).total_seconds()
     assert delay <= 121
 

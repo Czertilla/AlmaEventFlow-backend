@@ -29,7 +29,7 @@ PreferenceUOWDep = Depends(UOWDep(PreferenceUOW))
 
 @router.subscriber(NotifyRPC.REGISTER_CLIENT)
 async def on_register_client(
-    request: RegisterClientRequest, uow=ClientUOWDep
+    request: RegisterClientRequest, uow: ClientUOW = ClientUOWDep
 ) -> MQResponse[ClientData]:
     async def _call() -> ClientData:
         client = await ClientService(uow).register(
@@ -48,7 +48,7 @@ async def on_register_client(
 
 @router.subscriber(NotifyRPC.DEREGISTER_CLIENT)
 async def on_deregister_client(
-    request: DeregisterClientRequest, uow=ClientUOWDep
+    request: DeregisterClientRequest, uow: ClientUOW = ClientUOWDep
 ) -> MQResponse[Ack]:
     async def _call() -> Ack:
         await ClientService(uow).delete(request.user_id, request.client_id)
@@ -59,7 +59,7 @@ async def on_deregister_client(
 
 @router.subscriber(NotifyRPC.GET_PREFERENCES)
 async def on_get_preferences(
-    request: GetPreferencesRequest, uow=PreferenceUOWDep
+    request: GetPreferencesRequest, uow: PreferenceUOW = PreferenceUOWDep
 ) -> MQResponse[PreferencesData]:
     async def _call() -> PreferencesData:
         prefs = await PreferenceService(uow).get_my(request.user_id)
@@ -75,7 +75,7 @@ async def on_get_preferences(
 
 @router.subscriber(NotifyRPC.SET_PREFERENCES)
 async def on_set_preferences(
-    request: SetPreferencesRequest, uow=PreferenceUOWDep
+    request: SetPreferencesRequest, uow: PreferenceUOW = PreferenceUOWDep
 ) -> MQResponse[PreferencesData]:
     async def _call() -> PreferencesData:
         update = PreferencesUpdateDTO(

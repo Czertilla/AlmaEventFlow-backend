@@ -2,12 +2,12 @@ from typing import Any
 from uuid import UUID
 
 from fastapi_users.authentication import JWTStrategy as Base
-from fastapi_users.jwt import generate_jwt
+from fastapi_users.jwt import generate_jwt  # pyright: ignore[reportUnknownVariableType]
 
 from user.utils.rsa import get_private_key_pem, get_public_key_pem
 
 
-class AccessStrategy(Base):
+class AccessStrategy(Base[Any, Any]):
     def __init__(
         self,
         secret: str | None = None,

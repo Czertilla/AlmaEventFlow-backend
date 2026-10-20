@@ -1,7 +1,7 @@
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -37,6 +37,7 @@ from geo.models.country import CountryORM
 from geo.models.region import RegionORM
 from geo.models.spot import spot_element
 from geo.search import (
+    SearchableFilter,
     distance_m,
     point_element,
     search_page,
@@ -144,28 +145,29 @@ class AddressAlchemyRepo(
         scope: list[ColumnElement[bool]] | None = None,
         near: PointDTO | None = None,
     ) -> tuple[Iterable[Model], int]:
+        searchable = cast("SearchableFilter", filter)
         match = (
             text_match(
-                filter.search,
+                searchable.search,
                 self.model.search_tsv,
                 ADDRESS_SEARCH_TEXT,
                 self.model.name,
             )
-            if filter.search
+            if searchable.search
             else None
         )
         if match is None:
             if near is not None:
                 return await self._search_near(
-                    filter, near, pagination, options=options, scope=scope
+                    searchable, near, pagination, options=options, scope=scope
                 )
             return await super().search(
                 filter, pagination, options=options, scope=scope
             )
 
-        plain = filter.model_copy(update={"search": None})
+        plain = searchable.model_copy(update={"search": None})
 
-        def build(predicate):
+        def build(predicate: ColumnElement[bool]) -> Select[Any]:
             base = plain.filter(select(self.model).where(predicate))
             return base.where(*scope) if scope else base
 
@@ -351,13 +353,13 @@ class AddressAlchemyRepo(
 
     async def _search_near(
         self,
-        filter: Filter,
+        filter: SearchableFilter,
         near: PointDTO,
         pagination: PageParams,
         *,
-        options=None,
-        scope: list | None = None,
-    ) -> tuple[list[Model], int]:
+        options: Sequence[ExecutableOption] | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
+    ) -> tuple[Iterable[Model], int]:
         """No search text -- order by distance from ``near`` (KNN via the
         GiST index on ``spot``) instead of ``filter``'s default ordering."""
         point = WKTElement(f"POINT({near.lon} {near.lat})", srid=4326)
@@ -387,7 +389,7 @@ class AddressAlchemyRepo(
         max_lat: float,
         max_lon: float,
         pagination: PageParams,
-    ) -> tuple[list[Model], int]:
+    ) -> tuple[Iterable[Model], int]:
         """PostGIS bounding-box (``&&``) query against ``ST_MakeEnvelope`` --
         index-only, exactly what the GIST spatial index on ``spot`` exists
         for. Rows with no ``spot`` are excluded by ordinary SQL NULL

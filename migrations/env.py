@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 from logging.config import fileConfig
+from typing import Any
 
 from alembic import context
 from sqlalchemy import pool
@@ -22,13 +23,20 @@ from core.database.sqlalchemy.core import Base
 logger = getLogger(__name__)
 
 current_service = context.config.get_main_option("database_name")
+assert current_service is not None
 os.environ["DB_NAME"] = current_service
+geo_options: dict[str, Any] = {}
 if current_service == "geo":
     from geoalchemy2 import alembic_helpers
 
+    geo_options = {
+        "process_revision_directives": alembic_helpers.writer,
+        "render_item": alembic_helpers.render_item,
+    }
+
 config = context.config
 section = config.config_ini_section
-settings = Settings()
+settings = Settings()  # pyright: ignore[reportCallIssue]  # required fields are filled from the environment
 
 if settings.DB_DBMS == "sqlite":
     sqlalchemy_url = f"sqlite+aiosqlite:///{settings.DB_NAME}.db"
@@ -66,7 +74,7 @@ target_metadata = Base.metadata
 
 def include_object(object, name, type_, reflected, compare_to):
     return not (
-        not alembic_helpers.include_object(object, name, type_, reflected, compare_to)
+        not alembic_helpers.include_object(object, name, type_, reflected, compare_to)  # pyright: ignore[reportPossiblyUnboundVariable]
         or (type_ == "table" and name in ("layer", "topology"))
     )
 
@@ -91,8 +99,7 @@ def run_migrations_offline() -> None:
             literal_binds=True,
             dialect_opts={"paramstyle": "named"},
             include_object=include_object,
-            process_revision_directives=alembic_helpers.writer,
-            render_item=alembic_helpers.render_item,
+            **geo_options,
         )
     else:
         context.configure(
@@ -112,8 +119,7 @@ def do_run_migrations(connection: Connection) -> None:
             connection=connection,
             target_metadata=target_metadata,
             include_object=include_object,
-            process_revision_directives=alembic_helpers.writer,
-            render_item=alembic_helpers.render_item,
+            **geo_options,
             compare_type=True,
             compare_server_default=True,
         )
@@ -152,8 +158,7 @@ def run_migrations_online() -> None:
         context.configure(
             url=url,
             include_object=include_object,
-            process_revision_directives=alembic_helpers.writer,
-            render_item=alembic_helpers.render_item,
+            **geo_options,
         )
     else:
         context.configure(url=url)

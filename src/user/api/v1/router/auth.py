@@ -27,6 +27,7 @@ router = APIRouter()
 
 @router.post(
     "/login",
+    response_model=dict[str, Any],
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": ErrorModel,
@@ -48,7 +49,7 @@ async def login(
     request: Request,
     credentials: OAuth2PasswordRequestForm = Depends(),
     user_service: UserService = Depends(get_user_service),
-) -> dict[str, Any]:
+) -> JSONResponse:
     user = await user_service.authenticate(credentials.username, credentials.password)
     if user is None or not user.is_active:
         raise VancedHTTPException(
@@ -59,6 +60,7 @@ async def login(
 
 @router.post(
     "/refresh",
+    response_model=dict[str, Any],
     responses={
         status.HTTP_401_UNAUTHORIZED: {
             "model": ErrorModel,
@@ -83,7 +85,7 @@ async def login(
 async def refresh(
     request: Request,
     user_service: UserService = Depends(get_user_service),
-) -> dict[str, Any]:
+) -> JSONResponse:
     raw_refresh = request.cookies.get(settings.REFRESH_COOKIE_NAME)
     if not raw_refresh:
         raise VancedHTTPException(

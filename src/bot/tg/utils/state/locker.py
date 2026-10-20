@@ -9,7 +9,7 @@ from uuid import UUID, uuid4
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.redis import RedisStorage
 
-from ._locks import _memory_locks, _state_debounces
+from ._locks import memory_locks, state_debounces
 
 
 def get_state_lock(state: FSMContext) -> Any:
@@ -24,10 +24,10 @@ def get_state_lock(state: FSMContext) -> Any:
     """
     storage_key = str(state.key)
 
-    if storage_key not in _memory_locks:
-        _memory_locks[storage_key] = Lock()
+    if storage_key not in memory_locks:
+        memory_locks[storage_key] = Lock()
 
-    return _memory_locks[storage_key]
+    return memory_locks[storage_key]
 
 
 def _get_debounce_key(state: FSMContext) -> str:
@@ -39,13 +39,13 @@ def _get_debounce_key(state: FSMContext) -> str:
 
 
 def set_state_debounce(state: FSMContext) -> UUID:
-    _state_debounces[_get_debounce_key(state)] = (result := uuid4())
+    state_debounces[_get_debounce_key(state)] = (result := uuid4())
     return result
 
 
 def get_state_debounce(state: FSMContext) -> UUID | None:
-    return _state_debounces.get(_get_debounce_key(state), None)
+    return state_debounces.get(_get_debounce_key(state), None)
 
 
 def clear_state_debounce(state: FSMContext) -> None:
-    _state_debounces.pop(_get_debounce_key(state), None)
+    state_debounces.pop(_get_debounce_key(state), None)

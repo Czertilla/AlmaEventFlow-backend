@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import select, update
@@ -33,7 +34,7 @@ class SessionRepo(
             .distinct()
             .order_by(Model.last_used_at.desc())
         )
-        return (await self.execute(stmt)).scalars().all()
+        return list((await self.execute(stmt)).scalars().all())
 
     async def get_for_user(
         self, user_id: UUID, session_id: UUID
@@ -48,7 +49,7 @@ class SessionRepo(
         ip_address: str | None = None,
         device_info: str | None = None,
     ) -> None:
-        values: dict = {"last_used_at": datetime.now(UTC)}
+        values: dict[str, Any] = {"last_used_at": datetime.now(UTC)}
         if ip_address is not None:
             values["ip_address"] = ip_address
         if device_info is not None:

@@ -3,6 +3,7 @@ from logging import getLogger
 from uuid import UUID
 
 from core.dto.base import dto_from_orm
+from core.enum.notify import TransportTypeEnum
 from core.service.base import BaseService, required_transaction
 from notify.config.settings import settings
 from notify.dto.account import AccountDTO
@@ -66,7 +67,7 @@ class RetryReenqueueService(BaseService[RetryUOW]):
             )
             return 0
         content = NotificationContent.from_model(notification)
-        drafts: dict = defaultdict(list)
+        drafts: dict[TransportTypeEnum, list[DeliveryDraft]] = defaultdict(list)
         ready: list[UUID] = []
         unresolved: list[UUID] = []
         accounts: dict[UUID, AccountDTO | None] = {}

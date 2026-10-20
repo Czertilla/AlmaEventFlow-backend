@@ -1,5 +1,6 @@
 import base64
 from logging import getLogger
+from typing import TYPE_CHECKING, Any, cast
 from uuid import UUID
 
 import aiohttp
@@ -17,6 +18,10 @@ from notify.dto.client import ClientTargetDTO
 from notify.dto.notification import NotificationContent
 from notify.exc import WebPushClientInvalidException
 from notify.transport.base import DeliveryDraft, DirectTransport
+
+if TYPE_CHECKING:
+    from webpush import WebPush as WebPushEngine
+    from webpush.types import WebPushMessage
 
 logger = getLogger(__name__)
 
@@ -52,7 +57,7 @@ class WebPushTransport(DirectTransport):
     delivery_topic = NotifyDeliveryQueue.WEBPUSH
 
     def __init__(self) -> None:
-        self._wp: WebPush | None = None
+        self._wp: WebPushEngine | None = None
         self._wp_loaded = False
 
     def is_available(self) -> bool:
@@ -104,7 +109,9 @@ class WebPushTransport(DirectTransport):
         except WebPushException as exc:
             raise WebPushDeliveryError(f"encrypt:{exc}", dead=False) from exc
         async with session.post(
-            client.endpoint, data=message.encrypted, headers=message.headers
+            client.endpoint,
+            data=message.encrypted,
+            headers=cast("dict[str, str]", message.headers),
         ) as response:
             if response.status in _OK_STATUSES:
                 return
@@ -113,7 +120,10 @@ class WebPushTransport(DirectTransport):
                 dead=response.status in _DEAD_STATUSES,
             )
 
-    def _encrypt(self, client: ClientTargetDTO, content: NotificationContent):
+    def _encrypt(
+        self, client: ClientTargetDTO, content: NotificationContent
+    ) -> "WebPushMessage":
+        assert WebPushSubscription is not None
         subscription = WebPushSubscription.model_validate(
             {
                 "endpoint": client.endpoint,
@@ -123,12 +133,12 @@ class WebPushTransport(DirectTransport):
                 },
             }
         )
-        return self._engine().get(
-            message=self._payload(content), subscription=subscription
-        )
+        engine = self._engine()
+        assert engine is not None
+        return engine.get(message=self._payload(content), subscription=subscription)
 
     @staticmethod
-    def _payload(content: NotificationContent) -> dict:
+    def _payload(content: NotificationContent) -> dict[str, Any]:
         return {
             "title": content.title,
             "body": content.body,
@@ -136,13 +146,13 @@ class WebPushTransport(DirectTransport):
             "data": content.data,
         }
 
-    def _engine(self) -> "WebPush | None":
+    def _engine(self) -> "WebPushEngine | None":
         if not self._wp_loaded:
             self._wp = self._build_engine()
             self._wp_loaded = True
         return self._wp
 
-    def _build_engine(self) -> "WebPush | None":
+    def _build_engine(self) -> "WebPushEngine | None":
         if WebPush is None:
             return None
         private, public = settings.vapid_private_key, settings.vapid_public_key

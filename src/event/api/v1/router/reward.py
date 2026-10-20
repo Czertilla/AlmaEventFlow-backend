@@ -84,7 +84,7 @@ async def put_reward(
     uow: RewardUOWDep,
 ) -> RewardRead:
     result = await RewardService(uow, redis, s3).put(
-        RewardPut(id=reward_id, **reward.model_dump()).to_dto()
+        RewardPut.model_validate({"id": reward_id, **reward.model_dump()}).to_dto()
     )
     return RewardRead.from_dto(result)
 

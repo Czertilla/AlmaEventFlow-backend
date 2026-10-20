@@ -3,7 +3,7 @@ from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from datetime import date, datetime
 from logging import getLogger
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -14,6 +14,7 @@ from core.config.settings import settings
 from core.enum.notify import NotificationCategory
 from core.schema.message.announcement import AnnouncementRequest, AnnouncementStage
 from core.schema.message.notify import NotificationRequest
+from core.uow.sqlalchemy import UnitOfWork
 from core.utils.announcement import send_announcement
 from core.utils.notify import send_notification
 from event.models.attendance import AttendanceORM
@@ -85,7 +86,7 @@ def _format_date_time(
 
 
 async def notify_event_targets(
-    uow,
+    uow: UnitOfWork,
     *,
     attendance_ids: Iterable[UUID] | None = None,
     participation_ids: Iterable[UUID] | None = None,
@@ -101,8 +102,9 @@ async def notify_event_targets(
         "event_ids": event_ids,
     }
     try:
-        rows = await _resolve_targets(uow.session, **scope)
-        stages = await _resolve_stages(uow.session, {row[0] for row in rows})
+        session = _session(uow)
+        rows = await _resolve_targets(session, **scope)
+        stages = await _resolve_stages(session, {row[0] for row in rows})
         requests = _build_requests(rows, stages)
     except Exception:
         logger.exception(
@@ -119,6 +121,10 @@ async def notify_event_targets(
         await _publish(request)
 
 
+def _session(uow: UnitOfWork) -> AsyncSession:
+    return cast("AsyncSession", uow.session)
+
+
 def _describe_scope(scope: dict[str, Iterable[UUID] | None]) -> str:
     return ", ".join(
         f"{name}={[str(item) for item in ids]}"
@@ -133,7 +139,7 @@ async def _resolve_targets(
     attendance_ids: Iterable[UUID] | None,
     participation_ids: Iterable[UUID] | None,
     event_ids: Iterable[UUID] | None,
-) -> Sequence:
+) -> Sequence[Row[Any]]:
     stmt = (
         select(
             EventORM.id, EventORM.name, EventORM.date, MemberORM.person_id
@@ -188,7 +194,7 @@ async def _resolve_stages(
 
 
 def _build_requests(
-    rows: Sequence, stages: dict[UUID, list[StageInfo]]
+    rows: Sequence[Sequence[Any]], stages: dict[UUID, list[StageInfo]]
 ) -> list[NotificationRequest]:
     names: dict[UUID, str] = {}
     dates: dict[UUID, date | None] = {}
@@ -259,7 +265,7 @@ async def _publish(request: NotificationRequest) -> None:
 
 
 async def notify_collective_chats(
-    uow, *, event_ids: Iterable[UUID]
+    uow: UnitOfWork, *, event_ids: Iterable[UUID]
 ) -> None:
     """Announces a trigger-status event to each participating collective's
     official chat (a separate, non-personal pipeline from
@@ -269,10 +275,9 @@ async def notify_collective_chats(
     like the personal pipeline."""
     event_ids = list(event_ids)
     try:
-        rows = await _resolve_collective_targets(
-            uow.session, event_ids=event_ids
-        )
-        stages = await _resolve_stages(uow.session, {row[0] for row in rows})
+        session = _session(uow)
+        rows = await _resolve_collective_targets(session, event_ids=event_ids)
+        stages = await _resolve_stages(session, {row[0] for row in rows})
         requests = _build_announcements(rows, stages)
     except Exception:
         logger.exception(
@@ -332,7 +337,7 @@ async def _resolve_collective_targets(
 def _build_announcements(
     rows: Sequence[Row[Any]], stages: dict[UUID, list[StageInfo]]
 ) -> list[AnnouncementRequest]:
-    result = []
+    result: list[AnnouncementRequest] = []
     for row in rows:
         (
             event_id,

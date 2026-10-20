@@ -1,4 +1,5 @@
 from collections.abc import Awaitable
+from typing import Any, cast
 
 from pydantic import BaseModel
 
@@ -13,14 +14,15 @@ class RpcError(Exception):
         self.error = error
 
 
-async def rpc_call[T](
+async def rpc_call[T: BaseModel](
     topic: str,
     request: MQRequest,
     response_model: type[T],
     *,
     timeout_s: float = 5.0,
 ) -> T:
-    raw = await broker.request(request, topic, timeout=timeout_s)
+    raw: Any = await broker.request(request, topic, timeout=timeout_s)
+    response: MQResponse[T]
     if hasattr(raw, "body"):
         body = raw.body
         if isinstance(body, (bytes, str)):
@@ -32,7 +34,7 @@ async def rpc_call[T](
         response = raw
     if response.error is not None:
         raise RpcError(response.error)
-    return response.data
+    return cast("T", response.data)
 
 
 async def rpc_respond[T: BaseModel](coro: Awaitable[T]) -> MQResponse[T]:

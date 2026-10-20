@@ -5,6 +5,7 @@ from core.enum.topic import LocationTopic
 from core.schema.message.geo import (
     LocationCreatedEvent,
     LocationData,
+    LocationDelete,
     LocationDeletedEvent,
     LocationUpdatedEvent,
 )
@@ -30,7 +31,7 @@ async def on_location_updated(locations: list[LocationData]):
 async def on_location_deleted(location_ids: list[UUID]):
     await broker.publish(
         LocationDeletedEvent(
-            data=[{"id": location_id} for location_id in location_ids]
+            data=[LocationDelete(id=location_id) for location_id in location_ids]
         ),
         LocationTopic.DELETED,
     )

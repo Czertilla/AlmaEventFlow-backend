@@ -83,7 +83,7 @@ async def put_event(
     event_id: UUID, event: EventPutData, user: SuperUserJWTDep, uow: EventComposeUOWDep
 ) -> EventRead:
     result = await EventService(uow).put(
-        EventPut(id=event_id, **event.model_dump()).to_dto()
+        EventPut.model_validate({"id": event_id, **event.model_dump()}).to_dto()
     )
     return EventRead.from_dto(result)
 
@@ -102,7 +102,7 @@ async def patch_event(
     uow: EventComposeUOWDep,
 ) -> EventRead:
     result = await EventService(uow).patch(
-        EventPatch(id=event_id, **event.model_dump()).to_dto()
+        EventPatch.model_validate({"id": event_id, **event.model_dump()}).to_dto()
     )
     return EventRead.from_dto(result)
 

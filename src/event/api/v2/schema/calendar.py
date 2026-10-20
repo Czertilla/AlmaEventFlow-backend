@@ -47,7 +47,7 @@ class SubscriptionRead(FromDTOMixinV1, BaseModel):
 class SubscriptionCreated(SubscriptionRead):
     """Returned by create / rotate-token — ``feed_url`` is always present."""
 
-    feed_url: str
+    feed_url: str  # pyright: ignore[reportGeneralTypeIssues, reportIncompatibleVariableOverride]
 
 
 class FeedDescriptor(FromDTOMixinV1, BaseModel):

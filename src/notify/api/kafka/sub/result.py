@@ -13,5 +13,7 @@ DeliveryResultUOWDep = Depends(ModuleUOWDep("notify")(DeliveryResultUOW))
 
 
 @router.subscriber(NotifyDeliveryQueue.RESULT)
-async def on_delivery_result(result: DeliveryResult, uow=DeliveryResultUOWDep):
+async def on_delivery_result(
+    result: DeliveryResult, uow: DeliveryResultUOW = DeliveryResultUOWDep
+):
     await DeliveryService(uow).apply_result(result)

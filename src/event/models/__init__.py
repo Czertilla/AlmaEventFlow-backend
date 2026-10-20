@@ -28,7 +28,6 @@ __all__ = [
     "EventStageORM",
     "EventStatusORM",
     "EventTypeORM",
-    "FileORMEventLinkORM",
     "LocationORM",
     "MemberORM",
     "OrganizationORM",

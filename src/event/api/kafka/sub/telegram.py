@@ -33,7 +33,7 @@ MemberUOWDep = Depends(UOWDep(MemberUOW))
 
 @router.subscriber(EventRPC.MY_COLLECTIVES)
 async def on_my_collectives(
-    request: MyCollectivesRequest, uow=CollectiveUOWDep
+    request: MyCollectivesRequest, uow: CollectiveUOW = CollectiveUOWDep
 ) -> MQResponse[MyCollectivesResponse]:
     async def _call() -> MyCollectivesResponse:
         collectives = await CollectiveService(uow).get_my_collectives(
@@ -67,7 +67,7 @@ async def on_my_memberships(
 
 @router.subscriber(EventRPC.MY_ATTENDANCE)
 async def on_my_attendance(
-    request: MyAttendanceRequest, uow=AttendanceUOWDep
+    request: MyAttendanceRequest, uow: AttendanceUOW = AttendanceUOWDep
 ) -> MQResponse[MyAttendanceResponse]:
     async def _call() -> MyAttendanceResponse:
         attendances = await AttendanceService(uow).get_mine_for_event(
@@ -83,8 +83,8 @@ async def on_my_attendance(
 @router.subscriber(EventRPC.PATCH_MY_ATTENDANCE)
 async def on_patch_my_attendance(
     request: PatchMyAttendanceRequest,
-    member_uow=MemberUOWDep,
-    attendance_uow=AttendanceUOWDep,
+    member_uow: MemberUOW = MemberUOWDep,
+    attendance_uow: AttendanceUOW = AttendanceUOWDep,
 ) -> MQResponse[AttendanceData]:
     async def _call() -> AttendanceData:
         async with member_uow as uow:

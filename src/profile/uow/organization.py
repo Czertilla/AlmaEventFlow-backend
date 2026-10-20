@@ -8,4 +8,4 @@ class OrganizationMixin:
     organizations: OrganizationRepo
 
 
-class OrganizationUOW(UnitOfWork, OrganizationMixin, OrganizationAUOW): ...
+class OrganizationUOW(UnitOfWork, OrganizationMixin, OrganizationAUOW): ...  # pyright: ignore[reportIncompatibleVariableOverride]

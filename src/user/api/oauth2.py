@@ -25,7 +25,9 @@ class GoogleOAuth2(Base):
 
             return cast(dict[str, Any], response.json())
 
-    async def get_id_email(self, token: str) -> tuple[str, str | None]:
+    async def get_id_email(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self, token: str
+    ) -> tuple[str, tuple[str, str | None]]:
         try:
             profile = await self.get_profile(token)
         except GetProfileError as e:

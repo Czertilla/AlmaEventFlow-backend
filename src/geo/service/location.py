@@ -73,11 +73,15 @@ class LocationService(BaseService[LocationUOW]):
             )
             .options(*_WITH_ADDRESS)
         )
-        return (await self.uow.session.execute(stmt)).unique().scalar_one()
+        session = self.uow.session
+        assert session is not None
+        return (await session.execute(stmt)).unique().scalar_one()
 
     @required_transaction
     async def _ensure_address_proxy(self, address_id: UUID) -> tuple[LocationORM, bool]:
-        address_exists = await self.uow.session.scalar(
+        session = self.uow.session
+        assert session is not None
+        address_exists = await session.scalar(
             select(exists().where(AddressORM.id == address_id))
         )
         if not address_exists:

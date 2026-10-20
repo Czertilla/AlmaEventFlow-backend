@@ -30,7 +30,7 @@ class FacultyRead(FromDTOMixinV1, FacultyBase, UUIDMixinV1, TimestampMixinV1):
 
 
 class FacultyPatchData(FacultyBase, PatchModelV1):
-    name: str | None = Field(max_length=128, default=None)
+    name: str | None = Field(max_length=128, default=None)  # pyright: ignore[reportIncompatibleVariableOverride]
     acronym: str | None = Field(max_length=16, default=None)
     university_id: UUID | None = None
 

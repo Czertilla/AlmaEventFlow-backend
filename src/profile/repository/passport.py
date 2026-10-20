@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from profile.models.passport import NameVariantORM
 from profile.models.passport import PassportORM as Model
+from typing import Any
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -42,10 +43,16 @@ class PassportRepo(
             scope=scope,
         )
 
-    async def add_n_return(self, data, options=(with_name_variant,)):
+    async def add_n_return(
+        self,
+        data: dict[str, Any],
+        options: tuple[Any, ...] = (with_name_variant,),
+    ) -> Model:
         return await super().add_n_return(data, options)
 
-    async def get_by_id(self, id, options=(with_name_variant,)):
+    async def get_by_id(
+        self, id: UUID, options: tuple[Any, ...] | None = (with_name_variant,)
+    ) -> Model | None:
         return await super().get_by_id(id, options)
 
     async def clear_by_profile(self, profile_id: UUID):

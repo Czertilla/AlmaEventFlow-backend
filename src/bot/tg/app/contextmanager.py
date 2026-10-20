@@ -47,9 +47,11 @@ class TGBotContextManager(AppContextManager):
         self.dp = dp
 
     def register_handlers(self):
+        assert self.dp is not None
         register_routers(self.dp)
 
     def setup_di(self):
+        assert self.dp is not None
         setup_di(self.dp)
 
     async def set_commands(self):
@@ -70,6 +72,8 @@ class TGBotContextManager(AppContextManager):
             if settings.BOT_TG_WEBHOOK_SECRET
             else None
         )
+        assert self.bot is not None
+        assert self.dp is not None
         await self.bot.set_webhook(
             url=url,
             allowed_updates=self.dp.resolve_used_update_types(),
@@ -102,6 +106,7 @@ class TGBotContextManager(AppContextManager):
         track(polling)
 
     async def stop_polling(self):
+        assert self.dp is not None
         await self.dp.stop_polling()
 
     async def check_identity(self):
@@ -137,6 +142,7 @@ class TGBotContextManager(AppContextManager):
     async def shutdown(self, app: FastAPI | FastStream):
         await super().shutdown(app)
         if (feed_type := settings.BOT_TG_FEED_TYPE) == TgBotFeedType.WEBHOOK:
+            assert self.bot is not None
             await self.bot.delete_webhook()
         elif feed_type == TgBotFeedType.POLLING:
             await self.stop_polling()

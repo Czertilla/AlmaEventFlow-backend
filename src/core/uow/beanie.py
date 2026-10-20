@@ -1,12 +1,14 @@
 from contextlib import AbstractAsyncContextManager
 from logging import getLogger
-from typing import Any
+from typing import Any, cast
 
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.client_session import AsyncClientSession
 
 from core.database.beanie.client import get_client
+from core.database.beanie.core import BeanieRepository
 from core.uow.base import BaseUOW
+from core.utils.abstract.repository import AbstractRepository
 
 logger = getLogger(__name__)
 
@@ -23,13 +25,16 @@ class UnitOfWork(BaseUOW):
         Initializes the UnitOfWork with a new session factory.
         """
         super().__init__()
-        self.client: AsyncMongoClient = get_client()
+        self.client: AsyncMongoClient[dict[str, Any]] = get_client()
         self.max_commit_time_ms: int | None = max_commit_time_ms
         self.client_session: AsyncClientSession | None = None
         self.client_context: AbstractAsyncContextManager[Any] | None = None
 
-    def _init_repo(self, repo_type):
-        return repo_type(self.client_session)
+    def _init_repo(self, repo_type: type[AbstractRepository]) -> AbstractRepository:
+        assert self.client_session is not None
+        return cast("type[BeanieRepository[Any, Any]]", repo_type)(
+            self.client_session
+        )
 
     async def _on_aenter(self) -> None:
         """
@@ -47,6 +52,7 @@ class UnitOfWork(BaseUOW):
 
     async def _on_aexit(self):
         if self.client_session:
+            assert self.client_context is not None
             await self.client_context.__aexit__(None, None, None)
             await self.client_session.end_session()
         self.client_session = None

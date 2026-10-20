@@ -12,29 +12,29 @@ from core.service.event.location import LocationEventService
 from core.uow.event.location import LocationAUOW
 
 
-def get_location_event_router(
-    service_cls: type[LocationEventService], uow_dep: UOWDep
+def get_location_event_router[U: LocationAUOW](
+    service_cls: type[LocationEventService[U]], uow_dep: UOWDep
 ) -> KafkaRouter:
     router = KafkaRouter()
 
-    location_uow: LocationAUOW = Depends(uow_dep)
+    location_uow: U = Depends(uow_dep)
     location_service = service_cls
 
     @router.subscriber(LocationTopic.CREATED)
     async def on_location_created(
-        event: LocationCreatedEvent, uow=location_uow
+        event: LocationCreatedEvent, uow: U = location_uow
     ):
         await location_service(uow).create(event.data)
 
     @router.subscriber(LocationTopic.UPDATED)
     async def on_location_updated(
-        event: LocationUpdatedEvent, uow=location_uow
+        event: LocationUpdatedEvent, uow: U = location_uow
     ):
         await location_service(uow).update(event.data)
 
     @router.subscriber(LocationTopic.DELETED)
     async def on_location_deleted(
-        event: LocationDeletedEvent, uow=location_uow
+        event: LocationDeletedEvent, uow: U = location_uow
     ):
         await location_service(uow).delete(event.data)
 

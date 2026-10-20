@@ -1,12 +1,18 @@
-from beanie import Document, init_beanie
+from collections.abc import Sequence
+from typing import Any
+
+from beanie import (
+    Document,
+    init_beanie,  # pyright: ignore[reportUnknownVariableType]  # beanie leaves AsyncDatabase unparameterized
+)
 from pymongo import AsyncMongoClient
 
 from core.config.settings import settings
 
-_client: AsyncMongoClient | None = None
+_client: AsyncMongoClient[dict[str, Any]] | None = None
 
 
-def get_client(host: str = settings.MONGO_URL) -> AsyncMongoClient:
+def get_client(host: str = settings.MONGO_URL) -> AsyncMongoClient[dict[str, Any]]:
     global _client
     if _client is None:
         _client = AsyncMongoClient(host)
@@ -14,7 +20,7 @@ def get_client(host: str = settings.MONGO_URL) -> AsyncMongoClient:
 
 
 async def init(
-    document_models: list[Document] | None = None,
+    document_models: Sequence[type[Document]] | None = None,
     host: str = settings.MONGO_URL,
     db_name: str = settings.DB_NAME,
 ) -> None:

@@ -139,7 +139,7 @@ class EventFilter(
         for name in RELATION_FILTERS:
             setattr(self, name, None)
         try:
-            return super().filter(query)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
+            return super().filter(query)
         finally:
             for name, value in given.items():
                 setattr(self, name, value)

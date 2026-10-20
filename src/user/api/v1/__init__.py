@@ -1,7 +1,7 @@
-from fastapi import APIRouter
+from fastapi import FastAPI
 
 
-def include_routers(app: APIRouter, prefix: str) -> None:
+def include_routers(app: FastAPI, prefix: str) -> None:
     from user.api.auth import fastapi_users, oauth_backend
     from user.api.oauth2 import google_oauth_client
     from user.api.v1.router.auth import router as auth_router
@@ -45,7 +45,7 @@ def include_routers(app: APIRouter, prefix: str) -> None:
         tags=["auth"],
     )
     app.include_router(
-        fastapi_users.get_oauth_router(
+        fastapi_users.get_oauth_router(  # pyright: ignore[reportUnknownMemberType]
             google_oauth_client,
             oauth_backend,
             state_secret,
@@ -56,7 +56,7 @@ def include_routers(app: APIRouter, prefix: str) -> None:
         tags=["auth"],
     )
     app.include_router(
-        fastapi_users.get_oauth_associate_router(
+        fastapi_users.get_oauth_associate_router(  # pyright: ignore[reportUnknownMemberType]
             google_oauth_client, UserRead, state_secret
         ),
         prefix=f"{prefix}/v1/auth/associate/google",

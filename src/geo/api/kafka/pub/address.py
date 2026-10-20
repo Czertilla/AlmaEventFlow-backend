@@ -5,6 +5,7 @@ from core.enum.topic import AddressTopic
 from core.schema.message.geo import (
     AddressCreatedEvent,
     AddressData,
+    AddressDelete,
     AddressDeletedEvent,
     AddressUpdatedEvent,
 )
@@ -22,6 +23,8 @@ async def on_address_updated(addresses: list[AddressData]):
 @router.publisher(AddressTopic.DELETED)
 async def on_address_deleted(address_ids: list[UUID]):
     await broker.publish(
-        AddressDeletedEvent(data=[{"id": address_id} for address_id in address_ids]),
+        AddressDeletedEvent(
+            data=[AddressDelete(id=address_id) for address_id in address_ids]
+        ),
         AddressTopic.DELETED,
     )

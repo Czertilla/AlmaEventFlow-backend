@@ -1,3 +1,5 @@
+from typing import cast
+
 from pydantic import EmailStr, Field, Secret
 
 from core.config.settings import Settings, getSettings
@@ -7,7 +9,7 @@ class MailSettings(Settings):
     """_description_"""
 
     MAIL_ADMIN_EMAIL: EmailStr = Field(
-        default_factory=lambda d: d.get("ADMIN_EMAIL", None)
+        default_factory=lambda d: cast("EmailStr", d.get("ADMIN_EMAIL", None))
     )
     """_description_"""
 

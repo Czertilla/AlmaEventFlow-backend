@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from aiogram3_di import Depends  # pyright: ignore[reportMissingTypeStubs]
+from aiogram3_di import Depends
 
 from bot.tg.dto.actor import ActorDTO
 from bot.tg.schema.user import TGUser

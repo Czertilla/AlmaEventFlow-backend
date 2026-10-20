@@ -17,7 +17,9 @@ WebPushUOWDep = Depends(ModuleUOWDep("notify")(WebPushDeliveryUOW))
 
 
 @router.subscriber(NotifyDeliveryQueue.WEBPUSH)
-async def on_web_push(batch: WebPushDeliveryBatch, uow=WebPushUOWDep):
+async def on_web_push(
+    batch: WebPushDeliveryBatch, uow: WebPushDeliveryUOW = WebPushUOWDep
+):
     try:
         await WebPushWorkerService(uow).handle(batch)
     except Exception:

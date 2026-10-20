@@ -18,9 +18,9 @@ class CollectiveRepo(
 ):
     model = Model
 
-    async def get_by_principal_id(self, principal_id: UUID) -> list[Model]:
+    async def get_by_principal_id(self, principal_id: UUID | None) -> list[Model]:
         stmt = select(self.model).where(self.model.principal_id == principal_id)
-        return (await self.execute(stmt)).unique().scalars().all()
+        return list((await self.execute(stmt)).unique().scalars().all())
 
     async def get_by_member_person_id(self, person_id: UUID) -> list[Model]:
         stmt = (

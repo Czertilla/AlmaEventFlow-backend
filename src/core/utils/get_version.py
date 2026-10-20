@@ -2,7 +2,7 @@ import tomllib
 from pathlib import Path
 
 
-def find_pyproject_toml(start_path=None):
+def find_pyproject_toml(start_path: Path | None = None) -> Path:
     if start_path is None:
         start_path = Path(__file__).resolve().parent
     current = start_path
@@ -16,7 +16,7 @@ def find_pyproject_toml(start_path=None):
     raise FileNotFoundError("pyproject.toml not found in any parent directory.")
 
 
-def get_version():
+def get_version() -> str:
     pyproject_path = find_pyproject_toml()
     with open(pyproject_path, "rb") as f:
         pyproject = tomllib.load(f)

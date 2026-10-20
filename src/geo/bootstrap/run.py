@@ -30,9 +30,10 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from logging import basicConfig, getLogger
 from pathlib import Path
+from typing import Any
 from uuid import NAMESPACE_URL, UUID, uuid5
 
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from core.config.settings import settings
 from geo.bootstrap.coverage import cells_covering_bbox
@@ -63,7 +64,7 @@ MOSCOW_SEED = {
     "city_name": "Москва",
 }
 
-CITY_SEEDS: dict[str, dict] = {
+CITY_SEEDS: dict[str, dict[str, str]] = {
     "moscow": MOSCOW_SEED,
 }
 
@@ -133,7 +134,10 @@ async def resolve_city_for_point(
     return await resolve_or_create_city(uow, country, region, city)
 
 
-async def _flush(batch: list[dict], sessionmaker: async_sessionmaker | None) -> int:
+async def _flush(
+    batch: list[dict[str, Any]],
+    sessionmaker: async_sessionmaker[AsyncSession] | None,
+) -> int:
     rows = list({row["id"]: row for row in batch}.values())
     async with AddressUOW(sessionmaker) as uow:
         await uow.addresses.upsert_many(rows)
@@ -153,18 +157,18 @@ def address_id(city_id: int, street: str, housenumber: str) -> UUID:
 _address_id = address_id
 
 
-async def _import_cell(
+async def import_cell(
     source: OverpassSource,
     cell: BBox,
     city_id: int,
     batch_size: int,
     db_lock: asyncio.Lock,
-    sessionmaker: async_sessionmaker | None,
+    sessionmaker: async_sessionmaker[AsyncSession] | None,
     *,
     id_fn: Callable[[str, str], UUID],
     synced_at: datetime,
 ) -> int:
-    rows: dict[tuple[str, str], dict] = {}
+    rows: dict[tuple[str, str], dict[str, Any]] = {}
     async for raw in source.fetch(cell):
         key = (raw.street.strip().casefold(), raw.housenumber.strip().casefold())
         rows.setdefault(
@@ -189,7 +193,8 @@ async def _import_cell(
 
 
 async def _run(
-    args: argparse.Namespace, sessionmaker: async_sessionmaker | None = None
+    args: argparse.Namespace,
+    sessionmaker: async_sessionmaker[AsyncSession] | None = None,
 ) -> Progress:
     if args.prune_stale and not args.fresh:
         raise ValueError(
@@ -252,7 +257,7 @@ async def _run(
             except asyncio.QueueEmpty:
                 return
             try:
-                stored = await _import_cell(
+                stored = await import_cell(
                     source,
                     cells[index - 1],
                     city_id,

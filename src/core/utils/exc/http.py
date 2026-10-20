@@ -5,14 +5,14 @@ from fastapi import HTTPException
 
 
 class VancedHTTPException(HTTPException):
-    status_code: int = None
+    status_code: int = None  # pyright: ignore[reportAssignmentType]
     detail: Any | dict[str, Any] = None
     headers: ClassVar[dict[str, Any]] = {}
 
     def __init__(
         self,
-        status_code=None,
-        detail=None,
+        status_code: int | None = None,
+        detail: Any = None,
         headers: dict[str, str] | None = None,
         *,
         err_id: UUID | None = None,

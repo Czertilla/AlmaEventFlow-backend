@@ -59,7 +59,7 @@ async def put_link(
     link_id: UUID, link: LinkPutData, user: SuperUserJWTDep, uow: LinkUOWDep
 ) -> LinkRead:
     result = await LinkService(uow).put(
-        LinkPut(id=link_id, **link.model_dump()).to_dto()
+        LinkPut.model_validate({"id": link_id, **link.model_dump()}).to_dto()
     )
     return LinkRead.from_dto(result)
 
@@ -71,7 +71,7 @@ async def patch_link(
     link_id: UUID, link: LinkPatchData, user: SuperUserJWTDep, uow: LinkUOWDep
 ) -> LinkRead:
     result = await LinkService(uow).patch(
-        LinkPatch(id=link_id, **link.model_dump()).to_dto()
+        LinkPatch.model_validate({"id": link_id, **link.model_dump()}).to_dto()
     )
     return LinkRead.from_dto(result)
 

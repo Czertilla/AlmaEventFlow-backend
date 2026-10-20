@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import select, update
@@ -48,7 +49,7 @@ class NotificationDeliveryRepo(
         ids = list(ids)
         if not ids:
             return
-        values: dict = {
+        values: dict[str, Any] = {
             "status": status,
             "next_attempt_at": next_attempt_at,
             "last_error": last_error,
@@ -78,7 +79,7 @@ class NotificationDeliveryRepo(
             .limit(limit)
             .with_for_update(skip_locked=True)
         )
-        return (await self.execute(stmt)).scalars().all()
+        return list((await self.execute(stmt)).scalars().all())
 
     async def mark_pending(self, ids: Iterable[UUID]) -> None:
         ids = list(ids)

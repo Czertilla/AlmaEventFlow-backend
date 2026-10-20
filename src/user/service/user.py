@@ -130,7 +130,7 @@ class UserService(BaseService[UserUOW]):
 
     @required_transaction
     async def _flushed(self, user_id: UUID) -> UserDTO:
-        await self.uow.session.flush()
+        await self.uow.users.flush()
         return self._to_dto(await self._get(user_id))
 
     async def get(self, user_id: UUID) -> UserDTO:
@@ -700,7 +700,7 @@ class UserService(BaseService[UserUOW]):
             await self.uow.refresh_tokens.revoke_all_by_session(stored.session_id)
             return None
         stored.is_used = True
-        await self.uow.session.flush()
+        await self.uow.refresh_tokens.flush()
         await self.uow.sessions.update_last_used(
             stored.session_id, ip_address=ip_address, device_info=device_info
         )

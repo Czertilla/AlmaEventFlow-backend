@@ -7,7 +7,7 @@ Create Date: 2025-09-25 19:08:43.382103
 """
 from collections.abc import Sequence
 
-import fastapi_users_db_sqlalchemy
+import fastapi_users_db_sqlalchemy.generics
 import sqlalchemy as sa
 from alembic import op
 

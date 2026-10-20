@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from core.database.sqlalchemy.engine.pgsql import get_engine, get_url
 from core.uow.sqlalchemy import UnitOfWork
@@ -18,5 +18,7 @@ class BotUnitOfWork(UnitOfWork):
     them pointed at ``bot`` regardless of the process's global ``DB_NAME``.
     """
 
-    def __init__(self, sessionmaker: async_sessionmaker | None = None):
+    def __init__(
+        self, sessionmaker: async_sessionmaker[AsyncSession] | None = None
+    ):
         super().__init__(sessionmaker or _sessionmaker)

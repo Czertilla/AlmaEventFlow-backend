@@ -80,8 +80,8 @@ async def put_my_contact(
     person_id: RequiredPersonDep,
     uow: ContactUOWDep,
 ) -> ContactRead:
-    contact = ContactPut(
-        id=contact_id, person_id=person_id, **contact_data.model_dump()
+    contact = ContactPut.model_validate(
+        {"id": contact_id, "person_id": person_id, **contact_data.model_dump()}
     )
     return ContactRead.from_dto(await ContactService(uow).put(contact.to_dto()))
 

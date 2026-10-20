@@ -77,7 +77,7 @@ class CalendarSubscriptionRepo(
             .options(*_TYPE_OPTION)
             .order_by(self.model.created_at)
         )
-        return (await self.execute(stmt)).unique().scalars().all()
+        return list((await self.execute(stmt)).unique().scalars().all())
 
 
 class CalendarChangeLogRepo(
@@ -97,7 +97,7 @@ class CalendarChangeLogRepo(
             )
             .order_by(self.model.occurred_at)
         )
-        return (await self.execute(stmt)).scalars().all()
+        return list((await self.execute(stmt)).scalars().all())
 
 
 class CalendarFeedRepo(SQLAlchemyRepository[EventORM]):
@@ -217,7 +217,7 @@ class CalendarFeedRepo(SQLAlchemyRepository[EventORM]):
             .where(EventStageORM.event_id.in_(event_ids))
             .order_by(EventStageORM.event_id, EventStageORM.start_at)
         )
-        return (await self.execute(stmt)).scalars().all()
+        return list((await self.execute(stmt)).scalars().all())
 
     async def person_full_name(self, person_id: UUID) -> str | None:
         stmt = select(
@@ -238,7 +238,7 @@ class CalendarFeedRepo(SQLAlchemyRepository[EventORM]):
             .where(MemberORM.person_id == person_id)
             .order_by(CollectiveORM.name)
         )
-        return (await self.execute(stmt)).unique().scalars().all()
+        return list((await self.execute(stmt)).unique().scalars().all())
 
     async def member_exists(
         self, person_id: UUID, collective_id: UUID

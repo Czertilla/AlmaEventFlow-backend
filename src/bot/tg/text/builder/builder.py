@@ -62,7 +62,7 @@ class TextBuilder(MenuMixin, AccountMixin, LeaderMixin):
         )
         return phrase
 
-    async def get_lang_title(self, ch=None) -> str:
+    async def get_lang_title(self, ch: str | None = None) -> str:
         return await self.get_phrase(
             LocaleKey.title,
             ch=ch or Emoji.get_lang_emoji(self.lang),

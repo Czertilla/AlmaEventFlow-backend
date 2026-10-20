@@ -1,8 +1,8 @@
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 from aiogram import BaseMiddleware
-from aiogram.types import Update, User
+from aiogram.types import TelegramObject, User
 
 from bot.tg.service.user import TelegramUserService as UserService
 from bot.tg.uow.user import UserUOW
@@ -26,8 +26,8 @@ class UserUpdateMiddleware(
 
     async def __call__(
         self,
-        handler: Callable,
-        update: Update,
+        handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
+        update: TelegramObject,
         data: dict[str, Any],
     ) -> object:
         sender = data.get("event_from_user")

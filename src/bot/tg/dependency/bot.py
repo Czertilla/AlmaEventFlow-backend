@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, cast
 
 from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
@@ -9,7 +9,7 @@ from core.config.settings import settings
 
 
 def get_bot_token() -> str:
-    return settings.BOT_TG_TOKEN
+    return cast(str, settings.BOT_TG_TOKEN)
 
 
 def get_bot_session() -> AiohttpSession | None:
@@ -24,7 +24,7 @@ def get_bot_default() -> DefaultBotProperties:
 
 BotDefaultDep = Annotated[DefaultBotProperties, Depends(get_bot_default)]
 BotTokenDep = Annotated[str, Depends(get_bot_token)]
-BotSessionDep = Annotated[AiohttpSession, Depends(get_bot_session)]
+BotSessionDep = Annotated[AiohttpSession | None, Depends(get_bot_session)]
 
 
 def bot_factory(

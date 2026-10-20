@@ -43,4 +43,4 @@ section = [
 doc = DocxTemplate(TEMPLATE_PATH)
 
 doc.render({"section1": section})
-doc.save("static/render.docx")
+doc.save("static/render.docx")  # pyright: ignore[reportUnknownMemberType]

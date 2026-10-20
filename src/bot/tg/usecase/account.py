@@ -9,6 +9,7 @@ class AccountUseCase(BotUseCase, InlineBuilderMixin):
     async def on_account(
         self, actor: ActorDTO, notifications_enabled: bool | None = None
     ) -> MessageArgs:
+        assert self.state is not None
         await self.state.set_state(MenuStateGroup.Account._)
         return MessageArgs(
             text=await self.text_builder.on_account(

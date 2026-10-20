@@ -21,7 +21,7 @@ class ClientRepo(
             .where(self.model.user_id == user_id)
             .order_by(self.model.created_at.desc())
         )
-        return (await self.execute(stmt)).scalars().all()
+        return list((await self.execute(stmt)).scalars().all())
 
     async def get_active(
         self, user_id: UUID, transport: TransportTypeEnum
@@ -31,7 +31,7 @@ class ClientRepo(
             self.model.transport == transport,
             self.model.is_active.is_(True),
         )
-        return (await self.execute(stmt)).scalars().all()
+        return list((await self.execute(stmt)).scalars().all())
 
     async def get_by_endpoint(
         self, user_id: UUID, transport: TransportTypeEnum, endpoint: str

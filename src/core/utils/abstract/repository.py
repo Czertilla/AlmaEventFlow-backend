@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from sqlalchemy import Result
+from sqlalchemy import Executable, Result
 
 
 class AbstractRepository(ABC):
     @abstractmethod
-    async def execute(self, stmt, flush: bool = False) -> Result:
+    async def execute(self, stmt: Executable, flush: bool = False) -> Result[Any]:
         raise NotImplementedError
     
     @abstractmethod

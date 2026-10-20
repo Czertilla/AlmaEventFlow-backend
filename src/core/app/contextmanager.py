@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from logging import getLogger
 
@@ -56,7 +56,7 @@ class AppContextManager:
         return None
 
     @asynccontextmanager
-    async def __call__(self, app: FastAPI | FastStream) -> AsyncIterator[None]:
+    async def __call__(self, app: FastAPI | FastStream) -> AsyncGenerator[None]:
         """Application lifespan context manager"""
         await self.startup(app)
         try:

@@ -77,6 +77,7 @@ async def test_unlink_clears_link(
 
     result = await service.unlink(tgid)
 
+    assert result is not None
     assert result.user_id is None
     tg_rows = await bot_seed.all(TGUserORM)
     assert tg_rows[0].user_id is None

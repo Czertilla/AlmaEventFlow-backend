@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from fastapi import FastAPI
+from faststream import FastStream
 
 from core.app.contextmanager import AppContextManager
 from notify.app.contextmanager import NotifyContextManager
@@ -17,10 +18,10 @@ class AEFContextManager(AppContextManager):
         super().__init__()
         self.notify = NotifyContextManager()
 
-    async def startup(self, app: FastAPI) -> None:
+    async def startup(self, app: FastAPI | FastStream) -> None:
         await super().startup(app)
         await self.notify.startup(app)
 
-    async def shutdown(self, app: FastAPI) -> None:
+    async def shutdown(self, app: FastAPI | FastStream) -> None:
         await self.notify.shutdown(app)
         await super().shutdown(app)

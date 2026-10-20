@@ -1,10 +1,13 @@
 import datetime
+from uuid import UUID
 
 from event.enum.calendar import CalendarSubscriptionTypeEnum
 from event.models.calendar import (
     CalendarChangeLogORM,
     CalendarSubscriptionORM,
 )
+from event.models.event import EventORM
+from event.models.stage import EventStageORM
 from event.uow.calendar import CalendarUOW
 
 from .mapper import OWNER_ATTENDANCE, OWNER_PARTICIPATION
@@ -33,42 +36,48 @@ class CalendarVisibilityResolver:
     ) -> tuple[list[FeedItem], list[CalendarChangeLogORM]]:
         today = self._now.date()
         future = today + datetime.timedelta(days=FUTURE_DAYS)
+        person_id = subscription.person_id
+        collective_id = subscription.collective_id
 
         if subscription.type == CalendarSubscriptionTypeEnum.personal_all:
+            assert person_id is not None
             past = today - datetime.timedelta(days=PERSONAL_PAST_DAYS)
             rows = await self.uow.calendar_feed.personal_all(
-                subscription.person_id, past, future
+                person_id, past, future
             )
             return await self._build_items(rows, OWNER_ATTENDANCE), []
 
         if subscription.type == CalendarSubscriptionTypeEnum.personal_collective:
+            assert person_id is not None
+            assert collective_id is not None
             past = today - datetime.timedelta(days=PERSONAL_PAST_DAYS)
             rows = await self.uow.calendar_feed.personal_collective(
-                subscription.person_id,
-                subscription.collective_id,
+                person_id,
+                collective_id,
                 past,
                 future,
             )
             return await self._build_items(rows, OWNER_ATTENDANCE), []
 
+        assert collective_id is not None
         past = today - datetime.timedelta(days=PRINCIPAL_PAST_DAYS)
         grace_since = self._now - datetime.timedelta(days=GRACE_DAYS)
         rows = await self.uow.calendar_feed.principal_collective(
-            subscription.collective_id, past, future, grace_since
+            collective_id, past, future, grace_since
         )
         logs = await self.uow.calendar_change_logs.get_for_collective_since(
-            subscription.collective_id, grace_since
+            collective_id, grace_since
         )
         return await self._build_items(rows, OWNER_PARTICIPATION), logs
 
     async def _build_items(
-        self, rows: list[tuple], owner_kind: str
+        self, rows: list[tuple[EventORM, UUID]], owner_kind: str
     ) -> list[FeedItem]:
         if not rows:
             return []
         event_ids = [event.id for event, _ in rows]
         stages = await self.uow.calendar_feed.stages_for_events(event_ids)
-        stages_by_event: dict = {}
+        stages_by_event: dict[UUID, list[EventStageORM]] = {}
         for stage in stages:
             stages_by_event.setdefault(stage.event_id, []).append(stage)
         return [

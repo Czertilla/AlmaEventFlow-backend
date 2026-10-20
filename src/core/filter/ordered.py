@@ -1,4 +1,4 @@
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Protocol, cast
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import Field, ValidationInfo, field_validator
@@ -16,6 +16,10 @@ ORDER_HELP = (
 def ordered(column: Any, descending: bool) -> Any:
     """A sort key that puts rows without a value last in both directions."""
     return (column.desc() if descending else column.asc()).nulls_last()
+
+
+class _QueryFilter(Protocol):
+    def filter(self, query: Any) -> Any: ...
 
 
 class OrderedFilter(Filter):
@@ -53,7 +57,7 @@ class OrderedFilter(Filter):
             if clauses:
                 query = query.where(or_(*clauses))
         try:
-            return super().filter(query)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
+            return cast("_QueryFilter", super()).filter(query)
         finally:
             if term is not None:
                 setattr(self, name, term)

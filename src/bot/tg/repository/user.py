@@ -1,9 +1,8 @@
-from collections.abc import AsyncGenerator
 from logging import getLogger
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import ColumnElement, func, select
+from sqlalchemy import Select, SQLColumnExpression, func, select
 from sqlalchemy import update as sa_update
 
 from bot.tg.model.user import TGUserORM as Model
@@ -63,15 +62,15 @@ class UserRepo(SQLAlchemyRepository[Model]):
 
     async def get_all_superusers_tg_id(self) -> list[int]:
         stmt = select(Model.id).where(Model.is_superuser)
-        return (await self.execute(stmt)).unique().scalars().all()
+        return list((await self.execute(stmt)).unique().scalars().all())
 
     @staticmethod
     def _search_stmt(
-        search_column: ColumnElement,
+        search_column: SQLColumnExpression[Any],
         query: str,
         limit: int | None = None,
         offset: int = 0,
-    ):
+    ) -> Select[tuple[Model]]:
         rank = func.similarity(search_column, query).label("rank")
         return (
             select(Model)
@@ -91,7 +90,7 @@ class UserRepo(SQLAlchemyRepository[Model]):
         limit: int | None = None,
         offset: int = 0,
     ) -> list[Model]:
-        return (
+        return list(
             (
                 await self.execute(
                     self._search_stmt(Model.username, query, limit, offset)
@@ -110,7 +109,7 @@ class UserRepo(SQLAlchemyRepository[Model]):
         full_name = func.concat(
             Model.first_name, " ", func.coalesce(Model.last_name, "")
         )
-        return (
+        return list(
             (
                 await self.execute(
                     self._search_stmt(full_name, query, limit, offset)
@@ -119,8 +118,3 @@ class UserRepo(SQLAlchemyRepository[Model]):
             .scalars()
             .all()
         )
-
-    async def user_stream(self) -> AsyncGenerator[Model]:
-        stmt = select(Model).where(Model.is_active)
-        async for scalar in self.stream_scalars_generator(stmt):
-            yield scalar

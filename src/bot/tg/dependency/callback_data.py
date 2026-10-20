@@ -9,6 +9,7 @@ T = TypeVar("T")
 
 def Parse[T](parser: Callable[[str], T]) -> Depends:  # noqa: N802  # a DI factory named like a class
     def dependency(event: CallbackQuery) -> T:
+        assert event.data is not None
         return parser(event.data)
 
     return Depends(dependency)

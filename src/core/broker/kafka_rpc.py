@@ -9,11 +9,12 @@ topic must exist or be auto-created.
 
 import asyncio
 import contextlib
+from collections.abc import AsyncIterator
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Self, override
+from typing import TYPE_CHECKING, Any, Self, cast, override
 from uuid import uuid4
 
-from aiokafka import AIOKafkaConsumer
+from aiokafka import AIOKafkaConsumer, ConsumerRecord
 from faststream.kafka.publisher.producer import AioKafkaFastProducerImpl
 
 if TYPE_CHECKING:
@@ -80,7 +81,7 @@ class KafkaRpcReplyConsumer:
         self._connect_kwargs = connect_kwargs
         self._pending: dict[str, asyncio.Future[Any]] = {}
         self._consumer: AIOKafkaConsumer | None = None
-        self._consume_task: asyncio.Task | None = None
+        self._consume_task: asyncio.Task[None] | None = None
         self._start_lock = asyncio.Lock()
 
     async def _ensure_started(self) -> None:
@@ -115,7 +116,8 @@ class KafkaRpcReplyConsumer:
 
     async def _consume_loop(self) -> None:
         assert self._consumer is not None
-        async for record in self._consumer:
+        records = cast("AsyncIterator[ConsumerRecord[bytes, bytes]]", self._consumer)
+        async for record in records:
             headers = dict(record.headers or ())
             correlation_id = (headers.get("correlation_id") or b"").decode()
             future = self._pending.pop(correlation_id, None)
@@ -127,13 +129,15 @@ class KafkaRpcReplyConsumer:
     ) -> Any:
         await self._ensure_started()
         cmd.reply_to = REPLY_TOPIC
+        correlation_id = cmd.correlation_id
+        assert correlation_id is not None
         future: asyncio.Future[Any] = asyncio.get_running_loop().create_future()
-        self._pending[cmd.correlation_id] = future
+        self._pending[correlation_id] = future
         try:
             await producer.publish(cmd)
             return await asyncio.wait_for(future, timeout=cmd.timeout)
         finally:
-            self._pending.pop(cmd.correlation_id, None)
+            self._pending.pop(correlation_id, None)
 
     def attach(self, config: "ConfigComposition[KafkaBrokerConfig]") -> None:
         broker_config = config.broker_config

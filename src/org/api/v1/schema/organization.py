@@ -32,7 +32,7 @@ class OrganizationRead(FromDTOMixinV1, OrganizationBase, UUIDMixinV1, TimestampM
 
 
 class OrganizationPatchData(OrganizationBase, PatchModelV1):
-    name: str | None = Field(max_length=128, default=None)
+    name: str | None = Field(max_length=128, default=None)  # pyright: ignore[reportIncompatibleVariableOverride]
     acronym: str | None = Field(max_length=16, default=None)
 
 

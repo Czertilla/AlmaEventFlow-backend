@@ -7,5 +7,5 @@ EventUnion = Message | CallbackQuery | InlineQuery
 
 
 class SuperUserFilter(Filter):
-    async def __call__(self, event: EventUnion, user: UpdatedUserDep):
-        return user.is_superuser
+    async def __call__(self, event: EventUnion, user: UpdatedUserDep) -> bool:
+        return bool(user.is_superuser)

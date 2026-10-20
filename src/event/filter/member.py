@@ -67,16 +67,16 @@ class MemberFilter(
         if given["include_inactive"]:
             self.is_active = None  # pyright: ignore[reportAttributeAccessIssue]
         try:
-            return super().filter(query)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
+            return super().filter(query)
         finally:
             for name, value in given.items():
                 setattr(self, name, value)
 
-    def sort(self, query):
+    def sort(self, query: Any) -> Any:
         if not self.ordering_values:
             return query
 
-        joined_rels = set()
+        joined_rels: set[Any] = set()
 
         for field_name in self.ordering_values:
             direction = Filter.Direction.asc

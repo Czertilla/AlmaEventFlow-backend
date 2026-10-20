@@ -4,7 +4,8 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-import geo.api  # noqa: F401  (must load before geo.service.*, else circular import)
+# must load before geo.service.*, else circular import
+import geo.api  # noqa: F401  # pyright: ignore[reportUnusedImport]
 
 _GEO_TABLES = (
     "location",

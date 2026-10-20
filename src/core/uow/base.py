@@ -1,6 +1,6 @@
 from logging import getLogger
 from types import TracebackType
-from typing import get_type_hints
+from typing import Any, cast, get_type_hints
 
 from core.utils.abstract.repository import AbstractRepository
 from core.utils.abstract.unit_of_work import ABCUnitOfWork
@@ -20,7 +20,7 @@ class BaseUOW(ABCUnitOfWork):
         setattr(self, name, repo)
         self._repositories[name] = repo
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         """
         Scans the subclass for repository type annotations and prepares them
         for registration.
@@ -32,7 +32,12 @@ class BaseUOW(ABCUnitOfWork):
             if isinstance(typ, type) and issubclass(typ, AbstractRepository)
         }
 
-    async def _on_aexit_error(self, exc_type, exc_val, exc_tb):
+    async def _on_aexit_error(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         return await self.rollback()
 
     async def __aenter__(self):
@@ -67,7 +72,10 @@ class BaseUOW(ABCUnitOfWork):
         if exc_type is not None:
             logger.exception(
                 "Exception during %s transaction execution", self.__class__.__name__,
-                exc_info=(exc_type, exc_val, exc_tb),
+                exc_info=cast(
+                    "tuple[type[BaseException], BaseException, TracebackType]",
+                    (exc_type, exc_val, exc_tb),
+                ),
             )
             await self._on_aexit_error(exc_type, exc_val, exc_tb)
         await self._on_aexit()

@@ -34,11 +34,11 @@ class MessageArgs(TypedDict, total=False):
     reply_to_message_id: int | None
 
 
-class CallbackAnswerArgs(TypedDict):
-    text: str | None = None
-    show_alert: bool | None = None
-    url: str | None = None
-    cache_time: int | None = None
+class CallbackAnswerArgs(TypedDict, total=False):
+    text: str | None
+    show_alert: bool | None
+    url: str | None
+    cache_time: int | None
 
 
 class MediaGroupArgs(TypedDict, total=False):

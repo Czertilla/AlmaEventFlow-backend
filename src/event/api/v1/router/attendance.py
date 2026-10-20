@@ -71,7 +71,9 @@ async def put_attendance(
     uow: AttendanceUOWDep,
 ) -> AttendanceRead:
     result = await AttendanceService(uow).put(
-        AttendancePut(id=attendance_id, **attendance.model_dump()).to_dto()
+        AttendancePut.model_validate(
+            {"id": attendance_id, **attendance.model_dump()}
+        ).to_dto()
     )
     return AttendanceRead.from_dto(result)
 
@@ -87,7 +89,9 @@ async def patch_attendance(
     uow: AttendanceUOWDep,
 ) -> AttendanceRead:
     result = await AttendanceService(uow).patch(
-        AttendancePatch(id=attendance_id, **attendance.model_dump()).to_dto()
+        AttendancePatch.model_validate(
+            {"id": attendance_id, **attendance.model_dump()}
+        ).to_dto()
     )
     return AttendanceRead.from_dto(result)
 

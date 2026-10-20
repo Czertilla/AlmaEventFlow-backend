@@ -1,1 +1,3 @@
-from bot.tg.keyboard.inline.builder import InlineBuilder  # noqa: F401
+from bot.tg.keyboard.inline.builder import InlineBuilder
+
+__all__ = ["InlineBuilder"]

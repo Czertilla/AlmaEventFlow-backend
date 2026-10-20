@@ -1,14 +1,14 @@
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import Boolean, Enum, String, UniqueConstraint
+from sqlalchemy import Boolean, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from core.database.sqlalchemy.core import Base
 from core.database.sqlalchemy.mixins.models import TimestampMixin, UUIDMixin
 from core.enum.notify import TransportTypeEnum
 
-from ._base import ModuleBase
+from ._base import ModuleBase, enum_column
 
 
 class ClientORM(ModuleBase, Base, UUIDMixin, TimestampMixin):
@@ -29,11 +29,7 @@ class ClientORM(ModuleBase, Base, UUIDMixin, TimestampMixin):
 
     user_id: Mapped[UUID] = mapped_column(index=True)
     transport: Mapped[TransportTypeEnum] = mapped_column(
-        Enum(
-            TransportTypeEnum,
-            name="transport_type",
-            values_callable=lambda enum: [member.value for member in enum],
-        )
+        enum_column(TransportTypeEnum, "transport_type")
     )
     endpoint: Mapped[str] = mapped_column(String(512))
     label: Mapped[str | None] = mapped_column(String(256), default=None)

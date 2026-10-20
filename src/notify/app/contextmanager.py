@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from fastapi import FastAPI
+from faststream import FastStream
 
 from core.app.contextmanager import AppContextManager
 from core.broker.kafka import broker
@@ -20,13 +21,13 @@ class NotifyContextManager(AppContextManager):
         )
         self.retry_worker = RetryWorker(RetryUOW(notify_sessionmaker()))
 
-    async def startup(self, app: FastAPI) -> None:
+    async def startup(self, app: FastAPI | FastStream) -> None:
         """Start notify background workers (outbox publisher, retry worker)."""
         await super().startup(app)
         self.outbox_publisher.start()
         self.retry_worker.start()
 
-    async def shutdown(self, app: FastAPI) -> None:
+    async def shutdown(self, app: FastAPI | FastStream) -> None:
         """Stop notify background workers."""
         await self.retry_worker.stop()
         await self.outbox_publisher.stop()

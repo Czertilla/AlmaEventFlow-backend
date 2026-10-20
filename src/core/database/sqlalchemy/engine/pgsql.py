@@ -2,14 +2,14 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from core.config.settings import Settings
 
-settings = Settings()
+settings = Settings()  # pyright: ignore[reportCallIssue]  # required fields are filled from the environment
 
 
 def get_url(
-    user: str = settings.DB_USER,
-    password: str = settings.DB_PASS,
-    host: str = settings.DB_HOST,
-    port: str = settings.DB_PORT,
+    user: str | None = settings.DB_USER,
+    password: str | None = settings.DB_PASS,
+    host: str | None = settings.DB_HOST,
+    port: str | None = settings.DB_PORT,
     db_name: str = settings.DB_NAME,
 ) -> str:
     return f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}"

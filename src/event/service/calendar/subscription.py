@@ -1,4 +1,5 @@
 import datetime
+from typing import Any
 from uuid import UUID
 
 from fastapi import status
@@ -46,9 +47,11 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
         return dto_from_orm(sub, CalendarSubscriptionDTO)
 
     @required_transaction
-    async def _insert(self, data: dict) -> CalendarSubscriptionORM:
+    async def _insert(self, data: dict[str, Any]) -> CalendarSubscriptionORM:
         sub = await self.uow.calendar_subscriptions.add_n_return(data=data)
-        return await self.uow.calendar_subscriptions.get_loaded(sub.id)
+        loaded = await self.uow.calendar_subscriptions.get_loaded(sub.id)
+        assert loaded is not None
+        return loaded
 
     @required_transaction
     async def _get_owned(
@@ -70,10 +73,14 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
         person_id: UUID | None,
     ) -> str:
         if type_ == CalendarSubscriptionTypeEnum.personal_all:
-            full_name = await self.uow.calendar_feed.person_full_name(
-                person_id
+            full_name = (
+                None
+                if person_id is None
+                else await self.uow.calendar_feed.person_full_name(person_id)
             )
             return _personal_title(full_name or PERSONAL_FALLBACK)
+        if collective_id is None:
+            raise CollectiveNotExistsException()
         collective = await self.uow.collectives.get_by_id(collective_id)
         if collective is None:
             raise CollectiveNotExistsException()
@@ -93,8 +100,11 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
         if data.type == CalendarSubscriptionTypeEnum.personal_all:
             return
         if data.type == CalendarSubscriptionTypeEnum.personal_collective:
-            is_member = await self.uow.calendar_feed.member_exists(
-                user.person_id, data.collective_id
+            is_member = (
+                data.collective_id is not None
+                and await self.uow.calendar_feed.member_exists(
+                    user.person_id, data.collective_id
+                )
             )
             if not is_member and not user.is_superuser:
                 raise VancedHTTPException(
@@ -102,6 +112,8 @@ class CalendarSubscriptionService(BaseService[CalendarUOW]):
                     detail=ErrorCode.NOT_MEMBER_PERSON,
                 )
             return
+        if data.collective_id is None:
+            raise CollectiveNotExistsException()
         collective = await self.uow.collectives.get_by_id(data.collective_id)
         if collective is None:
             raise CollectiveNotExistsException()

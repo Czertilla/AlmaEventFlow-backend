@@ -8,6 +8,6 @@ class OrganizationMixin:
     organizations: OrganizationRepo
 
 
-class OrganizationUOW(
+class OrganizationUOW(  # pyright: ignore[reportIncompatibleVariableOverride]
     UnitOfWork, OrganizationMixin, CollectiveMixin, OrganizationAUOW
 ): ...

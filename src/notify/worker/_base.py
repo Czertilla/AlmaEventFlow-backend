@@ -14,7 +14,7 @@ class PollingWorker(ABC):
     def __init__(self, name: str, idle_seconds: float) -> None:
         self._name = name
         self._idle = idle_seconds
-        self._task: asyncio.Task | None = None
+        self._task: asyncio.Task[None] | None = None
         self._stop = asyncio.Event()
 
     def start(self) -> None:

@@ -5,7 +5,7 @@ from core.database.sqlalchemy.core import BasePreference
 
 if settings.MONOLITH:
 
-    class ModuleBase(BasePreference, DeclarativeBase):
+    class ModuleBase(BasePreference, DeclarativeBase):  # pyright: ignore[reportRedeclaration]
         type_annotation_map = BasePreference.type_annotation_map
 else:
 

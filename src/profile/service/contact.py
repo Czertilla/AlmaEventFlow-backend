@@ -15,7 +15,7 @@ from profile.filter.contact import ContactFilter
 from profile.models.contact import ContactORM
 from profile.uow.contact import ContactUOW
 from profile.uow.person import PersonContactUOW
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from core.dto.base import dto_dict, dto_from_orm
@@ -32,7 +32,8 @@ class ContactService(BaseService[ContactUOW | PersonContactUOW]):
 
     @required_transaction
     async def _create(self, contact_create: ContactCreateDTO) -> ContactORM:
-        if not await self.uow.persons.exists_id(contact_create.person_id):
+        uow = cast("PersonContactUOW", self.uow)
+        if not await uow.persons.exists_id(contact_create.person_id):
             raise PersonNotExistsException()
         return await self.uow.contacts.add_n_return(dto_dict(contact_create))
 

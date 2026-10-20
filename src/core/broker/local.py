@@ -55,7 +55,7 @@ def _bind_fastapi_depends(func: Handler) -> Handler:
             )
         return await func(*args, **kwargs)
 
-    bound.__signature__ = sig.replace(  # type: ignore[attr-defined]
+    bound.__signature__ = sig.replace(  # pyright: ignore[reportAttributeAccessIssue]
         parameters=[p for p in sig.parameters.values() if p.name not in depends_names]
     )
     return bound

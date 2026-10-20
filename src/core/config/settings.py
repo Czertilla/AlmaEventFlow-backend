@@ -90,7 +90,7 @@ class Settings(BaseSettings):
     """Event status names that trigger 'mark your attendance' notifications when
     an attendance becomes tied to such an event."""
 
-    DB_DBMS: DBManagerType = DBManagerType.__default__
+    DB_DBMS: DBManagerType = DBManagerType.__default__  # pyright: ignore[reportAssignmentType]
     """Type of database management system used (e.g., sqlite, postgres)."""
 
     DB_NAME: str = "simple-app"
@@ -169,8 +169,8 @@ class Settings(BaseSettings):
     KAFKA_SASL_PASSWORD: Secret[str] | None = None
     """SASL password."""
 
-    PASS_SECRET: Secret[str] = "SECRET"
-    USER_SECRET: Secret[str] = "SECRET"
+    PASS_SECRET: Secret[str] = "SECRET"  # pyright: ignore[reportAssignmentType]
+    USER_SECRET: Secret[str] = "SECRET"  # pyright: ignore[reportAssignmentType]
     """The defaults are public: ``AppContextManager`` warns while they are in use."""
 
     AUTH_COOKIE_MAX_AGE: int = 3600
@@ -217,7 +217,7 @@ class Settings(BaseSettings):
     VERSION: str = Field(default_factory=get_version)
     """The version of this project, displays in messages and descripions"""
 
-    model_config = SettingsConfigDict(env_file=environ, extra="ignore")
+    model_config = SettingsConfigDict(env_file=environ, extra="ignore")  # pyright: ignore[reportArgumentType]
     """Configuration for Pydantic settings,
     defining how environment variables are loaded."""
 

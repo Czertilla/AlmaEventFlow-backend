@@ -20,7 +20,7 @@ class OutboxRepo(SQLAlchemyRepository[Model]):
             .limit(limit)
             .with_for_update(skip_locked=True)
         )
-        return (await self.execute(stmt)).scalars().all()
+        return list((await self.execute(stmt)).scalars().all())
 
     async def mark_published(self, ids: Iterable[int]) -> None:
         ids = list(ids)

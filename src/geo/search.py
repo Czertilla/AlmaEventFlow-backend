@@ -1,7 +1,7 @@
 import re
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Protocol, Self
 
 from geoalchemy2 import WKTElement
 from sqlalchemy import (
@@ -40,7 +40,15 @@ def tokenize(query: str) -> list[str]:
     return _TOKEN.findall(query.lower())[:MAX_TOKENS]
 
 
-def _tsquery(tokens: list[str], suffix: str = "") -> ColumnElement:
+class SearchableFilter(Protocol):
+    search: str | None
+
+    def filter(self, query: Select[Any]) -> Select[Any]: ...
+
+    def model_copy(self, *, update: Mapping[str, Any]) -> Self: ...
+
+
+def _tsquery(tokens: list[str], suffix: str = "") -> ColumnElement[Any]:
     return func.to_tsquery(
         TS_CONFIG, " & ".join(f"{token}{suffix}" for token in tokens)
     )

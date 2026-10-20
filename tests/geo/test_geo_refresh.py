@@ -70,7 +70,7 @@ async def test_a_row_that_is_found_again_takes_the_current_data_and_a_new_date(
     after = await row_of(sessionmaker_, row.id)
     assert (report.checked, report.confirmed, report.missing) == (1, 1, 0)
     assert geocoder.calls[0][0] == "Тверская улица, 7, Москва"
-    assert (geocoder.calls[0][1].lat, geocoder.calls[0][1].lon) == CENTER  # type: ignore[union-attr]
+    assert (geocoder.calls[0][1].lat, geocoder.calls[0][1].lon) == CENTER  # pyright: ignore[reportOptionalMemberAccess]
     assert after.source_id == "way/5"
     assert after.synced_at and after.synced_at > _days_ago(1)
     assert after.edited_at is not None
@@ -120,7 +120,7 @@ async def test_data_built_before_the_last_confirmation_cannot_have_changed(
 
     assert report.checked == 1
     assert [call[0] for call in geocoder.calls] == ["Тверская улица, 9, Москва"]
-    assert (await row_of(sessionmaker_, old.id)).synced_at > _days_ago(1)  # type: ignore[operator]
+    assert (await row_of(sessionmaker_, old.id)).synced_at > _days_ago(1)  # pyright: ignore[reportOptionalOperand]
 
 
 async def test_an_unknown_build_date_falls_back_to_the_age_alone(
@@ -261,7 +261,7 @@ async def test_one_failure_among_answers_does_not_stop_the_run(
             raise TimeoutError
         return await original(query, near=near, limit=limit)
 
-    geocoder.search = flaky  # type: ignore[method-assign]
+    geocoder.search = flaky  # pyright: ignore[reportAttributeAccessIssue]
 
     report = await refresh(geocoder, sessionmaker=sessionmaker_)
 

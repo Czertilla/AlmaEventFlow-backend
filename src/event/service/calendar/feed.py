@@ -1,6 +1,7 @@
 import datetime
 import hashlib
 from dataclasses import dataclass
+from uuid import UUID
 
 from fastapi import status
 
@@ -11,6 +12,7 @@ from event.uow.calendar import CalendarUOW
 
 from .ics import CalendarIcsRenderer
 from .mapper import CalendarEventMapper
+from .model import VEvent
 from .token import CalendarTokenService
 from .visibility import CalendarVisibilityResolver
 
@@ -76,7 +78,7 @@ class CalendarFeedService(BaseService[CalendarUOW]):
             )
 
     @staticmethod
-    def _etag(subscription_id, vevents) -> str:
+    def _etag(subscription_id: UUID, vevents: list[VEvent]) -> str:
         last_modified = max(
             (ve.last_modified for ve in vevents),
             default=datetime.datetime.min.replace(

@@ -22,7 +22,7 @@ UserUOWDep = Depends(ModuleUOWDep("user")(UserUOW))
 
 @router.subscriber(UserRPC.RESOLVE_USER_ID)
 async def on_resolve_user_id(
-    request: ResolveUserIdRequest, uow=UserUOWDep
+    request: ResolveUserIdRequest, uow: UserUOW = UserUOWDep
 ) -> MQResponse[UserIdResponse]:
     async def _call() -> UserIdResponse:
         user = await UserService(uow).get_by_person_id(request.person_id)
@@ -35,7 +35,7 @@ async def on_resolve_user_id(
 
 @router.subscriber(UserRPC.LINK_TELEGRAM_OAUTH)
 async def on_link_telegram_oauth(
-    request: LinkTelegramOAuthRequest, uow=UserUOWDep
+    request: LinkTelegramOAuthRequest, uow: UserUOW = UserUOWDep
 ) -> MQResponse[Ack]:
     async def _call() -> Ack:
         await UserService(uow).link_telegram_oauth(
@@ -48,7 +48,7 @@ async def on_link_telegram_oauth(
 
 @router.subscriber(UserRPC.UNLINK_TELEGRAM_OAUTH)
 async def on_unlink_telegram_oauth(
-    request: UnlinkTelegramOAuthRequest, uow=UserUOWDep
+    request: UnlinkTelegramOAuthRequest, uow: UserUOW = UserUOWDep
 ) -> MQResponse[Ack]:
     async def _call() -> Ack:
         await UserService(uow).unlink_telegram_oauth(request.person_id)

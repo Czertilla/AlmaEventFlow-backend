@@ -7,4 +7,4 @@ class LocationMixin:
     locations: LocationRepo
 
 
-class LocationUOW(UnitOfWork, LocationMixin, LocationAUOW): ...
+class LocationUOW(UnitOfWork, LocationMixin, LocationAUOW): ...  # pyright: ignore[reportIncompatibleVariableOverride]

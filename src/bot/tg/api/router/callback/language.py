@@ -13,6 +13,7 @@ from bot.tg.schema.user import TGUser
 from bot.tg.service.user import TelegramUserService
 from bot.tg.text.builder.builder import TextBuilder
 from bot.tg.usecase.menu import MenuUseCase
+from bot.tg.utils.message import edit_message
 
 router = Router(name="language/")
 router.callback_query.filter(F.message.chat.type == "private")
@@ -20,7 +21,7 @@ router.callback_query.filter(F.message.chat.type == "private")
 
 @router.callback_query(F.data == CBPrefix.language)
 async def language(callback: CallbackQuery, usecase: MenuStateUserUseCaseDep):
-    await callback.message.edit_text(**await usecase.language())
+    await edit_message(callback, await usecase.language())
 
 
 @router.callback_query(F.data.startswith(CBPrefix.language))
@@ -40,10 +41,10 @@ async def language_change(
 ):
     if (
         (data
-        and user._is_lang_modified
+        and user.is_lang_modified
         and data.value == user.language_code)
         or (not data
-        and not user._is_lang_modified)
+        and not user.is_lang_modified)
     ):
         return
     user = await TelegramUserService(uow).set_lang(
@@ -51,8 +52,9 @@ async def language_change(
         data.value if data else callback.from_user.language_code,
         data is None,
     )
-    await callback.message.edit_text(
-        **await MenuUseCase(
+    await edit_message(
+        callback,
+        await MenuUseCase(
             TextBuilder(lang=user.language_code), user=user, state=state
-        ).language()
+        ).language(),
     )

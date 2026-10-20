@@ -205,7 +205,7 @@ async def patch_my_collective_role(
     _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_role_of_collective),
 ) -> RoleRead:
     result = await RoleService(uow).patch(
-        RolePatch(id=role_id, **role_data.model_dump()).to_dto()
+        RolePatch.model_validate({"id": role_id, **role_data.model_dump()}).to_dto()
     )
     return RoleRead.from_dto(result)
 
@@ -322,7 +322,9 @@ async def patch_my_collective_attendance(
     ),
 ) -> AttendanceRead:
     result = await AttendanceService(uow).patch(
-        AttendancePatch(id=attendance_id, **attendance_data.model_dump()).to_dto()
+        AttendancePatch.model_validate(
+            {"id": attendance_id, **attendance_data.model_dump()}
+        ).to_dto()
     )
     return AttendanceRead.from_dto(result)
 
@@ -403,7 +405,7 @@ async def put_my_collective_event(
 ) -> EventRead:
     result = await EventService(uow).put_for_collective(
         collective_id,
-        EventPut(id=event_id, **event_data.model_dump()).to_dto(),
+        EventPut.model_validate({"id": event_id, **event_data.model_dump()}).to_dto(),
     )
     return EventRead.from_dto(result)
 
@@ -421,7 +423,7 @@ async def patch_my_collective_event(
 ) -> EventRead:
     result = await EventService(uow).patch_for_collective(
         collective_id,
-        EventPatch(id=event_id, **event_data.model_dump()).to_dto(),
+        EventPatch.model_validate({"id": event_id, **event_data.model_dump()}).to_dto(),
     )
     return EventRead.from_dto(result)
 
@@ -469,7 +471,7 @@ async def patch_my_collective_event_stage(
 ) -> StageRead:
     result = await EventService(uow).patch_stage_for_collective(
         collective_id,
-        StagePatch(id=stage_id, **stage_data.model_dump()).to_dto(),
+        StagePatch.model_validate({"id": stage_id, **stage_data.model_dump()}).to_dto(),
     )
     return StageRead.from_dto(result)
 

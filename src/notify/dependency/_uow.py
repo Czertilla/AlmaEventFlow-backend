@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from core.config.settings import settings
 from core.database.sqlalchemy.engine.pgsql import get_engine, get_url
@@ -8,7 +8,7 @@ from core.dependencies.uow import ModuleUOWDep
 UOWDep = ModuleUOWDep("notify")
 
 
-def notify_sessionmaker() -> async_sessionmaker:
+def notify_sessionmaker() -> async_sessionmaker[AsyncSession]:
     """Notify-scoped session factory for background workers that run outside the
     request lifecycle (and thus outside FastAPI dependency injection)."""
     if settings.MONOLITH:

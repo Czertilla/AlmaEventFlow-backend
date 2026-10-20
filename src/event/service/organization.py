@@ -15,8 +15,9 @@ class OrganizationService(OrganizationEventService[OrganizationUOW]):
         data = organization.model_dump()
         if organization.type == "collective":
             collective = CollectiveORM(**data)
-            self.uow.session.add(collective)
-            await self.uow.session.flush([collective])
+            session = self.uow.organizations.session
+            session.add(collective)
+            await session.flush([collective])
         else:
             await self.uow.organizations.add_n_return(data)
 
@@ -24,6 +25,6 @@ class OrganizationService(OrganizationEventService[OrganizationUOW]):
     async def _upsert(self, organization: OrganizationData):
         data = organization.model_dump()
         if organization.type == "collective":
-            await self.uow.session.merge(CollectiveORM(**data))
+            await self.uow.organizations.session.merge(CollectiveORM(**data))
         else:
             await self.uow.organizations.upsert(data=data)

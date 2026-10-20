@@ -5,6 +5,7 @@ from core.enum.topic import PersonTopic
 from core.schema.message.profile import (
     PersonCreatedEvent,
     PersonData,
+    PersonDelete,
     PersonDeletedEvent,
     PersonLinkChangedEvent,
     PersonLinkData,
@@ -24,7 +25,9 @@ async def on_person_updated(persons: list[PersonData]):
 @router.publisher(PersonTopic.DELETED)
 async def on_person_deleted(person_ids: list[UUID]):
     await broker.publish(
-        PersonDeletedEvent(data=[{"id": person_id} for person_id in person_ids]),
+        PersonDeletedEvent(
+            data=[PersonDelete(id=person_id) for person_id in person_ids]
+        ),
         PersonTopic.DELETED,
     )
 

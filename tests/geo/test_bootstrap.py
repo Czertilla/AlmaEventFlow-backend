@@ -30,7 +30,7 @@ def _node(node_id: int, street: str, house: str) -> dict:
 
 class FakeMirror:
     def __init__(self, *responses: web.Response | dict, fallback: dict | None = None):
-        self._queue = list(responses)
+        self._queue: list[web.Response | dict] = list(responses)
         self._fallback = fallback
         self.hits = 0
 

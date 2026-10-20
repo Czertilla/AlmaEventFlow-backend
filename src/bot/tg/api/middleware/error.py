@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Iterable
-from inspect import Traceback
+from types import TracebackType
 from typing import Any, Self
 from uuid import UUID, uuid4
 
@@ -18,7 +18,7 @@ from bot.tg.utils.mixins.middleware import GetUserMixin, LoggerMiddlewareMixin
 ErrorEvent = Message | CallbackQuery | Any
 HandlerCallable = Callable[[ErrorEvent, dict[str, Any]], Awaitable[Any]]
 ExceptionHandler = Callable[
-    [type[BaseException], Any, Traceback, ErrorEvent, dict[str, Any]],
+    [type[BaseException], Any, TracebackType | None, ErrorEvent, dict[str, Any]],
     Awaitable[Any],
 ]
 
@@ -81,8 +81,13 @@ class ErrorHandlerMiddleware(
         async def __aenter__(self) -> Self:
             return self
 
-        async def __aexit__(self, exc_type, exc, tb) -> bool:
-            if exc:
+        async def __aexit__(
+            self,
+            exc_type: type[BaseException] | None,
+            exc: BaseException | None,
+            tb: TracebackType | None,
+        ) -> bool:
+            if exc and exc_type:
                 await self.middleware._handle_exception(
                     exc_type, exc, tb, self.event, self.data
                 )
@@ -93,7 +98,7 @@ class ErrorHandlerMiddleware(
         self,
         exc_type: type[BaseException],
         exc: BaseException,
-        tb: Traceback,
+        tb: TracebackType | None,
         event: ErrorEvent,
         data: dict[str, Any],
     ) -> None:
@@ -122,7 +127,7 @@ class ErrorHandlerMiddleware(
         self,
         exc_type: type[BaseException],
         exc: HTTPException,
-        tb: Traceback,
+        tb: TracebackType | None,
         event: ErrorEvent,
         data: dict[str, Any],
     ) -> None:
@@ -138,7 +143,7 @@ class ErrorHandlerMiddleware(
         self,
         exc_type: type[BaseException],
         exc: TelegramBadRequest,
-        tb: Traceback,
+        tb: TracebackType | None,
         event: ErrorEvent,
         data: dict[str, Any],
     ) -> None:
@@ -152,7 +157,7 @@ class ErrorHandlerMiddleware(
         self,
         exc_type: type[BaseException],
         exc: BaseException,
-        tb: Traceback,
+        tb: TracebackType | None,
         event: ErrorEvent,
         data: dict[str, Any],
     ) -> None:

@@ -25,6 +25,7 @@ async def resolve_or_create_city(
     before lookup/creation so incidental whitespace doesn't spawn a
     duplicate row next to an otherwise-identical existing one."""
     session = uow.session
+    assert session is not None
     country_name = country_name.strip()
     region_name = region_name.strip()
     city_name = city_name.strip()

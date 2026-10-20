@@ -1,6 +1,6 @@
 from logging import getLogger
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 import jwt
@@ -66,7 +66,7 @@ class JWTAuth:
         self.verified = verified
         self.superuser = superuser
 
-    def decode_token(self, token: str) -> dict:
+    def decode_token(self, token: str) -> dict[str, Any]:
         try:
             payload = jwt.decode(
                 token,
@@ -118,7 +118,7 @@ class JWTAuth:
 
 
 class OptionalJWTAuth(JWTAuth):
-    def __call__(
+    def __call__(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
         token: Annotated[str | None, Depends(get_optional_token)],
     ) -> UserJWT | None:

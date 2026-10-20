@@ -1,18 +1,29 @@
 from collections.abc import Iterable, Sequence
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Protocol, cast
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from sqlalchemy import ColumnElement, Select, delete, exists, func, select, update
+from sqlalchemy import (
+    ColumnElement,
+    Result,
+    Select,
+    delete,
+    exists,
+    func,
+    select,
+    update,
+)
 from sqlalchemy.sql.base import ExecutableOption
 
 from core.config.settings import settings
 from core.dto.pagination import PageParams
+from core.enum.config import DBManagerType
 
-if settings.DB_DBMS == "postgres":
-    from sqlalchemy.dialects.postgresql import insert
-elif settings.DB_DBMS == "sqlite":
-    from sqlalchemy.dialects.sqlite import insert
+match settings.DB_DBMS:
+    case DBManagerType.postgres:
+        from sqlalchemy.dialects.postgresql import insert
+    case DBManagerType.sqlite:
+        from sqlalchemy.dialects.sqlite import insert
 
 from ....utils.abstract.repository import (
     AbstractIdRepository,
@@ -52,8 +63,10 @@ class IDRepositoryMixin[Model: IdMixinProtocol, ID: (int, UUID, str)](
         return (await self.execute(stmt, flush)).unique().scalar_one_or_none()
 
     async def update_many(
-        self, data: dict[str, dict[str, Any]], options: tuple = ()
-    ) -> None:
+        self,
+        data: dict[str, dict[str, Any]],
+        options: tuple[ExecutableOption, ...] = (),
+    ) -> Result[Any]:
         stmt = (
             update(self.model)
             .where(self.model.id.in_(data.keys()))
@@ -123,12 +136,19 @@ class UpsertRepositoryMixin[Model: IdMixinProtocol, ID: (int, UUID, str)](
         return (await self.execute(stmt)).scalars()
 
 
+class _SelectFilter(Protocol):
+    def filter(self, query: Select[Any]) -> Select[Any]: ...
+
+    def sort(self, query: Select[Any]) -> Select[Any]: ...
+
+
 class SearchRepositoryMixin[Model: IdMixinProtocol](AbstractRepository):
     model: type[Model]
 
     @staticmethod
-    def _apply_filter(filter: Filter, statement: Select):
-        return filter.filter(filter.sort(statement))
+    def _apply_filter(filter: Filter, statement: Select[Any]) -> Select[Any]:
+        typed = cast("_SelectFilter", filter)
+        return typed.filter(typed.sort(statement))
 
     async def search(
         self,
@@ -141,7 +161,7 @@ class SearchRepositoryMixin[Model: IdMixinProtocol](AbstractRepository):
         total_stmt = select(func.count()).select_from(self.model)
         if scope:
             total_stmt = total_stmt.where(*scope)
-        total_stmt = filter.filter(total_stmt)
+        total_stmt = cast("_SelectFilter", filter).filter(total_stmt)
         total = (await self.execute(total_stmt)).scalar_one()
         if not total:
             return [], 0
@@ -154,5 +174,5 @@ class SearchRepositoryMixin[Model: IdMixinProtocol](AbstractRepository):
             stmt = stmt.where(*scope)
         stmt = self._apply_filter(filter, stmt)
         if (key := getattr(self.model, "id", None)) is not None:
-            stmt = stmt.order_by(key)  # pyright: ignore[reportUnknownVariableType]
+            stmt = stmt.order_by(key)
         return (await self.execute(stmt)).unique().scalars(), total

@@ -36,7 +36,7 @@ class CollectivePatchData(PatchModelV1):
     is_verified: bool | None = None
 
 
-class CollectivePatch(CollectivePatchData, UUIDMixinV1): ...
+class CollectivePatch(CollectivePatchData, UUIDMixinV1): ...  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class CollectivePutData(CollectiveCreate): ...

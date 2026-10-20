@@ -93,7 +93,7 @@ class AttendanceFilter(
         for name in DERIVED_FILTERS:
             setattr(self, name, None)
         try:
-            return super().filter(query)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
+            return super().filter(query)
         finally:
             for name, value in given.items():
                 setattr(self, name, value)

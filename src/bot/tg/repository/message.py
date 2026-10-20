@@ -13,7 +13,7 @@ class TelegramMessageRepo(
 ):
     model = Model
 
-    async def get(
+    async def get(  # pyright: ignore[reportIncompatibleMethodOverride]  # keyed by (correlation_key, chat_id), not by id
         self, correlation_key: str, chat_id: int
     ) -> Model | None:
         stmt = select(Model).where(

@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from logging import getLogger
 from typing import Any
 
@@ -15,11 +15,15 @@ class CommandLoggingMiddleware(BaseMiddleware, LoggerMiddlewareMixin):
 
     async def __call__(
         self,
-        handler: Callable[[types.Message, dict], Any],
-        event: types.Message,
-        data: dict,
+        handler: Callable[[types.TelegramObject, dict[str, Any]], Awaitable[Any]],
+        event: types.TelegramObject,
+        data: dict[str, Any],
     ) -> Any:
-        if event.text and event.text.startswith("/"):
+        if (
+            isinstance(event, types.Message)
+            and event.text
+            and event.text.startswith("/")
+        ):
             command = event.text.split()[0]
             self.logger.info(f"handling {command} from {event.chat.id=}")
         else:
@@ -37,9 +41,9 @@ class UpdateLoggingMiddleware(BaseMiddleware, LoggerMiddlewareMixin):
 
     async def __call__(
         self,
-        handler: Callable[[types.Message, dict], Any],
-        event: types.Update,
-        data: dict,
+        handler: Callable[[types.TelegramObject, dict[str, Any]], Awaitable[Any]],
+        event: types.TelegramObject,
+        data: dict[str, Any],
     ) -> Any:
         self.logger.debug(event)
         return await handler(event, data)

@@ -4,7 +4,7 @@ import logging.config
 import sys
 from pathlib import Path
 
-from core.config.logger.handler import handle_exception
+from core.config.logger.formatter import handle_exception
 
 LOG_CONFIG_FILE = Path(__file__).parent / "logger.json"
 

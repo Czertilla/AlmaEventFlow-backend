@@ -4,4 +4,4 @@ from user.repository.person import PersonRepo
 
 
 class UserPersonUOW(UnitOfWork, PersonAUOW):
-    persons: PersonRepo
+    persons: PersonRepo  # pyright: ignore[reportIncompatibleVariableOverride]

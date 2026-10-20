@@ -49,7 +49,7 @@ class AddressCreate(AddressBase, ToDTOMixinV1):
 
 
 class AddressRead(FromDTOMixinV1, AddressBase, UUIDMixinV1, TimestampMixinV1):
-    name: str
+    name: str  # pyright: ignore[reportGeneralTypeIssues, reportIncompatibleVariableOverride]
     source: str | None = None
 
     @computed_field

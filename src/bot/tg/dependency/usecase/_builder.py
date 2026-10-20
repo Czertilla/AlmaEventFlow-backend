@@ -45,7 +45,7 @@ def _build_provider_function[UseCaseT](
     usecase_cls: type[UseCaseT],
     dependencies: dict[str, Any],
 ) -> Callable[..., UseCaseT]:
-    params = []
+    params: list[inspect.Parameter] = []
     annotations: dict[str, Any] = {}
 
     for name, dep_type in dependencies.items():
@@ -55,7 +55,7 @@ def _build_provider_function[UseCaseT](
 
     signature = inspect.Signature(parameters=params)
 
-    def provider(*args, **kwargs) -> UseCaseT:
+    def provider(*args: Any, **kwargs: Any) -> UseCaseT:
         bound = signature.bind(*args, **kwargs)
         _apply_aliases(arguments := bound.arguments)
         return usecase_cls(**arguments)

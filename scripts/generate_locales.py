@@ -7,16 +7,18 @@ from pathlib import Path
 
 import yaml
 
+type LocaleValue = str | dict[str, LocaleValue]
+
 
 def _get_class_name(key: str) -> str:
     words = key.replace("_", " ").split()
     return "".join([word.capitalize() for word in words])
 
 
-def _handle_value(key: str, value: str | dict, level=1):
+def _handle_value(key: str, value: LocaleValue, level: int = 1) -> list[str]:
     if key.startswith("_"):
         return []
-    code = []
+    code: list[str] = []
     if isinstance(value, dict):
         # Вложенный класс для сложных структур
         class_name = _get_class_name(key)
@@ -46,7 +48,7 @@ def parse_yaml_to_enums(yaml_path: Path, output_path: Path) -> None:
     if not data or "en" not in data:
         raise ValueError("YAML-файл не содержит данных или раздела 'en'")
 
-    en_data: dict[str, dict | str] = data["en"]
+    en_data: dict[str, LocaleValue] = data["en"]
 
     # Генерация кода для enum-классов
     code = [

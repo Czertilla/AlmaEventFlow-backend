@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import Any
 from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -38,13 +39,13 @@ class MemberRepo(
             filter, pagination, options=options, scope=scope
         )
 
-    async def get_by_person_id(self, person_id: UUID) -> list[Model]:
+    async def get_by_person_id(self, person_id: UUID | None) -> list[Model]:
         stmt = (
             select(self.model)
             .options(selectinload(self.model.roles))
             .where(self.model.person_id == person_id)
         )
-        return (await self.execute(stmt)).unique().scalars().all()
+        return list((await self.execute(stmt)).unique().scalars().all())
 
     async def get_by_collective_with_person(self, collective_id: UUID) -> list[Model]:
         stmt = (
@@ -97,7 +98,7 @@ class MemberRepo(
             await self.session.flush()
 
     async def create_member_with_roles(
-        self, member_data: dict, role_ids: list[UUID]
+        self, member_data: dict[str, Any], role_ids: list[UUID]
     ) -> Model:
         member = Model(**member_data)
         self.session.add(member)
