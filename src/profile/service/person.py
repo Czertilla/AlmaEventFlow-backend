@@ -21,6 +21,7 @@ from uuid import UUID
 
 from core.dto.base import dto_dict, dto_from_orm
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
+from core.enum.profile import PersonLinkSource
 from core.schema.message.profile import PersonData, PersonLinkData
 from core.service.base import BaseService, required_transaction
 
@@ -129,11 +130,19 @@ class PersonService(BaseService[PersonUOW]):
         await on_person_updated([self._event(result)])
         return result
 
-    async def delete(self, person_id: UUID) -> None:
+    async def delete(self, person_id: UUID, actor_id: UUID | None = None) -> None:
         async with self.uow as uow:
             link = await uow.account_links.get_by_person(person_id)
             user_id = link.user_id if link is not None else None
             await self._delete(person_id)
+            if user_id is not None:
+                await uow.account_history.record(
+                    user_id,
+                    old_person_id=person_id,
+                    new_person_id=None,
+                    source=PersonLinkSource.PERSON_DELETED,
+                    actor_id=actor_id,
+                )
             await uow.commit()
         if user_id is not None:
             await on_person_link_changed(

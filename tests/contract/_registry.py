@@ -137,6 +137,9 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
     "profile_v2": (
         "profile.api.v2.schema",
         {
+            "account_history.AccountLinkChangeRead": (
+                "profile.dto.account_history:AccountLinkChangeDTO"
+            ),
             "profile.MyProfileRead": "profile.dto.my_profile:MyProfileDTO",
             "profile.MyStudentRead": "profile.dto.my_profile:MyStudentReadDTO",
             "reference.OrganizationRefRead": (

@@ -34,6 +34,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 
 from core.dto.base import dto_from_orm
+from core.enum.profile import PersonLinkSource
 from core.schema.message.profile import PersonData, PersonLinkData
 from core.service.base import BaseService, required_transaction
 
@@ -211,6 +212,13 @@ class MyProfileService(BaseService[MyProfileUOW]):
                 )
                 await self.uow.account_links.add_one(
                     {"person_id": person.id, "user_id": user_id}
+                )
+                await self.uow.account_history.record(
+                    user_id,
+                    old_person_id=None,
+                    new_person_id=person.id,
+                    source=PersonLinkSource.OWN_PROFILE,
+                    actor_id=user_id,
                 )
                 await self._write_profile(person.id, data)
                 result = await self._read(person.id)

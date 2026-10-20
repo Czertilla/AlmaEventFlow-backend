@@ -1,4 +1,70 @@
 {
+  "account_history.AccountLinkChangeRead": {
+    "full": {
+      "dump": {
+        "action": "linked",
+        "actor_id": "6a3a8eca-a2f7-5d60-a8c4-02c98acc0ff4",
+        "created_at": "2026-01-01T10:00:00Z",
+        "id": "6cdd6edd-c607-5c74-9239-0940aeaccb91",
+        "new_person_id": "a8c2fa1a-de1e-5906-a4a9-502175964b83",
+        "old_person_id": "54dd2874-626c-58ff-8a61-f3cde56d83cc",
+        "source": "own_profile",
+        "user_id": "9887ab34-623a-5148-a38c-8d08eedc64da"
+      },
+      "fields_set": [
+        "action",
+        "actor_id",
+        "created_at",
+        "id",
+        "new_person_id",
+        "old_person_id",
+        "source",
+        "user_id"
+      ],
+      "input": {
+        "action": "linked",
+        "actor_id": "6a3a8eca-a2f7-5d60-a8c4-02c98acc0ff4",
+        "created_at": "2026-01-01T10:00:00Z",
+        "id": "6cdd6edd-c607-5c74-9239-0940aeaccb91",
+        "new_person_id": "a8c2fa1a-de1e-5906-a4a9-502175964b83",
+        "old_person_id": "54dd2874-626c-58ff-8a61-f3cde56d83cc",
+        "source": "own_profile",
+        "user_id": "9887ab34-623a-5148-a38c-8d08eedc64da"
+      }
+    },
+    "required": {
+      "dump": {
+        "action": "linked",
+        "actor_id": "6a3a8eca-a2f7-5d60-a8c4-02c98acc0ff4",
+        "created_at": "2026-01-01T10:00:00Z",
+        "id": "6cdd6edd-c607-5c74-9239-0940aeaccb91",
+        "new_person_id": "a8c2fa1a-de1e-5906-a4a9-502175964b83",
+        "old_person_id": "54dd2874-626c-58ff-8a61-f3cde56d83cc",
+        "source": "own_profile",
+        "user_id": "9887ab34-623a-5148-a38c-8d08eedc64da"
+      },
+      "fields_set": [
+        "action",
+        "actor_id",
+        "created_at",
+        "id",
+        "new_person_id",
+        "old_person_id",
+        "source",
+        "user_id"
+      ],
+      "input": {
+        "action": "linked",
+        "actor_id": "6a3a8eca-a2f7-5d60-a8c4-02c98acc0ff4",
+        "created_at": "2026-01-01T10:00:00Z",
+        "id": "6cdd6edd-c607-5c74-9239-0940aeaccb91",
+        "new_person_id": "a8c2fa1a-de1e-5906-a4a9-502175964b83",
+        "old_person_id": "54dd2874-626c-58ff-8a61-f3cde56d83cc",
+        "source": "own_profile",
+        "user_id": "9887ab34-623a-5148-a38c-8d08eedc64da"
+      }
+    }
+  },
   "profile.MyContactData": {
     "full": {
       "dto": {

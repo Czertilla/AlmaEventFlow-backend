@@ -87,7 +87,9 @@ async def link_person(
     account, for cases the invite-token flow doesn't cover (account created
     first, or re-linking to a different person)."""
     return UserRead.from_dto(
-        await UserService(uow).admin_link_person(user_id, payload.person_id)
+        await UserService(uow).admin_link_person(
+            user_id, payload.person_id, actor_id=admin.id
+        )
     )
 
 

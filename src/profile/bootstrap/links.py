@@ -14,6 +14,7 @@ import argparse
 import asyncio
 from dataclasses import dataclass, field
 from logging import basicConfig, getLogger
+from profile.enum.account import PersonLinkAction
 from uuid import UUID
 
 from sqlalchemy import text
@@ -21,6 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from core.database.sqlalchemy import new_session
 from core.database.sqlalchemy.engine.pgsql import get_url
+from core.enum.profile import PersonLinkSource
 
 logger = getLogger("profile.bootstrap")
 
@@ -86,6 +88,21 @@ async def adopt(
                             "(person_id, user_id, created_at) VALUES (:p, :u, now())"
                         ),
                         {"p": person_id, "u": user_id},
+                    )
+                    await session.execute(
+                        text(
+                            "INSERT INTO person_account_history "
+                            "(id, user_id, old_person_id, new_person_id, action, "
+                            "source, actor_id, created_at) "
+                            "VALUES (gen_random_uuid(), :u, NULL, :p, :action, "
+                            ":source, NULL, now())"
+                        ),
+                        {
+                            "p": person_id,
+                            "u": user_id,
+                            "action": PersonLinkAction.LINKED,
+                            "source": PersonLinkSource.BOOTSTRAP,
+                        },
                     )
                     await session.commit()
                 report.linked += 1

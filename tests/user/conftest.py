@@ -17,6 +17,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from core.enum.profile import PersonLinkSource
+
 _TABLES = '"user", oauth_account, person, session, refresh_token'
 
 Maker = async_sessionmaker[AsyncSession]
@@ -80,11 +82,20 @@ def outbox(monkeypatch: pytest.MonkeyPatch) -> Outbox:
 
 
 @pytest.fixture(autouse=True)
-def profile_links(monkeypatch: pytest.MonkeyPatch) -> list[tuple[UUID, UUID, bool]]:
-    calls: list[tuple[UUID, UUID, bool]] = []
+def profile_links(
+    monkeypatch: pytest.MonkeyPatch,
+) -> list[tuple[UUID, UUID, bool, PersonLinkSource, UUID | None]]:
+    calls: list[tuple[UUID, UUID, bool, PersonLinkSource, UUID | None]] = []
 
-    async def link(user_id: UUID, person_id: UUID, *, replace: bool = False) -> None:
-        calls.append((user_id, person_id, replace))
+    async def link(
+        user_id: UUID,
+        person_id: UUID,
+        *,
+        source: PersonLinkSource,
+        actor_id: UUID | None,
+        replace: bool = False,
+    ) -> None:
+        calls.append((user_id, person_id, replace, source, actor_id))
 
     monkeypatch.setattr("user.service.user.link_account", link)
     return calls

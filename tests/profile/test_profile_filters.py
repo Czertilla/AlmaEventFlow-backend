@@ -1,3 +1,4 @@
+from profile.filter.account_history import AccountLinkChangeFilter
 from profile.filter.contact import ContactFilter
 from profile.filter.diet import DietFilter
 from profile.filter.passport import PassportFilter
@@ -21,6 +22,7 @@ from support.filters import (
 from core.filter.ordered import OrderedFilter
 
 FILTERS: list[type[OrderedFilter]] = [
+    AccountLinkChangeFilter,
     ContactFilter,
     DietFilter,
     PassportFilter,

@@ -12,6 +12,7 @@ from core.config.settings import settings
 from core.dto.base import dto_dict, dto_from_orm
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
 from core.enum.notify import NotificationCategory
+from core.enum.profile import PersonLinkSource
 from core.schema.message.notify import NotificationRequest
 from core.schema.message.profile import PersonLinkData
 from core.service.base import BaseService, required_transaction
@@ -218,7 +219,12 @@ class UserService(BaseService[UserUOW]):
         await self._announce_created(result)
         if person_id is not None:
             try:
-                await link_account(result.id, person_id)
+                await link_account(
+                    result.id,
+                    person_id,
+                    source=PersonLinkSource.INVITE,
+                    actor_id=result.id,
+                )
             except VancedHTTPException:
                 logger.warning(
                     "Account %s registered without the person of its invitation",
@@ -575,7 +581,9 @@ class UserService(BaseService[UserUOW]):
         await self.apply_link([PersonLinkData(user_id=user_id, person_id=person_id)])
         return await self.get(user_id)
 
-    async def admin_link_person(self, user_id: UUID, person_id: UUID) -> UserDTO:
+    async def admin_link_person(
+        self, user_id: UUID, person_id: UUID, *, actor_id: UUID
+    ) -> UserDTO:
         async with self.uow as uow:
             if await uow.users.get_by_id(user_id) is None:
                 raise UserNotFound()
@@ -583,7 +591,13 @@ class UserService(BaseService[UserUOW]):
                 raise InvitePersonNotExistsException()
             if await uow.users.exists_person(person_id):
                 raise PersonAlreadyHasAccount()
-        await link_account(user_id, person_id, replace=True)
+        await link_account(
+            user_id,
+            person_id,
+            replace=True,
+            source=PersonLinkSource.ADMIN,
+            actor_id=actor_id,
+        )
         return await self._adopt(user_id, person_id)
 
     async def link_invite(self, user_id: UUID, token: str) -> UserDTO:
@@ -594,7 +608,9 @@ class UserService(BaseService[UserUOW]):
             if user.person_id is not None:
                 raise AccountAlreadyLinked()
             person_id = await self._validate_invite_token(token)
-        await link_account(user_id, person_id)
+        await link_account(
+            user_id, person_id, source=PersonLinkSource.INVITE, actor_id=user_id
+        )
         return await self._adopt(user_id, person_id)
 
     async def announce_login(self, user_id: UUID, device_info: str | None) -> None:

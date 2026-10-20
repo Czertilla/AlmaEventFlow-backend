@@ -2,6 +2,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from core.enum.profile import PersonLinkSource
 from core.schema.message.core import MQEvent, MQRequest
 
 
@@ -32,6 +33,11 @@ class LinkAccountRequest(MQRequest):
     user_id: UUID
     person_id: UUID
     replace: bool = False
+    source: PersonLinkSource
+    actor_id: UUID | None = Field(
+        default=None,
+        description="The account that asked for the link, none for the system.",
+    )
 
 
 class PersonDelete(MQRequest):

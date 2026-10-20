@@ -9,6 +9,8 @@ from _outbox import Outbox
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
+from core.enum.profile import PersonLinkSource
+
 PASSWORD = "S3cret-pass"
 NEW_PASSWORD = "An0ther-pass"
 BOT_TOKEN = "123456:TEST-TOKEN"
@@ -810,9 +812,16 @@ async def test_the_invitation_flows_ask_profile_to_make_the_link(
     client: httpx.AsyncClient,
     user_engine: AsyncEngine,
     outbox: Outbox,
-    profile_links: list[tuple[UUID, UUID, bool]],
+    profile_links: list[tuple[UUID, UUID, bool, PersonLinkSource, UUID | None]],
 ) -> None:
+    import jwt
+
     admin = await _verified_session(client, user_engine, superuser=True)
+    admin_id = UUID(
+        jwt.decode(
+            admin["Authorization"].split()[1], options={"verify_signature": False}
+        )["sub"]
+    )
     invited = await _person(user_engine)
     joined = await _person(user_engine)
     moved = await _person(user_engine)
@@ -843,10 +852,11 @@ async def test_the_invitation_flows_ask_profile_to_make_the_link(
     assert registered.json()["person_id"] == str(invited)
     assert self_linked.json()["person_id"] == str(joined)
     assert admin_linked.json()["person_id"] == str(moved)
-    assert [(str(p), replace) for _, p, replace in profile_links] == [
-        (str(invited), False),
-        (str(joined), False),
-        (str(moved), True),
+    bob_id, cid_id = UUID(registered.json()["id"]), UUID(other["id"])
+    assert profile_links == [
+        (bob_id, invited, False, PersonLinkSource.INVITE, bob_id),
+        (cid_id, joined, False, PersonLinkSource.INVITE, cid_id),
+        (cid_id, moved, True, PersonLinkSource.ADMIN, admin_id),
     ]
     assert outbox.last("updated")[3] == moved
 

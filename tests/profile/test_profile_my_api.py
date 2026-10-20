@@ -107,6 +107,18 @@ async def test_a_user_makes_the_whole_profile_in_one_request(
     assert (link.user_id, str(link.person_id)) == (user_id, body["id"])
     for table in ("person", "person_account", "profile", "student", "contact"):
         assert await _count(profile_engine, table) >= 1
+    async with profile_engine.connect() as conn:
+        history = (
+            await conn.execute(
+                text(
+                    "SELECT user_id, old_person_id, new_person_id, action, source, "
+                    "actor_id FROM person_account_history"
+                )
+            )
+        ).all()
+    assert [tuple(row) for row in history] == [
+        (user_id, None, UUID(body["id"]), "linked", "own_profile", user_id)
+    ]
 
 
 async def test_the_profile_is_found_by_the_link_not_by_the_token(
@@ -143,6 +155,7 @@ async def test_a_second_profile_is_refused(
     assert again.status_code == 403
     assert again.json()["detail"] == "PROFILE_ALREADY_EXISTS"
     assert await _count(profile_engine, "person") == 1
+    assert await _count(profile_engine, "person_account_history") == 1
     assert published == []
 
 
@@ -160,6 +173,7 @@ async def test_two_simultaneous_attempts_make_one_profile(
     assert sorted([first.status_code, second.status_code]) == [200, 403]
     assert await _count(profile_engine, "person") == 1
     assert await _count(profile_engine, "person_account") == 1
+    assert await _count(profile_engine, "person_account_history") == 1
 
 
 @pytest.mark.parametrize(

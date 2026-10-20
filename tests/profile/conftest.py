@@ -42,7 +42,8 @@ async def profile_engine(test_database: None) -> AsyncIterator[AsyncEngine]:
         async with engine.begin() as conn:
             await conn.execute(
                 text(
-                    "TRUNCATE person, organization, diet, student_degree "
+                    "TRUNCATE person, person_account_history, organization, diet, "
+                    "student_degree "
                     "RESTART IDENTITY CASCADE"
                 )
             )

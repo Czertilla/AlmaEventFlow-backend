@@ -22,7 +22,11 @@ async def on_link_account(
 
     async def _call() -> Ack:
         await PersonAccountService(uow).link(
-            request.user_id, request.person_id, replace=request.replace
+            request.user_id,
+            request.person_id,
+            replace=request.replace,
+            source=request.source,
+            actor_id=request.actor_id,
         )
         return Ack()
 

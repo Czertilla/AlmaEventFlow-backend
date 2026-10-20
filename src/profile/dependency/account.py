@@ -1,12 +1,17 @@
 from profile.dependency.person import PersonUOWDep
 from profile.exc.user import NonPersonalUserException
 from profile.service.account import PersonAccountService
+from profile.uow.account import AccountUOW
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import Depends
 
 from core.dependencies.auth import ActiveUserJWTDep
+
+from ._uow import UOWDep
+
+AccountUOWDep = Annotated[AccountUOW, Depends(UOWDep(AccountUOW))]
 
 
 async def get_caller_person(user: ActiveUserJWTDep, uow: PersonUOWDep) -> UUID | None:

@@ -1,6 +1,83 @@
 {
   "components": {
     "schemas": {
+      "AccountLinkChangeRead": {
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/PersonLinkAction"
+          },
+          "actor_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The account that made the change, none when the system did.",
+            "title": "Actor Id"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "new_person_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The person the account stands for after, none when it has no one.",
+            "title": "New Person Id"
+          },
+          "old_person_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The person the account stood for before, none when it had no one.",
+            "title": "Old Person Id"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PersonLinkSource"
+          },
+          "user_id": {
+            "description": "The account whose link changed.",
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "old_person_id",
+          "new_person_id",
+          "action",
+          "source",
+          "actor_id",
+          "created_at"
+        ],
+        "title": "AccountLinkChangeRead",
+        "type": "object"
+      },
       "ContactItemRead": {
         "properties": {
           "id": {
@@ -562,6 +639,71 @@
         "title": "OrganizationRefRead",
         "type": "object"
       },
+      "PageV1_AccountLinkChangeRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AccountLinkChangeRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[AccountLinkChangeRead]",
+        "type": "object"
+      },
+      "PaginationV1": {
+        "properties": {
+          "limit": {
+            "default": 10,
+            "exclusiveMinimum": 0.0,
+            "maximum": 100.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "page": {
+            "default": 0,
+            "title": "Page",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total"
+        ],
+        "title": "PaginationV1",
+        "type": "object"
+      },
+      "PersonLinkAction": {
+        "enum": [
+          "linked",
+          "replaced",
+          "unlinked"
+        ],
+        "title": "PersonLinkAction",
+        "type": "string"
+      },
+      "PersonLinkSource": {
+        "enum": [
+          "own_profile",
+          "invite",
+          "admin",
+          "person_deleted",
+          "bootstrap"
+        ],
+        "title": "PersonLinkSource",
+        "type": "string"
+      },
       "ReferenceName": {
         "properties": {
           "name": {
@@ -707,6 +849,261 @@
     }
   },
   "paths": {
+    "/profile/v2/account-links/history": {
+      "get": {
+        "description": "Who linked, moved or unlinked which account, how and when; newest first.\n\n`person_id` matches a change that took the person from an account or gave\nit to one.",
+        "operationId": "get_account_link_history_profile_v2_account_links_history_get",
+        "parameters": [
+          {
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: created_at, action, source.",
+            "in": "query",
+            "name": "order_by",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "-created_at",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: created_at, action, source.",
+              "title": "Order By"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "in": "query",
+            "name": "user_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "person_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Person Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "actor_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Actor Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "action",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PersonLinkAction"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Action"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PersonLinkSource"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__gte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Gte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at__lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At  Lte"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_AccountLinkChangeRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Account Link History",
+        "tags": [
+          "account-link"
+        ]
+      }
+    },
     "/profile/v2/diets": {
       "post": {
         "description": "Finds the record by its name, whatever the case and spacing, or makes it.\n\nEvery endpoint of this router works so: what several profiles share is\nlooked up first and added only when it is missing.",

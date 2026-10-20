@@ -156,7 +156,7 @@ async def patch_person(
 async def delete_person(
     person_id: UUID, user: SuperUserJWTDep, uow: PersonUOWDep
 ) -> None:
-    await PersonService(uow).delete(person_id)
+    await PersonService(uow).delete(person_id, user.id)
 
 
 contact_router = APIRouter(prefix="/{person_id}/contacts", tags=["person", "contact"])

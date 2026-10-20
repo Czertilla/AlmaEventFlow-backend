@@ -2,6 +2,7 @@ from logging import getLogger
 from uuid import UUID
 
 from core.broker.rpc import RpcError, rpc_call
+from core.enum.profile import PersonLinkSource
 from core.enum.rpc import ProfileRPC
 from core.schema.error import ErrorCode
 from core.schema.message.core import Ack
@@ -23,9 +24,20 @@ _REFUSALS: dict[str, type[VancedHTTPException]] = {
 
 
 async def link_account(
-    user_id: UUID, person_id: UUID, *, replace: bool = False
+    user_id: UUID,
+    person_id: UUID,
+    *,
+    source: PersonLinkSource,
+    actor_id: UUID | None,
+    replace: bool = False,
 ) -> None:
-    request = LinkAccountRequest(user_id=user_id, person_id=person_id, replace=replace)
+    request = LinkAccountRequest(
+        user_id=user_id,
+        person_id=person_id,
+        replace=replace,
+        source=source,
+        actor_id=actor_id,
+    )
     try:
         await rpc_call(ProfileRPC.LINK_ACCOUNT, request, Ack)
     except RpcError as exc:

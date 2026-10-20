@@ -63,3 +63,15 @@ async def test_the_links_of_the_user_database_are_adopted_without_overwriting(
     assert [user for user, _ in report.unknown_person] == [other]
     assert (fresh, new_user) in await _links(profile_engine)
     assert again.present == 2
+    async with profile_engine.connect() as conn:
+        history = (
+            await conn.execute(
+                text(
+                    "SELECT user_id, old_person_id, new_person_id, action, source, "
+                    "actor_id FROM person_account_history"
+                )
+            )
+        ).all()
+    assert [tuple(row) for row in history] == [
+        (new_user, None, fresh, "linked", "bootstrap", None)
+    ]

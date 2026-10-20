@@ -9,6 +9,7 @@ from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
 
+from core.enum.profile import PersonLinkSource
 from core.schema.message.profile import PersonLinkData
 from core.schema.user import UserJWT
 from core.service.base import BaseService, required_transaction
@@ -26,7 +27,15 @@ class PersonAccountService(BaseService[PersonUOW]):
         return link.person_id if link is not None else None
 
     @required_transaction
-    async def _link(self, user_id: UUID, person_id: UUID, *, replace: bool) -> None:
+    async def _link(
+        self,
+        user_id: UUID,
+        person_id: UUID,
+        *,
+        replace: bool,
+        source: PersonLinkSource,
+        actor_id: UUID | None,
+    ) -> None:
         if not await self.uow.persons.exists_id(person_id):
             raise PersonNotExistsException()
         holder = await self.uow.account_links.get_by_person(person_id)
@@ -42,17 +51,36 @@ class PersonAccountService(BaseService[PersonUOW]):
         await self.uow.account_links.add_one(
             {"person_id": person_id, "user_id": user_id}
         )
+        await self.uow.account_history.record(
+            user_id,
+            old_person_id=current.person_id if current is not None else None,
+            new_person_id=person_id,
+            source=source,
+            actor_id=actor_id,
+        )
 
     async def person_of(self, user_id: UUID) -> UUID | None:
         async with self.uow:
             return await self._person_of(user_id)
 
     async def link(
-        self, user_id: UUID, person_id: UUID, *, replace: bool = False
+        self,
+        user_id: UUID,
+        person_id: UUID,
+        *,
+        source: PersonLinkSource,
+        actor_id: UUID | None = None,
+        replace: bool = False,
     ) -> None:
         try:
             async with self.uow as uow:
-                await self._link(user_id, person_id, replace=replace)
+                await self._link(
+                    user_id,
+                    person_id,
+                    replace=replace,
+                    source=source,
+                    actor_id=actor_id,
+                )
                 await uow.commit()
         except IntegrityError as exc:
             raise AccountAlreadyLinkedException() from exc
