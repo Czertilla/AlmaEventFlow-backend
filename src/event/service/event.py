@@ -270,7 +270,7 @@ class EventService(BaseService[EventUOW]):
         """Publishes both the personal attendance ping and the collective
         chat announcement for the same event — two independent pipelines
         (see ``event/service/notification.py``), triggered together."""
-        logger.info("Publishing notices for event %s", event_id)
+        logger.debug("Publishing notices for event %s", event_id)
         await notify_event_targets(self.uow, event_ids=[event_id])
         await notify_collective_chats(self.uow, event_ids=[event_id])
 
@@ -693,8 +693,6 @@ class EventService(BaseService[EventUOW]):
                     )
                     await self._delete(event_id)
             await uow.commit()
-
-    # --- Этапы мероприятия от лица руководителя коллектива-участника ---
 
     async def create_stage_for_collective(
         self, collective_id: UUID, event_id: UUID, stage_data: StageCreateDataDTO

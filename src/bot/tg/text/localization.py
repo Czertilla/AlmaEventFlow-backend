@@ -48,7 +48,7 @@ class Localization:
         i18n.config.set("load_path", [str(self.translations_path)])
         i18n.config.set("fallback", self.default_lang)
 
-        logger.info(f"Localization initialized: {self}")
+        logger.debug("Localization initialized: %s", self)
 
     def __repr__(self) -> str:
         """
@@ -107,7 +107,6 @@ class Localization:
         lang = lang or self.default_lang
         cache_key = f"i18n:{lang}:{key}:{self.hash_kwargs(kwargs)}"
 
-        # Check cache
         cached_translation: str | None = None
         try:
             cached_translation = cast(
@@ -121,15 +120,13 @@ class Localization:
                 exc,
             )
         if cached_translation:
-            logger.debug(f"Cache hit: {cache_key}")
+            logger.debug("Cache hit: %s", cache_key)
             return cached_translation
 
-        # Load translation if cache miss
-        logger.debug(f"Cache miss: {cache_key}. Fetching translation.")
+        logger.debug("Cache miss: %s. Fetching translation.", cache_key)
 
         text: str = i18n.t(f"{markup}.{key}", locale=lang, **kwargs)
 
-        # Store in cache
         try:
             await self.cache.set(
                 cache_key, text, ttl=self.ttl, namespace="i18n"
@@ -139,10 +136,9 @@ class Localization:
                 "Translation cache write failed for %s: %s", key, exc
             )
         else:
-            logger.debug(f"Cached translation: {cache_key} (TTL: {self.ttl}s)")
+            logger.debug("Cached translation: %s (TTL: %ss)", cache_key, self.ttl)
 
         return text
 
 
-# Global localization object
 i18n_manager: Localization = Localization()

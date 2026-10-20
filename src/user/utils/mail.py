@@ -16,7 +16,7 @@ logger = getLogger(__name__)
 async def send_verify_message(
     email: EmailStr, token: str, broker: KafkaBroker = broker
 ) -> JSONResponse:
-    logger.debug(f"Sending verify message to {email} with token")
+    logger.debug("Sending verify message to %s with token", email)
     await broker.publish(
         SendVerifyMessageRequest(email=email, token=token),
         EmailQueue.VERIFY,
@@ -27,7 +27,7 @@ async def send_verify_message(
 async def send_reset_message(
     email: EmailStr, token: str, broker: KafkaBroker = broker
 ) -> JSONResponse:
-    logger.debug(f"Sending password reset message to {email} with token")
+    logger.debug("Sending password reset message to %s with token", email)
     await broker.publish(
         SendResetPasswordMessageRequest(email=email, token=token),
         EmailQueue.RESET,

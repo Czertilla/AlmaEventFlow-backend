@@ -62,7 +62,7 @@ class TGBotContextManager(AppContextManager):
 
     async def set_webhook(self):
         url = f"https://{settings.APP_HOST}{settings.BOT_TG_WEBHOOK}"
-        logger.info(f"Setting up webhook on {url}")
+        logger.info("Setting up webhook on %s", url)
         secret = (
             settings.BOT_TG_WEBHOOK_SECRET.get_secret_value()
             if settings.BOT_TG_WEBHOOK_SECRET

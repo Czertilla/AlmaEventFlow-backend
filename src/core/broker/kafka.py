@@ -36,7 +36,7 @@ if not settings.IN_MEMORY_BROKER:
         host: str = settings.KAFKA_HOST,
         port: str = settings.KAFKA_PORT,
     ):
-        logger.info(f"Kafka URI configuration: host={host}, port={port}")
+        logger.debug("Kafka URI configuration: host=%s, port=%s", host, port)
         return f"{host}:{port}"
 
     _SASL_MECHANISMS = {
@@ -50,16 +50,14 @@ if not settings.IN_MEMORY_BROKER:
             return True
         if protocol in {"PLAINTEXT", "SASL_PLAINTEXT"}:
             return False
-        # Unset protocol: preserve plaintext-by-default, only opting into TLS
-        # when a CA was actually configured (legacy KAFKA_SSL_CA behavior).
+        # unset protocol: TLS only when a CA is configured
         return settings.KAFKA_SSL_CA is not None
 
     def _ssl_context(protocol: str) -> ssl.SSLContext | None:
         if not _wants_tls(protocol):
             return None
         ca = settings.KAFKA_SSL_CA
-        # No custom CA configured: fall back to the system trust store, which is
-        # what a publicly-trusted (e.g. Let's Encrypt) broker certificate needs.
+        # no CA: the system trust store, for publicly trusted certificates
         context = (
             ssl.create_default_context(cafile=ca)
             if ca
@@ -109,8 +107,7 @@ if not settings.IN_MEMORY_BROKER:
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.reconnect_interval = 0.8
-            # Real Kafka has no request/reply support in faststream out of the
-            # box -- see core.broker.kafka_rpc for why and how this patches it in.
+            # request/reply over Kafka: see core.broker.kafka_rpc
             self._rpc_reply = KafkaRpcReplyConsumer(
                 bootstrap_servers=kafka_uri(),
                 client_id=self.config.client_id or "aef",
@@ -122,13 +119,12 @@ if not settings.IN_MEMORY_BROKER:
             while True:
                 try:
                     logger.info(
-                        f"Attempting to connect to Kafka with servers: {kafka_uri()}"
+                        "Attempting to connect to Kafka with servers: %s", kafka_uri()
                     )
                     await super().start()
                 except Exception as e:
                     logger.error(
-                        "Error starting broker, reconnecting in "
-                        f"{self.reconnect_interval} seconds ({e=})"
+                        "Error starting broker, reconnecting in %s seconds (e=%r)", self.reconnect_interval, e
                     )
                     await asyncio.sleep(self.reconnect_interval)
                     self.reconnect_interval = next_reconnect_interval(
@@ -143,11 +139,8 @@ if not settings.IN_MEMORY_BROKER:
             await super().stop(*args, **kwargs)
 
     class KafkaStreamRouter(BaseKafkaStreamRouter):
-        # StreamRouter builds its internal broker from this class attribute
-        # (see faststream._internal.fastapi.router.StreamRouter.__init__) --
-        # without it, the FastAPI-mounted router silently constructs a plain
-        # unpatched faststream KafkaBroker instead of the one above, and the
-        # request/reply patch in KafkaBroker.__init__ never runs.
+        # StreamRouter builds its broker from this attribute; without it the
+        # request/reply patch above is skipped
         broker_class = KafkaBroker
 
         def __init__(
@@ -157,7 +150,7 @@ if not settings.IN_MEMORY_BROKER:
             *args,
             **kwargs,
         ):
-            logger.info(f"KafkaStreamRouter initializing with URL: {url}")
+            logger.debug("KafkaStreamRouter initializing with URL: %s", url)
             super().__init__(url, *args, security=security, **kwargs)
 
     class KafkaRouter(BaseKafkaRouter):
@@ -175,7 +168,7 @@ if not settings.IN_MEMORY_BROKER:
     @lru_cache
     def geStreamRouter() -> KafkaStreamRouter:
         uri = kafka_uri()
-        logger.info(f"Creating KafkaStreamRouter with URI: kafka://{uri}")
+        logger.debug("Creating KafkaStreamRouter with URI: kafka://%s", uri)
         return KafkaStreamRouter(url=uri)
 
 else:

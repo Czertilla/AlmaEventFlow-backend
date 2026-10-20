@@ -54,7 +54,7 @@ async def send_verify_message(request: SendVerifyMessageRequest) -> None:
     try:
         await get_fastmail().send_message(message)
     except Exception as e:
-        logger.error(f"Error sending verify message: {e}")
+        logger.error("Error sending verify message: %s", e)
 
 
 @router.subscriber(EmailQueue.RESET)
@@ -74,7 +74,7 @@ async def send_reset_password_message(
     try:
         await get_fastmail().send_message(message)
     except Exception as e:
-        logger.error(f"Error sending password reset message: {e}")
+        logger.error("Error sending password reset message: %s", e)
 
 
 @router.subscriber(EmailQueue.SEND)
@@ -83,7 +83,7 @@ async def send_templated_message(request: SendTemplatedEmailRequest) -> None:
     try:
         html = render_template(request.template, request.context)
     except Exception as e:
-        logger.error(f"Error rendering template {request.template!r}: {e}")
+        logger.error("Error rendering template %r: %s", request.template, e)
         return
     message = MessageSchema(
         subject=request.subject,
@@ -94,7 +94,7 @@ async def send_templated_message(request: SendTemplatedEmailRequest) -> None:
     try:
         await get_fastmail().send_message(message)
     except Exception as e:
-        logger.error(f"Error sending templated message: {e}")
+        logger.error("Error sending templated message: %s", e)
 
 
 def _is_expired(item: EmailDeliveryItem) -> bool:
@@ -113,7 +113,7 @@ async def _deliver_item(item: EmailDeliveryItem) -> None:
     try:
         html = render_template(item.template, item.context)
     except Exception as e:
-        logger.error(f"Error rendering template {item.template!r}: {e}")
+        logger.error("Error rendering template %r: %s", item.template, e)
         await _report(item.delivery_id, DeliveryStatus.failed, "render_error")
         return
     message = MessageSchema(
@@ -125,7 +125,7 @@ async def _deliver_item(item: EmailDeliveryItem) -> None:
     try:
         await get_fastmail().send_message(message)
     except Exception as e:
-        logger.error(f"Error sending notification email: {e}")
+        logger.error("Error sending notification email: %s", e)
         await _report(item.delivery_id, DeliveryStatus.retry_scheduled, str(e))
         return
     await _report(item.delivery_id, DeliveryStatus.sent)

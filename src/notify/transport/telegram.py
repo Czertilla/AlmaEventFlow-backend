@@ -57,9 +57,7 @@ class TelegramTransport(BaseTransport):
 
     @staticmethod
     def _render_text(content: NotificationContent) -> str:
-        # The bot sends with parse_mode=HTML, and title/body now routinely
-        # carry free-text event descriptions -- escape so a stray `<`/`&` in
-        # someone's event text doesn't break the whole send.
+        # parse_mode=HTML: a stray `<` or `&` in free text would break the send
         title = escape(content.title) if content.title else ""
         parts = [f"<b>{title}</b>"] if title else []
         if content.body:

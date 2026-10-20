@@ -67,7 +67,6 @@ class HandlerMixin:
     def decorator(self, func: Callable) -> Callable:
         @wraps(func)
         async def wrapper(event: Message | CallbackQuery, **kwargs):
-            # Mimic middleware behavior through kwargs
             return await self.__call__(lambda e, d: func(e, **d), event, kwargs)
 
         return wrapper

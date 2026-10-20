@@ -107,35 +107,15 @@ def _strip_settlement_prefix(name: str) -> str:
 
 
 def pick_administrative_names(levels: dict[int, str]) -> tuple[str, str, str]:
-    """Picks (country, region, city) names out of an ``admin_level -> name``
-    map from ``OverpassSource.reverse_geocode`` -- never a placeholder: a
-    country with no finer OSM subdivision at this point reuses its own name
-    for region and city rather than leaving them blank or fake.
+    """Picks (country, region, city) names out of an ``admin_level -> name`` map.
 
-    ``admin_level`` isn't a fixed universal scale -- what it means past 2
-    (country) varies by country, and blindly taking "the next level up" or
-    "the deepest level available" picks up things that aren't a region or a
-    city at all. Verified against real Overpass data for three different
-    Russian structures:
-    - a federal subject organized as one urban okrug (Tatarstan/Kazan):
-      country(2) -> [federal district(3), skipped] -> region(4) ->
-      city(6, "городской округ Казань") -> [district(9), too fine, skipped].
-    - a federal subject with a two-tier municipal split (Yaroslavl oblast/
-      Rostov Veliky): region(4) -> a level-6 "municipal okrug" that is only
-      the *district* around the town, not the town -- the actual settlement
-      is one level deeper (8, "городское поселение Ростов"). Picking level 6
-      unconditionally here would resolve "city" to the district's name.
-    - a federal city (Saint Petersburg) has no level-6 entry at all, only
-      sub-city boroughs (5, 8) -- picking the deepest level available would
-      wrongly resolve "city" to a borough; falls back to the region's own
-      name (region and city are the same real place here).
-
-    A level-8 settlement name is only trusted once a level-6 entry confirms
-    the deeper levels are genuine district->settlement drill-down and not
-    just a federal city's internal boroughs. The common
-    "городской округ"/"...поселение " administrative prefix is stripped from
-    whichever name wins, since it names the administrative unit, not the
-    place, e.g. "городской округ Казань" -> "Казань"."""
+    Levels past 2 (country) are not a universal scale, so neither the next
+    level up nor the deepest one is trusted: the region is level 4, the city
+    level 6, or level 8 when a level-6 entry confirms the deeper levels are a
+    district -> settlement drill-down and not a federal city's boroughs. A
+    missing level reuses the name above it (Saint Petersburg is its own
+    region and city), never a placeholder. The administrative prefix
+    ("городской округ", "...поселение ") is stripped from the winning name."""
     if not levels:
         raise OverpassError("no administrative boundary data for this point")
     country_level = 2 if 2 in levels else min(levels)

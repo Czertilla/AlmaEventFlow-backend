@@ -38,7 +38,7 @@ class TextBuilder(MenuMixin, AccountMixin, LeaderMixin):
             lang if settings.LOCALIZATION_AVAILABLE else None
         )
         self.markup: str = markup
-        logger.debug(f"initialized TextBuilder(lang={lang}, markup={markup})")
+        logger.debug("initialized TextBuilder(lang=%s, markup=%s)", lang, markup)
 
     async def get_username_warning(self) -> str:
         return await self.get_phrase(LocaleKey.Error.username, ch=Emoji.warning)
@@ -58,7 +58,7 @@ class TextBuilder(MenuMixin, AccountMixin, LeaderMixin):
             key = str(key.value)
         phrase = await i18n_manager.get(key, self.lang, self.markup, **kwargs)
         logger.debug(
-            f"fetched phrase for key='{key}' with kwargs={kwargs}: '{phrase}'"
+            "fetched phrase for key='%s' with kwargs=%s: '%s'", key, kwargs, phrase
         )
         return phrase
 

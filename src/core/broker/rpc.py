@@ -24,8 +24,7 @@ async def rpc_call[T](
         else:
             response = MQResponse[response_model].model_validate(body)
     else:
-        # Monolith broker: the handler's MQResponse comes back as-is, already
-        # holding a real response_model instance for `.data` — no reparsing.
+        # monolith broker: the handler's MQResponse arrives already parsed
         response = raw
     if response.error is not None:
         raise RpcError(response.error)

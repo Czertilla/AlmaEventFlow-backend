@@ -19,7 +19,6 @@ def load_common[T](
     """
     found_objects = []
 
-    # Import the package and iterate over its modules
     package = importlib.import_module(package_name)
 
     for _, module_name, _ in pkgutil.iter_modules(package.__path__):

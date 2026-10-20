@@ -158,11 +158,11 @@ async def _handle_link(
     try:
         updated = await AccountLinkService(uow).link(user.id, token)
     except LinkTokenExpiredException:
-        logger.info(f"expired link token for tg user {user.id=}")
+        logger.info("expired link token for tg user user.id=%r", user.id)
         await message.answer(text=await text_builder.on_link_expired())
         return actor
     except InvalidLinkTokenException:
-        logger.info(f"invalid link token for tg user {user.id=}")
+        logger.info("invalid link token for tg user user.id=%r", user.id)
         await message.answer(text=await text_builder.on_link_invalid())
         return actor
     refreshed = await ActorService(AccountLinkUOW()).resolve(updated)

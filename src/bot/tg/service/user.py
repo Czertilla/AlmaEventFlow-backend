@@ -19,7 +19,7 @@ class TelegramUserService(BaseService[UserUOW]):
 
     @staticmethod
     def filt_user_data(user_data: dict[str, Any]) -> dict[str, Any]:
-        logger.debug(f"filtering unnecessary attributes for {user_data=}")
+        logger.debug("filtering unnecessary attributes for user_data=%r", user_data)
         if f := "id" not in user_data:
             user_data["id"] = 0
         user_data = TGUser(**user_data).model_dump(exclude_unset=True)
@@ -35,12 +35,12 @@ class TelegramUserService(BaseService[UserUOW]):
             "id": user.id
         },
     ) -> TGUser:
-        logger.debug(f"updating data for {user=}")
+        logger.debug("updating data for user=%r", user)
         async with self.uow:
             user_data: dict[str, Any] = user.model_dump()
             user_model = await self.uow.users.get_by_id(user.id)
             if isinstance(user_model, TGUserORM):
-                logger.debug(f"data for {user=} already exists")
+                logger.debug("data for user=%r already exists", user)
                 user_data.update(from_db_update(user_model))
                 user_data = self.filt_user_data(user_data)
                 stored_lang = user_model.language_code
@@ -53,13 +53,13 @@ class TelegramUserService(BaseService[UserUOW]):
                     user_model.id, user_data
                 )
             else:
-                logger.debug(f"data for {user=} not exists yet")
+                logger.debug("data for user=%r not exists yet", user)
                 user_model = await self.uow.users.add_n_return(
                     self.filt_user_data(user_data)
                 )
             response = TGUser.model_validate(user_model)
             await self.uow.commit(True)
-        logger.debug(f"after update {user=} got {response=}")
+        logger.debug("after update user=%r got response=%r", user, response)
         return response
 
     async def set_lang(

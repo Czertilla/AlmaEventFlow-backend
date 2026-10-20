@@ -117,7 +117,6 @@ async def delete_student(
     await StudentService(uow).delete(student_id)
 
 
-# Student Degrees Router
 degree_router = APIRouter(prefix="/degrees", tags=["student", "degree"])
 
 
@@ -196,7 +195,6 @@ async def delete_student_degree(
     await StudentDegreeService(uow).delete(degree_id)
 
 
-# Student Groups Router
 group_router = APIRouter(prefix="/groups", tags=["student", "group"])
 
 
@@ -275,6 +273,5 @@ async def delete_student_group(
     await StudentGroupService(uow).delete(group_id)
 
 
-# Include sub-routers
 router.include_router(degree_router)
 router.include_router(group_router)

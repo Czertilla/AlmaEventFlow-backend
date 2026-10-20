@@ -54,7 +54,7 @@ class UserRepo(SQLAlchemyRepository[Model]):
         return await self.count(self.model.username == value) > 0
 
     async def get_by_username(self, username: str) -> Model | None:
-        logger.debug(f"getting user by {username=}")
+        logger.debug("getting user by username=%r", username)
         if not username:
             return None
         return (

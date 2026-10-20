@@ -41,10 +41,7 @@ def _shared_source() -> OverpassSource:
             if settings.GEO_OVERPASS_MIRRORS
             else None
         )
-        # attempts comfortably exceeds the mirror count: not every public
-        # mirror builds the area index reverse_geocode's is_in query needs --
-        # one that doesn't fails every single time (not just transient), so
-        # enough attempts to cycle past it and reach one that does matters.
+        # more attempts than mirrors: some never build the index is_in needs
         _source = OverpassSource(urls=urls, timeout=25.0, attempts=10, cooldown=10.0)
     return _source
 

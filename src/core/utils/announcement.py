@@ -19,5 +19,5 @@ async def send_announcement(
         request.collective_id,
         "in-memory" if settings.IN_MEMORY_BROKER else "kafka",
     )
-    logger.debug(f"Sending announcement request {request=}")
+    logger.debug("Sending announcement request request=%r", request)
     await broker.publish(request, AnnouncementQueue.COLLECTIVE_REQUESTED)

@@ -21,7 +21,11 @@ class AccountLinkService(BaseService[AccountLinkUOW]):
     """Links/unlinks a Telegram profile to an AlmaEventFlow identity. The link
     code is minted by ``user``-service and stashed in Redis (Telegram's deep-link
     ``start`` parameter is capped at 64 ``[A-Za-z0-9_-]`` characters, too short
-    for a signed token) — consumed here exactly once."""
+    for a signed token) — consumed here exactly once.
+
+    Linking again replaces the previous tgid of the person. The notify client
+    and the OAuth link are registered after the commit, best-effort: they are
+    HTTP calls and must not undo a link that already succeeded."""
 
     @staticmethod
     async def _resolve(code: str) -> UUID:
@@ -42,19 +46,14 @@ class AccountLinkService(BaseService[AccountLinkUOW]):
                     {"person_id": person_id}
                 )
             else:
-                # Re-linking a person already tied to another tgid replaces
-                # that link (e.g. the user switched phones/accounts).
                 await uow.tg_users.clear_link(account.id)
             tg_model = await uow.tg_users.update_one(
                 tgid, {"user_id": account.id}
             )
             await uow.commit(True)
-            logger.info(f"linked tg user {tgid=} to {person_id=}")
+            logger.debug("linked tg user %s to person %s", tgid, person_id)
             result = TGUser.model_validate(tg_model)
 
-        # Register the DM as a notify client outside the DB transaction (it's
-        # an HTTP call). Best-effort: the link itself already succeeded, so a
-        # transient failure here just means notifications don't go out yet.
         client_id = await register_notify_client(person_id, tgid)
         if client_id is not None:
             async with self.uow as uow:
@@ -63,9 +62,6 @@ class AccountLinkService(BaseService[AccountLinkUOW]):
                 )
                 await uow.commit(True)
 
-        # Same best-effort treatment: sync into user-service's OAuthAccount
-        # table so the website's Telegram Login Widget can find this link,
-        # without letting a transient failure undo the link itself.
         await register_oauth_link(person_id, tgid, result.username)
         return result
 
@@ -95,7 +91,7 @@ class AccountLinkService(BaseService[AccountLinkUOW]):
                     tgid, {"user_id": None}
                 )
             await uow.commit(True)
-            logger.info(f"unlinked tg user {tgid=}")
+            logger.info("unlinked tg user tgid=%r", tgid)
             result = TGUser.model_validate(tg_model)
 
         if account is not None:

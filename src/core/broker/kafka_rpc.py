@@ -1,27 +1,10 @@
-"""Real request/reply over Kafka.
+"""Request/reply over Kafka, which FastStream implements only in its test client.
 
-FastStream's aiokafka producer never implements ``request()`` outside the
-test client -- ``AioKafkaFastProducer.request()`` always raises
-``FeatureNotSupportedException`` (unlike RabbitMQ, Kafka has no broker-native
-reply-queue concept). The *subscriber* side is already reply-capable though:
-whenever an incoming message carries a ``reply_to`` header, the handler's
-return value is published straight to that topic with the same
-``correlation_id`` (see ``faststream.kafka.subscriber.usecase.KafkaFakePublisher``
-and ``_internal.endpoint.subscriber.usecase`` line ~372). Only the requesting
-side was missing.
-
-This fills that gap the same way FastStream's own RabbitMQ producer does it:
-publish with ``reply_to`` pointed at one shared topic, and demux replies by
-``correlation_id`` from a background consumer on it. Kafka has no
-per-connection exclusive queue like RabbitMQ's ``amq.rabbitmq.reply-to``, so
-instance isolation instead comes from each broker instance consuming that
-topic under its own randomly generated (and therefore always-fresh, never
-replaying old replies) consumer group -- every reply is broadcast to every
-listening instance, and each just ignores correlation_ids it isn't waiting
-on.
-
-Requires the ``core.rpc.reply`` topic to exist (or auto-creation enabled),
-same as any other topic this app publishes to.
+A request is published with ``reply_to`` pointing at one shared topic; a
+background consumer demultiplexes the replies by ``correlation_id``. Every
+broker instance reads that topic in its own random consumer group, so each
+reply reaches all instances and the others ignore it. The ``core.rpc.reply``
+topic must exist or be auto-created.
 """
 
 import asyncio

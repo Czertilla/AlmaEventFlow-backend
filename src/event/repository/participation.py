@@ -21,7 +21,6 @@ class ParticipationRepo(
     conflict_index_elements = ["collective_id", "event_id"]
 
     async def search(self, filter, pagination, *, options=None):
-        # Eager-load the collective so responses can expose its name.
         if options is None:
             options = (selectinload(Model.collective),)
         return await super().search(filter, pagination, options=options)

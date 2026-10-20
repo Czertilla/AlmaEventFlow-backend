@@ -245,8 +245,7 @@ class UserService(BaseService[UserUOW]):
         )
         if not verified:
             logger.debug(
-                f"Rejected password change for user {user.id}: "
-                "current password mismatch"
+                "Rejected password change for user %s: current password mismatch", user.id
             )
             raise InvalidCurrentPassword()
 
@@ -318,7 +317,7 @@ class UserService(BaseService[UserUOW]):
                 self._secret(),
                 ACCOUNT_TOKEN_LIFETIME,
             )
-        logger.debug(f"Verification requested for user {user_id}")
+        logger.debug("Verification requested for user %s", user_id)
         await send_verify_message(email=email, token=token)
 
     async def verify(self, token: str) -> UserDTO:
@@ -359,7 +358,7 @@ class UserService(BaseService[UserUOW]):
                 self._secret(),
                 ACCOUNT_TOKEN_LIFETIME,
             )
-        logger.debug(f"User {user_id} requested a password reset")
+        logger.debug("User %s requested a password reset", user_id)
         await send_reset_message(email=email, token=token)
 
     async def reset_password(self, token: str, password: str) -> UserDTO:
@@ -615,7 +614,7 @@ class UserService(BaseService[UserUOW]):
 
     async def announce_login(self, user_id: UUID, device_info: str | None) -> None:
         body = f"Выполнен вход с устройства: {device_info}" if device_info else ""
-        logger.debug(f"Dispatching login notification for user {user_id}")
+        logger.debug("Dispatching login notification for user %s", user_id)
         await send_notification(
             NotificationRequest(
                 user_ids=[user_id],
@@ -627,7 +626,7 @@ class UserService(BaseService[UserUOW]):
 
     @staticmethod
     async def _announce_created(user: UserDTO) -> None:
-        logger.info(f"User {user.id} has registered.")
+        logger.info("User %s has registered.", user.id)
         await publish_account_created(
             user.id, user.email, user.is_verified, user.person_id
         )
@@ -738,7 +737,7 @@ class UserService(BaseService[UserUOW]):
     ) -> list[SessionDTO]:
         async with self.uow as uow:
             sessions = await uow.sessions.list_active_for_user(user_id)
-            logger.debug(f"Listing {len(sessions)} active sessions for user {user_id}")
+            logger.debug("Listing %s active sessions for user %s", len(sessions), user_id)
             items = [
                 SessionDTO(
                     id=session.id,
@@ -757,11 +756,11 @@ class UserService(BaseService[UserUOW]):
         async with self.uow as uow:
             session = await uow.sessions.get_for_user(user_id, session_id)
             if session is None:
-                logger.debug(f"Session {session_id} not found for user {user_id}")
+                logger.debug("Session %s not found for user %s", session_id, user_id)
                 return False
             await uow.refresh_tokens.revoke_all_by_session(session_id)
             await uow.commit()
-        logger.debug(f"Revoked session {session_id} of user {user_id}")
+        logger.debug("Revoked session %s of user %s", session_id, user_id)
         return True
 
     async def revoke_other_sessions(
@@ -776,7 +775,7 @@ class UserService(BaseService[UserUOW]):
                 await uow.refresh_tokens.revoke_all_by_session(session.id)
                 revoked += 1
             await uow.commit()
-        logger.debug(f"Revoked {revoked} other sessions for user {user_id}")
+        logger.debug("Revoked %s other sessions for user %s", revoked, user_id)
         return revoked
 
     async def cleanup_expired_sessions(self) -> int:

@@ -36,8 +36,7 @@ async def _resolve_fastapi_dependency(
 
 
 def _bind_fastapi_depends(func: Handler) -> Handler:
-    # apply_types() only resolves faststream.Depends, not fastapi.Depends -- which
-    # every subscriber uses for FastAPI-mounted stream_router compatibility in prod.
+    # apply_types() resolves only faststream.Depends, subscribers use fastapi's
     sig = signature(func)
     depends_names = [
         name for name, param in sig.parameters.items()
@@ -63,10 +62,7 @@ def _bind_fastapi_depends(func: Handler) -> Handler:
 
 class MonolithBroker(SingletonMixin):
     def __init__(self) -> None:
-        # SingletonMixin.__new__ returns the same instance on every call, but
-        # __init__ still runs again each time -- guard it, or a second
-        # construction anywhere would silently wipe every already-registered
-        # subscriber.
+        # the singleton's __init__ runs on every construction: keep the handlers
         if not hasattr(self, "_handlers"):
             self._handlers: dict[str, list[Handler]] = defaultdict(list)
             self._tasks: set[Task[None]] = set()

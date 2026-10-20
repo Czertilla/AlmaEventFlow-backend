@@ -38,7 +38,7 @@ class S3Client:
                     f"File {file_name} uploaded to {self.bucket_name} ({len(data) / 1024**2:.4} MB)"
                 )
         except ClientError as e:
-            logger.error(f"Error uploading file: {e}")
+            logger.error("Error uploading file: %s", e)
             raise e
 
     async def delete_file(self, file_name: str):
@@ -48,10 +48,10 @@ class S3Client:
                     Bucket=self.bucket_name, Key=file_name
                 )
                 logger.debug(
-                    f"File {file_name} deleted from {self.bucket_name}"
+                    "File %s deleted from %s", file_name, self.bucket_name
                 )
         except ClientError as e:
-            logger.error(f"Error deleting file: {e}")
+            logger.error("Error deleting file: %s", e)
             raise e
 
     async def get_file(self, file_name: str) -> bytes:
@@ -61,11 +61,11 @@ class S3Client:
                     Bucket=self.bucket_name, Key=file_name
                 )
                 logger.debug(
-                    f"File {file_name} downloaded from {self.bucket_name}"
+                    "File %s downloaded from %s", file_name, self.bucket_name
                 )
                 return await response.get("Body").read()
         except ClientError as e:
-            logger.error(f"Error downloading file: {e}")
+            logger.error("Error downloading file: %s", e)
             raise e
 
     async def get_file_meta(self, file_name: str):
@@ -75,11 +75,11 @@ class S3Client:
                     Bucket=self.bucket_name, Key=file_name
                 )
                 logger.debug(
-                    f"File {file_name} got meta from {self.bucket_name}"
+                    "File %s got meta from %s", file_name, self.bucket_name
                 )
                 return response
         except ClientError as e:
-            logger.error(f"Error getting meta of file: {e}")
+            logger.error("Error getting meta of file: %s", e)
             raise e
 
     async def get_presigned_url(
@@ -98,5 +98,5 @@ class S3Client:
                 )
                 return url
         except ClientError as e:
-            logger.error(f"Error getting file url: {e}")
+            logger.error("Error getting file url: %s", e)
             raise e

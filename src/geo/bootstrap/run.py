@@ -51,8 +51,7 @@ from geo.uow.address import AddressUOW
 
 logger = getLogger("geo.bootstrap")
 
-# Rough box around Moscow within the MKAD plus a margin -- not a precise
-# administrative boundary, just wide enough to catch the city.
+# rough box around Moscow: wide enough to catch the city, not a boundary
 CITY_BBOXES: dict[str, BBox] = {
     "moscow": (55.49, 37.32, 55.96, 37.97),
 }

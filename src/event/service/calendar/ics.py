@@ -21,9 +21,7 @@ class CalendarIcsRenderer:
         cal.add("prodid", PRODID)
         cal.add("version", "2.0")
         cal.add("calscale", "GREGORIAN")
-        # No METHOD: this is a subscription feed, not an iTIP scheduling
-        # message. METHOD:PUBLISH makes some clients (Apple, Google) treat the
-        # object as invitations and skip rendering the events.
+        # no METHOD: it makes Apple and Google read the feed as invitations
         cal.add("x-wr-calname", calendar_name)
         cal.add("name", calendar_name)
         cal.add("x-published-ttl", "PT6H")

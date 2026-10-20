@@ -8,7 +8,6 @@ from pathlib import Path
 
 from .format import FORMATS
 
-# Path to the JSON logging configuration file
 LOG_CONFIG_FILE = Path(__file__).parent / "config.json"
 
 
@@ -79,11 +78,10 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
 
-    # Получаем последнюю точку, где произошла ошибка
-    tb_last_frame = traceback.extract_tb(exc_traceback)[-1]  # Последний кадр
+    tb_last_frame = traceback.extract_tb(exc_traceback)[-1]
 
     logging.critical(
-        f"Unhandled exception in {tb_last_frame.filename}:{tb_last_frame.lineno}",
+        "Unhandled exception in %s:%s", tb_last_frame.filename, tb_last_frame.lineno,
         exc_info=(exc_type, exc_value, exc_traceback),
     )
 
@@ -96,7 +94,6 @@ def setup():
     with open(LOG_CONFIG_FILE, encoding="utf8") as f:
         config = json.load(f)
 
-    # Extract log file paths and create directories if they don't exist
     log_dirs = {
         Path(handler["filename"]).parent
         for handler in config.get("handlers", {}).values()

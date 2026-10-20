@@ -208,7 +208,6 @@ class TelegramDeliveryService(BaseService[TelegramMessageUOW]):
             if existing is not None and "message is not modified" in str(
                 exc
             ).lower():
-                # Redelivered batch with unchanged content — not an error.
                 logger.info(
                     "Telegram message %s in chat %s is already up to date",
                     existing.message_id,

@@ -36,8 +36,7 @@ class SubscriptionRead(FromDTOMixinV1, BaseModel):
     title: str
     collective_id: UUID | None
     is_active: bool
-    # token cannot be recovered from its hash, so feed_url is only populated on
-    # create / rotate-token responses; it is null when listing subscriptions.
+    # the token cannot be recovered from its hash: set on create / rotate only
     feed_url: str | None = None
     created_at: datetime
     last_accessed_at: datetime | None = None

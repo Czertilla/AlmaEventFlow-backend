@@ -35,7 +35,6 @@ async def get_addresses(
     near_lat: float | None = None,
     near_lon: float | None = None,
 ) -> PageV1[AddressRead]:
-    # near_lat/near_lon sort by distance instead of name, but only when search is empty (see service)
     near = (
         Point(lat=near_lat, lon=near_lon).to_dto()
         if near_lat is not None and near_lon is not None
