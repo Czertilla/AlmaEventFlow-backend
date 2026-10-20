@@ -9,14 +9,16 @@ from event.uow.collective import CollectiveUOW
 class CollectiveService(BaseService[CollectiveUOW]):
     @required_transaction
     async def _get_my_collectives(
-        self, person_id: UUID
+        self, person_id: UUID | None
     ) -> list[CollectiveSummaryDTO]:
         collectives = await self.uow.collectives.get_by_principal_id(person_id)
         return [dto_from_orm(c, CollectiveSummaryDTO) for c in collectives]
 
     async def get_my_collectives(
-        self, person_id: UUID
+        self, person_id: UUID | None
     ) -> list[CollectiveSummaryDTO]:
+        if person_id is None:
+            return []
         async with self.uow:
             return await self._get_my_collectives(person_id)
 

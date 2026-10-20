@@ -67,6 +67,12 @@ class EventRepo(
                 ParticipationORM.collective_id == collective_id,
                 EventStatusORM.name == EventStatusEnumV1.template.value,
             )
+            # status/level/type are properties over these; async cannot lazy-load
+            .options(
+                selectinload(self.model.status_rel),
+                selectinload(self.model.level_rel),
+                selectinload(self.model.type_rel),
+            )
         )
 
     async def templates_of(self, collective_id: UUID) -> list[Model]:

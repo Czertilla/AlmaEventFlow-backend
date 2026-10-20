@@ -53,7 +53,7 @@ class MemberService(BaseService[MemberUOW]):
 
     @required_transaction
     async def _update(
-        self, member_id: UUID, member_data: dict, *, flush: bool = False
+        self, member_id: UUID, member_data: dict[str, Any], *, flush: bool = False
     ) -> MemberORM:
         await self.uow.members.update_one(member_id, member_data, flush)
         member = await self.uow.members.with_roles(member_id)
@@ -66,7 +66,7 @@ class MemberService(BaseService[MemberUOW]):
         await self.uow.members.delete_one(member_id)
 
     @required_transaction
-    async def _get_by_person_id(self, person_id: UUID) -> list[MemberORM]:
+    async def _get_by_person_id(self, person_id: UUID | None) -> list[MemberORM]:
         return await self.uow.members.get_by_person_id(person_id)
 
     @required_transaction
@@ -139,7 +139,9 @@ class MemberService(BaseService[MemberUOW]):
             await self._delete(member_id)
             await uow.commit()
 
-    async def get_my_members(self, person_id: UUID) -> list[MemberDTO]:
+    async def get_my_members(self, person_id: UUID | None) -> list[MemberDTO]:
+        if person_id is None:
+            return []
         async with self.uow:
             members = await self._get_by_person_id(person_id)
             return [self._to_dto(m) for m in members]
