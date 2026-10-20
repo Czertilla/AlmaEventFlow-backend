@@ -190,11 +190,18 @@ Across `src/*/service/*.py`:
 - Every service extends `BaseService[ABCUnitOfWork]` (or a narrower bound) for `self.uow`; a
   mutating method not decorated `@required_transaction` and called outside `async with uow` raises
   `RequiredTransactionException` — this is a deliberate fail-loud mechanism, not a lint nit.
-- `AbstractRepository.from_uow(cls, uow) -> Self` (`core/utils/abstract/repository.py`) is the
-  single plugin point for how a UoW-managed repository gets constructed; a service never
-  constructs a repository directly (`PartnerRepository(uow.session)`-style code is wrong) — it
-  reads `self.uow.<name>` where the UoW class declares that attribute (e.g. `AppUnitOfWork`/
-  per-service UoW composing repos via type hints scanned in `BaseUOW.__aenter__`).
+- A UoW class declares its repositories as type hints; `BaseUOW.__aenter__` instantiates them, so
+  `self.uow.<name>` exists only inside `async with uow`. A service never constructs a repository
+  (`PartnerRepository(uow.session)`-style code is wrong) and never runs `select()`/`update()`
+  through `self.uow.session`: a query is a repository method (`add_entity` stores an ORM
+  instance). A service that needs another repository uses a composed UoW (`EventComposeUOW`).
+- `org`'s collective, faculty, university and organization services share `OrgEntityService`
+  (`org/service/base.py`); a subclass only names its model, DTO, filter, not-found exception and
+  UoW repository. Fire-and-forget `asyncio` tasks go through `core.utils.tasks.track`, or the loop
+  may garbage-collect them.
+- `/event/v1/me/collectives/{collective_id}/...` routes that take a member, role, attendance or
+  participation id depend on `verify_*_of_collective` (`event/dependency/principal.py`), not on
+  `verify_collective_principal` alone: the principal must not reach another collective's rows.
 
 ## API layer, DTOs and schema versioning
 
