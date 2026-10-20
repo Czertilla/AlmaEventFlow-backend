@@ -112,8 +112,17 @@ extend-immutable-calls = [
 
 [tool.basedpyright]
 typeCheckingMode = "strict"
+# no py.typed and no stub package upstream: aiogram3_di, aiocache, i18n, aiokafka, aiobotocore, botocore, webpush, docxtpl, asyncpg
+reportMissingTypeStubs = false
+# the first matching root wins: keep a nested root above its parent
 executionEnvironments = [
-  { root = "src/bot/tg/api/router", reportUnusedCallResult = false }
+  { root = "src/bot/tg/api/router", reportUnusedCallResult = false },
+  # untyped pytest fixtures, mocks and asyncpg results; tests reach into private helpers on purpose
+  { root = "tests", reportUnknownArgumentType = false, reportUnknownMemberType = false, reportUnknownParameterType = false, reportUnknownVariableType = false, reportMissingParameterType = false, reportMissingTypeArgument = false, reportPrivateUsage = false },
+  # geoalchemy2 adds op.create_geospatial_* to Alembic at import time
+  { root = "migrations/versions/geo", reportAttributeAccessIssue = false, reportUnknownMemberType = false },
+  # Alembic env hooks and the untyped geoalchemy2 / postgresql.ENUM column types
+  { root = "migrations", reportUnknownArgumentType = false, reportUnknownMemberType = false, reportUnknownParameterType = false, reportMissingParameterType = false },
 ]
 
 [tool.pytest.ini_options]
