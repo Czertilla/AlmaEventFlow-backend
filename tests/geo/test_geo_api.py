@@ -104,3 +104,27 @@ async def test_locations_are_filtered_by_their_anchor(
 
     assert [loc["name"] for loc in anchored.json()["items"]] == ["Зал"]
     assert [loc["name"] for loc in by_address.json()["items"]] == ["Зал"]
+
+
+async def test_a_location_is_created_and_replaced_by_put(
+    api: httpx.AsyncClient, city_id: int
+) -> None:
+    address = await _address(api, city_id, "Арбат, 10")
+    location_id = "6f1c3a52-0b5e-4c63-8f3e-2a9b1f0d7c11"
+    body = {"name": "Зал", "address_id": address["id"]}
+
+    created = await api.put(
+        f"{BASE}/locations/{location_id}", json=body, headers=ADMIN
+    )
+    replaced = await api.put(
+        f"{BASE}/locations/{location_id}",
+        json={**body, "name": "Большой зал"},
+        headers=ADMIN,
+    )
+
+    assert created.status_code == 200, created.text
+    assert replaced.status_code == 200, replaced.text
+    assert (created.json()["id"], replaced.json()["name"]) == (
+        location_id,
+        "Большой зал",
+    )

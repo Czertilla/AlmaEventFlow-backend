@@ -1,5 +1,6 @@
 from collections.abc import Iterable, Sequence
-from typing import Any
+from types import CoroutineType
+from typing import Any, cast
 from uuid import UUID, uuid4
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -22,6 +23,7 @@ from geo.models.location import LocationORM as Model
 from geo.models.spot import spot_element
 from geo.search import (
     TS_CONFIG,
+    SearchableFilter,
     distance_m,
     search_page,
     search_ranked,
@@ -43,19 +45,27 @@ class LocationRepo(
             return
         data["spot"] = spot_element(data.pop("spot"))
 
-    def add_n_return(self, data, options=()):
+    def add_n_return(
+        self, data: dict[str, Any], options: tuple[ExecutableOption, ...] = ()
+    ) -> CoroutineType[Any, Any, Model]:
         self.dump_spot(data)
         return super().add_n_return(data, options)
 
-    def add_one(self, data):
+    def add_one(self, data: dict[str, Any]) -> CoroutineType[Any, Any, None]:
         self.dump_spot(data)
         return super().add_one(data)
 
-    def update_one(self, id, data, flush=False):
+    def update_one(
+        self, id: UUID, data: dict[str, Any], flush: bool = False
+    ) -> CoroutineType[Any, Any, Model | None]:
         self.dump_spot(data)
         return super().update_one(id, data, flush)
 
-    def upsert(self, data, options=...):
+    def upsert(
+        self,
+        data: dict[str, Any],
+        options: tuple[ExecutableOption, ...] = (),
+    ) -> CoroutineType[Any, Any, Model | None]:
         self.dump_spot(data)
         return super().upsert(data, options)
 
@@ -74,26 +84,27 @@ class LocationRepo(
         scope: list[ColumnElement[bool]] | None = None,
         near: PointDTO | None = None,
     ) -> tuple[Iterable[Model], int]:
+        searchable = cast("SearchableFilter", filter)
         haystack = self._haystack()
         match = (
             text_match(
-                filter.search, func.to_tsvector(TS_CONFIG, haystack), haystack
+                searchable.search, func.to_tsvector(TS_CONFIG, haystack), haystack
             )
-            if filter.search
+            if searchable.search
             else None
         )
         if match is None:
             if near is not None:
                 return await self._search_near(
-                    filter, near, pagination, options=options, scope=scope
+                    searchable, near, pagination, options=options, scope=scope
                 )
             return await super().search(
                 filter, pagination, options=options, scope=scope
             )
 
-        plain = filter.model_copy(update={"search": None})
+        plain = searchable.model_copy(update={"search": None})
 
-        def build(predicate):
+        def build(predicate: ColumnElement[bool]) -> Select[Any]:
             base = plain.filter(
                 select(self.model)
                 .outerjoin(AddressORM, AddressORM.id == self.model.address_id)
@@ -181,13 +192,13 @@ class LocationRepo(
 
     async def _search_near(
         self,
-        filter: Filter,
+        filter: SearchableFilter,
         near: PointDTO,
         pagination: PageParams,
         *,
-        options=None,
-        scope: list | None = None,
-    ) -> tuple[list[Model], int]:
+        options: Sequence[ExecutableOption] | None = None,
+        scope: list[ColumnElement[bool]] | None = None,
+    ) -> tuple[Iterable[Model], int]:
         """No search text -- order by distance from ``near``. An
         address-anchored location has no ``spot`` of its own, hence the
         outer join + coalesce, same as ``search_in_bbox`` below."""
@@ -263,7 +274,7 @@ class LocationRepo(
         max_lat: float,
         max_lon: float,
         pagination: PageParams,
-    ) -> tuple[list[Model], int]:
+    ) -> tuple[Iterable[Model], int]:
         """An address-anchored location has no ``spot`` of its own -- its
         effective point for map display is the linked address's ``spot``,
         hence the outer join + coalesce instead of a plain column check."""
