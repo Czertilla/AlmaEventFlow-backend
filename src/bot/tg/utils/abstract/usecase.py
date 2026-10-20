@@ -8,7 +8,7 @@ from aiogram.types import Message, ReplyParameters
 from bot.tg.keyboard.inline import InlineBuilder
 from bot.tg.schema.user import TGUser
 from bot.tg.text.builder import TextBuilder
-from core.uow.abc import ABCUnitOfWork
+from core.utils.abstract.unit_of_work import ABCUnitOfWork
 from core.utils.requirer import required_field
 
 

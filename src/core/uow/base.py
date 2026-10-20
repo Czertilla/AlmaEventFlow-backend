@@ -42,7 +42,7 @@ class BaseUOW(ABCUnitOfWork):
             self.register_repository(name, repo_instance)
 
         logger.debug(
-            f"Repositories initialized: {list(self._repositories.keys())}"
+            "Repositories initialized: %s", list(self._repositories.keys())
         )
         return self
 
@@ -64,7 +64,7 @@ class BaseUOW(ABCUnitOfWork):
 
         if exc_type is not None:
             logger.exception(
-                f"Exception during {self.__class__.__name__} transaction execution",
+                "Exception during %s transaction execution", self.__class__.__name__,
                 exc_info=(exc_type, exc_val, exc_tb),
             )
             await self._on_aexit_error(exc_type, exc_val, exc_tb)

@@ -11,9 +11,3 @@ logger = getLogger(__name__)
 class BotContextManager(TGBotContextManager, AppContextManager):
     def __init__(self):
         super().__init__(bot=_bot, dp=_dp)
-
-    async def startup(self, app):
-        return await super().startup(app)
-
-    async def shutdown(self, app):
-        return await super().shutdown(app)

@@ -1,5 +1,4 @@
-import asyncio
-from collections.abc import AsyncIterator, Coroutine
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from logging import getLogger
 
@@ -24,9 +23,6 @@ def _broker_summary() -> str:
 class AppContextManager:
     is_startup_completed: bool = False
 
-    def __init__(self):
-        self.background_tasks: list[Coroutine] = []
-
     async def startup(self, app: FastAPI | FastStream) -> None:
         """Initialize application services"""
         if not getLogger().handlers:
@@ -48,8 +44,7 @@ class AppContextManager:
             )
 
     async def shutdown(self, app: FastAPI | FastStream) -> None:
-        if self.background_tasks:
-            asyncio.wait([self.background_tasks][::-1])
+        return None
 
     @asynccontextmanager
     async def __call__(self, app: FastAPI | FastStream) -> AsyncIterator[None]:

@@ -26,7 +26,6 @@ def run_microservice(app_name: str, port: int):
         host="localhost",
         port=port,
         reload=False,
-        # reload_dirs=[f"src/{app_name}", "src/core"],
         lifespan="on",
         log_config=config,
     )
