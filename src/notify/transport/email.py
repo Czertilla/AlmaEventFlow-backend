@@ -13,7 +13,7 @@ class EmailTransport(DelegatedTransport):
     resolved at ingest time, so ``mail`` needs no database access."""
 
     type = TransportTypeEnum.email
-    label = "Email"
+    label = "Электронная почта"
     delivery_topic = NotifyDeliveryQueue.EMAIL
     template = "notification"
 

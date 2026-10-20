@@ -48,7 +48,7 @@ class WebPushTransport(DirectTransport):
     thread pool)."""
 
     type = TransportTypeEnum.webpush
-    label = "Web Push"
+    label = "Push-уведомления"
     delivery_topic = NotifyDeliveryQueue.WEBPUSH
 
     def __init__(self) -> None:
