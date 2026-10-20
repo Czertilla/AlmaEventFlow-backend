@@ -85,6 +85,11 @@ class Settings(BaseSettings):
     """Base URL of the user-facing frontend. Used to build event page links
     (e.g. in ICS calendar feeds: ``{FRONTEND_URL}/events/{event_id}``)."""
 
+    DISPLAY_TIMEZONE: str | None = None
+    """IANA zone (e.g. ``Europe/Moscow``) for the wall-clock time in Telegram texts
+    when a stage has no usable zone of its own; unset keeps the zone of the value
+    (UTC for stored times)."""
+
     EVENT_NOTIFY_TRIGGER_STATUSES: list[str] = ["active"]
     """Event status names that trigger 'mark your attendance' notifications when
     an attendance becomes tied to such an event."""
