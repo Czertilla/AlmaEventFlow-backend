@@ -175,8 +175,7 @@ class Settings(BaseSettings):
     """SASL password."""
 
     PASS_SECRET: Secret[str] = "SECRET"  # pyright: ignore[reportAssignmentType]
-    USER_SECRET: Secret[str] = "SECRET"  # pyright: ignore[reportAssignmentType]
-    """The defaults are public: ``AppContextManager`` warns while they are in use."""
+    """The default is public: ``AppContextManager`` warns while it is in use."""
 
     AUTH_COOKIE_MAX_AGE: int = 3600
     AUTH_COOKIE_NAME: str = "auth"

@@ -39,13 +39,11 @@ class AppContextManager:
             settings.MONOLITH,
             _broker_summary(),
         )
-        for name in ("PASS_SECRET", "USER_SECRET"):
-            if getattr(settings, name).get_secret_value() == DEFAULT_SECRET:
-                logger.warning(
-                    "%s is the public default: invite, reset and verification "
-                    "tokens can be forged, set it in the environment",
-                    name,
-                )
+        if settings.PASS_SECRET.get_secret_value() == DEFAULT_SECRET:
+            logger.warning(
+                "PASS_SECRET is the public default: reset and verification "
+                "tokens can be forged, set it in the environment"
+            )
         if settings.IN_MEMORY_BROKER and not settings.MONOLITH:
             logger.warning(
                 "IN_MEMORY_BROKER is on outside the monolith: messages "

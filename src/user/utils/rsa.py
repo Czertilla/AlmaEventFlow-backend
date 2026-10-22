@@ -6,6 +6,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 from core.config.settings import settings
+from core.utils.keys import KeyMissingError, read_key
 
 
 @lru_cache
@@ -18,11 +19,15 @@ def _get_public_key_path() -> Path:
     return Path(settings.RSA_PUBLIC_KEY_PATH)
 
 
-def _ensure_keys_exist() -> None:
+def ensure_access_keys() -> None:
     private_path = _get_private_key_path()
     public_path = _get_public_key_path()
     if private_path.exists() and public_path.exists():
         return
+    if not settings.MONOLITH:
+        raise KeyMissingError(
+            f"The access token keys are not at {private_path} and {public_path}"
+        )
     private_key = rsa.generate_private_key(
         public_exponent=65537, key_size=2048, backend=default_backend()
     )
@@ -42,7 +47,11 @@ def _ensure_keys_exist() -> None:
     )
 
 
-_ensure_keys_exist()
+ensure_access_keys()
+if not settings.MONOLITH:
+    read_key(
+        settings.PROFILE_RSA_PUBLIC_KEY_PATH, "The public key of the invitations"
+    )
 
 
 @lru_cache(maxsize=1)

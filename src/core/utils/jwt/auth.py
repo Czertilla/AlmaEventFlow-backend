@@ -1,5 +1,4 @@
 from logging import getLogger
-from pathlib import Path
 from typing import Annotated, Any
 from uuid import UUID
 
@@ -14,6 +13,7 @@ from core.config.settings import settings
 from core.schema.error import ErrorCode
 from core.schema.user import UserJWT
 from core.utils.exc.http import VancedHTTPException
+from core.utils.keys import read_key
 
 logger = getLogger(__name__)
 
@@ -21,12 +21,8 @@ logger = getLogger(__name__)
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
-def _load_rsa_public_key() -> str | None:
-    pub_key_path: str = settings.RSA_PUBLIC_KEY_PATH
-    try:
-        return Path(pub_key_path).read_text()
-    except (FileNotFoundError, OSError):
-        return None
+def _access_public_key() -> str:
+    return read_key(settings.RSA_PUBLIC_KEY_PATH, "The public key of the access tokens")
 
 
 async def get_token(
@@ -140,12 +136,7 @@ def create_jwt_auth(
     superuser: bool = False,
 ) -> JWTAuth:
     if secret is None:
-        pub_key = _load_rsa_public_key()
-        if pub_key is not None:
-            secret = pub_key
-        else:
-            secret = settings.USER_SECRET.get_secret_value()
-            algorithm = "HS256"
+        secret = _access_public_key()
     return JWTAuth(
         secret=secret,
         algorithm=algorithm,
@@ -161,10 +152,5 @@ def create_optional_jwt_auth(
     algorithm: str = "RS256",
 ) -> OptionalJWTAuth:
     if secret is None:
-        pub_key = _load_rsa_public_key()
-        if pub_key is not None:
-            secret = pub_key
-        else:
-            secret = settings.USER_SECRET.get_secret_value()
-            algorithm = "HS256"
+        secret = _access_public_key()
     return OptionalJWTAuth(secret=secret, algorithm=algorithm)
