@@ -1,0 +1,74 @@
+{
+  "settings.UserSettingsPatch": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "values": {}
+        }
+      },
+      "dump": {
+        "values": {}
+      },
+      "fields_set": [
+        "values"
+      ],
+      "input": {
+        "values": {}
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "values": {}
+        }
+      },
+      "dump": {
+        "values": {}
+      },
+      "fields_set": [
+        "values"
+      ],
+      "input": {
+        "values": {}
+      }
+    }
+  },
+  "settings.UserSettingsRead": {
+    "full": {
+      "dump": {
+        "edited_at": "2026-01-01T10:00:00Z",
+        "revision": 1,
+        "values": {}
+      },
+      "fields_set": [
+        "edited_at",
+        "revision",
+        "values"
+      ],
+      "input": {
+        "edited_at": "2026-01-01T10:00:00Z",
+        "revision": 1,
+        "values": {}
+      }
+    },
+    "required": {
+      "dump": {
+        "edited_at": "2026-01-01T10:00:00Z",
+        "revision": 1,
+        "values": {}
+      },
+      "fields_set": [
+        "edited_at",
+        "revision",
+        "values"
+      ],
+      "input": {
+        "edited_at": "2026-01-01T10:00:00Z",
+        "revision": 1,
+        "values": {}
+      }
+    }
+  }
+}

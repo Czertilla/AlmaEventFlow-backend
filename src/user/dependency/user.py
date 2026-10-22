@@ -8,6 +8,7 @@ from core.database.sqlalchemy.session import get_engine, get_url
 from core.dependencies.session import get_session_maker
 from user.api.manager import UserManager
 from user.repository.user import UserRepo
+from user.service.settings import SettingsService
 from user.service.user import UserService
 from user.uow.user import UserUOW
 from user.utils.password import PasswordHelper
@@ -46,6 +47,12 @@ def get_user_service(
     password_helper: PasswordHelper = Depends(get_password_helper),
 ) -> UserService:
     return UserService(user_uow, password_helper=password_helper)
+
+
+def get_settings_service(
+    user_uow: UserUOW = Depends(get_user_uow),
+) -> SettingsService:
+    return SettingsService(user_uow)
 
 
 def get_user_manager(

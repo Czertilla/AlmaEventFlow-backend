@@ -19,7 +19,7 @@ from sqlalchemy.ext.asyncio import (
 
 from core.enum.profile import PersonLinkSource
 
-_TABLES = '"user", oauth_account, person, session, refresh_token'
+_TABLES = '"user", oauth_account, person, session, refresh_token, user_settings'
 
 Maker = async_sessionmaker[AsyncSession]
 

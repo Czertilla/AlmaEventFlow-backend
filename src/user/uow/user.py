@@ -2,6 +2,7 @@ from core.uow.sqlalchemy import UnitOfWork
 from user.repository.person import PersonRepo
 from user.repository.refresh_token import RefreshTokenRepo
 from user.repository.session import SessionRepo
+from user.repository.settings import SettingsRepo
 from user.repository.user import UserRepo
 
 
@@ -21,4 +22,15 @@ class RefreshTokenMixin:
     refresh_tokens: RefreshTokenRepo
 
 
-class UserUOW(UnitOfWork, UserMixin, PersonMixin, SessionMixin, RefreshTokenMixin): ...
+class SettingsMixin:
+    user_settings: SettingsRepo
+
+
+class UserUOW(
+    UnitOfWork,
+    UserMixin,
+    PersonMixin,
+    SessionMixin,
+    RefreshTokenMixin,
+    SettingsMixin,
+): ...

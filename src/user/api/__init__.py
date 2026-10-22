@@ -10,6 +10,8 @@ def include_routers(app: FastAPI):
     from user.api.kafka.sub.person import router as person_router
     from user.api.kafka.sub.telegram import router as telegram_rpc_router
     from user.api.v1 import include_routers as include_v1_routers
+    from user.api.v2 import include_routers as include_v2_routers
 
     include_mq_routers(app, stream_router, [person_router, telegram_rpc_router])
     include_v1_routers(app, PREFIX)
+    include_v2_routers(app, PREFIX)

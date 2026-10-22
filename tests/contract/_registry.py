@@ -11,6 +11,7 @@ SCHEMA_PACKAGES = {
     "profile_v1": "profile.api.v1.schema",
     "profile_v2": "profile.api.v2.schema",
     "user_v1": "user.api.v1.schema",
+    "user_v2": "user.api.v2.schema",
 }
 
 RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
@@ -156,6 +157,12 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
                 "user.dto.telegram:TelegramLinkTokenDTO"
             ),
             "user.UserRead": "user.dto.user:UserDTO",
+        },
+    ),
+    "user_v2": (
+        "user.api.v2.schema",
+        {
+            "settings.UserSettingsRead": "user.dto.settings:UserSettingsDTO",
         },
     ),
 }
