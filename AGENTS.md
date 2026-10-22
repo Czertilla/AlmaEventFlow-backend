@@ -92,6 +92,14 @@ sharing one codebase and one dependency-resolution graph:
   intact (`tryRefresh` answers `unknown`, the guard waits on `/unavailable`). There is exactly one
   refresh at a time (`refreshAccessToken`): the backend revokes the whole session when a used
   refresh token is presented again.
+- **Signing keys are a start-up requirement, there is no fallback.** The access tokens are RS256;
+  `create_jwt_auth` reads `RSA_PUBLIC_KEY_PATH` through `core.utils.keys.read_key`, which logs CRITICAL
+  and raises `KeyMissingError` while the service imports its dependencies, so a service that verifies
+  tokens does not start without the public key (the microservice images carry none: mount it). `user`
+  makes its own pair only in the monolith (`ensure_access_keys`, also run first by `aef/__init__.py`,
+  before any router builds a verifier); outside the monolith missing keys stop it. A shared secret
+  never stands in for a key: `USER_SECRET` is gone, `PASS_SECRET` signs only the verification and reset
+  tokens that `user` itself reads.
 - `frontend/` is a **git submodule** (Ionic Vue) — treat it as a separate deployable; its API
   client (`frontend/src/api/generated/`) is Orval-generated from `frontend/api_schema/openapi.json`.
 - `migrations/` is shared: one Alembic environment, but `alembic.ini` has a `[<service>]` section
@@ -123,6 +131,22 @@ sharing one codebase and one dependency-resolution graph:
   `PROFILE_SERVICE_UNAVAILABLE`. `POST /profile/v1/persons` is superuser-only and deleting a person
   announces the unlink first. **Run `python -m profile.bootstrap.links` once before profile serves**:
   it copies the links the user database already has; nothing runs it by itself.
+- **An invitation is profile's**: `POST /profile/v2/persons/{person_id}/invite` (superuser) checks its
+  own `person` and `person_account` (404 `PERSON_NOT_FOUND`, 400 `PERSON_ALREADY_HAS_ACCOUNT`). The token
+  (a person id, RS256, `iss=profile`) is signed with `profile`'s own key pair and read with its public
+  key by `core/utils/invite.py` (the algorithm is fixed on both sides). **A service that signs what
+  another service verifies has its own RSA pair: the private key stays on its host, the verifiers get
+  the public one** (`user`: `RSA_*_KEY_PATH` for access tokens, `profile`: `PROFILE_RSA_*_KEY_PATH` for
+  invitations); a shared HMAC secret such as `USER_SECRET` is never the way to sign for someone else.
+  `profile` checks its pair when it mounts its routers (`ensure_invite_keys`): the monolith makes the
+  pair when there is none, outside the monolith a missing or half a pair stops the start; `user` outside
+  the monolith needs the public key at start. In microservices mount the private key into `profile`
+  only and the public one into `user`. A key that vanishes later is 503 `INVITE_SIGNING_NOT_CONFIGURED`
+  and `user` accepts no invitation. `user` only redeems it: registration with `invite_token` and
+  `POST /user/v1/users/me/link-invite` read it with the same helper, pre-check their own projections to
+  fail before an account is made, and leave the authoritative link to `rpc.profile.link-account`. The
+  old `POST /user/v1/users/invite` is gone; `PATCH /user/v1/users/{id}/person` (admin relink) is still
+  `user`'s thin proxy over the same RPC.
 - **Every change of the link is kept** in `person_account_history` (append-only; no FK, so a row
   outlives the person): the account (`user_id`), `old_person_id` and `new_person_id`, the `action`
   (`linked`, `replaced`, `unlinked`, derived from the two ids by `PersonLinkAction.of`), the `source`
@@ -150,7 +174,18 @@ sharing one codebase and one dependency-resolution graph:
   profile asks it over `rpc.org.*` (`OrgRPC`, `org/api/kafka/sub/reference.py`) and projects the answer
   into its own `organization` table; `ensure_organizations` fetches a missing one lazily
   (`get-organization`). The UI sends its drafts only on submit, so an abandoned form leaves nothing.
-  Any verified user may create them and the only dedupe is the name (no unique index): watch it for spam.
+  Any verified user may create them, except a degree: `student-degrees` is superuser-only, a profile
+  only picks one (the administration sets them, later an integration with the university systems).
+  The only dedupe is the name (no unique index): watch it for spam.
+- **The student catalog is managed by superusers** at `/profile/v1/students/{degrees,groups}` (CRUD;
+  reads are open to verified users). Names are normalised and unique (a degree by name, a group within
+  its faculty: 409 `STUDENT_DEGREE_ALREADY_EXISTS`, `STUDENT_GROUP_ALREADY_EXISTS`), a degree that has
+  groups and a group that has students are not deleted (409 `STUDENT_DEGREE_IN_USE`,
+  `STUDENT_GROUP_IN_USE`), a missing one is 404 `STUDENT_DEGREE_NOT_FOUND` / `STUDENT_GROUP_NOT_FOUND`.
+  The faculty of a group is projected from `org` as in the find-or-create (`StudentGroupUOW`,
+  `ensure_organizations`). The new codes are not in the v1 OpenAPI (a released schema); the admin UI
+  words them (`utils/apiErrors.ts`). The student detail routes are `/{student_id:uuid}`: registered
+  before `degrees` and `groups`, a plain `{student_id}` swallowed `GET /students/degrees|groups` (422).
 - The old `/my` endpoints stay: v1 for person, profile and contacts, v2 `/profile/v2/students/my` for
   the student card. Passports stay for superusers until their storage and encryption are designed.
 
@@ -307,6 +342,21 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   nobody was declared to does not appear. The member list holds the active members and the former ones
   who have rows in the period. `rate` of the summary and of a member is `attended / past` (unmarked
   count in `past`), while the UI colours a day by `attended / (attended + absent)`.
+
+## Org (`src/org`)
+
+- University, faculty and collective are joined-table children of `organization` and are written
+  through ORM instances (`OrgEntityService`). A delete goes through the parent row
+  (`SQLAlchemyRepository.delete_entity`): a Core `DELETE` of the subtype leaves the `organization` row
+  typed `university` behind, an «university» with no row in `university` that cannot take a faculty
+  (migration `c4e1b7a92d35` gave such orphans their rows back).
+- A faculty or a collective points only at a `university` row: any other id is 404
+  `UNIVERSITY_NOT_FOUND`, not a foreign key error (`UniversityLinkedService`). A university that still
+  has faculties is not deleted, by the typed endpoint or by `DELETE /organizations/{id}`: 409
+  `UNIVERSITY_HAS_FACULTIES` (the `ON DELETE CASCADE` of `faculty.university_id` would remove the
+  `faculty` rows and leave their organizations behind). `POST /organizations` makes a plain
+  organization whatever `type` it is sent. The admin pickers list universities and faculties through
+  their own endpoints, never by `organization.type`.
 
 ## Geo (`src/geo`)
 
@@ -496,7 +546,7 @@ is a defect, not a style choice.
   `ui-option-icon` when the option has an `icon`), `ui-select-pill`
   (+ `--sm`, `--set`: the compact select of a toolbar, with a leading icon and room for a
   direction button) and the `ui-pop` transition,
-  `ui-icon-btn` (+ `--primary`, `--danger`, `--active`), `ui-help` (the round «?» button of a hint,
+  `ui-icon-btn` (+ `--primary`, `--danger`, `--delete`, `--active`), `ui-help` (the round «?» button of a hint,
   drawn by `common/HelpTip`, its bubble is `ui-help-tip`), `ui-chips` and `ui-chip` (+ `--active`),
   `ui-btn` (+ `--primary`, `--ghost`, `--sm`); `ui-card`, `ui-card-head` and `ui-card-title` (a section
   card; `HomePage`'s own `.section-card` is a copy of it, see the debt below), `ui-count` (the number
@@ -608,14 +658,20 @@ Rules:
   `DashboardPage`, `ResourceTable`) from a small `AppFab secondary` above the main one, and the sort
   is its own `SortFab` above that (`stack` counts the small ones; the menu lists the sorts, a tap on
   the direction row flips the order). On a desktop the filters stay on the page and the sort is a
-  `UiSelectPill`. An admin list also keeps its search in a bar that sticks to the top and goes away
-  with the swipe up (`composables/useHideOnScroll`, a `transform`, never a height, so the list does not
-  jump); the small buttons then slip under the main one (`AppFab` `tucked`). The list ends with room
+  `UiSelectPill`. An admin list also keeps its search in a bar that sticks to the top, on a phone and
+  on a desktop, and goes away with the swipe up (`composables/useHideOnScroll`, a `transform`, never a
+  height, so the list does not jump; the desktop filter panel sits outside the bar, so a tall panel
+  never drops with it); the small buttons then slip under the main one (`AppFab` `tucked`). The list ends with room
   for the main button (88px), so it never covers the last row's actions.
 - **A row of an admin table never loses its edit and delete buttons.** The other actions of a row
   (`rowLinks`, `extraAction`) are buttons while there is one of them and fold into one `RowActionsMenu`
   ("⋯") when there are two or more: a menu that hides a single button is a defect, and so is clipping
   the cell (`text-overflow` on the actions cell once replaced the delete button with an ellipsis).
+  Every action of a row, links and edit and delete alike, is a `ui-icon-btn` in one `.row-actions` row
+  (34px, one centre line; edit is `--primary`, delete is `--delete`, which stays red at rest where
+  `--danger` only tints on hover): an `ion-button` there has another size and baseline and made the row
+  crooked. On a phone the link chips and the buttons share one card footer, the buttons on the first
+  chip row (`.mobile-link` is as tall as the button).
 - **A form field with several records** is a `multisearch` field of `ResourceFormModal`
   (`MultiSearchField`: chips plus a picker). Its `choices(search, form)` may look at the form, and
   `dependsOn` blocks it until the field it depends on is set (the roles of a member need the
@@ -658,12 +714,20 @@ Rules:
   `shake`n after a failed save), swiped on a phone with `composables/useSwipe` (`data-no-swipe` opts a
   region out), and one save button for all of them. A reference shared by profiles (university,
   faculty, group, degree, diet, workplace) is a `SearchPicker` with `creatable` (a typed name nobody
-  has comes out as a `draft`, made by `POST /profile/v2/...` at submit, not before) and `browse` (the
+  has comes out as a `draft`, made by `POST /profile/v2/...` at submit, not before; the degree is
+  `creatable` for a superuser only) and `browse` (the
   list opens on focus); a picked group fills its faculty, university, degree and grade and `locked`
   closes them. Contacts go through `profile/ContactsEditor` (the "Добавить контакт" selector turns into a
   field named after the kind and built for it, `utils/contactTypes`; the first contact of a kind becomes
   the main one, a star in the field tells which is). Passport data is
   not in it. The admin dossier is `profile/PersonFile` (admin only).
+- **A field of an admin form can depend on the form**: `FormField.visibleWhen(form)` shows and saves it
+  only while it holds (the university of a faculty on the organizations page). The student catalog has
+  its own admin pages next to «Студенты»: «Группы» (`/admin/student-groups`) and «Степени»
+  (`/admin/student-degrees`); a faculty carries its university.
+- **A route component that holds `ion-tabs` is wrapped in `ion-page`** (`TabsShell`). The outer
+  `ion-router-outlet` switches pages only for a component that registers an `ion-page`: without it the
+  login page stayed in the DOM next to the app after signing in (`tests/unit/tabsShell.spec.ts`).
 - **A new primitive** is added to `components.css` and to the list above in the same change.
 - **Sub-pages of the principal and admin panels** (`/principal/members/<id>`, `/admin/persons/<id>`)
   are in-place routes: the layout matches a path prefix and renders the page itself, and a child page
