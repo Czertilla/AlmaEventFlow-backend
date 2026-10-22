@@ -17,8 +17,8 @@ from core.schema.message.notify import NotificationRequest
 from core.schema.message.profile import PersonLinkData
 from core.service.base import BaseService, required_transaction
 from core.utils.exc.http import VancedHTTPException
+from core.utils.invite import decode_invite_token
 from core.utils.notify import send_notification
-from user.dto.invite import InviteTokenCreateDTO, InviteTokenDTO
 from user.dto.session import SessionDTO, SessionTokenDTO
 from user.dto.telegram import TelegramLinkTokenDTO
 from user.dto.user import (
@@ -71,7 +71,6 @@ VERIFICATION_TOKEN_AUDIENCE = "fastapi-users:verify"
 RESET_PASSWORD_TOKEN_AUDIENCE = "fastapi-users:reset"
 ACCOUNT_TOKEN_LIFETIME = 3600
 TOKEN_ALGORITHM = "HS256"
-INVITE_AUDIENCE = "invite"
 UNSAFE_USER_FIELDS = frozenset({"is_superuser", "is_active", "is_verified"})
 ANNOUNCED_FIELDS = frozenset({"email", "is_verified", "person_id"})
 
@@ -499,37 +498,16 @@ class UserService(BaseService[UserUOW]):
     @required_transaction
     async def _validate_invite_token(self, token: str) -> UUID:
         try:
-            data = _decode(
-                token, settings.USER_SECRET.get_secret_value(), INVITE_AUDIENCE
-            )
+            person_id = decode_invite_token(token)
         except jwt.ExpiredSignatureError:
             raise InviteTokenExpired() from None
         except jwt.PyJWTError:
-            raise InviteTokenInvalid() from None
-        try:
-            person_id = UUID(data["person_id"])
-        except (KeyError, TypeError, ValueError):
             raise InviteTokenInvalid() from None
         if await self.uow.persons.get_by_id(person_id) is None:
             raise InvitePersonNotExistsException()
         if await self.uow.users.exists_person(person_id):
             raise PersonAlreadyHasAccount()
         return person_id
-
-    async def create_invite_token(self, invite: InviteTokenCreateDTO) -> InviteTokenDTO:
-        async with self.uow:
-            if await self.uow.persons.get_by_id(invite.person_id) is None:
-                raise InvitePersonNotExistsException()
-            if await self.uow.users.exists_person(invite.person_id):
-                raise PersonAlreadyHasAccount()
-        lifetime = invite.expires_in or settings.INVITE_TOKEN_LIFETIME
-        token = _encode(
-            {"person_id": str(invite.person_id), "aud": [INVITE_AUDIENCE]},
-            settings.USER_SECRET.get_secret_value(),
-            lifetime,
-        )
-        expires_at = int(datetime.now(UTC).timestamp()) + lifetime
-        return InviteTokenDTO(token=token, expires_at=expires_at)
 
     async def create_telegram_link_token(
         self, person_id: UUID | None

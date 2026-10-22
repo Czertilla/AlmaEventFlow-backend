@@ -39,3 +39,5 @@ rsa_public.pem
 vapid_private.pem
 vapid_public.pem
 
+profile_rsa_private.pem
+profile_rsa_public.pem

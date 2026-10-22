@@ -1,3 +1,5 @@
+from profile.utils.rsa import ensure_invite_keys
+
 from fastapi import APIRouter, FastAPI
 
 from core.broker.kafka import KafkaRouter
@@ -7,6 +9,7 @@ from core.utils.imports import load_common
 
 
 def include_routers(app: FastAPI):
+    ensure_invite_keys()
     api_routers = load_common(__name__, "router", (APIRouter))
     kafka_routers = load_common(__name__, "router", (KafkaRouter))
     include_mq_routers(app, kafka_root, kafka_routers)

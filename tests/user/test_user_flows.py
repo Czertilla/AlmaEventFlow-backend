@@ -11,6 +11,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from core.enum.profile import PersonLinkSource
+from core.utils.invite import encode_invite_token
 
 PASSWORD = "S3cret-pass"
 NEW_PASSWORD = "An0ther-pass"
@@ -28,7 +29,12 @@ async def _register(
 ) -> httpx.Response:
     return await client.post(
         "/user/v1/auth/register",
-        json={"email": email, "password": PASSWORD, "username": username, **extra},
+        json={
+            "email": email,
+            "password": PASSWORD,
+            "username": username,
+            **extra,
+        },
     )
 
 
@@ -69,7 +75,9 @@ async def _verified_session(
     return _bearer(await _login(client, email))
 
 
-def _configure(monkeypatch: pytest.MonkeyPatch, name: str, value: object) -> None:
+def _configure(
+    monkeypatch: pytest.MonkeyPatch, name: str, value: object
+) -> None:
     from core.config.settings import settings as core_settings
     from user.config.settings import settings as user_settings
 
@@ -81,6 +89,10 @@ async def _person(engine: AsyncEngine) -> UUID:
     person_id = uuid4()
     await _sql(engine, "INSERT INTO person (id) VALUES (:id)", id=person_id)
     return person_id
+
+
+def _invite(person_id: UUID) -> str:
+    return encode_invite_token(person_id, 3600)[0]
 
 
 async def test_register_creates_the_account_and_announces_it(
@@ -98,7 +110,11 @@ async def test_register_creates_the_account_and_announces_it(
     assert body["person_id"] is None
     assert "password" not in body and "hashed_password" not in body
     assert outbox.count("created") == 1
-    assert outbox.last("created")[:3] == (UUID(body["id"]), "ann@example.com", False)
+    assert outbox.last("created")[:3] == (
+        UUID(body["id"]),
+        "ann@example.com",
+        False,
+    )
 
 
 async def test_register_ignores_privileged_fields(
@@ -173,7 +189,9 @@ async def test_me_requires_a_verified_account_until_the_email_is_verified(
     )
     email, token = outbox.verify[-1]
     verified = await client.get(VERIFY_PAGE, params={"token": token})
-    after = await client.get("/user/v1/users/me", headers=_bearer(await _login(client)))
+    after = await client.get(
+        "/user/v1/users/me", headers=_bearer(await _login(client))
+    )
 
     assert before.status_code == 403
     assert requested.status_code == 202
@@ -190,7 +208,9 @@ async def test_me_requires_a_verified_account_until_the_email_is_verified(
 async def test_verify_endpoint_rejects_a_garbage_token(
     client: httpx.AsyncClient,
 ) -> None:
-    response = await client.post("/user/v1/auth/verify", json={"token": "garbage"})
+    response = await client.post(
+        "/user/v1/auth/verify", json={"token": "garbage"}
+    )
 
     assert response.status_code == 400
     assert response.json()["detail"] == "VERIFY_USER_BAD_TOKEN"
@@ -399,7 +419,9 @@ async def test_refresh_without_a_cookie_is_rejected(
     assert response.json()["detail"] == "REFRESH_TOKEN_MISSING"
 
 
-async def test_logout_revokes_the_refresh_token(client: httpx.AsyncClient) -> None:
+async def test_logout_revokes_the_refresh_token(
+    client: httpx.AsyncClient,
+) -> None:
     await _register(client)
     await _login(client)
 
@@ -466,8 +488,12 @@ async def test_users_are_searched_with_pagination_and_filters(
     admin = await _verified_session(client, user_engine, superuser=True)
     await _register(client, "bob@example.com", "bob")
 
-    everyone = await client.get("/user/v1/users", params={"limit": 1}, headers=admin)
-    found = await client.get("/user/v1/users", params={"search": "bob"}, headers=admin)
+    everyone = await client.get(
+        "/user/v1/users", params={"limit": 1}, headers=admin
+    )
+    found = await client.get(
+        "/user/v1/users", params={"search": "bob"}, headers=admin
+    )
     verified = await client.get(
         "/user/v1/users", params={"is_verified": True}, headers=admin
     )
@@ -506,7 +532,9 @@ async def test_a_self_service_patch_needs_no_username(
     headers = await _verified_session(client, user_engine)
 
     response = await client.patch(
-        "/user/v1/users/me", json={"email": "ann@new.example.com"}, headers=headers
+        "/user/v1/users/me",
+        json={"email": "ann@new.example.com"},
+        headers=headers,
     )
 
     assert response.status_code == 200, response.text
@@ -565,50 +593,41 @@ async def test_deleting_an_account_announces_it(
 async def test_invite_token_links_a_person_at_registration(
     client: httpx.AsyncClient, user_engine: AsyncEngine
 ) -> None:
-    admin = await _verified_session(client, user_engine, superuser=True)
     person_id = await _person(user_engine)
+    token = _invite(person_id)
 
-    invite = await client.post(
-        "/user/v1/users/invite", json={"person_id": str(person_id)}, headers=admin
-    )
     registered = await _register(
-        client, "bob@example.com", "bob", invite_token=invite.json()["token"]
+        client, "bob@example.com", "bob", invite_token=token
     )
-    again = await client.post(
-        "/user/v1/users/invite", json={"person_id": str(person_id)}, headers=admin
+    again = await _register(
+        client, "cid@example.com", "cid", invite_token=token
     )
 
-    assert invite.status_code == 200, invite.text
-    assert invite.json()["expires_at"] > time.time()
     assert registered.status_code == 201, registered.text
     assert registered.json()["person_id"] == str(person_id)
     assert again.status_code == 400
     assert again.json()["detail"] == "PERSON_ALREADY_HAS_ACCOUNT"
 
 
-async def test_invite_for_an_unknown_person_is_rejected(
-    client: httpx.AsyncClient, user_engine: AsyncEngine
+async def test_registering_with_an_invite_for_an_unknown_person_is_rejected(
+    client: httpx.AsyncClient,
 ) -> None:
-    admin = await _verified_session(client, user_engine, superuser=True)
-
-    response = await client.post(
-        "/user/v1/users/invite", json={"person_id": str(uuid4())}, headers=admin
-    )
+    response = await _register(client, invite_token=_invite(uuid4()))
 
     assert response.status_code == 400
     assert response.json()["detail"] == "INVITE_PERSON_NOT_FOUND"
 
 
-async def test_invite_endpoint_is_for_superusers_only(
+async def test_registering_with_an_expired_invite_is_rejected(
     client: httpx.AsyncClient, user_engine: AsyncEngine
 ) -> None:
-    headers = await _verified_session(client, user_engine)
+    person_id = await _person(user_engine)
+    token, _ = encode_invite_token(person_id, -60)
 
-    response = await client.post(
-        "/user/v1/users/invite", json={"person_id": str(uuid4())}, headers=headers
-    )
+    response = await _register(client, invite_token=token)
 
-    assert response.status_code == 403
+    assert response.status_code == 400
+    assert response.json()["detail"] == "INVITE_TOKEN_EXPIRED"
 
 
 async def test_registering_with_a_bad_invite_token_is_rejected(
@@ -623,15 +642,8 @@ async def test_registering_with_a_bad_invite_token_is_rejected(
 async def test_link_invite_attaches_the_person_to_the_caller(
     client: httpx.AsyncClient, user_engine: AsyncEngine, outbox: Outbox
 ) -> None:
-    admin = await _verified_session(client, user_engine, superuser=True)
     person_id = await _person(user_engine)
-    token = (
-        await client.post(
-            "/user/v1/users/invite",
-            json={"person_id": str(person_id)},
-            headers=admin,
-        )
-    ).json()["token"]
+    token = _invite(person_id)
     await _register(client, "bob@example.com", "bob")
     bob = _bearer(await _login(client, "bob@example.com"))
 
@@ -688,7 +700,9 @@ async def test_admin_links_a_person_to_an_account(
     assert unknown_person.json()["detail"] == "INVITE_PERSON_NOT_FOUND"
 
 
-async def _register_id(client: httpx.AsyncClient, email: str, username: str) -> UUID:
+async def _register_id(
+    client: httpx.AsyncClient, email: str, username: str
+) -> UUID:
     return UUID((await _register(client, email, username)).json()["id"])
 
 
@@ -712,7 +726,11 @@ async def test_a_link_announced_by_profile_is_applied_before_its_person_event(
     await service.apply_link(link)
     await service.apply_link(link)
     await UserPersonEventService(UserPersonUOW(user_sessionmaker)).create(
-        [PersonData(id=person_id, surname="Ivanov", name="Ivan", patronymic=None)]
+        [
+            PersonData(
+                id=person_id, surname="Ivanov", name="Ivan", patronymic=None
+            )
+        ]
     )
 
     assert (await service.get(bob)).person_id == person_id
@@ -777,7 +795,10 @@ async def test_a_link_for_an_unknown_account_is_ignored(
 async def test_the_link_event_subscriber_applies_the_state(
     client: httpx.AsyncClient, user_sessionmaker: Maker
 ) -> None:
-    from core.schema.message.profile import PersonLinkChangedEvent, PersonLinkData
+    from core.schema.message.profile import (
+        PersonLinkChangedEvent,
+        PersonLinkData,
+    )
     from user.api.kafka.sub.link import on_person_link_changed
     from user.service.user import UserService
     from user.uow.user import UserUOW
@@ -786,13 +807,15 @@ async def test_the_link_event_subscriber_applies_the_state(
     person_id = uuid4()
 
     await on_person_link_changed(
-        PersonLinkChangedEvent(data=[PersonLinkData(user_id=bob, person_id=person_id)]),
+        PersonLinkChangedEvent(
+            data=[PersonLinkData(user_id=bob, person_id=person_id)]
+        ),
         UserUOW(user_sessionmaker),
     )
 
-    assert (await UserService(UserUOW(user_sessionmaker)).get(bob)).person_id == (
-        person_id
-    )
+    assert (
+        await UserService(UserUOW(user_sessionmaker)).get(bob)
+    ).person_id == (person_id)
 
 
 async def test_a_refreshed_token_carries_the_person_linked_meanwhile(
@@ -814,7 +837,11 @@ async def test_a_refreshed_token_carries_the_person_linked_meanwhile(
 
     before = jwt.decode(login.json()["access_token"], options=unverified)
     await UserService(UserUOW(user_sessionmaker)).apply_link(
-        [PersonLinkData(user_id=UUID(registered.json()["id"]), person_id=person_id)]
+        [
+            PersonLinkData(
+                user_id=UUID(registered.json()["id"]), person_id=person_id
+            )
+        ]
     )
     refreshed = await client.post(f"{JWT_PREFIX}/refresh")
     after = jwt.decode(refreshed.json()["access_token"], options=unverified)
@@ -834,25 +861,20 @@ async def test_the_invitation_flows_ask_profile_to_make_the_link(
     admin = await _verified_session(client, user_engine, superuser=True)
     admin_id = UUID(
         jwt.decode(
-            admin["Authorization"].split()[1], options={"verify_signature": False}
+            admin["Authorization"].split()[1],
+            options={"verify_signature": False},
         )["sub"]
     )
     invited = await _person(user_engine)
     joined = await _person(user_engine)
     moved = await _person(user_engine)
-    token = (
-        await client.post(
-            "/user/v1/users/invite", json={"person_id": str(invited)}, headers=admin
-        )
-    ).json()["token"]
-    registered = await _register(client, "bob@example.com", "bob", invite_token=token)
+    token = _invite(invited)
+    registered = await _register(
+        client, "bob@example.com", "bob", invite_token=token
+    )
     other = (await _register(client, "cid@example.com", "cid")).json()
     cid = _bearer(await _login(client, "cid@example.com"))
-    join_token = (
-        await client.post(
-            "/user/v1/users/invite", json={"person_id": str(joined)}, headers=admin
-        )
-    ).json()["token"]
+    join_token = _invite(joined)
 
     self_linked = await client.post(
         "/user/v1/users/me/link-invite", json={"token": join_token}, headers=cid
@@ -917,15 +939,12 @@ async def test_registration_survives_a_silent_profile_but_linking_does_not(
 
     monkeypatch.setattr("user.service.user.link_account", link_account)
     monkeypatch.setattr("user.utils.profile.rpc_call", silent)
-    admin = await _verified_session(client, user_engine, superuser=True)
     person_id = await _person(user_engine)
-    token = (
-        await client.post(
-            "/user/v1/users/invite", json={"person_id": str(person_id)}, headers=admin
-        )
-    ).json()["token"]
+    token = _invite(person_id)
 
-    registered = await _register(client, "bob@example.com", "bob", invite_token=token)
+    registered = await _register(
+        client, "bob@example.com", "bob", invite_token=token
+    )
     bob = _bearer(await _login(client, "bob@example.com"))
     linked = await client.post(
         "/user/v1/users/me/link-invite", json={"token": token}, headers=bob
@@ -952,7 +971,8 @@ async def test_telegram_link_token_needs_a_person_and_a_configured_bot(
         headers=admin,
     )
     await _sql(
-        user_engine, "UPDATE \"user\" SET is_verified = true WHERE username = 'bob'"
+        user_engine,
+        "UPDATE \"user\" SET is_verified = true WHERE username = 'bob'",
     )
     bob_headers = _bearer(await _login(client, "bob@example.com"))
     no_person = await client.post(
@@ -984,7 +1004,9 @@ def _widget_payload(telegram_id: int, **overrides: object) -> dict[str, object]:
         "auth_date": int(time.time()),
     } | overrides
     check = "\n".join(
-        f"{key}={value}" for key, value in sorted(data.items()) if value is not None
+        f"{key}={value}"
+        for key, value in sorted(data.items())
+        if value is not None
     )
     key = hashlib.sha256(BOT_TOKEN.encode()).digest()
     data["hash"] = hmac.new(key, check.encode(), hashlib.sha256).hexdigest()
@@ -1033,7 +1055,9 @@ async def test_telegram_widget_login_requires_a_linked_account(
     linked = await client.post(
         "/user/v1/auth/telegram/login", json=_widget_payload(777)
     )
-    await on_unlink_telegram_oauth(UnlinkTelegramOAuthRequest(person_id=person_id), uow)
+    await on_unlink_telegram_oauth(
+        UnlinkTelegramOAuthRequest(person_id=person_id), uow
+    )
     unlinked_again = await client.post(
         "/user/v1/auth/telegram/login", json=_widget_payload(777)
     )
@@ -1049,7 +1073,9 @@ async def test_telegram_widget_login_requires_a_linked_account(
 
 async def _count(engine: AsyncEngine, table: str) -> int:
     async with engine.connect() as conn:
-        return (await conn.execute(text(f"SELECT count(*) FROM {table}"))).scalar_one()
+        return (
+            await conn.execute(text(f"SELECT count(*) FROM {table}"))
+        ).scalar_one()
 
 
 @pytest.fixture
@@ -1076,7 +1102,9 @@ def google(monkeypatch: pytest.MonkeyPatch) -> dict[str, object]:
     async def get_id_email(_: str) -> tuple[object, tuple[object, object]]:
         return profile["id"], (profile["email"], profile["name"])
 
-    monkeypatch.setattr(google_oauth_client, "get_access_token", get_access_token)
+    monkeypatch.setattr(
+        google_oauth_client, "get_access_token", get_access_token
+    )
     monkeypatch.setattr(google_oauth_client, "get_id_email", get_id_email)
     return profile
 
@@ -1094,7 +1122,9 @@ def _oauth_state(client: httpx.AsyncClient, subject: str | None = None) -> str:
     data = {CSRF_TOKEN_KEY: "csrf-token"}
     if subject is not None:
         data["sub"] = subject
-    return generate_state_token(data, settings.OAUTH_STATE_SECRET.get_secret_value())
+    return generate_state_token(
+        data, settings.OAUTH_STATE_SECRET.get_secret_value()
+    )
 
 
 async def test_google_callback_creates_a_verified_account_once(

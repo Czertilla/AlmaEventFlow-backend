@@ -2,6 +2,7 @@ import asyncio
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -27,6 +28,31 @@ os.environ.setdefault("BOT_TG_TOKEN", "123456:ABCdefGhIJKlmNoPQRsTUVwxyZ-0123456
 
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
+
+
+def _invitation_keys() -> None:
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+
+    folder = Path(tempfile.mkdtemp(prefix="aef-invitation-keys-"))
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    (folder / "private.pem").write_bytes(
+        key.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.PKCS8,
+            serialization.NoEncryption(),
+        )
+    )
+    (folder / "public.pem").write_bytes(
+        key.public_key().public_bytes(
+            serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+    )
+    os.environ.setdefault("PROFILE_RSA_PRIVATE_KEY_PATH", str(folder / "private.pem"))
+    os.environ.setdefault("PROFILE_RSA_PUBLIC_KEY_PATH", str(folder / "public.pem"))
+
+
+_invitation_keys()
 
 import pytest
 

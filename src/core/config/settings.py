@@ -192,6 +192,12 @@ class Settings(BaseSettings):
 
     RSA_PRIVATE_KEY_PATH: str = "rsa_private.pem"
     RSA_PUBLIC_KEY_PATH: str = "rsa_public.pem"
+    """Pair of `user`: it signs access tokens, the rest verify with the public key."""
+
+    PROFILE_RSA_PRIVATE_KEY_PATH: str = "profile_rsa_private.pem"
+    PROFILE_RSA_PUBLIC_KEY_PATH: str = "profile_rsa_public.pem"
+    """Pair of `profile`: it signs invitations, `user` verifies with the public key.
+    Only `profile` may hold the private key."""
 
     INVITE_TOKEN_LIFETIME: int = 604800
 

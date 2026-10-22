@@ -13,7 +13,6 @@ from core.schema.error import (
 )
 from core.schema.v1.pagination import PageParamV1, PageV1
 from user.api.v1.schema.check import CheckResponse
-from user.api.v1.schema.invite import InviteTokenCreate, InviteTokenRead
 from user.api.v1.schema.user import LinkInviteData, PersonLinkRequest, UserRead
 from user.dependency.user import get_user_uow
 from user.filter.user import UserFilter
@@ -43,22 +42,6 @@ async def get_many(
 ) -> PageV1[UserRead]:
     return PageV1[UserRead].from_dto(
         await UserService(uow).search(filter.to_dto(), page_param.to_dto())
-    )
-
-
-@router.post(
-    "/invite",
-    responses={
-        **auth_responses(),
-    },
-)
-async def create_invite_token(
-    uow: Annotated[UserUOW, Depends(get_user_uow)],
-    user: SuperUserJWTDep,
-    invite_data: InviteTokenCreate,
-) -> InviteTokenRead:
-    return InviteTokenRead.from_dto(
-        await UserService(uow).create_invite_token(invite_data.to_dto())
     )
 
 

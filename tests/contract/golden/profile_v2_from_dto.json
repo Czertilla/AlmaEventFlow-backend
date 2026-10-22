@@ -11,6 +11,12 @@
       "user_id": "c9c6cde8-7e9d-5bc4-bc27-44a30f2d9837"
     }
   },
+  "invite.InviteTokenRead": {
+    "response": {
+      "expires_at": 1,
+      "token": "x"
+    }
+  },
   "profile.MyProfileRead": {
     "response": {
       "birthdate": "2026-01-01",

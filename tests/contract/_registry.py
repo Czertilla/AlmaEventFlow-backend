@@ -140,6 +140,7 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "account_history.AccountLinkChangeRead": (
                 "profile.dto.account_history:AccountLinkChangeDTO"
             ),
+            "invite.InviteTokenRead": "profile.dto.invite:InviteTokenDTO",
             "profile.MyProfileRead": "profile.dto.my_profile:MyProfileDTO",
             "profile.MyStudentRead": "profile.dto.my_profile:MyStudentReadDTO",
             "reference.OrganizationRefRead": (
@@ -150,7 +151,6 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
     "user_v1": (
         "user.api.v1.schema",
         {
-            "invite.InviteTokenRead": "user.dto.invite:InviteTokenDTO",
             "session.SessionRead": "user.dto.session:SessionDTO",
             "telegram.TelegramLinkTokenRead": (
                 "user.dto.telegram:TelegramLinkTokenDTO"

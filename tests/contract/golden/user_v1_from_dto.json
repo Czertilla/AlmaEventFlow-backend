@@ -1,10 +1,4 @@
 {
-  "invite.InviteTokenRead": {
-    "response": {
-      "expires_at": 1,
-      "token": "x"
-    }
-  },
   "session.SessionRead": {
     "response": {
       "created_at": "2026-01-01T10:00:00Z",
