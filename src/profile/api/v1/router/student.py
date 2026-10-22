@@ -19,7 +19,7 @@ from profile.api.v1.schema.student import (
     StudentPutData,
     StudentRead,
 )
-from profile.dependency.student import StudentUOWDep
+from profile.dependency.student import StudentGroupUOWDep, StudentUOWDep
 from profile.filter.student import (
     StudentDegreeFilter,
     StudentFilter,
@@ -57,7 +57,7 @@ async def get_students(
 
 
 @router.get(
-    "/{student_id}",
+    "/{student_id:uuid}",
     responses={**auth_responses(), **entity_not_found_responses("student")},
 )
 async def get_student(
@@ -74,7 +74,7 @@ async def create_student(
 
 
 @router.put(
-    "/{student_id}",
+    "/{student_id:uuid}",
     responses={**auth_responses(), **entity_not_found_responses("student")},
 )
 async def put_student(
@@ -93,7 +93,7 @@ async def put_student(
 
 
 @router.patch(
-    "/{student_id}",
+    "/{student_id:uuid}",
     responses={**auth_responses(), **entity_not_found_responses("student")},
 )
 async def patch_student(
@@ -112,7 +112,7 @@ async def patch_student(
 
 
 @router.delete(
-    "/{student_id}",
+    "/{student_id:uuid}",
     responses={**auth_responses(), **entity_not_found_responses("student")},
 )
 async def delete_student(
@@ -209,7 +209,7 @@ group_router = APIRouter(prefix="/groups", tags=["student", "group"])
 @group_router.get("", responses={**auth_responses()})
 async def get_student_groups(
     user: ActiveUserJWTDep,
-    uow: StudentUOWDep,
+    uow: StudentGroupUOWDep,
     filter: StudentGroupFilter = FilterDepends(StudentGroupFilter),
     page_param: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[StudentGroupRead]:
@@ -223,14 +223,14 @@ async def get_student_groups(
     responses={**auth_responses(), **entity_not_found_responses("student_group")},
 )
 async def get_student_group(
-    group_id: int, user: UserJWTDep, uow: StudentUOWDep
+    group_id: int, user: UserJWTDep, uow: StudentGroupUOWDep
 ) -> StudentGroupRead:
     return StudentGroupRead.from_dto(await StudentGroupService(uow).read(group_id))
 
 
 @group_router.post("", responses={**auth_responses()})
 async def create_student_group(
-    group: StudentGroupCreate, user: SuperUserJWTDep, uow: StudentUOWDep
+    group: StudentGroupCreate, user: SuperUserJWTDep, uow: StudentGroupUOWDep
 ) -> StudentGroupRead:
     return StudentGroupRead.from_dto(
         await StudentGroupService(uow).create(group.to_dto())
@@ -245,7 +245,7 @@ async def put_student_group(
     group_id: int,
     group: StudentGroupPutData,
     user: SuperUserJWTDep,
-    uow: StudentUOWDep,
+    uow: StudentGroupUOWDep,
 ) -> StudentGroupRead:
     return StudentGroupRead.from_dto(
         await StudentGroupService(uow).put(
@@ -264,7 +264,7 @@ async def patch_student_group(
     group_id: int,
     group: StudentGroupPatchData,
     user: SuperUserJWTDep,
-    uow: StudentUOWDep,
+    uow: StudentGroupUOWDep,
 ) -> StudentGroupRead:
     return StudentGroupRead.from_dto(
         await StudentGroupService(uow).patch(
@@ -280,7 +280,7 @@ async def patch_student_group(
     responses={**auth_responses(), **entity_not_found_responses("student_group")},
 )
 async def delete_student_group(
-    group_id: int, user: SuperUserJWTDep, uow: StudentUOWDep
+    group_id: int, user: SuperUserJWTDep, uow: StudentGroupUOWDep
 ) -> None:
     await StudentGroupService(uow).delete(group_id)
 

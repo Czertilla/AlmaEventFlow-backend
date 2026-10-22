@@ -19,6 +19,26 @@ class StudentDegreeNotExistsException(VancedHTTPException):
     detail = ErrorCode.STUDENT_DEGREE_NOT_FOUND
 
 
+class StudentDegreeAlreadyExistsException(VancedHTTPException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = ErrorCode.STUDENT_DEGREE_ALREADY_EXISTS
+
+
+class StudentDegreeInUseException(VancedHTTPException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = ErrorCode.STUDENT_DEGREE_IN_USE
+
+
+class StudentGroupAlreadyExistsException(VancedHTTPException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = ErrorCode.STUDENT_GROUP_ALREADY_EXISTS
+
+
+class StudentGroupInUseException(VancedHTTPException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = ErrorCode.STUDENT_GROUP_IN_USE
+
+
 class StudentAlreadyExistsException(VancedHTTPException):
     status_code = status.HTTP_400_BAD_REQUEST
     detail = ErrorCode.STUDENT_ALREADY_EXISTS

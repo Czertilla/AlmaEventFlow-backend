@@ -9,7 +9,16 @@ from profile.models.student import (
 from typing import Any, cast
 from uuid import UUID
 
-from sqlalchemy import CursorResult, Table, delete, func, insert, select, update
+from sqlalchemy import (
+    CursorResult,
+    Table,
+    delete,
+    exists,
+    func,
+    insert,
+    select,
+    update,
+)
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import selectinload
 
@@ -66,6 +75,10 @@ class StudentRepo(
     async def unenroll(self, id: UUID) -> None:
         await self.execute(delete(self.table).where(self.table.c.id == id))
 
+    async def exists_in_group(self, group_id: int) -> bool:
+        stmt = select(exists().where(self.table.c.group_id == group_id))
+        return bool((await self.execute(stmt)).scalar())
+
 
 class StudentGroupRepo(
     SQLAlchemyRepository[StudentGroupORM],
@@ -81,6 +94,10 @@ class StudentGroupRepo(
             self.model.faculty_id == faculty_id,
         )
         return (await self.execute(stmt)).scalars().first()
+
+    async def exists_with_degree(self, degree_id: int) -> bool:
+        stmt = select(exists().where(self.model.degree_id == degree_id))
+        return bool((await self.execute(stmt)).scalar())
 
 
 class StudentDegreeRepo(

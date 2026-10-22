@@ -60,7 +60,7 @@ from profile.uow.diet import DietUOW
 from profile.uow.passport import PassportUOW
 from profile.uow.person import PersonContactUOW, PersonUOW
 from profile.uow.profile import ProfileExtendedUOW, ProfilePassportUOW
-from profile.uow.student import StudentUOW
+from profile.uow.student import StudentGroupUOW, StudentUOW
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -299,7 +299,7 @@ async def test_student_with_group_and_degree(
             {"id": faculty_id},
         )
     degrees = StudentDegreeService(StudentUOW(profile_sessionmaker))
-    groups = StudentGroupService(StudentUOW(profile_sessionmaker))
+    groups = StudentGroupService(StudentGroupUOW(profile_sessionmaker))
     students = StudentService(StudentUOW(profile_sessionmaker))
 
     degree = await degrees.create(StudentDegreeCreateDTO(name="Bachelor"))

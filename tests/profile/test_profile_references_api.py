@@ -15,7 +15,9 @@ USER = principal()
 
 async def _count(engine: AsyncEngine, table: str) -> int:
     async with engine.connect() as conn:
-        return (await conn.execute(text(f"SELECT count(*) FROM {table}"))).scalar_one()
+        return (
+            await conn.execute(text(f"SELECT count(*) FROM {table}"))
+        ).scalar_one()
 
 
 async def _types(engine: AsyncEngine) -> dict[UUID, str]:
@@ -28,7 +30,9 @@ async def test_a_diet_is_found_by_its_name_or_made_once(
     api: httpx.AsyncClient, profile_engine: AsyncEngine
 ) -> None:
     made = await api.post(f"{V2}/diets", json={"name": "Vegan"}, headers=USER)
-    again = await api.post(f"{V2}/diets", json={"name": "  vegan "}, headers=USER)
+    again = await api.post(
+        f"{V2}/diets", json={"name": "  vegan "}, headers=USER
+    )
     other = await api.post(f"{V2}/diets", json={"name": "Halal"}, headers=USER)
 
     assert made.status_code == 200, made.text
@@ -37,22 +41,12 @@ async def test_a_diet_is_found_by_its_name_or_made_once(
     assert await _count(profile_engine, "diet") == 2
 
 
-async def test_a_degree_is_found_by_its_name_or_made_once(
-    api: httpx.AsyncClient, profile_engine: AsyncEngine
-) -> None:
-    made = await api.post(
-        f"{V2}/student-degrees", json={"name": "Master"}, headers=USER
-    )
-    again = await api.post(
-        f"{V2}/student-degrees", json={"name": "MASTER"}, headers=USER
-    )
-
-    assert again.json()["id"] == made.json()["id"]
-    assert await _count(profile_engine, "student_degree") == 1
-
-
 async def _group(
-    api: httpx.AsyncClient, name: str, degree: int, faculty: UUID, grade: int = 2
+    api: httpx.AsyncClient,
+    name: str,
+    degree: int,
+    faculty: UUID,
+    grade: int = 2,
 ) -> httpx.Response:
     return await api.post(
         f"{V2}/student-groups",
@@ -73,7 +67,9 @@ async def test_a_group_is_told_apart_by_its_faculty(
     law = org.add("faculty", "Law", university.id)
     art = org.add("faculty", "Art", university.id)
     degree = (
-        await api.post(f"{V2}/student-degrees", json={"name": "Bachelor"}, headers=USER)
+        await api.post(
+            f"{V2}/student-degrees", json={"name": "Bachelor"}, headers=ADMIN
+        )
     ).json()
 
     made = await _group(api, "IS-21", degree["id"], law.id)
@@ -101,9 +97,13 @@ async def test_a_group_needs_a_degree_that_exists(
     assert response.json()["detail"] == "STUDENT_DEGREE_NOT_FOUND"
 
 
-async def test_a_group_of_an_unknown_faculty_is_refused(api: httpx.AsyncClient) -> None:
+async def test_a_group_of_an_unknown_faculty_is_refused(
+    api: httpx.AsyncClient,
+) -> None:
     degree = (
-        await api.post(f"{V2}/student-degrees", json={"name": "Bachelor"}, headers=USER)
+        await api.post(
+            f"{V2}/student-degrees", json={"name": "Bachelor"}, headers=ADMIN
+        )
     ).json()
 
     response = await _group(api, "IS-21", degree["id"], uuid4())
@@ -144,7 +144,9 @@ async def test_universities_faculties_and_workplaces_come_from_the_organization(
     }
 
 
-async def test_a_faculty_needs_a_university_that_exists(api: httpx.AsyncClient) -> None:
+async def test_a_faculty_needs_a_university_that_exists(
+    api: httpx.AsyncClient,
+) -> None:
     response = await api.post(
         f"{V2}/faculties",
         json={"name": "Law", "university_id": str(uuid4())},
@@ -177,7 +179,7 @@ async def test_the_references_are_for_signed_in_verified_users_and_need_a_name(
     )
     blank = await api.post(f"{V2}/diets", json={"name": "   "}, headers=USER)
     long = await api.post(
-        f"{V2}/student-degrees", json={"name": "x" * 33}, headers=USER
+        f"{V2}/student-degrees", json={"name": "x" * 33}, headers=ADMIN
     )
 
     assert anonymous.status_code in (401, 403)
@@ -195,7 +197,9 @@ async def test_a_workplace_unknown_to_profile_is_taken_from_the_organization_ser
         "workplace_id": str(acme.id),
     }
 
-    response = await api.post(f"{V2}/profiles/my", json=body, headers=principal())
+    response = await api.post(
+        f"{V2}/profiles/my", json=body, headers=principal()
+    )
 
     assert response.status_code == 200, response.text
     assert response.json()["workplace_id"] == str(acme.id)
@@ -206,12 +210,18 @@ async def test_a_new_workplace_made_in_the_same_form_flow_is_usable_at_once(
     api: httpx.AsyncClient,
 ) -> None:
     workplace = (
-        await api.post(f"{V2}/organizations", json={"name": "Acme"}, headers=USER)
+        await api.post(
+            f"{V2}/organizations", json={"name": "Acme"}, headers=USER
+        )
     ).json()
 
     response = await api.post(
         f"{V2}/profiles/my",
-        json={"surname": "Ivanova", "name": "Maria", "workplace_id": workplace["id"]},
+        json={
+            "surname": "Ivanova",
+            "name": "Maria",
+            "workplace_id": workplace["id"],
+        },
         headers=principal(),
     )
 

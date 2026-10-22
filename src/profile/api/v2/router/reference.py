@@ -13,7 +13,7 @@ from profile.service.reference import ReferenceService
 
 from fastapi import APIRouter
 
-from core.dependencies.auth import UserJWTDep
+from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.schema.error import ErrorCode, auth_responses, detail_404
 
 router = APIRouter(tags=["reference"])
@@ -33,9 +33,12 @@ async def resolve_diet(
 
 @router.post("/student-degrees", responses={**auth_responses()})
 async def resolve_student_degree(
-    data: DegreeReference, user: UserJWTDep, uow: ReferenceUOWDep
+    data: DegreeReference, user: SuperUserJWTDep, uow: ReferenceUOWDep
 ) -> StudentDegreeRead:
-    return StudentDegreeRead.from_dto(await ReferenceService(uow).degree(data.name))
+    """Superuser only: a profile picks a degree, it does not make one."""
+    return StudentDegreeRead.from_dto(
+        await ReferenceService(uow).degree(data.name)
+    )
 
 
 @router.post(
@@ -67,7 +70,10 @@ async def resolve_university(
 
 @router.post(
     "/faculties",
-    responses={**auth_responses(), **detail_404(ErrorCode.UNIVERSITY_NOT_FOUND)},
+    responses={
+        **auth_responses(),
+        **detail_404(ErrorCode.UNIVERSITY_NOT_FOUND),
+    },
 )
 async def resolve_faculty(
     data: FacultyReference, user: UserJWTDep, uow: ReferenceUOWDep

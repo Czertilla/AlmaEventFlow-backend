@@ -5,6 +5,7 @@ from profile.dto.student import StudentDegreeDTO, StudentGroupDTO
 from profile.exc.student import StudentDegreeNotExistsException
 from profile.uow.my_profile import MyProfileUOW
 from profile.uow.reference import ReferenceUOW
+from profile.uow.student import StudentGroupUOW
 from profile.utils import org
 from uuid import UUID
 
@@ -14,7 +15,8 @@ from core.utils.names import normalize_name
 
 
 async def ensure_organizations(
-    uow: ReferenceUOW | MyProfileUOW, organization_ids: Iterable[UUID | None]
+    uow: ReferenceUOW | MyProfileUOW | StudentGroupUOW,
+    organization_ids: Iterable[UUID | None],
 ) -> None:
     for organization_id in {i for i in organization_ids if i is not None}:
         async with uow:

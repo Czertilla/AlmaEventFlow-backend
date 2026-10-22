@@ -3,6 +3,7 @@ from profile.repository.student import (
     StudentGroupRepo,
     StudentRepo,
 )
+from profile.uow.organization import OrganizationMixin
 from profile.uow.profile import ProfileMixin
 
 from core.uow.sqlalchemy import UnitOfWork
@@ -15,3 +16,6 @@ class StudentMixin:
 
 
 class StudentUOW(UnitOfWork, StudentMixin, ProfileMixin): ...
+
+
+class StudentGroupUOW(UnitOfWork, StudentMixin, OrganizationMixin): ...
