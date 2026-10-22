@@ -699,12 +699,18 @@ Rules:
   picked id); a reference field of a form shows the name of the saved value by asking for that id
   (`resolveResourceLabel`), never by looking for it among the first search results.
 - **The collective profile** (`views/principal/CollectiveProfilePage.vue`) is the member profile for
-  the whole roster and lives in two places the same way: the panel tab `/principal/collective` (the
-  layout passes the active collective as `collectiveId`) and `/collective/<id>`
+  the whole roster and lives in two places the same way: the panel tab «Дашборд» `/principal/dashboard`
+  (the landing tab; the layout passes the active collective as `collectiveId`) and `/collective/<id>`
   (`views/CollectivePage.vue`, open to the leader and the active members). Its heatmap day is coloured
   by the share of the declared roster that came, `attended / (attended + absent)` of the day's places
   (`collectiveDays`), and unmarked places only hatch the day. The member profile reached from it goes
-  back to the tab through `principalReturnTo`.
+  back to the tab through `principalReturnTo`. The attendance matrix (`views/principal/DashboardPage.vue`,
+  the file kept its old name) is the tab «Участия» `/principal/attendances` (`gridOutline`); the old
+  `/principal/collective` redirects to the dashboard.
+- **The user-facing name of the personal data card is «Подробная информация»** (the block on `/profile`,
+  the form at `/profile/data`, the invitation pages, toasts and errors): not «профиль». «Профиль» stays
+  for the page and the menu entry of the account, for the attendance profiles of a member and of a
+  collective, and in the admin panel (`Профили`, the person file), which keeps the technical word.
 - **A user makes their own profile** at `/profile/data` (`views/ProfileFormPage.vue`); `/profile/edit`
   is the account (email, password). One form builds person, profile, student card, diet, workplace and
   contacts through `/profile/v2/profiles/my` (`stores/myProfile`); the token carries the person id, so
