@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import exists, func, select
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
@@ -18,6 +18,10 @@ class FacultyRepo(
     SearchRepositoryMixin[Model],
 ):
     model = Model
+
+    async def exists_in_university(self, university_id: UUID) -> bool:
+        stmt = select(exists().where(self.model.university_id == university_id))
+        return bool((await self.execute(stmt)).scalar())
 
     async def find_by_name(self, name: str, university_id: UUID) -> Model | None:
         stmt = select(self.model).where(

@@ -11,6 +11,7 @@ from org.api.kafka.pub.organization import (
     on_organization_deleted,
     on_organization_updated,
 )
+from org.exc.university import UniversityNotExistsException
 
 
 class OrgEntityService[U: UnitOfWork](BaseService[U]):
@@ -70,8 +71,16 @@ class OrgEntityService[U: UnitOfWork](BaseService[U]):
         return await self._repo.add_entity(entity)
 
     @required_transaction
+    async def _ensure_deletable(self, entity: Any) -> None:
+        return None
+
+    @required_transaction
     async def _delete(self, entity_id: UUID) -> None:
-        await self._repo.delete_one(entity_id)
+        entity = await self._repo.get_by_id(entity_id)
+        if entity is None:
+            return
+        await self._ensure_deletable(entity)
+        await self._repo.delete_entity(entity)
 
     @required_transaction
     async def _search(
@@ -122,3 +131,28 @@ class OrgEntityService[U: UnitOfWork](BaseService[U]):
             await self._delete(entity_id)
             await uow.commit()
         await on_organization_deleted([entity_id])
+
+
+class UniversityLinkedService[U: UnitOfWork](OrgEntityService[U]):
+    @required_transaction
+    async def _ensure_university(self, university_id: UUID | None) -> None:
+        if university_id is None:
+            return
+        universities = getattr(self.uow, "universities")  # noqa: B009  # the UoW names it
+        if not await universities.exists_id(university_id):
+            raise UniversityNotExistsException()
+
+    @required_transaction
+    async def _create(self, create: Any) -> Any:
+        await self._ensure_university(create.university_id)
+        return await super()._create(create)
+
+    @required_transaction
+    async def _update(self, entity_id: UUID, data: dict[str, Any]) -> Any:
+        await self._ensure_university(data.get("university_id"))
+        return await super()._update(entity_id, data)
+
+    @required_transaction
+    async def _upsert(self, put: Any) -> Any:
+        await self._ensure_university(put.university_id)
+        return await super()._upsert(put)

@@ -6,6 +6,7 @@ from core.service.base import required_transaction
 from org.dto.organization import OrganizationCreateDTO, OrganizationDTO
 from org.enum.organization import OrganizationTypeEnum
 from org.exc.organization import OrganizationNotExistsException
+from org.exc.university import UniversityHasFacultiesException
 from org.filter.organization import OrganizationFilter
 from org.models.organization import OrganizationORM
 from org.service.base import OrgEntityService
@@ -36,6 +37,14 @@ class OrganizationService(OrgEntityService[OrganizationUOW]):
         return await self.uow.organizations.add_n_return(
             data={**dto_dict(create), "type": OrganizationTypeEnum.organization}
         )
+
+    @required_transaction
+    async def _ensure_deletable(self, entity: OrganizationORM) -> None:
+        if (
+            entity.type == OrganizationTypeEnum.university
+            and await self.uow.faculties.exists_in_university(entity.id)
+        ):
+            raise UniversityHasFacultiesException()
 
     @required_transaction
     async def _update(

@@ -87,6 +87,11 @@ class SQLAlchemyRepository[Model: Base](AbstractRepository):
         await self.session.flush()
         return entity
 
+    async def delete_entity(self, entity: Model) -> None:
+        """Deletes through the ORM, so every table of a joined entity loses its row."""
+        await self.session.delete(entity)
+        await self.session.flush()
+
     async def add_n_return(
         self, data: dict[str, Any], options: tuple[Any, ...] = ()
     ) -> Model:
