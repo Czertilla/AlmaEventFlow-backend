@@ -459,6 +459,29 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   `application/geo+json`.
 - The migration that adds `locality` rewrites `address` (about a minute per 300k rows).
 
+## User (`src/user`)
+
+- **Client settings are synced per account**: `GET/PATCH /user/v2/users/me/settings` (v2, so v1 stays
+  frozen), one row per user in `user_settings` (`data` JSONB, `revision`, `ON DELETE CASCADE`). The
+  client owns the names and the values; the server only bounds them (name `^[A-Za-z][A-Za-z0-9_.:-]{0,63}$`,
+  at most 64 names per request, 16 KiB for the whole document, else 413 `SETTINGS_TOO_LARGE`).
+  `PATCH` is a JSON merge patch over the top-level names (`null` removes one) under a row lock
+  (`SettingsRepo.lock_for_user`: an `ON CONFLICT DO NOTHING` insert, then `SELECT ... FOR UPDATE`), so
+  two devices changing different settings never overwrite each other and parallel first writes cannot
+  both insert. A patch that changes nothing leaves `revision` as it was; `GET` of an account with none
+  is `{values: {}, revision: 0}` without writing a row.
+- **The client syncs through `composables/useSettingsSync.ts`** (started in `App.vue`) with the pure
+  rules in `utils/settingsSync.ts`: `SETTING_GUARDS` lists the synced settings and checks every remote
+  value (an unknown name or a wrong shape is ignored, so a newer app can keep its own names). The
+  server wins for every setting this device did not change since the last sync; a change made here is
+  `dirty` (kept in localStorage `settingsSync` with the owner account and the revision), sent after
+  700 ms as one `PATCH` of only those names, and a failed send is retried at the next sync. Sync runs
+  after sign-in and when the app returns to the foreground (`focus`, `visibilitychange`, `online`, at
+  most every 20 s). Only settings the person picked on this device (they have their own localStorage
+  entry, which is why `theme` is saved on change and not at start) seed an account that has none; a
+  browser last used by another account sends nothing of what that account chose. A new synced setting
+  is one more ref in `stores/settings.ts` plus its guard in `SETTING_GUARDS`.
+
 ## Telegram bot (`src/bot`)
 
 - Handlers live in `bot/tg/api/router/{command,callback,chat_member,message}`; `load_common` picks
@@ -692,6 +715,21 @@ Rules:
   parameters of an API request: the two share names only by convention. A page that links to a
   filtered list builds the target with `withQuery('/admin/members', { collective_id })`; the panel
   layouts accept a target with a query, and recreate the page when only the query changed.
+- **The home list and the calendar** (`views/main/HomePage.vue`, `components/event/EventList.vue`). The
+  facets (status for a leader, type, level, format) are multi-select chips (`ui-chip`, «Все» is the
+  empty list) and «Только предстоящие» is a switch; they live in the URL (`utils/homeFilters`) and go
+  to the server (`status`/`status__in`, `type__in`, `level__in`, `format__in`, `date__gte`), never
+  filtered on the client alone: a window of 10+10 events filtered afterwards left a short list with
+  `hasMore*` still true and nothing to scroll to load more. A change of the filters reloads the
+  window around the selected day. **The list scrolls to a day only through `EventList.scrollTo(day,
+  smooth)`**, which puts the first card of the day (else the next one) at the top edge and answers
+  whether it got there (`false`: the list was too short, so `HomePage.aimAt` loads more and tries
+  again). The selected day follows the list only while the person scrolls (`wheel`, `touchstart`,
+  `pointerdown`, `keydown` mark it as theirs) and is the card at the **top edge**, never the middle of
+  the list window (on a phone the window is taller than the screen); a programmatic scroll and the
+  compensation after a load never change the day, and nothing loads while a jump is settling.
+  `settings.collapseOnScroll` (default on) decides whether the week calendar on a phone and the search
+  bar of an admin list (`useHideOnScroll`) hide on the way down.
 - **Admin lists** cross-link: a `ResourceTable` takes `rowLinks` (a button per row, a chip on a phone)
   and `ResourceFormModal` takes `links`, both leading to another list with the filter already set
   (`utils/adminLinks`). A filter of type `picker` searches a record of another resource
