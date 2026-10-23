@@ -49,6 +49,6 @@ class MeAttendanceCreateData(BaseModel, ToDTOMixinV1):
     __dto_cls__ = MeAttendanceCreateDataDTO
 
     member_id: UUID
-    is_attended: bool | None = True
+    is_attended: bool = True
     is_verified: bool | None = False
     comment: str | None = Field(max_length=512, default=None)

@@ -11,6 +11,14 @@
       "participation_id": "225a08e4-057b-5ea2-b6fd-6f34285e7be2"
     }
   },
+  "collective.EventCollectiveRead": {
+    "response": {
+      "id": "ad03e811-0a63-5743-81c7-4858dd5d03d6",
+      "is_verified": true,
+      "name": "x",
+      "principal_id": "17a51bc7-6457-574c-b929-5df23f398ceb"
+    }
+  },
   "collective.MyCollectiveRead": {
     "response": {
       "id": "75de279d-1c68-5fd9-886e-dc2879852b89",

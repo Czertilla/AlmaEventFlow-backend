@@ -75,6 +75,146 @@
         "title": "AttendanceByType",
         "type": "object"
       },
+      "AttendanceChangeData": {
+        "properties": {
+          "comment": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "is_attended": {
+            "title": "Is Attended",
+            "type": "boolean"
+          },
+          "is_verified": {
+            "description": "Only the leader of the collective may set it.",
+            "title": "Is Verified",
+            "type": "boolean"
+          }
+        },
+        "title": "AttendanceChangeData",
+        "type": "object"
+      },
+      "AttendanceChanged": {
+        "description": "The place as it is now and the counters it moves, so a list can be updated\nwithout asking again.",
+        "properties": {
+          "attendance": {
+            "$ref": "#/components/schemas/AttendanceReadV2"
+          },
+          "participation": {
+            "$ref": "#/components/schemas/ParticipationCounts"
+          }
+        },
+        "required": [
+          "attendance",
+          "participation"
+        ],
+        "title": "AttendanceChanged",
+        "type": "object"
+      },
+      "AttendanceDeclareData": {
+        "properties": {
+          "member_id": {
+            "format": "uuid",
+            "title": "Member Id",
+            "type": "string"
+          },
+          "participation_id": {
+            "format": "uuid",
+            "title": "Participation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "participation_id",
+          "member_id"
+        ],
+        "title": "AttendanceDeclareData",
+        "type": "object"
+      },
+      "AttendanceMatrix": {
+        "description": "Who was declared for which event: `attendances` are the places of the\nparticipations of `events`. `members` and `roles` are the same in every window.",
+        "properties": {
+          "attendances": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceReadV2"
+            },
+            "title": "Attendances",
+            "type": "array"
+          },
+          "events": {
+            "description": "Oldest first, no templates.",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveEvent"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "future_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Future Cursor"
+          },
+          "has_more_future": {
+            "title": "Has More Future",
+            "type": "boolean"
+          },
+          "has_more_past": {
+            "title": "Has More Past",
+            "type": "boolean"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/RosterMember"
+            },
+            "title": "Members",
+            "type": "array"
+          },
+          "past_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Past Cursor"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RoleRead"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "members",
+          "roles",
+          "events",
+          "attendances",
+          "has_more_past",
+          "has_more_future",
+          "past_cursor",
+          "future_cursor"
+        ],
+        "title": "AttendanceMatrix",
+        "type": "object"
+      },
       "AttendanceOutcomeEnumV1": {
         "enum": [
           "attended",
@@ -84,6 +224,81 @@
         ],
         "title": "AttendanceOutcomeEnumV1",
         "type": "string"
+      },
+      "AttendanceReadV2": {
+        "properties": {
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_attended": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "`null` until someone marks the place.",
+            "title": "Is Attended"
+          },
+          "is_verified": {
+            "title": "Is Verified",
+            "type": "boolean"
+          },
+          "member_id": {
+            "format": "uuid",
+            "title": "Member Id",
+            "type": "string"
+          },
+          "participation_id": {
+            "format": "uuid",
+            "title": "Participation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "edited_at",
+          "member_id",
+          "participation_id",
+          "is_attended",
+          "is_verified",
+          "comment"
+        ],
+        "title": "AttendanceReadV2",
+        "type": "object"
       },
       "AvailableFeeds": {
         "properties": {
@@ -219,6 +434,105 @@
         "title": "CollectiveDay",
         "type": "object"
       },
+      "CollectiveEvent": {
+        "description": "An event the collective takes part in, with the collective's participation.",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "format": {
+            "$ref": "#/components/schemas/EventFormatEnumV1"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventLevelEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventPlace"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "participation_id": {
+            "format": "uuid",
+            "title": "Participation Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EventStatusEnumV1"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventTypeEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "date",
+          "status",
+          "level",
+          "type",
+          "format",
+          "location",
+          "participation_id",
+          "created_at",
+          "edited_at"
+        ],
+        "title": "CollectiveEvent",
+        "type": "object"
+      },
       "CollectiveEventItem": {
         "properties": {
           "absent": {
@@ -277,6 +591,29 @@
           "type"
         ],
         "title": "CollectiveEventItem",
+        "type": "object"
+      },
+      "CollectiveEvents": {
+        "properties": {
+          "items": {
+            "description": "The latest first, undated ones on top.",
+            "items": {
+              "$ref": "#/components/schemas/CollectiveEvent"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "truncated": {
+            "description": "There are more events than the answer holds.",
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items",
+          "truncated"
+        ],
+        "title": "CollectiveEvents",
         "type": "object"
       },
       "CollectiveInfo": {
@@ -468,6 +805,32 @@
         "title": "CollectiveProfileRead",
         "type": "object"
       },
+      "CollectiveRoster": {
+        "properties": {
+          "members": {
+            "description": "By name, the former members too.",
+            "items": {
+              "$ref": "#/components/schemas/RosterMember"
+            },
+            "title": "Members",
+            "type": "array"
+          },
+          "roles": {
+            "description": "By name.",
+            "items": {
+              "$ref": "#/components/schemas/RoleRead"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "members",
+          "roles"
+        ],
+        "title": "CollectiveRoster",
+        "type": "object"
+      },
       "ErrorModel": {
         "properties": {
           "detail": {
@@ -490,6 +853,366 @@
         ],
         "title": "ErrorModel",
         "type": "object"
+      },
+      "EventCard": {
+        "description": "An event as a list shows it. Only the collectives of the caller take part\nin `participations`; `edited_at ?? created_at` tells which copy is newer.",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "ends_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The last stage end (its start when open-ended).",
+            "title": "Ends At"
+          },
+          "format": {
+            "$ref": "#/components/schemas/EventFormatEnumV1"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventLevelEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventPlace"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "participations": {
+            "items": {
+              "$ref": "#/components/schemas/EventCardParticipation"
+            },
+            "title": "Participations",
+            "type": "array"
+          },
+          "starts_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The first stage start, if the event has stages.",
+            "title": "Starts At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EventStatusEnumV1"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventTypeEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "updated_at": {
+            "description": "When the event or a place of its participations last changed: of two copies of a card the greater one is the newer. A deleted place leaves no trace in it.",
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "date",
+          "status",
+          "level",
+          "type",
+          "format",
+          "location",
+          "starts_at",
+          "ends_at",
+          "participations",
+          "created_at",
+          "edited_at",
+          "updated_at"
+        ],
+        "title": "EventCard",
+        "type": "object"
+      },
+      "EventCardParticipation": {
+        "properties": {
+          "attended_count": {
+            "description": "Places of the participation marked as attended.",
+            "title": "Attended Count",
+            "type": "integer"
+          },
+          "collective_id": {
+            "format": "uuid",
+            "title": "Collective Id",
+            "type": "string"
+          },
+          "collective_name": {
+            "title": "Collective Name",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "my_attendance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AttendanceReadV2"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The caller's own place, when they are a member of the collective."
+          },
+          "total_count": {
+            "description": "Places declared for the participation.",
+            "title": "Total Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "collective_id",
+          "collective_name",
+          "attended_count",
+          "total_count",
+          "my_attendance"
+        ],
+        "title": "EventCardParticipation",
+        "type": "object"
+      },
+      "EventFeed": {
+        "description": "Events in date order. `has_more_*` and the cursors speak of the sides that\nwere asked for; the other side of a `past` or `future` request is `false`/`null`.",
+        "properties": {
+          "future_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Of the latest event returned.",
+            "title": "Future Cursor"
+          },
+          "has_more_future": {
+            "title": "Has More Future",
+            "type": "boolean"
+          },
+          "has_more_past": {
+            "title": "Has More Past",
+            "type": "boolean"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EventCard"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "past_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Of the earliest event returned.",
+            "title": "Past Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "has_more_past",
+          "has_more_future",
+          "past_cursor",
+          "future_cursor"
+        ],
+        "title": "EventFeed",
+        "type": "object"
+      },
+      "EventFormatEnumV1": {
+        "enum": [
+          "online",
+          "offline"
+        ],
+        "title": "EventFormatEnumV1",
+        "type": "string"
+      },
+      "EventLevelEnumV1": {
+        "enum": [
+          "internal",
+          "regional",
+          "national",
+          "international"
+        ],
+        "title": "EventLevelEnumV1",
+        "type": "string"
+      },
+      "EventPageRead": {
+        "description": "Everything the page of an event shows. Collectives are the participating ones,\nthe caller's own first, then by name.",
+        "properties": {
+          "editable_collective_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The collective the caller edits the event on behalf of, if any.",
+            "title": "Editable Collective Id"
+          },
+          "event": {
+            "$ref": "#/components/schemas/PageEvent"
+          },
+          "participations": {
+            "items": {
+              "$ref": "#/components/schemas/PageParticipation"
+            },
+            "title": "Participations",
+            "type": "array"
+          },
+          "stages": {
+            "description": "By start.",
+            "items": {
+              "$ref": "#/components/schemas/StageRead"
+            },
+            "title": "Stages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "event",
+          "stages",
+          "participations",
+          "editable_collective_id"
+        ],
+        "title": "EventPageRead",
+        "type": "object"
+      },
+      "EventPlace": {
+        "description": "Where an event is, as geo last told: the text to show and a point on the map.",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "lat",
+          "lon"
+        ],
+        "title": "EventPlace",
+        "type": "object"
+      },
+      "EventPriorityEnumV1": {
+        "enum": [
+          "hight",
+          "medium",
+          "low"
+        ],
+        "title": "EventPriorityEnumV1",
+        "type": "string"
       },
       "EventStatusEnumV1": {
         "enum": [
@@ -541,6 +1264,15 @@
         ],
         "title": "FeedDescriptor",
         "type": "object"
+      },
+      "FeedDirection": {
+        "enum": [
+          "around",
+          "past",
+          "future"
+        ],
+        "title": "FeedDirection",
+        "type": "string"
       },
       "HTTPValidationError": {
         "properties": {
@@ -881,6 +1613,362 @@
         "title": "MemberRead",
         "type": "object"
       },
+      "PageAttendance": {
+        "properties": {
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_attended": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "`null` until someone marks the place.",
+            "title": "Is Attended"
+          },
+          "is_verified": {
+            "title": "Is Verified",
+            "type": "boolean"
+          },
+          "member": {
+            "$ref": "#/components/schemas/RosterMember"
+          },
+          "member_id": {
+            "format": "uuid",
+            "title": "Member Id",
+            "type": "string"
+          },
+          "participation_id": {
+            "format": "uuid",
+            "title": "Participation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "edited_at",
+          "member_id",
+          "participation_id",
+          "is_attended",
+          "is_verified",
+          "comment",
+          "member"
+        ],
+        "title": "PageAttendance",
+        "type": "object"
+      },
+      "PageEvent": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "format": {
+            "$ref": "#/components/schemas/EventFormatEnumV1"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventLevelEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventPlace"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The text to show and the point on the map; geo has the rest."
+          },
+          "location_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Id"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "organizer_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organizer Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EventStatusEnumV1"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventTypeEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "date",
+          "description",
+          "status",
+          "level",
+          "type",
+          "format",
+          "organizer_id",
+          "location_id",
+          "location",
+          "created_at",
+          "edited_at"
+        ],
+        "title": "PageEvent",
+        "type": "object"
+      },
+      "PageParticipation": {
+        "properties": {
+          "addable_members": {
+            "description": "Active members without a place yet; for the leader only.",
+            "items": {
+              "$ref": "#/components/schemas/RosterMember"
+            },
+            "title": "Addable Members",
+            "type": "array"
+          },
+          "attendances": {
+            "description": "By surname; empty unless visible.",
+            "items": {
+              "$ref": "#/components/schemas/PageAttendance"
+            },
+            "title": "Attendances",
+            "type": "array"
+          },
+          "attended_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null unless the places are visible.",
+            "title": "Attended Count"
+          },
+          "can_view_attendances": {
+            "description": "Only the leader and the members see the places.",
+            "title": "Can View Attendances",
+            "type": "boolean"
+          },
+          "collective_id": {
+            "format": "uuid",
+            "title": "Collective Id",
+            "type": "string"
+          },
+          "collective_name": {
+            "title": "Collective Name",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_member": {
+            "description": "The caller has a membership in the collective.",
+            "title": "Is Member",
+            "type": "boolean"
+          },
+          "is_principal": {
+            "description": "The caller leads the collective (or is a superuser).",
+            "title": "Is Principal",
+            "type": "boolean"
+          },
+          "my_attendance_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "My Attendance Id"
+          },
+          "priority_degree": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventPriorityEnumV1"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "total_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Count"
+          }
+        },
+        "required": [
+          "id",
+          "collective_id",
+          "collective_name",
+          "priority_degree",
+          "is_principal",
+          "is_member",
+          "can_view_attendances",
+          "attended_count",
+          "total_count",
+          "my_attendance_id",
+          "attendances",
+          "addable_members"
+        ],
+        "title": "PageParticipation",
+        "type": "object"
+      },
+      "ParticipationCounts": {
+        "properties": {
+          "attended_count": {
+            "title": "Attended Count",
+            "type": "integer"
+          },
+          "collective_id": {
+            "format": "uuid",
+            "title": "Collective Id",
+            "type": "string"
+          },
+          "event_id": {
+            "format": "uuid",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "total_count": {
+            "title": "Total Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "event_id",
+          "collective_id",
+          "attended_count",
+          "total_count"
+        ],
+        "title": "ParticipationCounts",
+        "type": "object"
+      },
       "RecentLocationRead": {
         "properties": {
           "location_id": {
@@ -918,6 +2006,167 @@
           "name"
         ],
         "title": "RolePreview",
+        "type": "object"
+      },
+      "RoleRead": {
+        "properties": {
+          "collective_id": {
+            "format": "uuid",
+            "title": "Collective Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "created_at",
+          "edited_at",
+          "id",
+          "name",
+          "collective_id"
+        ],
+        "title": "RoleRead",
+        "type": "object"
+      },
+      "RosterMember": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "person": {
+            "$ref": "#/components/schemas/MemberPerson"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RolePreview"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "person",
+          "is_active",
+          "roles"
+        ],
+        "title": "RosterMember",
+        "type": "object"
+      },
+      "StageRead": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 1024,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
+          "end_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End At"
+          },
+          "event_id": {
+            "format": "uuid",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 32,
+            "title": "Name",
+            "type": "string"
+          },
+          "start_at": {
+            "format": "date-time",
+            "title": "Start At",
+            "type": "string"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          }
+        },
+        "required": [
+          "created_at",
+          "edited_at",
+          "id",
+          "name",
+          "start_at",
+          "event_id"
+        ],
+        "title": "StageRead",
         "type": "object"
       },
       "SubscriptionCreate": {
@@ -1118,10 +2367,331 @@
         ],
         "title": "ValidationError",
         "type": "object"
+      },
+      "ViewerCollective": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_principal": {
+            "description": "The caller leads the collective.",
+            "title": "Is Principal",
+            "type": "boolean"
+          },
+          "is_verified": {
+            "title": "Is Verified",
+            "type": "boolean"
+          },
+          "member_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The caller's membership, if any.",
+            "title": "Member Id"
+          },
+          "member_is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Member Is Active"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "roles": {
+            "description": "The roles of the caller's membership.",
+            "items": {
+              "$ref": "#/components/schemas/RolePreview"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "is_verified",
+          "is_principal",
+          "member_id",
+          "member_is_active",
+          "roles"
+        ],
+        "title": "ViewerCollective",
+        "type": "object"
+      },
+      "ViewerContext": {
+        "description": "Who the caller is for the events: the collectives they lead or belong to.",
+        "properties": {
+          "collectives": {
+            "items": {
+              "$ref": "#/components/schemas/ViewerCollective"
+            },
+            "title": "Collectives",
+            "type": "array"
+          },
+          "person_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Id"
+          }
+        },
+        "required": [
+          "person_id",
+          "collectives"
+        ],
+        "title": "ViewerContext",
+        "type": "object"
       }
     }
   },
   "paths": {
+    "/event/v2/attendances": {
+      "post": {
+        "description": "Adds a member of the collective to the event. The new place is not marked:\nits `is_attended` is `null` until someone marks it. Only the leader of the\ncollective and a superuser may; an existing place is returned unchanged.",
+        "operationId": "declare_attendance_event_v2_attendances_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendanceDeclareData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceChanged"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NOT_COLLECTIVE_PRINCIPAL": {
+                    "summary": "NOT_COLLECTIVE_PRINCIPAL",
+                    "value": {
+                      "detail": "NOT_COLLECTIVE_PRINCIPAL"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "NOT_COLLECTIVE_PRINCIPAL"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PARTICIPATION_NOT_FOUND": {
+                    "summary": "PARTICIPATION_NOT_FOUND",
+                    "value": {
+                      "detail": "PARTICIPATION_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PARTICIPATION_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Declare Attendance",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/event/v2/attendances/{attendance_id}": {
+      "patch": {
+        "description": "Marks a place, comments on it or (the leader) verifies it. One endpoint for\nwhoever may: the member of the place, the leader of the collective, a superuser.",
+        "operationId": "change_attendance_event_v2_attendances__attendance_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "attendance_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Attendance Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendanceChangeData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceChanged"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NOT_MEMBER_PERSON": {
+                    "summary": "NOT_MEMBER_PERSON",
+                    "value": {
+                      "detail": "NOT_MEMBER_PERSON"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "NOT_MEMBER_PERSON"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ATTENDANCE_NOT_FOUND": {
+                    "summary": "ATTENDANCE_NOT_FOUND",
+                    "value": {
+                      "detail": "ATTENDANCE_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ATTENDANCE_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Change Attendance",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
     "/event/v2/calendar/available-feeds": {
       "get": {
         "operationId": "get_available_feeds_event_v2_calendar_available_feeds_get",
@@ -1578,6 +3148,284 @@
         ]
       }
     },
+    "/event/v2/collectives/{collective_id}/attendance-matrix": {
+      "get": {
+        "description": "The roster against a window of the collective's events with every declared\nplace: the table of the leader's panel in one answer. Keyset paging as in the\nfeed.",
+        "operationId": "get_attendance_matrix_event_v2_collectives__collective_id__attendance_matrix_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collective_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Collective Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "As in the feed: `around` a day, or the next events `past` / `future` of `cursor`. Ignored when both ends of a range are given.",
+            "in": "query",
+            "name": "direction",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/FeedDirection",
+              "default": "around",
+              "description": "As in the feed: `around` a day, or the next events `past` / `future` of `cursor`. Ignored when both ends of a range are given."
+            }
+          },
+          {
+            "description": "Today when omitted.",
+            "in": "query",
+            "name": "anchor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Today when omitted.",
+              "title": "Anchor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "description": "Events per side.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Events per side.",
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "With `date_to`: every event of the range, no paging.",
+            "in": "query",
+            "name": "date_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "With `date_to`: every event of the range, no paging.",
+              "title": "Date From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceMatrix"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NOT_COLLECTIVE_PRINCIPAL": {
+                    "summary": "NOT_COLLECTIVE_PRINCIPAL",
+                    "value": {
+                      "detail": "NOT_COLLECTIVE_PRINCIPAL"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "NOT_COLLECTIVE_PRINCIPAL"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Attendance Matrix",
+        "tags": [
+          "collective"
+        ]
+      }
+    },
+    "/event/v2/collectives/{collective_id}/events": {
+      "get": {
+        "description": "Every event the collective takes part in, in any status, a template too.\nFor its leader and superusers.",
+        "operationId": "get_collective_events_event_v2_collectives__collective_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collective_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Collective Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveEvents"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NOT_COLLECTIVE_PRINCIPAL": {
+                    "summary": "NOT_COLLECTIVE_PRINCIPAL",
+                    "value": {
+                      "detail": "NOT_COLLECTIVE_PRINCIPAL"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "NOT_COLLECTIVE_PRINCIPAL"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Collective Events",
+        "tags": [
+          "collective"
+        ]
+      }
+    },
     "/event/v2/collectives/{collective_id}/profile": {
       "get": {
         "description": "A collective's card with the attendance of its whole roster.\n\nOpen to the leader, the collective's active members and superusers\n(``403 NOT_COLLECTIVE_MEMBER`` otherwise).",
@@ -1829,6 +3677,676 @@
         "summary": "Get Recent Locations",
         "tags": [
           "location"
+        ]
+      }
+    },
+    "/event/v2/collectives/{collective_id}/roster": {
+      "get": {
+        "description": "The members with their names and roles, and the roles of the collective.\nFor its leader and superusers.",
+        "operationId": "get_collective_roster_event_v2_collectives__collective_id__roster_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collective_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Collective Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectiveRoster"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NOT_COLLECTIVE_PRINCIPAL": {
+                    "summary": "NOT_COLLECTIVE_PRINCIPAL",
+                    "value": {
+                      "detail": "NOT_COLLECTIVE_PRINCIPAL"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "NOT_COLLECTIVE_PRINCIPAL"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Collective Roster",
+        "tags": [
+          "collective"
+        ]
+      }
+    },
+    "/event/v2/events/{event_id}": {
+      "get": {
+        "description": "The event with its stages, its place and every participation, in one answer.\nThe places of a collective come with the names of the members and their roles\nfor its leader and its members only. An event the caller may not see is not\nfound.",
+        "operationId": "get_event_page_event_v2_events__event_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Event Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventPageRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "EVENT_NOT_FOUND": {
+                    "summary": "EVENT_NOT_FOUND",
+                    "value": {
+                      "detail": "EVENT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "EVENT_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Event Page",
+        "tags": [
+          "event"
+        ]
+      }
+    },
+    "/event/v2/feed": {
+      "get": {
+        "description": "Events around a day, or the next ones in either direction, each with the\ncaller's own places and the counters of their collectives: what a list of\nevents needs in one answer. Keyset paging, so a change of the list between two\nrequests neither repeats nor skips an event.",
+        "operationId": "get_feed_event_v2_feed_get",
+        "parameters": [
+          {
+            "description": "`around`: the events before `anchor` and from it on, `limit` of each side. `past` / `future`: the next `limit` events before / after `cursor` (or before / from `anchor` when there is no cursor).",
+            "in": "query",
+            "name": "direction",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/FeedDirection",
+              "default": "around",
+              "description": "`around`: the events before `anchor` and from it on, `limit` of each side. `past` / `future`: the next `limit` events before / after `cursor` (or before / from `anchor` when there is no cursor)."
+            }
+          },
+          {
+            "description": "A day of the caller's calendar; today when omitted.",
+            "in": "query",
+            "name": "anchor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "A day of the caller's calendar; today when omitted.",
+              "title": "Anchor"
+            }
+          },
+          {
+            "description": "`past_cursor` / `future_cursor` of the previous answer, as given.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "`past_cursor` / `future_cursor` of the previous answer, as given.",
+              "title": "Cursor"
+            }
+          },
+          {
+            "description": "Events per side.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "description": "Events per side.",
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Only the events these collectives take part in; every event when empty.",
+            "in": "query",
+            "name": "collective_id",
+            "required": false,
+            "schema": {
+              "description": "Only the events these collectives take part in; every event when empty.",
+              "items": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "maxItems": 50,
+              "title": "Collective Id",
+              "type": "array"
+            }
+          },
+          {
+            "description": "Any of the given statuses; all but `template` when empty. Only the leaders of the collectives taking part see a status other than `active`.",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "description": "Any of the given statuses; all but `template` when empty. Only the leaders of the collectives taking part see a status other than `active`.",
+              "items": {
+                "$ref": "#/components/schemas/EventStatusEnumV1"
+              },
+              "title": "Status",
+              "type": "array"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/EventTypeEnumV1"
+              },
+              "title": "Type",
+              "type": "array"
+            }
+          },
+          {
+            "in": "query",
+            "name": "level",
+            "required": false,
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/EventLevelEnumV1"
+              },
+              "title": "Level",
+              "type": "array"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/EventFormatEnumV1"
+              },
+              "title": "Format",
+              "type": "array"
+            }
+          },
+          {
+            "description": "Only the events on this day or later.",
+            "in": "query",
+            "name": "date_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only the events on this day or later.",
+              "title": "Date From"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventFeed"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Feed",
+        "tags": [
+          "feed"
+        ]
+      }
+    },
+    "/event/v2/feed/cards": {
+      "get": {
+        "description": "The same cards by id, in the order asked; an event that does not exist or\nthat the caller may not see is left out.",
+        "operationId": "get_cards_event_v2_feed_cards_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "items": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "title": "Id",
+              "type": "array"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EventCard"
+                  },
+                  "title": "Response Get Cards Event V2 Feed Cards Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Cards",
+        "tags": [
+          "feed"
+        ]
+      }
+    },
+    "/event/v2/feed/pending": {
+      "get": {
+        "description": "Active events where a place of the caller is declared and nobody has marked\nit yet, the earliest first (at most 100).",
+        "operationId": "get_pending_event_v2_feed_pending_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EventCard"
+                  },
+                  "title": "Response Get Pending Event V2 Feed Pending Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Pending",
+        "tags": [
+          "feed"
+        ]
+      }
+    },
+    "/event/v2/me/context": {
+      "get": {
+        "description": "The collectives the caller leads or is a member of, with their names and\nthe caller's membership in each: the whole picture a client needs at start.",
+        "operationId": "get_my_context_event_v2_me_context_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViewerContext"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get My Context",
+        "tags": [
+          "me"
         ]
       }
     },

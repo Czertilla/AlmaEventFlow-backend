@@ -15,6 +15,7 @@ from core.database.sqlalchemy.mixins.repositories import (
 )
 from core.dto.pagination import PageParams
 from event.models.attendance import AttendanceORM as Model
+from event.models.collective import CollectiveORM
 from event.models.event import EventORM, EventStatusORM, EventTypeORM
 from event.models.member import MemberORM
 from event.models.participation import ParticipationORM
@@ -52,6 +53,39 @@ class AttendanceRepo(
             .where(self.model.id == attendance_id)
         )
         return (await self.execute(stmt)).scalar_one_or_none()
+
+    async def ownership(self, attendance_id: UUID) -> Row[Any] | None:
+        """Whose place it is and which collective it belongs to."""
+        stmt = (
+            select(
+                self.model.participation_id,
+                self.model.is_verified,
+                ParticipationORM.event_id,
+                ParticipationORM.collective_id,
+                CollectiveORM.principal_id,
+                MemberORM.person_id.label("member_person_id"),
+            )
+            .select_from(self.model)
+            .join(ParticipationORM, ParticipationORM.id == self.model.participation_id)
+            .join(CollectiveORM, CollectiveORM.id == ParticipationORM.collective_id)
+            .join(MemberORM, MemberORM.id == self.model.member_id)
+            .where(self.model.id == attendance_id)
+        )
+        return (await self.execute(stmt)).one_or_none()
+
+    async def participation_owner(self, participation_id: UUID) -> Row[Any] | None:
+        stmt = (
+            select(
+                ParticipationORM.id,
+                ParticipationORM.event_id,
+                ParticipationORM.collective_id,
+                CollectiveORM.principal_id,
+            )
+            .select_from(ParticipationORM)
+            .join(CollectiveORM, CollectiveORM.id == ParticipationORM.collective_id)
+            .where(ParticipationORM.id == participation_id)
+        )
+        return (await self.execute(stmt)).one_or_none()
 
     async def of_participation(self, participation_id: UUID) -> list[Model]:
         stmt = select(self.model).where(

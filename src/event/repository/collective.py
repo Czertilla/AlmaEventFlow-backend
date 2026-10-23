@@ -5,6 +5,7 @@ from sqlalchemy import select
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 from core.database.sqlalchemy.mixins.repositories import (
     IDRepositoryMixin,
+    SearchRepositoryMixin,
     UpsertRepositoryMixin,
 )
 from event.models.collective import CollectiveORM as Model
@@ -14,7 +15,8 @@ from event.models.member import MemberORM
 class CollectiveRepo(
     SQLAlchemyRepository[Model],
     IDRepositoryMixin[Model, UUID],
-    UpsertRepositoryMixin[Model, UUID]
+    UpsertRepositoryMixin[Model, UUID],
+    SearchRepositoryMixin[Model],
 ):
     model = Model
 

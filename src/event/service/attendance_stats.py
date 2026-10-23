@@ -1,11 +1,14 @@
 import datetime
 from collections import Counter, defaultdict
 from collections.abc import Sequence
+from dataclasses import replace
 from typing import Any
 from uuid import UUID
 
 from sqlalchemy import Row
 
+from core.dto.base import dto_from_orm
+from event.dto.attendance import AttendanceViewDTO
 from event.dto.collective_profile import (
     CollectiveAttendanceSummaryDTO,
     CollectiveDayDTO,
@@ -20,16 +23,31 @@ from event.dto.member_profile import (
 from event.enum.attendance import AttendanceOutcomeEnumV1 as Outcome
 from event.enum.status import EventStatusEnumV1
 from event.enum.type import EventTypeEnumV1
+from event.models.attendance import AttendanceORM
 
 
-def is_marked(
-    is_attended: bool | None, edited_at: datetime.datetime | None, is_verified: bool
-) -> bool:
-    return is_attended is not None and (edited_at is not None or is_verified)
+def is_marked(edited_at: datetime.datetime | None, is_verified: bool) -> bool:
+    return edited_at is not None or is_verified
+
+
+def shown(
+    is_attended: bool, edited_at: datetime.datetime | None, is_verified: bool
+) -> bool | None:
+    return is_attended if is_marked(edited_at, is_verified) else None
+
+
+def shown_attendance(attendance: AttendanceORM) -> AttendanceViewDTO:
+    dto = dto_from_orm(attendance, AttendanceViewDTO)
+    return replace(
+        dto,
+        is_attended=shown(
+            attendance.is_attended, attendance.edited_at, attendance.is_verified
+        ),
+    )
 
 
 def classify(
-    date: datetime.date, is_attended: bool | None, marked: bool, today: datetime.date
+    date: datetime.date, is_attended: bool, marked: bool, today: datetime.date
 ) -> Outcome:
     if date > today:
         return Outcome.upcoming
@@ -41,7 +59,7 @@ def classify(
 def to_item(
     row: Row[Any], today: datetime.date, show_comment: bool = False
 ) -> MemberAttendanceItemDTO:
-    marked = is_marked(row.is_attended, row.edited_at, row.is_verified)
+    marked = is_marked(row.edited_at, row.is_verified)
     return MemberAttendanceItemDTO(
         attendance_id=row.attendance_id,
         event_id=row.event_id,
@@ -50,7 +68,7 @@ def to_item(
         status=EventStatusEnumV1(row.status),
         type=EventTypeEnumV1(row.type) if row.type else None,
         outcome=classify(row.date, row.is_attended, marked, today),
-        is_attended=row.is_attended if marked else None,
+        is_attended=shown(row.is_attended, row.edited_at, row.is_verified),
         is_verified=row.is_verified,
         comment=row.comment if show_comment else None,
     )

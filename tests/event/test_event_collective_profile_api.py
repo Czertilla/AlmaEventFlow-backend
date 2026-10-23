@@ -110,7 +110,7 @@ async def _declare(
     engine: AsyncEngine,
     participation: UUID,
     member: UUID,
-    is_attended: bool | None,
+    is_attended: bool,
     *,
     marked: bool = True,
     verified: bool = False,
@@ -163,7 +163,7 @@ async def test_the_card_counts_the_whole_declared_roster(
     await _declare(event_engine, first, c, True)
     await _declare(event_engine, second, a, True)
     await _declare(event_engine, second, b, True, marked=False)
-    await _declare(event_engine, second, c, None)
+    await _declare(event_engine, second, c, False, marked=False)
     await _declare(event_engine, upcoming, a, True)
 
     response = await api.get(

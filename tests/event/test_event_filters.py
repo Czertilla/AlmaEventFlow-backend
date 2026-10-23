@@ -9,6 +9,7 @@ from support.filters import (
 )
 
 from event.filter.attendance import AttendanceFilter
+from event.filter.collective import CollectiveFilter
 from event.filter.event import EventFilter
 from event.filter.link import LinkFilter
 from event.filter.member import MemberFilter
@@ -19,6 +20,7 @@ from event.filter.stage import StageFilter
 
 FILTERS: list[Any] = [
     AttendanceFilter,
+    CollectiveFilter,
     EventFilter,
     LinkFilter,
     MemberFilter,

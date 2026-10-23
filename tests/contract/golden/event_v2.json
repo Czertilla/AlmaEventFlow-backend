@@ -1,4 +1,294 @@
 {
+  "attendance.AttendanceChangeData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "comment",
+          "is_attended",
+          "is_verified"
+        ],
+        "mapped": {
+          "comment": "x",
+          "is_attended": true,
+          "is_verified": true
+        }
+      },
+      "dump": {
+        "comment": "x",
+        "is_attended": true,
+        "is_verified": true
+      },
+      "fields_set": [
+        "comment",
+        "is_attended",
+        "is_verified"
+      ],
+      "input": {
+        "comment": "x",
+        "is_attended": true,
+        "is_verified": true
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [],
+        "mapped": {}
+      },
+      "dump": {},
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "attendance.AttendanceChanged": {
+    "full": {
+      "dump": {
+        "attendance": {
+          "comment": "x",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "99d19a18-a8ea-5d2e-934a-835fcc6a28f8",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "d72e65c3-6a3e-5734-913f-f9b60db0f632",
+          "participation_id": "cb1ab404-28f1-5b87-b87e-64c882fd2946"
+        },
+        "participation": {
+          "attended_count": 1,
+          "collective_id": "8435fb35-9c95-5dc1-a638-41b317926902",
+          "event_id": "fdda19e1-1e7e-5a11-aa5b-934e0a4efa10",
+          "id": "51ccbbfe-64c4-5213-be1a-0c228f7679c2",
+          "total_count": 1
+        }
+      },
+      "fields_set": [
+        "attendance",
+        "participation"
+      ],
+      "input": {
+        "attendance": {
+          "comment": "x",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "99d19a18-a8ea-5d2e-934a-835fcc6a28f8",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "d72e65c3-6a3e-5734-913f-f9b60db0f632",
+          "participation_id": "cb1ab404-28f1-5b87-b87e-64c882fd2946"
+        },
+        "participation": {
+          "attended_count": 1,
+          "collective_id": "8435fb35-9c95-5dc1-a638-41b317926902",
+          "event_id": "fdda19e1-1e7e-5a11-aa5b-934e0a4efa10",
+          "id": "51ccbbfe-64c4-5213-be1a-0c228f7679c2",
+          "total_count": 1
+        }
+      }
+    },
+    "required": {
+      "dump": {
+        "attendance": {
+          "comment": "x",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "99d19a18-a8ea-5d2e-934a-835fcc6a28f8",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "d72e65c3-6a3e-5734-913f-f9b60db0f632",
+          "participation_id": "cb1ab404-28f1-5b87-b87e-64c882fd2946"
+        },
+        "participation": {
+          "attended_count": 1,
+          "collective_id": "8435fb35-9c95-5dc1-a638-41b317926902",
+          "event_id": "fdda19e1-1e7e-5a11-aa5b-934e0a4efa10",
+          "id": "51ccbbfe-64c4-5213-be1a-0c228f7679c2",
+          "total_count": 1
+        }
+      },
+      "fields_set": [
+        "attendance",
+        "participation"
+      ],
+      "input": {
+        "attendance": {
+          "comment": "x",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "99d19a18-a8ea-5d2e-934a-835fcc6a28f8",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "d72e65c3-6a3e-5734-913f-f9b60db0f632",
+          "participation_id": "cb1ab404-28f1-5b87-b87e-64c882fd2946"
+        },
+        "participation": {
+          "attended_count": 1,
+          "collective_id": "8435fb35-9c95-5dc1-a638-41b317926902",
+          "event_id": "fdda19e1-1e7e-5a11-aa5b-934e0a4efa10",
+          "id": "51ccbbfe-64c4-5213-be1a-0c228f7679c2",
+          "total_count": 1
+        }
+      }
+    }
+  },
+  "attendance.AttendanceDeclareData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "member_id": "dede82db-b6a0-5606-b0d3-762210390e6b",
+          "participation_id": "bc8fe39d-7e54-57e0-9774-e19efa77f346"
+        }
+      },
+      "dump": {
+        "member_id": "dede82db-b6a0-5606-b0d3-762210390e6b",
+        "participation_id": "bc8fe39d-7e54-57e0-9774-e19efa77f346"
+      },
+      "fields_set": [
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "member_id": "dede82db-b6a0-5606-b0d3-762210390e6b",
+        "participation_id": "bc8fe39d-7e54-57e0-9774-e19efa77f346"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "member_id": "dede82db-b6a0-5606-b0d3-762210390e6b",
+          "participation_id": "bc8fe39d-7e54-57e0-9774-e19efa77f346"
+        }
+      },
+      "dump": {
+        "member_id": "dede82db-b6a0-5606-b0d3-762210390e6b",
+        "participation_id": "bc8fe39d-7e54-57e0-9774-e19efa77f346"
+      },
+      "fields_set": [
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "member_id": "dede82db-b6a0-5606-b0d3-762210390e6b",
+        "participation_id": "bc8fe39d-7e54-57e0-9774-e19efa77f346"
+      }
+    }
+  },
+  "attendance.AttendanceReadV2": {
+    "full": {
+      "dump": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "da06895f-ba25-5430-b657-fc5056369aa7",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "5c9403e3-e314-544e-ae3f-ea844b06373f",
+        "participation_id": "6488b971-e156-53e1-91c4-ab928ed32f16"
+      },
+      "fields_set": [
+        "comment",
+        "created_at",
+        "edited_at",
+        "id",
+        "is_attended",
+        "is_verified",
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "da06895f-ba25-5430-b657-fc5056369aa7",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "5c9403e3-e314-544e-ae3f-ea844b06373f",
+        "participation_id": "6488b971-e156-53e1-91c4-ab928ed32f16"
+      }
+    },
+    "required": {
+      "dump": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "da06895f-ba25-5430-b657-fc5056369aa7",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "5c9403e3-e314-544e-ae3f-ea844b06373f",
+        "participation_id": "6488b971-e156-53e1-91c4-ab928ed32f16"
+      },
+      "fields_set": [
+        "comment",
+        "created_at",
+        "edited_at",
+        "id",
+        "is_attended",
+        "is_verified",
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "da06895f-ba25-5430-b657-fc5056369aa7",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "5c9403e3-e314-544e-ae3f-ea844b06373f",
+        "participation_id": "6488b971-e156-53e1-91c4-ab928ed32f16"
+      }
+    }
+  },
+  "attendance.ParticipationCounts": {
+    "full": {
+      "dump": {
+        "attended_count": 1,
+        "collective_id": "a019f9dc-49cd-5f2e-9517-9291a5705e6e",
+        "event_id": "68673f1f-d34d-515a-8712-841fd36d4efd",
+        "id": "07909d1a-6e7a-527b-8bd3-5870cb20143b",
+        "total_count": 1
+      },
+      "fields_set": [
+        "attended_count",
+        "collective_id",
+        "event_id",
+        "id",
+        "total_count"
+      ],
+      "input": {
+        "attended_count": 1,
+        "collective_id": "a019f9dc-49cd-5f2e-9517-9291a5705e6e",
+        "event_id": "68673f1f-d34d-515a-8712-841fd36d4efd",
+        "id": "07909d1a-6e7a-527b-8bd3-5870cb20143b",
+        "total_count": 1
+      }
+    },
+    "required": {
+      "dump": {
+        "attended_count": 1,
+        "collective_id": "a019f9dc-49cd-5f2e-9517-9291a5705e6e",
+        "event_id": "68673f1f-d34d-515a-8712-841fd36d4efd",
+        "id": "07909d1a-6e7a-527b-8bd3-5870cb20143b",
+        "total_count": 1
+      },
+      "fields_set": [
+        "attended_count",
+        "collective_id",
+        "event_id",
+        "id",
+        "total_count"
+      ],
+      "input": {
+        "attended_count": 1,
+        "collective_id": "a019f9dc-49cd-5f2e-9517-9291a5705e6e",
+        "event_id": "68673f1f-d34d-515a-8712-841fd36d4efd",
+        "id": "07909d1a-6e7a-527b-8bd3-5870cb20143b",
+        "total_count": 1
+      }
+    }
+  },
   "calendar.AvailableFeeds": {
     "full": {
       "dump": {
@@ -979,6 +1269,1766 @@
       }
     }
   },
+  "event_page.EventPageRead": {
+    "full": {
+      "dump": {
+        "editable_collective_id": "e1eec9b5-1c0c-58e3-a817-e87cbdd15003",
+        "event": {
+          "created_at": "2026-01-01T10:00:00Z",
+          "date": "2026-01-01",
+          "description": "x",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "format": "online",
+          "id": "b9e89e47-5701-5b6f-a95e-fbfa6c52caad",
+          "level": "internal",
+          "location": {
+            "id": "a294d246-a65a-5b8d-9460-fb940e6b66a7",
+            "lat": 1.5,
+            "lon": 1.5,
+            "name": "x"
+          },
+          "location_id": "761370e9-adb6-5c2a-a3f7-c6856955b1ff",
+          "name": "x",
+          "organizer_id": "27fc8043-8f4f-5076-a0fd-63a04124b071",
+          "status": "draft",
+          "type": "rehearsal"
+        },
+        "participations": [
+          {
+            "addable_members": [
+              {
+                "id": "d1223a6c-2f5b-58aa-bcee-b29751f25fb7",
+                "is_active": true,
+                "person": {
+                  "id": "81a39b11-d176-5da4-983e-a1df4ad5fa79",
+                  "name": "x",
+                  "patronymic": "x",
+                  "surname": "x"
+                },
+                "roles": [
+                  {
+                    "id": "376e5916-8903-58eb-9d13-3939fdb56c9e",
+                    "name": "x"
+                  }
+                ]
+              }
+            ],
+            "attendances": [
+              {
+                "comment": "x",
+                "created_at": "2026-01-01T10:00:00Z",
+                "edited_at": "2026-01-01T10:00:00Z",
+                "id": "7c317fe1-f58c-5331-97ff-2a24b06eda9e",
+                "is_attended": true,
+                "is_verified": true,
+                "member": {
+                  "id": "5eb5ca51-0b65-549a-9ae3-a606e3758740",
+                  "is_active": true,
+                  "person": {
+                    "id": "4719ad42-37a0-5d90-89ef-33190839e4a5",
+                    "name": "x",
+                    "patronymic": "x",
+                    "surname": "x"
+                  },
+                  "roles": [
+                    {
+                      "id": "60a81e62-88fd-5c6d-9866-cab7913e61c4",
+                      "name": "x"
+                    }
+                  ]
+                },
+                "member_id": "bc15c869-946e-513e-9073-a7bc3a0c7423",
+                "participation_id": "b2824aad-2f26-5e62-9d1f-a6d0df99208a"
+              }
+            ],
+            "attended_count": 1,
+            "can_view_attendances": true,
+            "collective_id": "ba9bcafa-6385-5573-8ba1-6ad8e4a8f34a",
+            "collective_name": "x",
+            "id": "959cda79-71d9-5bac-8b4d-5c9a9f3dad55",
+            "is_member": true,
+            "is_principal": true,
+            "my_attendance_id": "f2b35f84-af1d-5d57-84b3-075197619306",
+            "priority_degree": "hight",
+            "total_count": 1
+          }
+        ],
+        "stages": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "description": "x",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "end_at": "2026-01-01T10:00:00Z",
+            "event_id": "ad7e51ab-8300-5610-97c0-2fb8722e9e63",
+            "id": "27f0f5ee-6b5a-5327-a746-497dc73c719a",
+            "name": "x",
+            "start_at": "2026-01-01T10:00:00Z",
+            "timezone": "Europe/Moscow"
+          }
+        ]
+      },
+      "fields_set": [
+        "editable_collective_id",
+        "event",
+        "participations",
+        "stages"
+      ],
+      "input": {
+        "editable_collective_id": "e1eec9b5-1c0c-58e3-a817-e87cbdd15003",
+        "event": {
+          "created_at": "2026-01-01T10:00:00Z",
+          "date": "2026-01-01",
+          "description": "x",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "format": "online",
+          "id": "b9e89e47-5701-5b6f-a95e-fbfa6c52caad",
+          "level": "internal",
+          "location": {
+            "id": "a294d246-a65a-5b8d-9460-fb940e6b66a7",
+            "lat": 1.5,
+            "lon": 1.5,
+            "name": "x"
+          },
+          "location_id": "761370e9-adb6-5c2a-a3f7-c6856955b1ff",
+          "name": "x",
+          "organizer_id": "27fc8043-8f4f-5076-a0fd-63a04124b071",
+          "status": "draft",
+          "type": "rehearsal"
+        },
+        "participations": [
+          {
+            "addable_members": [
+              {
+                "id": "d1223a6c-2f5b-58aa-bcee-b29751f25fb7",
+                "is_active": true,
+                "person": {
+                  "id": "81a39b11-d176-5da4-983e-a1df4ad5fa79",
+                  "name": "x",
+                  "patronymic": "x",
+                  "surname": "x"
+                },
+                "roles": [
+                  {
+                    "id": "376e5916-8903-58eb-9d13-3939fdb56c9e",
+                    "name": "x"
+                  }
+                ]
+              }
+            ],
+            "attendances": [
+              {
+                "comment": "x",
+                "created_at": "2026-01-01T10:00:00Z",
+                "edited_at": "2026-01-01T10:00:00Z",
+                "id": "7c317fe1-f58c-5331-97ff-2a24b06eda9e",
+                "is_attended": true,
+                "is_verified": true,
+                "member": {
+                  "id": "5eb5ca51-0b65-549a-9ae3-a606e3758740",
+                  "is_active": true,
+                  "person": {
+                    "id": "4719ad42-37a0-5d90-89ef-33190839e4a5",
+                    "name": "x",
+                    "patronymic": "x",
+                    "surname": "x"
+                  },
+                  "roles": [
+                    {
+                      "id": "60a81e62-88fd-5c6d-9866-cab7913e61c4",
+                      "name": "x"
+                    }
+                  ]
+                },
+                "member_id": "bc15c869-946e-513e-9073-a7bc3a0c7423",
+                "participation_id": "b2824aad-2f26-5e62-9d1f-a6d0df99208a"
+              }
+            ],
+            "attended_count": 1,
+            "can_view_attendances": true,
+            "collective_id": "ba9bcafa-6385-5573-8ba1-6ad8e4a8f34a",
+            "collective_name": "x",
+            "id": "959cda79-71d9-5bac-8b4d-5c9a9f3dad55",
+            "is_member": true,
+            "is_principal": true,
+            "my_attendance_id": "f2b35f84-af1d-5d57-84b3-075197619306",
+            "priority_degree": "hight",
+            "total_count": 1
+          }
+        ],
+        "stages": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "description": "x",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "end_at": "2026-01-01T10:00:00Z",
+            "event_id": "ad7e51ab-8300-5610-97c0-2fb8722e9e63",
+            "id": "27f0f5ee-6b5a-5327-a746-497dc73c719a",
+            "name": "x",
+            "start_at": "2026-01-01T10:00:00Z",
+            "timezone": "Europe/Moscow"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "editable_collective_id": "e1eec9b5-1c0c-58e3-a817-e87cbdd15003",
+        "event": {
+          "created_at": "2026-01-01T10:00:00Z",
+          "date": "2026-01-01",
+          "description": "x",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "format": "online",
+          "id": "b9e89e47-5701-5b6f-a95e-fbfa6c52caad",
+          "level": "internal",
+          "location": {
+            "id": "a294d246-a65a-5b8d-9460-fb940e6b66a7",
+            "lat": 1.5,
+            "lon": 1.5,
+            "name": "x"
+          },
+          "location_id": "761370e9-adb6-5c2a-a3f7-c6856955b1ff",
+          "name": "x",
+          "organizer_id": "27fc8043-8f4f-5076-a0fd-63a04124b071",
+          "status": "draft",
+          "type": "rehearsal"
+        },
+        "participations": [
+          {
+            "addable_members": [
+              {
+                "id": "d1223a6c-2f5b-58aa-bcee-b29751f25fb7",
+                "is_active": true,
+                "person": {
+                  "id": "81a39b11-d176-5da4-983e-a1df4ad5fa79",
+                  "name": "x",
+                  "patronymic": "x",
+                  "surname": "x"
+                },
+                "roles": [
+                  {
+                    "id": "376e5916-8903-58eb-9d13-3939fdb56c9e",
+                    "name": "x"
+                  }
+                ]
+              }
+            ],
+            "attendances": [
+              {
+                "comment": "x",
+                "created_at": "2026-01-01T10:00:00Z",
+                "edited_at": "2026-01-01T10:00:00Z",
+                "id": "7c317fe1-f58c-5331-97ff-2a24b06eda9e",
+                "is_attended": true,
+                "is_verified": true,
+                "member": {
+                  "id": "5eb5ca51-0b65-549a-9ae3-a606e3758740",
+                  "is_active": true,
+                  "person": {
+                    "id": "4719ad42-37a0-5d90-89ef-33190839e4a5",
+                    "name": "x",
+                    "patronymic": "x",
+                    "surname": "x"
+                  },
+                  "roles": [
+                    {
+                      "id": "60a81e62-88fd-5c6d-9866-cab7913e61c4",
+                      "name": "x"
+                    }
+                  ]
+                },
+                "member_id": "bc15c869-946e-513e-9073-a7bc3a0c7423",
+                "participation_id": "b2824aad-2f26-5e62-9d1f-a6d0df99208a"
+              }
+            ],
+            "attended_count": 1,
+            "can_view_attendances": true,
+            "collective_id": "ba9bcafa-6385-5573-8ba1-6ad8e4a8f34a",
+            "collective_name": "x",
+            "id": "959cda79-71d9-5bac-8b4d-5c9a9f3dad55",
+            "is_member": true,
+            "is_principal": true,
+            "my_attendance_id": "f2b35f84-af1d-5d57-84b3-075197619306",
+            "priority_degree": "hight",
+            "total_count": 1
+          }
+        ],
+        "stages": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "description": null,
+            "edited_at": "2026-01-01T10:00:00Z",
+            "end_at": null,
+            "event_id": "ad7e51ab-8300-5610-97c0-2fb8722e9e63",
+            "id": "27f0f5ee-6b5a-5327-a746-497dc73c719a",
+            "name": "x",
+            "start_at": "2026-01-01T10:00:00Z",
+            "timezone": null
+          }
+        ]
+      },
+      "fields_set": [
+        "editable_collective_id",
+        "event",
+        "participations",
+        "stages"
+      ],
+      "input": {
+        "editable_collective_id": "e1eec9b5-1c0c-58e3-a817-e87cbdd15003",
+        "event": {
+          "created_at": "2026-01-01T10:00:00Z",
+          "date": "2026-01-01",
+          "description": "x",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "format": "online",
+          "id": "b9e89e47-5701-5b6f-a95e-fbfa6c52caad",
+          "level": "internal",
+          "location": {
+            "id": "a294d246-a65a-5b8d-9460-fb940e6b66a7",
+            "lat": 1.5,
+            "lon": 1.5,
+            "name": "x"
+          },
+          "location_id": "761370e9-adb6-5c2a-a3f7-c6856955b1ff",
+          "name": "x",
+          "organizer_id": "27fc8043-8f4f-5076-a0fd-63a04124b071",
+          "status": "draft",
+          "type": "rehearsal"
+        },
+        "participations": [
+          {
+            "addable_members": [
+              {
+                "id": "d1223a6c-2f5b-58aa-bcee-b29751f25fb7",
+                "is_active": true,
+                "person": {
+                  "id": "81a39b11-d176-5da4-983e-a1df4ad5fa79",
+                  "name": "x",
+                  "patronymic": "x",
+                  "surname": "x"
+                },
+                "roles": [
+                  {
+                    "id": "376e5916-8903-58eb-9d13-3939fdb56c9e",
+                    "name": "x"
+                  }
+                ]
+              }
+            ],
+            "attendances": [
+              {
+                "comment": "x",
+                "created_at": "2026-01-01T10:00:00Z",
+                "edited_at": "2026-01-01T10:00:00Z",
+                "id": "7c317fe1-f58c-5331-97ff-2a24b06eda9e",
+                "is_attended": true,
+                "is_verified": true,
+                "member": {
+                  "id": "5eb5ca51-0b65-549a-9ae3-a606e3758740",
+                  "is_active": true,
+                  "person": {
+                    "id": "4719ad42-37a0-5d90-89ef-33190839e4a5",
+                    "name": "x",
+                    "patronymic": "x",
+                    "surname": "x"
+                  },
+                  "roles": [
+                    {
+                      "id": "60a81e62-88fd-5c6d-9866-cab7913e61c4",
+                      "name": "x"
+                    }
+                  ]
+                },
+                "member_id": "bc15c869-946e-513e-9073-a7bc3a0c7423",
+                "participation_id": "b2824aad-2f26-5e62-9d1f-a6d0df99208a"
+              }
+            ],
+            "attended_count": 1,
+            "can_view_attendances": true,
+            "collective_id": "ba9bcafa-6385-5573-8ba1-6ad8e4a8f34a",
+            "collective_name": "x",
+            "id": "959cda79-71d9-5bac-8b4d-5c9a9f3dad55",
+            "is_member": true,
+            "is_principal": true,
+            "my_attendance_id": "f2b35f84-af1d-5d57-84b3-075197619306",
+            "priority_degree": "hight",
+            "total_count": 1
+          }
+        ],
+        "stages": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "event_id": "ad7e51ab-8300-5610-97c0-2fb8722e9e63",
+            "id": "27f0f5ee-6b5a-5327-a746-497dc73c719a",
+            "name": "x",
+            "start_at": "2026-01-01T10:00:00Z"
+          }
+        ]
+      }
+    }
+  },
+  "event_page.PageAttendance": {
+    "full": {
+      "dump": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "8116fd53-0a78-57c2-b94e-6fc236ad4fcc",
+        "is_attended": true,
+        "is_verified": true,
+        "member": {
+          "id": "78feadb0-083c-5136-aa5c-a5bc31beb94c",
+          "is_active": true,
+          "person": {
+            "id": "01a80916-de4f-5e00-a1c2-69774b74eb9e",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "roles": [
+            {
+              "id": "b2e5f003-f1d4-5cfe-b602-95ffe0f926e5",
+              "name": "x"
+            }
+          ]
+        },
+        "member_id": "95499056-58fa-5c64-80b2-33e8834de932",
+        "participation_id": "25f21929-9597-54a8-a618-2e2d1de35dad"
+      },
+      "fields_set": [
+        "comment",
+        "created_at",
+        "edited_at",
+        "id",
+        "is_attended",
+        "is_verified",
+        "member",
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "8116fd53-0a78-57c2-b94e-6fc236ad4fcc",
+        "is_attended": true,
+        "is_verified": true,
+        "member": {
+          "id": "78feadb0-083c-5136-aa5c-a5bc31beb94c",
+          "is_active": true,
+          "person": {
+            "id": "01a80916-de4f-5e00-a1c2-69774b74eb9e",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "roles": [
+            {
+              "id": "b2e5f003-f1d4-5cfe-b602-95ffe0f926e5",
+              "name": "x"
+            }
+          ]
+        },
+        "member_id": "95499056-58fa-5c64-80b2-33e8834de932",
+        "participation_id": "25f21929-9597-54a8-a618-2e2d1de35dad"
+      }
+    },
+    "required": {
+      "dump": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "8116fd53-0a78-57c2-b94e-6fc236ad4fcc",
+        "is_attended": true,
+        "is_verified": true,
+        "member": {
+          "id": "78feadb0-083c-5136-aa5c-a5bc31beb94c",
+          "is_active": true,
+          "person": {
+            "id": "01a80916-de4f-5e00-a1c2-69774b74eb9e",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "roles": [
+            {
+              "id": "b2e5f003-f1d4-5cfe-b602-95ffe0f926e5",
+              "name": "x"
+            }
+          ]
+        },
+        "member_id": "95499056-58fa-5c64-80b2-33e8834de932",
+        "participation_id": "25f21929-9597-54a8-a618-2e2d1de35dad"
+      },
+      "fields_set": [
+        "comment",
+        "created_at",
+        "edited_at",
+        "id",
+        "is_attended",
+        "is_verified",
+        "member",
+        "member_id",
+        "participation_id"
+      ],
+      "input": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "8116fd53-0a78-57c2-b94e-6fc236ad4fcc",
+        "is_attended": true,
+        "is_verified": true,
+        "member": {
+          "id": "78feadb0-083c-5136-aa5c-a5bc31beb94c",
+          "is_active": true,
+          "person": {
+            "id": "01a80916-de4f-5e00-a1c2-69774b74eb9e",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "roles": [
+            {
+              "id": "b2e5f003-f1d4-5cfe-b602-95ffe0f926e5",
+              "name": "x"
+            }
+          ]
+        },
+        "member_id": "95499056-58fa-5c64-80b2-33e8834de932",
+        "participation_id": "25f21929-9597-54a8-a618-2e2d1de35dad"
+      }
+    }
+  },
+  "event_page.PageEvent": {
+    "full": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "d89ade6d-b175-52f8-a4e5-d83a2348707c",
+        "level": "internal",
+        "location": {
+          "id": "fa820da9-03e2-5b60-a2b4-7c9208df9057",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "location_id": "bdd8efde-72f7-5972-a9cd-08fc12ec43e3",
+        "name": "x",
+        "organizer_id": "7d80f734-1898-56ce-aaeb-69d429c1ca1b",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "created_at",
+        "date",
+        "description",
+        "edited_at",
+        "format",
+        "id",
+        "level",
+        "location",
+        "location_id",
+        "name",
+        "organizer_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "d89ade6d-b175-52f8-a4e5-d83a2348707c",
+        "level": "internal",
+        "location": {
+          "id": "fa820da9-03e2-5b60-a2b4-7c9208df9057",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "location_id": "bdd8efde-72f7-5972-a9cd-08fc12ec43e3",
+        "name": "x",
+        "organizer_id": "7d80f734-1898-56ce-aaeb-69d429c1ca1b",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "d89ade6d-b175-52f8-a4e5-d83a2348707c",
+        "level": "internal",
+        "location": {
+          "id": "fa820da9-03e2-5b60-a2b4-7c9208df9057",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "location_id": "bdd8efde-72f7-5972-a9cd-08fc12ec43e3",
+        "name": "x",
+        "organizer_id": "7d80f734-1898-56ce-aaeb-69d429c1ca1b",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "created_at",
+        "date",
+        "description",
+        "edited_at",
+        "format",
+        "id",
+        "level",
+        "location",
+        "location_id",
+        "name",
+        "organizer_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "d89ade6d-b175-52f8-a4e5-d83a2348707c",
+        "level": "internal",
+        "location": {
+          "id": "fa820da9-03e2-5b60-a2b4-7c9208df9057",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "location_id": "bdd8efde-72f7-5972-a9cd-08fc12ec43e3",
+        "name": "x",
+        "organizer_id": "7d80f734-1898-56ce-aaeb-69d429c1ca1b",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    }
+  },
+  "event_page.PageParticipation": {
+    "full": {
+      "dump": {
+        "addable_members": [
+          {
+            "id": "062ef7ad-0714-5ff8-8250-7fdb7d9278ab",
+            "is_active": true,
+            "person": {
+              "id": "79a68ff8-2ecc-5c53-9274-55f2d2fe46e6",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "d92d0b8a-6c6f-53d0-93cc-1c08584b9cf5",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "attendances": [
+          {
+            "comment": "x",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "56c49c5d-d591-55a9-ab22-c8e8e7558034",
+            "is_attended": true,
+            "is_verified": true,
+            "member": {
+              "id": "1cf311db-7aa0-509d-91ed-28ee294c13e0",
+              "is_active": true,
+              "person": {
+                "id": "7fdd5a30-545e-53fb-88d2-fff65e3d7a51",
+                "name": "x",
+                "patronymic": "x",
+                "surname": "x"
+              },
+              "roles": [
+                {
+                  "id": "0a4f26d2-164c-5fd5-9550-bed94aff3fff",
+                  "name": "x"
+                }
+              ]
+            },
+            "member_id": "b6783599-c930-5b9a-9866-61302cc2107f",
+            "participation_id": "4023356a-d523-56a2-8686-1df2263cc86a"
+          }
+        ],
+        "attended_count": 1,
+        "can_view_attendances": true,
+        "collective_id": "c08b1dba-0426-5bd9-913b-05c4f53ede39",
+        "collective_name": "x",
+        "id": "81b4f8d8-fe0c-5212-81fc-24d319e2240c",
+        "is_member": true,
+        "is_principal": true,
+        "my_attendance_id": "25741b47-5134-5e07-8349-3f575763f791",
+        "priority_degree": "hight",
+        "total_count": 1
+      },
+      "fields_set": [
+        "addable_members",
+        "attendances",
+        "attended_count",
+        "can_view_attendances",
+        "collective_id",
+        "collective_name",
+        "id",
+        "is_member",
+        "is_principal",
+        "my_attendance_id",
+        "priority_degree",
+        "total_count"
+      ],
+      "input": {
+        "addable_members": [
+          {
+            "id": "062ef7ad-0714-5ff8-8250-7fdb7d9278ab",
+            "is_active": true,
+            "person": {
+              "id": "79a68ff8-2ecc-5c53-9274-55f2d2fe46e6",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "d92d0b8a-6c6f-53d0-93cc-1c08584b9cf5",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "attendances": [
+          {
+            "comment": "x",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "56c49c5d-d591-55a9-ab22-c8e8e7558034",
+            "is_attended": true,
+            "is_verified": true,
+            "member": {
+              "id": "1cf311db-7aa0-509d-91ed-28ee294c13e0",
+              "is_active": true,
+              "person": {
+                "id": "7fdd5a30-545e-53fb-88d2-fff65e3d7a51",
+                "name": "x",
+                "patronymic": "x",
+                "surname": "x"
+              },
+              "roles": [
+                {
+                  "id": "0a4f26d2-164c-5fd5-9550-bed94aff3fff",
+                  "name": "x"
+                }
+              ]
+            },
+            "member_id": "b6783599-c930-5b9a-9866-61302cc2107f",
+            "participation_id": "4023356a-d523-56a2-8686-1df2263cc86a"
+          }
+        ],
+        "attended_count": 1,
+        "can_view_attendances": true,
+        "collective_id": "c08b1dba-0426-5bd9-913b-05c4f53ede39",
+        "collective_name": "x",
+        "id": "81b4f8d8-fe0c-5212-81fc-24d319e2240c",
+        "is_member": true,
+        "is_principal": true,
+        "my_attendance_id": "25741b47-5134-5e07-8349-3f575763f791",
+        "priority_degree": "hight",
+        "total_count": 1
+      }
+    },
+    "required": {
+      "dump": {
+        "addable_members": [
+          {
+            "id": "062ef7ad-0714-5ff8-8250-7fdb7d9278ab",
+            "is_active": true,
+            "person": {
+              "id": "79a68ff8-2ecc-5c53-9274-55f2d2fe46e6",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "d92d0b8a-6c6f-53d0-93cc-1c08584b9cf5",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "attendances": [
+          {
+            "comment": "x",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "56c49c5d-d591-55a9-ab22-c8e8e7558034",
+            "is_attended": true,
+            "is_verified": true,
+            "member": {
+              "id": "1cf311db-7aa0-509d-91ed-28ee294c13e0",
+              "is_active": true,
+              "person": {
+                "id": "7fdd5a30-545e-53fb-88d2-fff65e3d7a51",
+                "name": "x",
+                "patronymic": "x",
+                "surname": "x"
+              },
+              "roles": [
+                {
+                  "id": "0a4f26d2-164c-5fd5-9550-bed94aff3fff",
+                  "name": "x"
+                }
+              ]
+            },
+            "member_id": "b6783599-c930-5b9a-9866-61302cc2107f",
+            "participation_id": "4023356a-d523-56a2-8686-1df2263cc86a"
+          }
+        ],
+        "attended_count": 1,
+        "can_view_attendances": true,
+        "collective_id": "c08b1dba-0426-5bd9-913b-05c4f53ede39",
+        "collective_name": "x",
+        "id": "81b4f8d8-fe0c-5212-81fc-24d319e2240c",
+        "is_member": true,
+        "is_principal": true,
+        "my_attendance_id": "25741b47-5134-5e07-8349-3f575763f791",
+        "priority_degree": "hight",
+        "total_count": 1
+      },
+      "fields_set": [
+        "addable_members",
+        "attendances",
+        "attended_count",
+        "can_view_attendances",
+        "collective_id",
+        "collective_name",
+        "id",
+        "is_member",
+        "is_principal",
+        "my_attendance_id",
+        "priority_degree",
+        "total_count"
+      ],
+      "input": {
+        "addable_members": [
+          {
+            "id": "062ef7ad-0714-5ff8-8250-7fdb7d9278ab",
+            "is_active": true,
+            "person": {
+              "id": "79a68ff8-2ecc-5c53-9274-55f2d2fe46e6",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "d92d0b8a-6c6f-53d0-93cc-1c08584b9cf5",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "attendances": [
+          {
+            "comment": "x",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "56c49c5d-d591-55a9-ab22-c8e8e7558034",
+            "is_attended": true,
+            "is_verified": true,
+            "member": {
+              "id": "1cf311db-7aa0-509d-91ed-28ee294c13e0",
+              "is_active": true,
+              "person": {
+                "id": "7fdd5a30-545e-53fb-88d2-fff65e3d7a51",
+                "name": "x",
+                "patronymic": "x",
+                "surname": "x"
+              },
+              "roles": [
+                {
+                  "id": "0a4f26d2-164c-5fd5-9550-bed94aff3fff",
+                  "name": "x"
+                }
+              ]
+            },
+            "member_id": "b6783599-c930-5b9a-9866-61302cc2107f",
+            "participation_id": "4023356a-d523-56a2-8686-1df2263cc86a"
+          }
+        ],
+        "attended_count": 1,
+        "can_view_attendances": true,
+        "collective_id": "c08b1dba-0426-5bd9-913b-05c4f53ede39",
+        "collective_name": "x",
+        "id": "81b4f8d8-fe0c-5212-81fc-24d319e2240c",
+        "is_member": true,
+        "is_principal": true,
+        "my_attendance_id": "25741b47-5134-5e07-8349-3f575763f791",
+        "priority_degree": "hight",
+        "total_count": 1
+      }
+    }
+  },
+  "event_page.RosterMember": {
+    "full": {
+      "dump": {
+        "id": "65c48372-bd13-54bb-b8be-a85bddeb7f65",
+        "is_active": true,
+        "person": {
+          "id": "5df495ac-b0c3-5d67-a934-e6181003181a",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "roles": [
+          {
+            "id": "8ee96b31-5c84-504c-820f-3117e1aaea4f",
+            "name": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "id",
+        "is_active",
+        "person",
+        "roles"
+      ],
+      "input": {
+        "id": "65c48372-bd13-54bb-b8be-a85bddeb7f65",
+        "is_active": true,
+        "person": {
+          "id": "5df495ac-b0c3-5d67-a934-e6181003181a",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "roles": [
+          {
+            "id": "8ee96b31-5c84-504c-820f-3117e1aaea4f",
+            "name": "x"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "65c48372-bd13-54bb-b8be-a85bddeb7f65",
+        "is_active": true,
+        "person": {
+          "id": "5df495ac-b0c3-5d67-a934-e6181003181a",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "roles": [
+          {
+            "id": "8ee96b31-5c84-504c-820f-3117e1aaea4f",
+            "name": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "id",
+        "is_active",
+        "person",
+        "roles"
+      ],
+      "input": {
+        "id": "65c48372-bd13-54bb-b8be-a85bddeb7f65",
+        "is_active": true,
+        "person": {
+          "id": "5df495ac-b0c3-5d67-a934-e6181003181a",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "roles": [
+          {
+            "id": "8ee96b31-5c84-504c-820f-3117e1aaea4f",
+            "name": "x"
+          }
+        ]
+      }
+    }
+  },
+  "feed.EventCard": {
+    "full": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "ends_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "6aed25c9-c390-5acb-bc53-35170b4b0a4e",
+        "level": "internal",
+        "location": {
+          "id": "6378b1b0-e932-5956-babe-db49f4e401b7",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "name": "x",
+        "participations": [
+          {
+            "attended_count": 1,
+            "collective_id": "920dc07d-bf18-562a-9deb-5fc18f9967c5",
+            "collective_name": "x",
+            "id": "dc836d43-69d2-5240-9889-3784196ee13e",
+            "my_attendance": {
+              "comment": "x",
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
+              "id": "930e13c4-713c-5444-b899-06bf012ac416",
+              "is_attended": true,
+              "is_verified": true,
+              "member_id": "d5f69bd4-34f3-54b1-8df6-70352d88a08a",
+              "participation_id": "6a4c8e57-50ea-5303-863c-4d025b2ca7d5"
+            },
+            "total_count": 1
+          }
+        ],
+        "starts_at": "2026-01-01T10:00:00Z",
+        "status": "draft",
+        "type": "rehearsal",
+        "updated_at": "2026-01-01T10:00:00Z"
+      },
+      "fields_set": [
+        "created_at",
+        "date",
+        "edited_at",
+        "ends_at",
+        "format",
+        "id",
+        "level",
+        "location",
+        "name",
+        "participations",
+        "starts_at",
+        "status",
+        "type",
+        "updated_at"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "ends_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "6aed25c9-c390-5acb-bc53-35170b4b0a4e",
+        "level": "internal",
+        "location": {
+          "id": "6378b1b0-e932-5956-babe-db49f4e401b7",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "name": "x",
+        "participations": [
+          {
+            "attended_count": 1,
+            "collective_id": "920dc07d-bf18-562a-9deb-5fc18f9967c5",
+            "collective_name": "x",
+            "id": "dc836d43-69d2-5240-9889-3784196ee13e",
+            "my_attendance": {
+              "comment": "x",
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
+              "id": "930e13c4-713c-5444-b899-06bf012ac416",
+              "is_attended": true,
+              "is_verified": true,
+              "member_id": "d5f69bd4-34f3-54b1-8df6-70352d88a08a",
+              "participation_id": "6a4c8e57-50ea-5303-863c-4d025b2ca7d5"
+            },
+            "total_count": 1
+          }
+        ],
+        "starts_at": "2026-01-01T10:00:00Z",
+        "status": "draft",
+        "type": "rehearsal",
+        "updated_at": "2026-01-01T10:00:00Z"
+      }
+    },
+    "required": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "ends_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "6aed25c9-c390-5acb-bc53-35170b4b0a4e",
+        "level": "internal",
+        "location": {
+          "id": "6378b1b0-e932-5956-babe-db49f4e401b7",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "name": "x",
+        "participations": [
+          {
+            "attended_count": 1,
+            "collective_id": "920dc07d-bf18-562a-9deb-5fc18f9967c5",
+            "collective_name": "x",
+            "id": "dc836d43-69d2-5240-9889-3784196ee13e",
+            "my_attendance": {
+              "comment": "x",
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
+              "id": "930e13c4-713c-5444-b899-06bf012ac416",
+              "is_attended": true,
+              "is_verified": true,
+              "member_id": "d5f69bd4-34f3-54b1-8df6-70352d88a08a",
+              "participation_id": "6a4c8e57-50ea-5303-863c-4d025b2ca7d5"
+            },
+            "total_count": 1
+          }
+        ],
+        "starts_at": "2026-01-01T10:00:00Z",
+        "status": "draft",
+        "type": "rehearsal",
+        "updated_at": "2026-01-01T10:00:00Z"
+      },
+      "fields_set": [
+        "created_at",
+        "date",
+        "edited_at",
+        "ends_at",
+        "format",
+        "id",
+        "level",
+        "location",
+        "name",
+        "participations",
+        "starts_at",
+        "status",
+        "type",
+        "updated_at"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "ends_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "6aed25c9-c390-5acb-bc53-35170b4b0a4e",
+        "level": "internal",
+        "location": {
+          "id": "6378b1b0-e932-5956-babe-db49f4e401b7",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "name": "x",
+        "participations": [
+          {
+            "attended_count": 1,
+            "collective_id": "920dc07d-bf18-562a-9deb-5fc18f9967c5",
+            "collective_name": "x",
+            "id": "dc836d43-69d2-5240-9889-3784196ee13e",
+            "my_attendance": {
+              "comment": "x",
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
+              "id": "930e13c4-713c-5444-b899-06bf012ac416",
+              "is_attended": true,
+              "is_verified": true,
+              "member_id": "d5f69bd4-34f3-54b1-8df6-70352d88a08a",
+              "participation_id": "6a4c8e57-50ea-5303-863c-4d025b2ca7d5"
+            },
+            "total_count": 1
+          }
+        ],
+        "starts_at": "2026-01-01T10:00:00Z",
+        "status": "draft",
+        "type": "rehearsal",
+        "updated_at": "2026-01-01T10:00:00Z"
+      }
+    }
+  },
+  "feed.EventCardParticipation": {
+    "full": {
+      "dump": {
+        "attended_count": 1,
+        "collective_id": "9e52b9b5-9a6d-5f11-b24f-91a0cb53f1a7",
+        "collective_name": "x",
+        "id": "7b9d5957-f616-56db-9917-f07ca10501cc",
+        "my_attendance": {
+          "comment": "x",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "bb73c22f-d097-5b5c-9a07-44cca867a978",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "f4b5daa6-0ed9-5011-94b2-1ae4b6c8cc55",
+          "participation_id": "8b6bec13-aa3b-52b5-aed2-d66765563033"
+        },
+        "total_count": 1
+      },
+      "fields_set": [
+        "attended_count",
+        "collective_id",
+        "collective_name",
+        "id",
+        "my_attendance",
+        "total_count"
+      ],
+      "input": {
+        "attended_count": 1,
+        "collective_id": "9e52b9b5-9a6d-5f11-b24f-91a0cb53f1a7",
+        "collective_name": "x",
+        "id": "7b9d5957-f616-56db-9917-f07ca10501cc",
+        "my_attendance": {
+          "comment": "x",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "bb73c22f-d097-5b5c-9a07-44cca867a978",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "f4b5daa6-0ed9-5011-94b2-1ae4b6c8cc55",
+          "participation_id": "8b6bec13-aa3b-52b5-aed2-d66765563033"
+        },
+        "total_count": 1
+      }
+    },
+    "required": {
+      "dump": {
+        "attended_count": 1,
+        "collective_id": "9e52b9b5-9a6d-5f11-b24f-91a0cb53f1a7",
+        "collective_name": "x",
+        "id": "7b9d5957-f616-56db-9917-f07ca10501cc",
+        "my_attendance": {
+          "comment": "x",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "bb73c22f-d097-5b5c-9a07-44cca867a978",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "f4b5daa6-0ed9-5011-94b2-1ae4b6c8cc55",
+          "participation_id": "8b6bec13-aa3b-52b5-aed2-d66765563033"
+        },
+        "total_count": 1
+      },
+      "fields_set": [
+        "attended_count",
+        "collective_id",
+        "collective_name",
+        "id",
+        "my_attendance",
+        "total_count"
+      ],
+      "input": {
+        "attended_count": 1,
+        "collective_id": "9e52b9b5-9a6d-5f11-b24f-91a0cb53f1a7",
+        "collective_name": "x",
+        "id": "7b9d5957-f616-56db-9917-f07ca10501cc",
+        "my_attendance": {
+          "comment": "x",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "bb73c22f-d097-5b5c-9a07-44cca867a978",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "f4b5daa6-0ed9-5011-94b2-1ae4b6c8cc55",
+          "participation_id": "8b6bec13-aa3b-52b5-aed2-d66765563033"
+        },
+        "total_count": 1
+      }
+    }
+  },
+  "feed.EventFeed": {
+    "full": {
+      "dump": {
+        "future_cursor": "x",
+        "has_more_future": true,
+        "has_more_past": true,
+        "items": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "ends_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "8b08538f-5520-5ab2-9e30-a9b534820b2f",
+            "level": "internal",
+            "location": {
+              "id": "707fac27-335c-57a5-8591-80b903a7f2e4",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participations": [
+              {
+                "attended_count": 1,
+                "collective_id": "5fa16460-76a2-5148-9b82-116916e3ccab",
+                "collective_name": "x",
+                "id": "b77906d3-cf1b-57a8-a33d-54a26f76d785",
+                "my_attendance": {
+                  "comment": "x",
+                  "created_at": "2026-01-01T10:00:00Z",
+                  "edited_at": "2026-01-01T10:00:00Z",
+                  "id": "0494c204-35e4-51f7-b691-b6c1942fa29a",
+                  "is_attended": true,
+                  "is_verified": true,
+                  "member_id": "b2b047b2-782a-5188-8757-d237f4c4ad73",
+                  "participation_id": "177b5c14-ce8b-5247-8bce-15572f78c41b"
+                },
+                "total_count": 1
+              }
+            ],
+            "starts_at": "2026-01-01T10:00:00Z",
+            "status": "draft",
+            "type": "rehearsal",
+            "updated_at": "2026-01-01T10:00:00Z"
+          }
+        ],
+        "past_cursor": "x"
+      },
+      "fields_set": [
+        "future_cursor",
+        "has_more_future",
+        "has_more_past",
+        "items",
+        "past_cursor"
+      ],
+      "input": {
+        "future_cursor": "x",
+        "has_more_future": true,
+        "has_more_past": true,
+        "items": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "ends_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "8b08538f-5520-5ab2-9e30-a9b534820b2f",
+            "level": "internal",
+            "location": {
+              "id": "707fac27-335c-57a5-8591-80b903a7f2e4",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participations": [
+              {
+                "attended_count": 1,
+                "collective_id": "5fa16460-76a2-5148-9b82-116916e3ccab",
+                "collective_name": "x",
+                "id": "b77906d3-cf1b-57a8-a33d-54a26f76d785",
+                "my_attendance": {
+                  "comment": "x",
+                  "created_at": "2026-01-01T10:00:00Z",
+                  "edited_at": "2026-01-01T10:00:00Z",
+                  "id": "0494c204-35e4-51f7-b691-b6c1942fa29a",
+                  "is_attended": true,
+                  "is_verified": true,
+                  "member_id": "b2b047b2-782a-5188-8757-d237f4c4ad73",
+                  "participation_id": "177b5c14-ce8b-5247-8bce-15572f78c41b"
+                },
+                "total_count": 1
+              }
+            ],
+            "starts_at": "2026-01-01T10:00:00Z",
+            "status": "draft",
+            "type": "rehearsal",
+            "updated_at": "2026-01-01T10:00:00Z"
+          }
+        ],
+        "past_cursor": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "future_cursor": "x",
+        "has_more_future": true,
+        "has_more_past": true,
+        "items": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "ends_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "8b08538f-5520-5ab2-9e30-a9b534820b2f",
+            "level": "internal",
+            "location": {
+              "id": "707fac27-335c-57a5-8591-80b903a7f2e4",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participations": [
+              {
+                "attended_count": 1,
+                "collective_id": "5fa16460-76a2-5148-9b82-116916e3ccab",
+                "collective_name": "x",
+                "id": "b77906d3-cf1b-57a8-a33d-54a26f76d785",
+                "my_attendance": {
+                  "comment": "x",
+                  "created_at": "2026-01-01T10:00:00Z",
+                  "edited_at": "2026-01-01T10:00:00Z",
+                  "id": "0494c204-35e4-51f7-b691-b6c1942fa29a",
+                  "is_attended": true,
+                  "is_verified": true,
+                  "member_id": "b2b047b2-782a-5188-8757-d237f4c4ad73",
+                  "participation_id": "177b5c14-ce8b-5247-8bce-15572f78c41b"
+                },
+                "total_count": 1
+              }
+            ],
+            "starts_at": "2026-01-01T10:00:00Z",
+            "status": "draft",
+            "type": "rehearsal",
+            "updated_at": "2026-01-01T10:00:00Z"
+          }
+        ],
+        "past_cursor": "x"
+      },
+      "fields_set": [
+        "future_cursor",
+        "has_more_future",
+        "has_more_past",
+        "items",
+        "past_cursor"
+      ],
+      "input": {
+        "future_cursor": "x",
+        "has_more_future": true,
+        "has_more_past": true,
+        "items": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "ends_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "8b08538f-5520-5ab2-9e30-a9b534820b2f",
+            "level": "internal",
+            "location": {
+              "id": "707fac27-335c-57a5-8591-80b903a7f2e4",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participations": [
+              {
+                "attended_count": 1,
+                "collective_id": "5fa16460-76a2-5148-9b82-116916e3ccab",
+                "collective_name": "x",
+                "id": "b77906d3-cf1b-57a8-a33d-54a26f76d785",
+                "my_attendance": {
+                  "comment": "x",
+                  "created_at": "2026-01-01T10:00:00Z",
+                  "edited_at": "2026-01-01T10:00:00Z",
+                  "id": "0494c204-35e4-51f7-b691-b6c1942fa29a",
+                  "is_attended": true,
+                  "is_verified": true,
+                  "member_id": "b2b047b2-782a-5188-8757-d237f4c4ad73",
+                  "participation_id": "177b5c14-ce8b-5247-8bce-15572f78c41b"
+                },
+                "total_count": 1
+              }
+            ],
+            "starts_at": "2026-01-01T10:00:00Z",
+            "status": "draft",
+            "type": "rehearsal",
+            "updated_at": "2026-01-01T10:00:00Z"
+          }
+        ],
+        "past_cursor": "x"
+      }
+    }
+  },
+  "feed.EventPlace": {
+    "full": {
+      "dump": {
+        "id": "cb6e262e-bf7c-56b5-8889-e9ac49c5b801",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "lat",
+        "lon",
+        "name"
+      ],
+      "input": {
+        "id": "cb6e262e-bf7c-56b5-8889-e9ac49c5b801",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "cb6e262e-bf7c-56b5-8889-e9ac49c5b801",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x"
+      },
+      "fields_set": [
+        "id",
+        "lat",
+        "lon",
+        "name"
+      ],
+      "input": {
+        "id": "cb6e262e-bf7c-56b5-8889-e9ac49c5b801",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x"
+      }
+    }
+  },
+  "feed.FeedParams": {
+    "full": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {
+        "anchor": "2026-01-01",
+        "collective_id": [
+          "df5d73b7-e639-5986-9494-43668e91c33a"
+        ],
+        "cursor": "x",
+        "date_from": "2026-01-01",
+        "direction": "around",
+        "format": [
+          "online"
+        ],
+        "level": [
+          "internal"
+        ],
+        "limit": 1,
+        "status": [
+          "draft"
+        ],
+        "type": [
+          "rehearsal"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [
+          "collective_id",
+          "date_from",
+          "format",
+          "level",
+          "status",
+          "type"
+        ],
+        "mapped": {
+          "anchor": null,
+          "cursor": null,
+          "direction": "around",
+          "limit": 10
+        }
+      },
+      "dump": {
+        "anchor": null,
+        "collective_id": "<generated>",
+        "cursor": null,
+        "date_from": null,
+        "direction": "around",
+        "format": "<generated>",
+        "level": "<generated>",
+        "limit": 10,
+        "status": "<generated>",
+        "type": "<generated>"
+      },
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "feed.ViewerCollective": {
+    "full": {
+      "dump": {
+        "id": "81977bfc-99c5-5e7b-8530-3f78e0cf7e69",
+        "is_principal": true,
+        "is_verified": true,
+        "member_id": "c1d17ac1-2b5e-5b9f-8c91-5d16db4ff5b1",
+        "member_is_active": true,
+        "name": "x",
+        "roles": [
+          {
+            "id": "e4e8b7c4-c63b-5b02-bc88-4e0bd5bd465a",
+            "name": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "id",
+        "is_principal",
+        "is_verified",
+        "member_id",
+        "member_is_active",
+        "name",
+        "roles"
+      ],
+      "input": {
+        "id": "81977bfc-99c5-5e7b-8530-3f78e0cf7e69",
+        "is_principal": true,
+        "is_verified": true,
+        "member_id": "c1d17ac1-2b5e-5b9f-8c91-5d16db4ff5b1",
+        "member_is_active": true,
+        "name": "x",
+        "roles": [
+          {
+            "id": "e4e8b7c4-c63b-5b02-bc88-4e0bd5bd465a",
+            "name": "x"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "81977bfc-99c5-5e7b-8530-3f78e0cf7e69",
+        "is_principal": true,
+        "is_verified": true,
+        "member_id": "c1d17ac1-2b5e-5b9f-8c91-5d16db4ff5b1",
+        "member_is_active": true,
+        "name": "x",
+        "roles": [
+          {
+            "id": "e4e8b7c4-c63b-5b02-bc88-4e0bd5bd465a",
+            "name": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "id",
+        "is_principal",
+        "is_verified",
+        "member_id",
+        "member_is_active",
+        "name",
+        "roles"
+      ],
+      "input": {
+        "id": "81977bfc-99c5-5e7b-8530-3f78e0cf7e69",
+        "is_principal": true,
+        "is_verified": true,
+        "member_id": "c1d17ac1-2b5e-5b9f-8c91-5d16db4ff5b1",
+        "member_is_active": true,
+        "name": "x",
+        "roles": [
+          {
+            "id": "e4e8b7c4-c63b-5b02-bc88-4e0bd5bd465a",
+            "name": "x"
+          }
+        ]
+      }
+    }
+  },
+  "feed.ViewerContext": {
+    "full": {
+      "dump": {
+        "collectives": [
+          {
+            "id": "c0e41f8d-5125-5eb1-9dfa-d187ea250893",
+            "is_principal": true,
+            "is_verified": true,
+            "member_id": "99b06942-d0fe-55f7-ba53-1449662c8021",
+            "member_is_active": true,
+            "name": "x",
+            "roles": [
+              {
+                "id": "71c56225-c924-5c98-8e5a-cfe5832c1ba7",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "person_id": "c2fcc307-aa14-50d6-99a0-5044db83e54c"
+      },
+      "fields_set": [
+        "collectives",
+        "person_id"
+      ],
+      "input": {
+        "collectives": [
+          {
+            "id": "c0e41f8d-5125-5eb1-9dfa-d187ea250893",
+            "is_principal": true,
+            "is_verified": true,
+            "member_id": "99b06942-d0fe-55f7-ba53-1449662c8021",
+            "member_is_active": true,
+            "name": "x",
+            "roles": [
+              {
+                "id": "71c56225-c924-5c98-8e5a-cfe5832c1ba7",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "person_id": "c2fcc307-aa14-50d6-99a0-5044db83e54c"
+      }
+    },
+    "required": {
+      "dump": {
+        "collectives": [
+          {
+            "id": "c0e41f8d-5125-5eb1-9dfa-d187ea250893",
+            "is_principal": true,
+            "is_verified": true,
+            "member_id": "99b06942-d0fe-55f7-ba53-1449662c8021",
+            "member_is_active": true,
+            "name": "x",
+            "roles": [
+              {
+                "id": "71c56225-c924-5c98-8e5a-cfe5832c1ba7",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "person_id": "c2fcc307-aa14-50d6-99a0-5044db83e54c"
+      },
+      "fields_set": [
+        "collectives",
+        "person_id"
+      ],
+      "input": {
+        "collectives": [
+          {
+            "id": "c0e41f8d-5125-5eb1-9dfa-d187ea250893",
+            "is_principal": true,
+            "is_verified": true,
+            "member_id": "99b06942-d0fe-55f7-ba53-1449662c8021",
+            "member_is_active": true,
+            "name": "x",
+            "roles": [
+              {
+                "id": "71c56225-c924-5c98-8e5a-cfe5832c1ba7",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "person_id": "c2fcc307-aa14-50d6-99a0-5044db83e54c"
+      }
+    }
+  },
   "location.RecentLocationRead": {
     "full": {
       "dump": {
@@ -1007,6 +3057,670 @@
         "location_id": "d94320c8-975c-55cf-a133-ec85c7550338",
         "used_at": "2026-01-01T10:00:00Z"
       }
+    }
+  },
+  "matrix.AttendanceMatrix": {
+    "full": {
+      "dump": {
+        "attendances": [
+          {
+            "comment": "x",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "5ef1e5fc-82b9-5b07-b552-eb9762179dd2",
+            "is_attended": true,
+            "is_verified": true,
+            "member_id": "c61093f1-9dca-591a-88ac-0004b444c3a7",
+            "participation_id": "63764db3-a3b9-5007-b993-f27bbd58fdc9"
+          }
+        ],
+        "events": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "644f8b36-882a-5778-9125-3af3234625f0",
+            "level": "internal",
+            "location": {
+              "id": "ea091d5d-37b4-5efa-9105-5d9c3ff4001d",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participation_id": "cb69676d-0f09-5d06-8000-272f75314af6",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "future_cursor": "x",
+        "has_more_future": true,
+        "has_more_past": true,
+        "members": [
+          {
+            "id": "78c55a27-0674-5789-843d-3fbc8eaf0d14",
+            "is_active": true,
+            "person": {
+              "id": "05ca1189-4fdb-56dd-a411-0820d83b6f72",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "6e23bfb7-db72-5099-8507-1af830f55879",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "past_cursor": "x",
+        "roles": [
+          {
+            "collective_id": "64100f68-0edd-5a33-8044-9539bc0b4bba",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "1c1f4101-b9c1-5073-926c-62e631cb84ab",
+            "name": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "attendances",
+        "events",
+        "future_cursor",
+        "has_more_future",
+        "has_more_past",
+        "members",
+        "past_cursor",
+        "roles"
+      ],
+      "input": {
+        "attendances": [
+          {
+            "comment": "x",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "5ef1e5fc-82b9-5b07-b552-eb9762179dd2",
+            "is_attended": true,
+            "is_verified": true,
+            "member_id": "c61093f1-9dca-591a-88ac-0004b444c3a7",
+            "participation_id": "63764db3-a3b9-5007-b993-f27bbd58fdc9"
+          }
+        ],
+        "events": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "644f8b36-882a-5778-9125-3af3234625f0",
+            "level": "internal",
+            "location": {
+              "id": "ea091d5d-37b4-5efa-9105-5d9c3ff4001d",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participation_id": "cb69676d-0f09-5d06-8000-272f75314af6",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "future_cursor": "x",
+        "has_more_future": true,
+        "has_more_past": true,
+        "members": [
+          {
+            "id": "78c55a27-0674-5789-843d-3fbc8eaf0d14",
+            "is_active": true,
+            "person": {
+              "id": "05ca1189-4fdb-56dd-a411-0820d83b6f72",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "6e23bfb7-db72-5099-8507-1af830f55879",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "past_cursor": "x",
+        "roles": [
+          {
+            "collective_id": "64100f68-0edd-5a33-8044-9539bc0b4bba",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "1c1f4101-b9c1-5073-926c-62e631cb84ab",
+            "name": "x"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "attendances": [
+          {
+            "comment": "x",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "5ef1e5fc-82b9-5b07-b552-eb9762179dd2",
+            "is_attended": true,
+            "is_verified": true,
+            "member_id": "c61093f1-9dca-591a-88ac-0004b444c3a7",
+            "participation_id": "63764db3-a3b9-5007-b993-f27bbd58fdc9"
+          }
+        ],
+        "events": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "644f8b36-882a-5778-9125-3af3234625f0",
+            "level": "internal",
+            "location": {
+              "id": "ea091d5d-37b4-5efa-9105-5d9c3ff4001d",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participation_id": "cb69676d-0f09-5d06-8000-272f75314af6",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "future_cursor": "x",
+        "has_more_future": true,
+        "has_more_past": true,
+        "members": [
+          {
+            "id": "78c55a27-0674-5789-843d-3fbc8eaf0d14",
+            "is_active": true,
+            "person": {
+              "id": "05ca1189-4fdb-56dd-a411-0820d83b6f72",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "6e23bfb7-db72-5099-8507-1af830f55879",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "past_cursor": "x",
+        "roles": [
+          {
+            "collective_id": "64100f68-0edd-5a33-8044-9539bc0b4bba",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "1c1f4101-b9c1-5073-926c-62e631cb84ab",
+            "name": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "attendances",
+        "events",
+        "future_cursor",
+        "has_more_future",
+        "has_more_past",
+        "members",
+        "past_cursor",
+        "roles"
+      ],
+      "input": {
+        "attendances": [
+          {
+            "comment": "x",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "5ef1e5fc-82b9-5b07-b552-eb9762179dd2",
+            "is_attended": true,
+            "is_verified": true,
+            "member_id": "c61093f1-9dca-591a-88ac-0004b444c3a7",
+            "participation_id": "63764db3-a3b9-5007-b993-f27bbd58fdc9"
+          }
+        ],
+        "events": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "644f8b36-882a-5778-9125-3af3234625f0",
+            "level": "internal",
+            "location": {
+              "id": "ea091d5d-37b4-5efa-9105-5d9c3ff4001d",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participation_id": "cb69676d-0f09-5d06-8000-272f75314af6",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "future_cursor": "x",
+        "has_more_future": true,
+        "has_more_past": true,
+        "members": [
+          {
+            "id": "78c55a27-0674-5789-843d-3fbc8eaf0d14",
+            "is_active": true,
+            "person": {
+              "id": "05ca1189-4fdb-56dd-a411-0820d83b6f72",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "6e23bfb7-db72-5099-8507-1af830f55879",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "past_cursor": "x",
+        "roles": [
+          {
+            "collective_id": "64100f68-0edd-5a33-8044-9539bc0b4bba",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "1c1f4101-b9c1-5073-926c-62e631cb84ab",
+            "name": "x"
+          }
+        ]
+      }
+    }
+  },
+  "matrix.CollectiveEvent": {
+    "full": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "69aa3c87-c158-5ed2-be90-2d57420a4e2e",
+        "level": "internal",
+        "location": {
+          "id": "28c7aa5b-81ab-5820-bfc3-3eb70fea9d7f",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "name": "x",
+        "participation_id": "e6a31a64-4d95-5818-ba83-0f6bdf351488",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "created_at",
+        "date",
+        "edited_at",
+        "format",
+        "id",
+        "level",
+        "location",
+        "name",
+        "participation_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "69aa3c87-c158-5ed2-be90-2d57420a4e2e",
+        "level": "internal",
+        "location": {
+          "id": "28c7aa5b-81ab-5820-bfc3-3eb70fea9d7f",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "name": "x",
+        "participation_id": "e6a31a64-4d95-5818-ba83-0f6bdf351488",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    },
+    "required": {
+      "dump": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "69aa3c87-c158-5ed2-be90-2d57420a4e2e",
+        "level": "internal",
+        "location": {
+          "id": "28c7aa5b-81ab-5820-bfc3-3eb70fea9d7f",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "name": "x",
+        "participation_id": "e6a31a64-4d95-5818-ba83-0f6bdf351488",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "fields_set": [
+        "created_at",
+        "date",
+        "edited_at",
+        "format",
+        "id",
+        "level",
+        "location",
+        "name",
+        "participation_id",
+        "status",
+        "type"
+      ],
+      "input": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "69aa3c87-c158-5ed2-be90-2d57420a4e2e",
+        "level": "internal",
+        "location": {
+          "id": "28c7aa5b-81ab-5820-bfc3-3eb70fea9d7f",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "name": "x",
+        "participation_id": "e6a31a64-4d95-5818-ba83-0f6bdf351488",
+        "status": "draft",
+        "type": "rehearsal"
+      }
+    }
+  },
+  "matrix.CollectiveEvents": {
+    "full": {
+      "dump": {
+        "items": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "ec947e7e-adf3-5dce-8d54-a7d30217eb52",
+            "level": "internal",
+            "location": {
+              "id": "f7575aa0-588b-50c2-94d4-d5770cf5db11",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participation_id": "6c35db5f-55bb-5bda-88d1-6de134595962",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "truncated": true
+      },
+      "fields_set": [
+        "items",
+        "truncated"
+      ],
+      "input": {
+        "items": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "ec947e7e-adf3-5dce-8d54-a7d30217eb52",
+            "level": "internal",
+            "location": {
+              "id": "f7575aa0-588b-50c2-94d4-d5770cf5db11",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participation_id": "6c35db5f-55bb-5bda-88d1-6de134595962",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "truncated": true
+      }
+    },
+    "required": {
+      "dump": {
+        "items": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "ec947e7e-adf3-5dce-8d54-a7d30217eb52",
+            "level": "internal",
+            "location": {
+              "id": "f7575aa0-588b-50c2-94d4-d5770cf5db11",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participation_id": "6c35db5f-55bb-5bda-88d1-6de134595962",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "truncated": true
+      },
+      "fields_set": [
+        "items",
+        "truncated"
+      ],
+      "input": {
+        "items": [
+          {
+            "created_at": "2026-01-01T10:00:00Z",
+            "date": "2026-01-01",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "format": "online",
+            "id": "ec947e7e-adf3-5dce-8d54-a7d30217eb52",
+            "level": "internal",
+            "location": {
+              "id": "f7575aa0-588b-50c2-94d4-d5770cf5db11",
+              "lat": 1.5,
+              "lon": 1.5,
+              "name": "x"
+            },
+            "name": "x",
+            "participation_id": "6c35db5f-55bb-5bda-88d1-6de134595962",
+            "status": "draft",
+            "type": "rehearsal"
+          }
+        ],
+        "truncated": true
+      }
+    }
+  },
+  "matrix.CollectiveRoster": {
+    "full": {
+      "dump": {
+        "members": [
+          {
+            "id": "eda0e386-9442-5942-8034-be8731d812bb",
+            "is_active": true,
+            "person": {
+              "id": "451edd91-5074-59b3-bec7-9cc7b099a627",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "ee4472ae-50a2-5063-8b11-9a8a894b5d8c",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "roles": [
+          {
+            "collective_id": "d56e9586-569b-5c16-a78e-a8a88fc49b18",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "18901d8c-29e8-5f95-ade6-e2dd4f097878",
+            "name": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "members",
+        "roles"
+      ],
+      "input": {
+        "members": [
+          {
+            "id": "eda0e386-9442-5942-8034-be8731d812bb",
+            "is_active": true,
+            "person": {
+              "id": "451edd91-5074-59b3-bec7-9cc7b099a627",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "ee4472ae-50a2-5063-8b11-9a8a894b5d8c",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "roles": [
+          {
+            "collective_id": "d56e9586-569b-5c16-a78e-a8a88fc49b18",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "18901d8c-29e8-5f95-ade6-e2dd4f097878",
+            "name": "x"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "members": [
+          {
+            "id": "eda0e386-9442-5942-8034-be8731d812bb",
+            "is_active": true,
+            "person": {
+              "id": "451edd91-5074-59b3-bec7-9cc7b099a627",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "ee4472ae-50a2-5063-8b11-9a8a894b5d8c",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "roles": [
+          {
+            "collective_id": "d56e9586-569b-5c16-a78e-a8a88fc49b18",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "18901d8c-29e8-5f95-ade6-e2dd4f097878",
+            "name": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "members",
+        "roles"
+      ],
+      "input": {
+        "members": [
+          {
+            "id": "eda0e386-9442-5942-8034-be8731d812bb",
+            "is_active": true,
+            "person": {
+              "id": "451edd91-5074-59b3-bec7-9cc7b099a627",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "ee4472ae-50a2-5063-8b11-9a8a894b5d8c",
+                "name": "x"
+              }
+            ]
+          }
+        ],
+        "roles": [
+          {
+            "collective_id": "d56e9586-569b-5c16-a78e-a8a88fc49b18",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "18901d8c-29e8-5f95-ade6-e2dd4f097878",
+            "name": "x"
+          }
+        ]
+      }
+    }
+  },
+  "matrix.MatrixParams": {
+    "full": {
+      "error": [
+        ":value_error"
+      ],
+      "input": {
+        "anchor": "2026-01-01",
+        "cursor": "x",
+        "date_from": "2026-01-01",
+        "date_to": "2026-01-01",
+        "direction": "around",
+        "limit": 1
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "anchor": null,
+          "cursor": null,
+          "date_from": null,
+          "date_to": null,
+          "direction": "around",
+          "limit": 20
+        }
+      },
+      "dump": {
+        "anchor": null,
+        "cursor": null,
+        "date_from": null,
+        "date_to": null,
+        "direction": "around",
+        "limit": 20
+      },
+      "fields_set": [],
+      "input": {}
     }
   },
   "member_profile.AttendanceByMonth": {

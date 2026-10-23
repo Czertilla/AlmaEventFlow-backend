@@ -12,6 +12,7 @@ from event.service.attendance_stats import (
     by_type,
     classify,
     is_marked,
+    shown,
     summarize,
 )
 
@@ -56,33 +57,48 @@ def _item(
         (-1, False, True, Outcome.absent),
         (-1, False, False, Outcome.unmarked),
         (-1, True, False, Outcome.unmarked),
-        (-1, None, False, Outcome.unmarked),
     ],
 )
 def test_an_event_is_decided_by_a_hand_set_mark_or_once_its_day_is_over(
-    offset: int, is_attended: bool | None, marked: bool, expected: Outcome
+    offset: int, is_attended: bool, marked: bool, expected: Outcome
 ) -> None:
     assert classify(_day(offset), is_attended, marked, TODAY) is expected
 
 
 @pytest.mark.parametrize(
-    ("is_attended", "edited", "verified", "expected"),
+    ("edited", "verified", "expected"),
     [
-        (False, False, False, False),
-        (True, False, False, False),
-        (False, True, False, True),
-        (True, True, False, True),
-        (False, False, True, True),
-        (None, True, False, False),
-        (None, False, True, False),
+        (False, False, False),
+        (True, False, True),
+        (False, True, True),
+        (True, True, True),
     ],
 )
 def test_a_row_is_marked_once_it_was_edited_or_verified(
-    is_attended: bool | None, edited: bool, verified: bool, expected: bool
+    edited: bool, verified: bool, expected: bool
 ) -> None:
     edited_at = datetime.datetime(2026, 6, 1, tzinfo=datetime.UTC) if edited else None
 
-    assert is_marked(is_attended, edited_at, verified) is expected
+    assert is_marked(edited_at, verified) is expected
+
+
+@pytest.mark.parametrize(
+    ("stored", "edited", "verified", "expected"),
+    [
+        (True, False, False, None),
+        (False, False, False, None),
+        (True, True, False, True),
+        (False, True, False, False),
+        (False, False, True, False),
+        (True, False, True, True),
+    ],
+)
+def test_an_unmarked_place_shows_no_value_whatever_is_stored(
+    stored: bool, edited: bool, verified: bool, expected: bool | None
+) -> None:
+    edited_at = datetime.datetime(2026, 6, 1, tzinfo=datetime.UTC) if edited else None
+
+    assert shown(stored, edited_at, verified) is expected
 
 
 def test_summary_counts_the_rate_and_streaks_over_decided_events() -> None:

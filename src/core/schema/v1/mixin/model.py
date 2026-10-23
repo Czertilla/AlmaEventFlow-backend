@@ -32,6 +32,11 @@ class PatchModelV1(BaseModel):
         return super().model_dump(exclude_unset=True, **kwargs)
 
 
+def omittable(**kwargs: Any) -> Any:
+    """A patch field that may be left out but never sent as null."""
+    return Field(default=None, **kwargs)
+
+
 class UUIDMixinV1:
     id: UUID
 

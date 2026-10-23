@@ -28,7 +28,7 @@ class AttendanceData(MQRequest):
     id: UUID
     member_id: UUID
     participation_id: UUID
-    is_attended: bool | None
+    is_attended: bool
     is_verified: bool | None
     comment: str | None
     created_at: datetime

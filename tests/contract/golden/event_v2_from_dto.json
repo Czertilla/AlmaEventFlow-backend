@@ -1,4 +1,46 @@
 {
+  "attendance.AttendanceChanged": {
+    "response": {
+      "attendance": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "cb04e060-c933-5db1-b326-260db63b8155",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "c5d4abb6-1f9d-543c-a0b7-8a5f93d2296d",
+        "participation_id": "f6d9ab51-0276-53a1-9ddf-dade7032a1f2"
+      },
+      "participation": {
+        "attended_count": 1,
+        "collective_id": "1986cae5-f5dd-509f-aaa4-530cff9dae96",
+        "event_id": "8e7e8572-e626-5c68-b15e-5f21c2bc8d46",
+        "id": "1c5b9c05-1a91-505b-80cb-512b3d9c275b",
+        "total_count": 1
+      }
+    }
+  },
+  "attendance.AttendanceReadV2": {
+    "response": {
+      "comment": "x",
+      "created_at": "2026-01-01T10:00:00Z",
+      "edited_at": "2026-01-01T10:00:00Z",
+      "id": "f3e04e8d-633c-5150-87e2-553028bf9aba",
+      "is_attended": true,
+      "is_verified": true,
+      "member_id": "096c7062-f862-547b-b747-bfa884fc8728",
+      "participation_id": "20ebecf5-12e6-5063-9c31-61f09d5756f5"
+    }
+  },
+  "attendance.ParticipationCounts": {
+    "response": {
+      "attended_count": 1,
+      "collective_id": "9ebea920-e898-5061-8fbc-f33aabe70e4a",
+      "event_id": "89d90974-e9ea-5aae-b856-1535da6867cf",
+      "id": "7702e72b-df65-5314-88cd-1414fc959b27",
+      "total_count": 1
+    }
+  },
   "calendar.AvailableFeeds": {
     "response": {
       "member_collectives": [
@@ -197,10 +239,533 @@
       ]
     }
   },
+  "event_page.EventPageRead": {
+    "response": {
+      "editable_collective_id": "5392627c-c047-5eba-8a2d-6a24dc396fa3",
+      "event": {
+        "created_at": "2026-01-01T10:00:00Z",
+        "date": "2026-01-01",
+        "description": "x",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "format": "online",
+        "id": "215a6304-855d-5ef8-8f00-0a25abcc1882",
+        "level": "internal",
+        "location": {
+          "id": "f36190b6-d797-5fd9-9620-0e0f8ffbe916",
+          "lat": 1.5,
+          "lon": 1.5,
+          "name": "x"
+        },
+        "location_id": "6837bfbe-d12a-5831-b530-29d4209c8b38",
+        "name": "x",
+        "organizer_id": "d3510d4c-a6bc-5d68-9889-800bde2e44a4",
+        "status": "draft",
+        "type": "rehearsal"
+      },
+      "participations": [
+        {
+          "addable_members": [
+            {
+              "id": "dd9ed1b2-6b40-5ce6-b888-4eae269ea8b1",
+              "is_active": true,
+              "person": {
+                "id": "30acec21-217c-50bf-b42a-93f9a67dc327",
+                "name": "x",
+                "patronymic": "x",
+                "surname": "x"
+              },
+              "roles": [
+                {
+                  "id": "b700bf39-9d0b-5092-b1a8-387c566036c3",
+                  "name": "x"
+                }
+              ]
+            }
+          ],
+          "attendances": [
+            {
+              "comment": "x",
+              "created_at": "2026-01-01T10:00:00Z",
+              "edited_at": "2026-01-01T10:00:00Z",
+              "id": "34649960-9d00-5b3c-b96a-8b1644ff0d79",
+              "is_attended": true,
+              "is_verified": true,
+              "member": {
+                "id": "85b3d50e-4896-5ef1-8f30-8b47533bece0",
+                "is_active": true,
+                "person": {
+                  "id": "f553f091-7325-5226-957c-014334783065",
+                  "name": "x",
+                  "patronymic": "x",
+                  "surname": "x"
+                },
+                "roles": [
+                  {
+                    "id": "932f6e9f-8256-56a7-9aaa-26f511e98785",
+                    "name": "x"
+                  }
+                ]
+              },
+              "member_id": "3f9e21b2-5afa-57f9-baf6-70bbf44119b3",
+              "participation_id": "cac867a8-ad2b-52af-a269-e151797f1316"
+            }
+          ],
+          "attended_count": 1,
+          "can_view_attendances": true,
+          "collective_id": "b379abb0-02b9-5655-9098-9f45772b3549",
+          "collective_name": "x",
+          "id": "c25f2b2e-97ea-5b26-a215-527b35c3da4f",
+          "is_member": true,
+          "is_principal": true,
+          "my_attendance_id": "c475e6ee-6cbd-54a1-b95a-6166f00fd829",
+          "priority_degree": "hight",
+          "total_count": 1
+        }
+      ],
+      "stages": [
+        {
+          "created_at": "2026-01-01T10:00:00Z",
+          "description": "x",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "end_at": "2026-01-01T10:00:00Z",
+          "event_id": "266684f9-4d9e-5730-bd7d-144e0adeb3d3",
+          "id": "7545ad72-b984-5019-8f27-426bc5651a33",
+          "name": "x",
+          "start_at": "2026-01-01T10:00:00Z",
+          "timezone": "Europe/Moscow"
+        }
+      ]
+    }
+  },
+  "event_page.PageAttendance": {
+    "response": {
+      "comment": "x",
+      "created_at": "2026-01-01T10:00:00Z",
+      "edited_at": "2026-01-01T10:00:00Z",
+      "id": "ba73ae31-ffd7-531f-88eb-31d62954c9be",
+      "is_attended": true,
+      "is_verified": true,
+      "member": {
+        "id": "c9d90a04-36fe-5b13-809a-a19578677a27",
+        "is_active": true,
+        "person": {
+          "id": "702abc70-5c98-5268-822e-0b1aa83d1b59",
+          "name": "x",
+          "patronymic": "x",
+          "surname": "x"
+        },
+        "roles": [
+          {
+            "id": "f6178b54-5b30-5c37-a4de-75628ad40b5d",
+            "name": "x"
+          }
+        ]
+      },
+      "member_id": "d2e7f810-c4bb-5ede-a289-79f0d9591049",
+      "participation_id": "216dbab6-58c9-5ed3-b4a1-bc19e9628833"
+    }
+  },
+  "event_page.PageEvent": {
+    "response": {
+      "created_at": "2026-01-01T10:00:00Z",
+      "date": "2026-01-01",
+      "description": "x",
+      "edited_at": "2026-01-01T10:00:00Z",
+      "format": "online",
+      "id": "57c56773-c9ac-55aa-83d2-ab72ef609e9b",
+      "level": "internal",
+      "location": {
+        "id": "4e8f4aac-59ad-5ce5-821b-e6b5b7098d93",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x"
+      },
+      "location_id": "883d3398-0874-5c80-af8d-3e6c04be60a2",
+      "name": "x",
+      "organizer_id": "bff708c6-f14b-5215-9b32-0d5c4c01f463",
+      "status": "draft",
+      "type": "rehearsal"
+    }
+  },
+  "event_page.PageParticipation": {
+    "response": {
+      "addable_members": [
+        {
+          "id": "5b1081c5-d684-5209-8d20-ac19fc09e86c",
+          "is_active": true,
+          "person": {
+            "id": "73e9088f-2068-5ade-b897-dd975d1e714a",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "roles": [
+            {
+              "id": "e63312bf-961f-595b-b13c-72dca6fa3cfe",
+              "name": "x"
+            }
+          ]
+        }
+      ],
+      "attendances": [
+        {
+          "comment": "x",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "c88e16e8-8887-50dd-ba01-573aca1557c3",
+          "is_attended": true,
+          "is_verified": true,
+          "member": {
+            "id": "41d2c037-91fe-559e-b909-d882e74ec4dc",
+            "is_active": true,
+            "person": {
+              "id": "545fecc8-b64a-5ec4-bca0-5221ce7daca0",
+              "name": "x",
+              "patronymic": "x",
+              "surname": "x"
+            },
+            "roles": [
+              {
+                "id": "ffd122c3-e8eb-566a-84be-b6dc8e8d753b",
+                "name": "x"
+              }
+            ]
+          },
+          "member_id": "b4e56bf3-fc5d-53d0-b57e-1a141db9f60d",
+          "participation_id": "d8baf70e-8be3-57e8-8f7a-eb4b6cc80abf"
+        }
+      ],
+      "attended_count": 1,
+      "can_view_attendances": true,
+      "collective_id": "01526d6f-e847-5aff-b6a8-4c657751f012",
+      "collective_name": "x",
+      "id": "37fd959c-5cc7-5e7c-a6e2-10ef1f184dbb",
+      "is_member": true,
+      "is_principal": true,
+      "my_attendance_id": "04a8054a-ed1a-55ae-8810-d2b67da53405",
+      "priority_degree": "hight",
+      "total_count": 1
+    }
+  },
+  "event_page.RosterMember": {
+    "response": {
+      "id": "2c976a60-c02c-506e-afc8-69e0d872c06a",
+      "is_active": true,
+      "person": {
+        "id": "a93d9b1c-e3fa-537a-8e28-37c41b4ee056",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "roles": [
+        {
+          "id": "c3553aa8-af79-5a98-b003-57c6f00fd761",
+          "name": "x"
+        }
+      ]
+    }
+  },
+  "feed.EventCard": {
+    "response": {
+      "created_at": "2026-01-01T10:00:00Z",
+      "date": "2026-01-01",
+      "edited_at": "2026-01-01T10:00:00Z",
+      "ends_at": "2026-01-01T10:00:00Z",
+      "format": "online",
+      "id": "78a2f3b1-8a2c-500d-ad57-42188c55984b",
+      "level": "internal",
+      "location": {
+        "id": "187500e3-c13f-5dd6-b233-893ac9717f8c",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x"
+      },
+      "name": "x",
+      "participations": [
+        {
+          "attended_count": 1,
+          "collective_id": "4ec0a962-c01e-592e-abb2-f08bd330ec64",
+          "collective_name": "x",
+          "id": "ff36c56a-e6de-5bcf-b99c-faa6ed926ce9",
+          "my_attendance": {
+            "comment": "x",
+            "created_at": "2026-01-01T10:00:00Z",
+            "edited_at": "2026-01-01T10:00:00Z",
+            "id": "1d404eb2-546b-5adb-adee-b93c4a57ea72",
+            "is_attended": true,
+            "is_verified": true,
+            "member_id": "87560d71-1523-52cd-b211-4516ba53b632",
+            "participation_id": "14aad906-368f-5601-8d4b-91cbbaa577b2"
+          },
+          "total_count": 1
+        }
+      ],
+      "starts_at": "2026-01-01T10:00:00Z",
+      "status": "draft",
+      "type": "rehearsal",
+      "updated_at": "2026-01-01T10:00:00Z"
+    }
+  },
+  "feed.EventCardParticipation": {
+    "response": {
+      "attended_count": 1,
+      "collective_id": "6e73ce68-aa54-5c36-be25-0b54123163bc",
+      "collective_name": "x",
+      "id": "e79756a8-5cf9-51f7-a7f8-4fcb7de88310",
+      "my_attendance": {
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "edited_at": "2026-01-01T10:00:00Z",
+        "id": "7333e0ea-9199-5c84-95f1-aa972207bf29",
+        "is_attended": true,
+        "is_verified": true,
+        "member_id": "68e8aacf-bb6b-5598-90e6-627fda5e6feb",
+        "participation_id": "5348e2d4-165d-5bc0-85da-2e741c46c1bd"
+      },
+      "total_count": 1
+    }
+  },
+  "feed.EventFeed": {
+    "response": {
+      "future_cursor": "MjAyNi0wMS0wMXxhMGM3NjQ2MS00YWYyLTUxYzktODFlNy03ZGEyODM5Nzg0NWI",
+      "has_more_future": true,
+      "has_more_past": true,
+      "items": [
+        {
+          "created_at": "2026-01-01T10:00:00Z",
+          "date": "2026-01-01",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "ends_at": "2026-01-01T10:00:00Z",
+          "format": "online",
+          "id": "1b788731-94ca-5a93-8b74-890d89673af8",
+          "level": "internal",
+          "location": {
+            "id": "219dc6e4-c9a1-5a0c-82a2-d1739e3c2ecf",
+            "lat": 1.5,
+            "lon": 1.5,
+            "name": "x"
+          },
+          "name": "x",
+          "participations": [
+            {
+              "attended_count": 1,
+              "collective_id": "61165882-f7d3-5096-91e9-6a0541b8b581",
+              "collective_name": "x",
+              "id": "650f1841-1ff2-5836-bdae-8504648bb728",
+              "my_attendance": {
+                "comment": "x",
+                "created_at": "2026-01-01T10:00:00Z",
+                "edited_at": "2026-01-01T10:00:00Z",
+                "id": "b4304cb7-3b50-551b-ab7d-f86ad280c656",
+                "is_attended": true,
+                "is_verified": true,
+                "member_id": "e6f94676-2eeb-5d27-8993-48069fee1517",
+                "participation_id": "1b681c91-c5c4-5ec7-8769-df11ff0b1972"
+              },
+              "total_count": 1
+            }
+          ],
+          "starts_at": "2026-01-01T10:00:00Z",
+          "status": "draft",
+          "type": "rehearsal",
+          "updated_at": "2026-01-01T10:00:00Z"
+        }
+      ],
+      "past_cursor": "MjAyNi0wMS0wMXwyYzQyZmYyYi1iOGQzLTU4MzctYWE1MC1lMWI5OWMxZTZhMDA"
+    }
+  },
+  "feed.EventPlace": {
+    "response": {
+      "id": "c1492c4a-f3cc-5ca2-8c6d-cdd481f55b8d",
+      "lat": 1.5,
+      "lon": 1.5,
+      "name": "x"
+    }
+  },
+  "feed.ViewerCollective": {
+    "response": {
+      "id": "29a99cb2-c89d-534e-b7cc-1aaca13271df",
+      "is_principal": true,
+      "is_verified": true,
+      "member_id": "7c33568c-1206-5cd3-962f-f4f150218d49",
+      "member_is_active": true,
+      "name": "x",
+      "roles": [
+        {
+          "id": "dbd7a081-47a1-5a20-bed4-f56004e254b9",
+          "name": "x"
+        }
+      ]
+    }
+  },
+  "feed.ViewerContext": {
+    "response": {
+      "collectives": [
+        {
+          "id": "764186c6-0fe9-56e2-9543-81c32bfdb59c",
+          "is_principal": true,
+          "is_verified": true,
+          "member_id": "b338f62a-827a-5306-bef5-0446045c0c65",
+          "member_is_active": true,
+          "name": "x",
+          "roles": [
+            {
+              "id": "eb6b8e42-eda1-50e8-985c-9d1a23bedae9",
+              "name": "x"
+            }
+          ]
+        }
+      ],
+      "person_id": "2997f6c8-0bd2-5360-8996-82a721fb9b9a"
+    }
+  },
   "location.RecentLocationRead": {
     "response": {
       "location_id": "2390bb3b-fd1f-5227-bda1-a0feacccd626",
       "used_at": "2026-01-01T10:00:00Z"
+    }
+  },
+  "matrix.AttendanceMatrix": {
+    "response": {
+      "attendances": [
+        {
+          "comment": "x",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "5ea7ecf4-5bfb-59eb-9b0d-cc57190b9103",
+          "is_attended": true,
+          "is_verified": true,
+          "member_id": "0071ff11-ee87-5387-b15a-cd23379e02ad",
+          "participation_id": "bcc3a9ee-c2a5-5ab2-822e-ed0e764aa16f"
+        }
+      ],
+      "events": [
+        {
+          "created_at": "2026-01-01T10:00:00Z",
+          "date": "2026-01-01",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "format": "online",
+          "id": "37762d18-799f-5008-aa81-2346d15ca005",
+          "level": "internal",
+          "location": {
+            "id": "5d6c79fd-be4e-5e61-b7c0-d30d747d5255",
+            "lat": 1.5,
+            "lon": 1.5,
+            "name": "x"
+          },
+          "name": "x",
+          "participation_id": "09b30c82-73fa-5de2-a564-5e79d7283f87",
+          "status": "draft",
+          "type": "rehearsal"
+        }
+      ],
+      "future_cursor": "MjAyNi0wMS0wMXwyNjE5Yjg2Yy1lMTk0LTVmMmEtOGIyMy05ZTE5OTg1ZDVlYzk",
+      "has_more_future": true,
+      "has_more_past": true,
+      "members": [
+        {
+          "id": "5b7e6157-e8fd-537b-8d8a-6fa444fa80e3",
+          "is_active": true,
+          "person": {
+            "id": "7e64edc2-d5d0-53c7-b3d1-bec28fc92d96",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "roles": [
+            {
+              "id": "d96d2bac-4c9a-50bd-aa60-6220080e5e6d",
+              "name": "x"
+            }
+          ]
+        }
+      ],
+      "past_cursor": "MjAyNi0wMS0wMXxmYzkyODFjMi1mMjA0LTUxY2UtYjUxNy01Mjk5MDRlZWY4ZTA",
+      "roles": [
+        {
+          "collective_id": "bf8e9de4-46a5-56e4-aa63-3130f9f6a8bc",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "bac80bfe-cb38-5e00-b6aa-56f1d620fa08",
+          "name": "x"
+        }
+      ]
+    }
+  },
+  "matrix.CollectiveEvent": {
+    "response": {
+      "created_at": "2026-01-01T10:00:00Z",
+      "date": "2026-01-01",
+      "edited_at": "2026-01-01T10:00:00Z",
+      "format": "online",
+      "id": "10d2859a-fe0e-5c3e-895a-c2c4d4639e20",
+      "level": "internal",
+      "location": {
+        "id": "5225e62c-2963-541f-9354-860544a7cd02",
+        "lat": 1.5,
+        "lon": 1.5,
+        "name": "x"
+      },
+      "name": "x",
+      "participation_id": "0c187460-5e6e-57a9-a52d-1e119bbe59bd",
+      "status": "draft",
+      "type": "rehearsal"
+    }
+  },
+  "matrix.CollectiveEvents": {
+    "response": {
+      "items": [
+        {
+          "created_at": "2026-01-01T10:00:00Z",
+          "date": "2026-01-01",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "format": "online",
+          "id": "1ec8f955-1b73-5f75-9e3e-b7f7f0a4943a",
+          "level": "internal",
+          "location": {
+            "id": "03e08a98-8dbb-503e-8118-e2df7cca2f77",
+            "lat": 1.5,
+            "lon": 1.5,
+            "name": "x"
+          },
+          "name": "x",
+          "participation_id": "9f64c091-e9f0-582d-9044-66e6b59cfaf4",
+          "status": "draft",
+          "type": "rehearsal"
+        }
+      ],
+      "truncated": true
+    }
+  },
+  "matrix.CollectiveRoster": {
+    "response": {
+      "members": [
+        {
+          "id": "1fb5561f-f19b-5463-afd0-4f44db473519",
+          "is_active": true,
+          "person": {
+            "id": "0e7a2a7d-8159-570e-aabe-9970ad9c0d55",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          },
+          "roles": [
+            {
+              "id": "4e335ee4-db9b-55f5-82cc-e0ed99d83b0c",
+              "name": "x"
+            }
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "collective_id": "1db0cbf3-fbbb-5945-9a50-88e89d98b061",
+          "created_at": "2026-01-01T10:00:00Z",
+          "edited_at": "2026-01-01T10:00:00Z",
+          "id": "b19c75ac-695f-5f52-8dbe-cffd29436274",
+          "name": "x"
+        }
+      ]
     }
   },
   "member_profile.AttendanceByMonth": {

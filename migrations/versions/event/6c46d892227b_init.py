@@ -166,7 +166,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column("member_id", sa.Uuid(), nullable=False),
         sa.Column("participation_id", sa.Uuid(), nullable=False),
-        sa.Column("is_attended", sa.Boolean(), nullable=True),
+        sa.Column("is_attended", sa.Boolean(), nullable=False),
         sa.Column("is_verified", sa.Boolean(), nullable=False),
         sa.Column("comment", sa.String(length=512), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),

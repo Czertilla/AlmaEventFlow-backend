@@ -418,58 +418,63 @@
       }
     }
   },
-  "collective.CollectiveCreate": {
+  "collective.EventCollectivePatch": {
     "full": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id",
+          "is_verified"
+        ],
+        "mapped": {
+          "id": "67e1eb1c-95a4-529b-899a-58d41d67efdc",
+          "is_verified": true
+        }
+      },
       "dump": {
-        "id": "967c10f4-564d-56df-9abb-59270e73d1c0",
-        "is_verified": true,
-        "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa"
+        "id": "67e1eb1c-95a4-529b-899a-58d41d67efdc",
+        "is_verified": true
       },
       "fields_set": [
         "id",
-        "is_verified",
-        "principal_id"
+        "is_verified"
       ],
       "input": {
-        "id": "967c10f4-564d-56df-9abb-59270e73d1c0",
-        "is_verified": true,
-        "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa"
+        "id": "67e1eb1c-95a4-529b-899a-58d41d67efdc",
+        "is_verified": true
       }
     },
     "required": {
+      "dto": {
+        "dropped": [],
+        "fields_set": [
+          "id"
+        ],
+        "mapped": {
+          "id": "67e1eb1c-95a4-529b-899a-58d41d67efdc"
+        }
+      },
       "dump": {
-        "id": "967c10f4-564d-56df-9abb-59270e73d1c0",
-        "is_verified": true,
-        "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa"
+        "id": "67e1eb1c-95a4-529b-899a-58d41d67efdc"
       },
       "fields_set": [
-        "id",
-        "is_verified",
-        "principal_id"
+        "id"
       ],
       "input": {
-        "id": "967c10f4-564d-56df-9abb-59270e73d1c0",
-        "is_verified": true,
-        "principal_id": "4381f1b7-e4ee-5421-84c9-b9eb369de9fa"
+        "id": "67e1eb1c-95a4-529b-899a-58d41d67efdc"
       }
     }
   },
-  "collective.CollectivePatch": {
+  "collective.EventCollectivePatchData": {
     "full": {
       "dump": {
-        "id": "056229f3-b7d4-59f0-aef8-776e1e9605f5",
-        "is_verified": true,
-        "principal_id": "850b73b0-da59-511b-ae7c-6bd76ca9657a"
+        "is_verified": true
       },
       "fields_set": [
-        "id",
-        "is_verified",
-        "principal_id"
+        "is_verified"
       ],
       "input": {
-        "id": "056229f3-b7d4-59f0-aef8-776e1e9605f5",
-        "is_verified": true,
-        "principal_id": "850b73b0-da59-511b-ae7c-6bd76ca9657a"
+        "is_verified": true
       }
     },
     "required": {
@@ -478,147 +483,45 @@
       "input": {}
     }
   },
-  "collective.CollectivePatchData": {
+  "collective.EventCollectiveRead": {
     "full": {
       "dump": {
-        "id": "7f83b3ab-eaa8-5984-a605-1340d748be40",
+        "id": "ea17ec68-5de7-552d-bf2a-ed9306d3f426",
         "is_verified": true,
-        "principal_id": "e4c9a04e-8354-520c-b005-c513688d63db"
+        "name": "x",
+        "principal_id": "32ba185b-5060-54bf-8657-480c08ad9dd7"
       },
       "fields_set": [
         "id",
         "is_verified",
+        "name",
         "principal_id"
       ],
       "input": {
-        "id": "7f83b3ab-eaa8-5984-a605-1340d748be40",
+        "id": "ea17ec68-5de7-552d-bf2a-ed9306d3f426",
         "is_verified": true,
-        "principal_id": "e4c9a04e-8354-520c-b005-c513688d63db"
-      }
-    },
-    "required": {
-      "dump": {},
-      "fields_set": [],
-      "input": {}
-    }
-  },
-  "collective.CollectivePut": {
-    "full": {
-      "dump": {
-        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
-        "is_verified": true,
-        "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635"
-      },
-      "fields_set": [
-        "id",
-        "is_verified",
-        "principal_id"
-      ],
-      "input": {
-        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
-        "is_verified": true,
-        "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635"
+        "name": "x",
+        "principal_id": "32ba185b-5060-54bf-8657-480c08ad9dd7"
       }
     },
     "required": {
       "dump": {
-        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+        "id": "ea17ec68-5de7-552d-bf2a-ed9306d3f426",
         "is_verified": true,
-        "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635"
+        "name": "x",
+        "principal_id": "32ba185b-5060-54bf-8657-480c08ad9dd7"
       },
       "fields_set": [
         "id",
         "is_verified",
+        "name",
         "principal_id"
       ],
       "input": {
-        "id": "ec1420e3-03eb-5b5b-9080-ad07d2a6ba98",
+        "id": "ea17ec68-5de7-552d-bf2a-ed9306d3f426",
         "is_verified": true,
-        "principal_id": "e26d5ffb-8f4b-52c9-9a91-9b7d071e1635"
-      }
-    }
-  },
-  "collective.CollectivePutData": {
-    "full": {
-      "dump": {
-        "id": "56c0077e-a269-554f-8954-e50f76306aa6",
-        "is_verified": true,
-        "principal_id": "5a72444d-b9da-5588-8d59-30e3366b467d"
-      },
-      "fields_set": [
-        "id",
-        "is_verified",
-        "principal_id"
-      ],
-      "input": {
-        "id": "56c0077e-a269-554f-8954-e50f76306aa6",
-        "is_verified": true,
-        "principal_id": "5a72444d-b9da-5588-8d59-30e3366b467d"
-      }
-    },
-    "required": {
-      "dump": {
-        "id": "56c0077e-a269-554f-8954-e50f76306aa6",
-        "is_verified": true,
-        "principal_id": "5a72444d-b9da-5588-8d59-30e3366b467d"
-      },
-      "fields_set": [
-        "id",
-        "is_verified",
-        "principal_id"
-      ],
-      "input": {
-        "id": "56c0077e-a269-554f-8954-e50f76306aa6",
-        "is_verified": true,
-        "principal_id": "5a72444d-b9da-5588-8d59-30e3366b467d"
-      }
-    }
-  },
-  "collective.CollectiveRead": {
-    "full": {
-      "dump": {
-        "created_at": "2026-01-01T10:00:00Z",
-        "edited_at": "2026-01-01T10:00:00Z",
-        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
-        "is_verified": true,
-        "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056"
-      },
-      "fields_set": [
-        "created_at",
-        "edited_at",
-        "id",
-        "is_verified",
-        "principal_id"
-      ],
-      "input": {
-        "created_at": "2026-01-01T10:00:00Z",
-        "edited_at": "2026-01-01T10:00:00Z",
-        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
-        "is_verified": true,
-        "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056"
-      }
-    },
-    "required": {
-      "dump": {
-        "created_at": "2026-01-01T10:00:00Z",
-        "edited_at": "2026-01-01T10:00:00Z",
-        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
-        "is_verified": true,
-        "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056"
-      },
-      "fields_set": [
-        "created_at",
-        "edited_at",
-        "id",
-        "is_verified",
-        "principal_id"
-      ],
-      "input": {
-        "created_at": "2026-01-01T10:00:00Z",
-        "edited_at": "2026-01-01T10:00:00Z",
-        "id": "ae275aea-d733-5a73-b8df-f94df57755dd",
-        "is_verified": true,
-        "principal_id": "e77ab7f4-2909-5309-9406-5edb4fee4056"
+        "name": "x",
+        "principal_id": "32ba185b-5060-54bf-8657-480c08ad9dd7"
       }
     }
   },

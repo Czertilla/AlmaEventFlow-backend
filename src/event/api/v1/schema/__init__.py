@@ -5,10 +5,8 @@ from .attendance import (
     AttendanceRead,
 )
 from .collective import (
-    CollectiveCreate,
-    CollectivePatch,
-    CollectivePut,
-    CollectiveRead,
+    EventCollectivePatch,
+    EventCollectiveRead,
 )
 from .event import (
     EventCreate,
@@ -64,10 +62,8 @@ __all__ = [
     "AttendancePatch",
     "AttendancePut",
     "AttendanceRead",
-    "CollectiveCreate",
-    "CollectivePatch",
-    "CollectivePut",
-    "CollectiveRead",
+    "EventCollectivePatch",
+    "EventCollectiveRead",
     "EventCreate",
     "EventPatch",
     "EventPut",

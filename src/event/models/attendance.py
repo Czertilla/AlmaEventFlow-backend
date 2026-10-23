@@ -23,7 +23,7 @@ class AttendanceORM(ModuleBase, Base, UUIDMixin, TimestampMixin):
     participation_id: Mapped[UUID] = mapped_column(
         ForeignKey("participation.id", ondelete="CASCADE")
     )
-    is_attended: Mapped[bool | None]
+    is_attended: Mapped[bool] = mapped_column(default=False)
     is_verified: Mapped[bool] = mapped_column(default=False)
     comment: Mapped[str | None] = mapped_column(String(512))
 

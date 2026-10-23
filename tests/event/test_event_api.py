@@ -425,6 +425,48 @@ async def test_rewards_are_multipart_forms_and_files_are_optional(
     assert ordered.status_code == 200
 
 
+async def test_attendance_is_never_null_in_the_crud_api(
+    api: httpx.AsyncClient, event_engine: AsyncEngine
+) -> None:
+    collective_id = await _collective(event_engine)
+    person_id = await _person(event_engine)
+    event = await _event(api)
+    participation = await api.post(
+        f"{BASE}/participations",
+        json={"collective_id": str(collective_id), "event_id": event["id"]},
+        headers=ADMIN,
+    )
+    member = await api.post(
+        f"{BASE}/members",
+        json={"collective_id": str(collective_id), "person_id": str(person_id)},
+        headers=ADMIN,
+    )
+    place = {
+        "member_id": member.json()["id"],
+        "participation_id": participation.json()["id"],
+    }
+
+    refused = await api.post(
+        f"{BASE}/attendances", json={**place, "is_attended": None}, headers=ADMIN
+    )
+    created = await api.post(f"{BASE}/attendances", json=place, headers=ADMIN)
+    cleared = await api.patch(
+        f"{BASE}/attendances/{created.json()['id']}",
+        json={"is_attended": None},
+        headers=ADMIN,
+    )
+    replaced = await api.put(
+        f"{BASE}/attendances/{created.json()['id']}",
+        json={**place, "is_attended": None},
+        headers=ADMIN,
+    )
+
+    assert refused.status_code == 422
+    assert created.json()["is_attended"] is False
+    assert cleared.status_code == 422
+    assert replaced.status_code == 422
+
+
 async def test_attendance_filters(
     api: httpx.AsyncClient, event_engine: AsyncEngine
 ) -> None:

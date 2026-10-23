@@ -53,6 +53,6 @@ class MeEventDTO:
 @dataclass(frozen=True, slots=True)
 class MeAttendanceCreateDataDTO:
     member_id: UUID
-    is_attended: bool | None = True
+    is_attended: bool = True
     is_verified: bool | None = False
     comment: str | None = None

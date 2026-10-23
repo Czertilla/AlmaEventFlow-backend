@@ -2,19 +2,20 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
-from core.schema.v1.mixin.dto import FromDTOMixinV1
-from core.schema.v1.mixin.model import PatchModelV1, TimestampMixinV1, UUIDMixinV1
+from core.schema.v1.mixin.dto import FromDTOMixinV1, ToDTOMixinV1
+from core.schema.v1.mixin.model import PatchModelV1, UUIDMixinV1
+from event.dto.collective import CollectivePatchDTO
 
 
-class CollectiveCreate(BaseModel):
+class EventCollectiveRead(FromDTOMixinV1, BaseModel):
+    """What the event service knows of a collective: the confirmation is its own."""
+
     id: UUID
-    principal_id: UUID
+    name: str
+    principal_id: UUID | None
     is_verified: bool
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class CollectiveRead(CollectiveCreate, TimestampMixinV1, UUIDMixinV1): ...
 
 
 class MyCollectiveRead(FromDTOMixinV1, BaseModel):
@@ -30,16 +31,9 @@ class MyCollectiveRead(FromDTOMixinV1, BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class CollectivePatchData(PatchModelV1):
-    id: UUID | None = None
-    principal_id: UUID | None = None
+class EventCollectivePatchData(PatchModelV1):
     is_verified: bool | None = None
 
 
-class CollectivePatch(CollectivePatchData, UUIDMixinV1): ...  # pyright: ignore[reportIncompatibleVariableOverride]
-
-
-class CollectivePutData(CollectiveCreate): ...
-
-
-class CollectivePut(CollectivePutData, UUIDMixinV1): ...
+class EventCollectivePatch(EventCollectivePatchData, UUIDMixinV1, ToDTOMixinV1):
+    __dto_cls__ = CollectivePatchDTO

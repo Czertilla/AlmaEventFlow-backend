@@ -19,6 +19,7 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
         "event.api.v1.schema",
         {
             "attendance.AttendanceRead": "event.dto.attendance:AttendanceDTO",
+            "collective.EventCollectiveRead": "event.dto.collective:CollectiveDTO",
             "collective.MyCollectiveRead": (
                 "event.dto.collective:CollectiveSummaryDTO"
             ),
@@ -38,6 +39,13 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
     "event_v2": (
         "event.api.v2.schema",
         {
+            "attendance.AttendanceChanged": (
+                "event.dto.attendance_change:AttendanceChangedDTO"
+            ),
+            "attendance.AttendanceReadV2": "event.dto.attendance:AttendanceViewDTO",
+            "attendance.ParticipationCounts": (
+                "event.dto.attendance_change:ParticipationCountsDTO"
+            ),
             "calendar.AvailableFeeds": "event.dto.calendar:AvailableFeedsDTO",
             "calendar.FeedDescriptor": "event.dto.calendar:FeedDescriptorDTO",
             "calendar.SubscriptionRead": ("event.dto.calendar:CalendarSubscriptionDTO"),
@@ -59,7 +67,24 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "collective_profile.CollectiveProfileRead": (
                 "event.dto.collective_profile:CollectiveProfileDTO"
             ),
+            "event_page.EventPageRead": "event.dto.event_page:EventPageDTO",
+            "event_page.PageAttendance": "event.dto.event_page:PageAttendanceDTO",
+            "event_page.PageEvent": "event.dto.event_page:PageEventDTO",
+            "event_page.PageParticipation": (
+                "event.dto.event_page:PageParticipationDTO"
+            ),
+            "event_page.RosterMember": "event.dto.feed:RosterMemberDTO",
+            "feed.EventCard": "event.dto.feed:EventCardDTO",
+            "feed.EventCardParticipation": "event.dto.feed:CardParticipationDTO",
+            "feed.EventFeed": "event.dto.feed:FeedDTO",
+            "feed.EventPlace": "event.dto.feed:PlaceDTO",
+            "feed.ViewerCollective": "event.dto.feed:ViewerCollectiveDTO",
+            "feed.ViewerContext": "event.dto.feed:ViewerContextDTO",
             "location.RecentLocationRead": "event.dto.location:RecentLocationDTO",
+            "matrix.AttendanceMatrix": "event.dto.matrix:MatrixDTO",
+            "matrix.CollectiveEvent": "event.dto.matrix:CollectiveEventDTO",
+            "matrix.CollectiveEvents": "event.dto.matrix:CollectiveEventsDTO",
+            "matrix.CollectiveRoster": "event.dto.matrix:RosterDTO",
             "member_profile.AttendanceByMonth": (
                 "event.dto.member_profile:AttendanceByMonthDTO"
             ),

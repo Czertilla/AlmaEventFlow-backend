@@ -78,7 +78,7 @@ async def _attend(
     collective: UUID,
     name: str,
     offset: int | None,
-    is_attended: bool | None,
+    is_attended: bool,
     marked: bool = True,
     status: str = "active",
     type: str | None = None,
@@ -155,7 +155,6 @@ async def test_leader_reads_the_card_and_attendance_statistics(
                   type="concert", status="archived", **kw)
     await _attend(event_engine, name="Untouched", offset=-4, is_attended=False,
                   marked=False, **kw)
-    await _attend(event_engine, name="Forgotten", offset=-3, is_attended=None, **kw)
     await _attend(event_engine, name="Next", offset=7, is_attended=True, **kw)
     await _attend(event_engine, name="Draft", offset=-2, is_attended=True,
                   status="draft", **kw)
@@ -177,22 +176,22 @@ async def test_leader_reads_the_card_and_attendance_statistics(
     assert body["date_from"] == _day(-364)
     counted_years = {
         (TODAY + datetime.timedelta(days=offset)).year
-        for offset in (-20, -10, -5, -4, -3, 7)
+        for offset in (-20, -10, -5, -4, 7)
     }
     assert body["years"] == sorted(counted_years | {2019}, reverse=True)
     assert [i["event_name"] for i in body["items"]] == [
-        "Forgotten", "Untouched", "Concert", "Rehearsal 2", "Rehearsal 1",
+        "Untouched", "Concert", "Rehearsal 2", "Rehearsal 1",
     ]
     assert [i["outcome"] for i in body["items"]] == [
-        "unmarked", "unmarked", "attended", "absent", "attended",
+        "unmarked", "attended", "absent", "attended",
     ]
-    assert [i["is_attended"] for i in body["items"]] == [None, None, True, False, True]
+    assert [i["is_attended"] for i in body["items"]] == [None, True, False, True]
     summary = body["summary"]
     assert (summary["attended"], summary["absent"], summary["unmarked"],
-            summary["upcoming"]) == (2, 1, 2, 0)
-    assert summary["past"] == 5
+            summary["upcoming"]) == (2, 1, 1, 0)
+    assert summary["past"] == 4
     assert summary["verified"] == 1
-    assert summary["rate"] == 0.4
+    assert summary["rate"] == 0.5
     assert summary["current_streak"] == 0
     assert summary["longest_streak"] == 1
     assert summary["last_attended"] == _day(-5)

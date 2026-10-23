@@ -9,21 +9,21 @@ from core.dto.base import FieldsSetDTOMixin, IdentityFilterDTOMixin
 class AttendanceCreateDTO:
     member_id: UUID
     participation_id: UUID
-    is_attended: bool | None = False
+    is_attended: bool = False
     is_verified: bool | None = False
     comment: str | None = None
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AttendanceMinePatchDTO(FieldsSetDTOMixin):
-    is_attended: bool | None = None
+    is_attended: bool = False
     comment: str | None = None
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AttendancePatchDTO(FieldsSetDTOMixin):
     id: UUID
-    is_attended: bool | None = None
+    is_attended: bool = False
     is_verified: bool | None = None
     comment: str | None = None
 
@@ -33,7 +33,7 @@ class AttendancePutDTO:
     id: UUID
     member_id: UUID
     participation_id: UUID
-    is_attended: bool | None = False
+    is_attended: bool = False
     is_verified: bool | None = False
     comment: str | None = None
 
@@ -43,8 +43,20 @@ class AttendanceDTO:
     id: UUID
     member_id: UUID
     participation_id: UUID
-    is_attended: bool | None
+    is_attended: bool
     is_verified: bool | None
+    comment: str | None
+    created_at: datetime
+    edited_at: datetime | None
+
+
+@dataclass(frozen=True, slots=True)
+class AttendanceViewDTO:
+    id: UUID
+    member_id: UUID
+    participation_id: UUID
+    is_attended: bool | None
+    is_verified: bool
     comment: str | None
     created_at: datetime
     edited_at: datetime | None

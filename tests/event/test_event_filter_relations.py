@@ -120,8 +120,9 @@ async def _world(engine: AsyncEngine) -> World:
         await _insert(
             engine,
             "INSERT INTO attendance "
-            "(id, member_id, participation_id, is_verified, comment, created_at) "
-            "VALUES (:id, :member, :participation, false, :comment, now())",
+            "(id, member_id, participation_id, is_attended, is_verified, comment, "
+            "created_at) "
+            "VALUES (:id, :member, :participation, false, false, :comment, now())",
             id=attendance,
             member=member,
             participation=participation,
