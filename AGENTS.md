@@ -331,6 +331,69 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   A deliberate change is a new `v<N+1>`; only pilot/pre-release work may regenerate with
   `UPDATE_CONTRACTS=1 uv run pytest tests/contract` and must review the resulting file diff.
 
+## Page aggregates (`src/event`, API v2)
+
+- **A page loads with one request.** v1 is the CRUD of one resource, meant for the administration;
+  what a screen shows is read through v2 read models that join the pieces on the server. Never add
+  an N+1 on the client (a request per row, per member name, per location): the data is already in the
+  service's own tables (`person`, `organization`, `location`, `member`, `role`, `event_stage`
+  projections), so one query can carry it. A new page gets its own read model next to the others.
+- The read side is `ViewRepo` (`event/repository/view.py`, read-only queries, no transactions of its
+  own) behind `ViewUOW`, and four services: `FeedService` (`/v2/me/context`, `/v2/feed`,
+  `/v2/feed/cards`, `/v2/feed/pending`), `EventPageService` (`/v2/events/{id}`),
+  `CollectiveViewService` (`/v2/collectives/{id}/roster|events|attendance-matrix`, leader and
+  superusers only through `verify_collective_principal`) and `AttendanceChangeService`
+  (`PATCH /v2/attendances/{id}`). `viewer_context`/`roster_of` (`service/viewer.py`) and `read_window`
+  (`service/window.py`) are shared by them.
+- **Windows are keyset-paged, not offset-paged.** `direction=around|past|future` with an `anchor` day or
+  an opaque `cursor` (`date|id`, base64) of the previous answer; `limit` is per side, `has_more_*` is
+  exact (`limit + 1` rows are read), a change between two requests neither repeats nor skips an
+  event. The order is `(date, id)`; events without a date are not in a window. List parameters
+  are repeated keys (`status=a&status=b`): the frontend sets `axios.defaults.paramsSerializer =
+  { indexes: null }`, so the generated client needs no per-call option.
+- **Visibility is decided on the server.** Everybody sees `active` events; any other status only the
+  leaders of the collectives taking part (and superusers); a template is never in a window and only
+  a leader opens its page. The places of a collective (names, marks, comments, roles) go to its
+  leader, its members and superusers; counters are `null` for anyone else.
+- **An unmarked place is `is_attended: null` in v2 reads and nowhere else.** The column is `NOT NULL`
+  (`false` by default), so every v1 schema and DTO, the admin endpoints, the EDA events and the filters
+  see `true` or `false`. `shown`/`shown_attendance` (`service/attendance_stats.py`) turn the stored
+  value into `null` for a place that was never edited and is not verified (`MARKED` in `ViewRepo` is
+  the same rule in SQL), and every v2 answer that carries a place goes through them. The client never
+  works it out (no `edited_at` check): "not marked" is exactly `is_attended == null`. A new place is
+  declared with `POST /v2/attendances`, whose answer already has that shape; the v1 `me` endpoint
+  answers with the stored value.
+- `GET /v2/me/context` is the whole picture of an account at start: collectives it leads or belongs to,
+  with names, `is_verified`, the membership and its roles. The frontend asks once per minute and
+  account (`principal.fetchCollectives`, `force` to skip the cache) and never fetches a collective by id
+  or `/me/members` any more.
+- A card (`EventCard`) carries the place, the time (first and last stage), the caller's own places and
+  the counters of their collectives. `PATCH /v2/attendances/{id}` answers with the changed place and the
+  counters of its participation, the frontend patches its store (`applyAttendanceChange`) and
+  loads nothing. The member of the place may mark and comment until it is verified; the leader of the
+  collective and superusers may set anything, `is_verified` included.
+- **What the live updates of 0.5.1/0.5.2 (SSE or long polling) can rely on, and what they cannot:**
+  rows have stable ids and every response of a mutation has the shape of the aggregate it changes, so
+  a push can carry the same `AttendanceChanged` or only "event X changed" and the client re-reads
+  `GET /v2/feed/cards?id=...` (a batch, any number of cards, one request). `EventCard.updated_at`
+  (`max(event.edited_at ?? created_at, the latest change of a place of its participations)`) is the
+  version to compare two copies by (`eventCalendar.upsertCards`). It does **not** move when a place is
+  deleted or a member leaves: a push needs a tombstone (`deleted`, id) for those, and polling by
+  `edited_at` alone would miss them. The in-memory broker lives in one process (`--workers 1`); a
+  second worker needs Redis pub/sub or Kafka for the fan-out.
+
+## Collective confirmation (`src/event`)
+
+- A collective is confirmed by the administration, and **event owns that flag** (`collective.is_verified`,
+  the projection of org that event enforces: a leader of an unconfirmed collective cannot create events,
+  `403 COLLECTIVE_NOT_VERIFIED`; a superuser can). org knows nothing of it: a new collective starts
+  unconfirmed and the flag is never sent in an organization event, so a rename in org cannot reset it.
+- `GET /event/v1/collectives` (superusers; filters `is_verified`, `search` by name, `principal_id[__in]`,
+  `id[__in]`, order `name|is_verified`) and `PATCH /event/v1/collectives/{id}` with `{is_verified}`. The
+  admin page of collectives lists org's rows and asks `id__in` of event for the flags (two requests); its
+  `Подтверждён` filter first takes the ids from event, then asks org for them. The field is hidden in the
+  creation form: event learns of a new collective from the organization event, a moment after it.
+
 ## Collective profile (`src/event`)
 
 - `GET /event/v2/collectives/{id}/profile?date_from&date_to` is the member profile of a whole roster
