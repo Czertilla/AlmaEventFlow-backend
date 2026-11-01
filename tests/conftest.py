@@ -54,6 +54,18 @@ def _invitation_keys() -> None:
 
 _invitation_keys()
 
+
+def _data_keys() -> None:
+    folder = Path(tempfile.mkdtemp(prefix="aef-data-keys-"))
+    kek = folder / "kek.v1"
+    kek.write_bytes(os.urandom(32))
+    kek.chmod(0o400)
+    os.environ.setdefault("KEY_PROVIDER", "local")
+    os.environ.setdefault("LOCAL_KEK_DIR", str(folder))
+
+
+_data_keys()
+
 import pytest
 
 import user.utils.rsa  # noqa: F401  # pyright: ignore[reportUnusedImport]

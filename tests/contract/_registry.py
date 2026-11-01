@@ -166,11 +166,16 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "account_history.AccountLinkChangeRead": (
                 "profile.dto.account_history:AccountLinkChangeDTO"
             ),
+            "invite.InvitePreviewRead": "profile.dto.invite:InvitePreviewDTO",
             "invite.InviteTokenRead": "profile.dto.invite:InviteTokenDTO",
+            "person.PersonNameRead": "profile.dto.person:PersonNameDTO",
             "profile.MyProfileRead": "profile.dto.my_profile:MyProfileDTO",
             "profile.MyStudentRead": "profile.dto.my_profile:MyStudentReadDTO",
             "reference.OrganizationRefRead": (
                 "profile.dto.reference:OrganizationRefDTO"
+            ),
+            "visibility.VisibilityEntryRead": (
+                "profile.dto.visibility:VisibilityEntryDTO"
             ),
         },
     ),

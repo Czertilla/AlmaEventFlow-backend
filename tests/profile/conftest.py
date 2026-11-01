@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from support.event import FakeEvent
 from support.http import AsPerson, api_client, principal
 from support.org import FakeOrg
 
@@ -30,6 +31,13 @@ def org(monkeypatch: pytest.MonkeyPatch) -> FakeOrg:
     return fake
 
 
+@pytest.fixture(autouse=True)
+def event(monkeypatch: pytest.MonkeyPatch) -> FakeEvent:
+    fake = FakeEvent()
+    monkeypatch.setattr("profile.utils.event.rpc_call", fake)
+    return fake
+
+
 @pytest.fixture
 async def profile_engine(test_database: None) -> AsyncIterator[AsyncEngine]:
     engine = create_async_engine(
@@ -43,7 +51,7 @@ async def profile_engine(test_database: None) -> AsyncIterator[AsyncEngine]:
             await conn.execute(
                 text(
                     "TRUNCATE person, person_account_history, organization, diet, "
-                    "student_degree "
+                    "student_degree, notification_outbox "
                     "RESTART IDENTITY CASCADE"
                 )
             )

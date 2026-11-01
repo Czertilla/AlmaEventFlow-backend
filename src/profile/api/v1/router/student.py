@@ -19,7 +19,9 @@ from profile.api.v1.schema.student import (
     StudentPutData,
     StudentRead,
 )
+from profile.dependency.access import PolicyDep
 from profile.dependency.student import StudentGroupUOWDep, StudentUOWDep
+from profile.exc.student import StudentNotExistsException
 from profile.filter.student import (
     StudentDegreeFilter,
     StudentFilter,
@@ -61,8 +63,10 @@ async def get_students(
     responses={**auth_responses(), **entity_not_found_responses("student")},
 )
 async def get_student(
-    student_id: UUID, user: ActiveUserJWTDep, uow: StudentUOWDep
+    student_id: UUID, policy: PolicyDep, uow: StudentUOWDep
 ) -> StudentRead:
+    """Read by the owner or a superuser; for anyone else `404 STUDENT_NOT_FOUND`."""
+    policy.ensure_owner(student_id, StudentNotExistsException())
     return StudentRead.from_dto(await StudentService(uow).read(student_id))
 
 

@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from logging import getLogger
 from profile.dto.passport import (
     NameVariantCreateDTO,
@@ -17,10 +18,11 @@ from profile.exc.passport import (
 )
 from profile.filter.passport import PassportFilter
 from profile.models.passport import NameVariantORM, PassportORM
+from profile.service.personal_data import PersonalDataService
 from profile.uow.passport import PassportUOW
 from profile.uow.profile import ProfilePassportUOW
 from typing import Any
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from core.dto.base import dto_dict, dto_from_orm
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
@@ -28,19 +30,34 @@ from core.service.base import BaseService, required_transaction
 
 logger = getLogger(__name__)
 
+TABLE = "passport"
+
+
+def _stored(passport: PassportORM) -> dict[str, Any]:
+    return {
+        "number": passport.number,
+        "expire_date": passport.expire_date,
+        "issued_date": passport.issued_date,
+        "issued_authority": passport.issued_authority,
+    }
+
 
 class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
+    @property
+    def _personal_data(self) -> PersonalDataService:
+        return PersonalDataService(self.uow)
+
     @staticmethod
-    def _to_dto(passport: PassportORM) -> PassportDTO:
+    def _to_dto(passport: PassportORM, plain: dict[str, Any]) -> PassportDTO:
         name_variant = passport.name_variant
         return PassportDTO(
             id=passport.id,
             profile_id=passport.profile_id,
-            number=passport.number,
-            expire_date=passport.expire_date,
+            number=plain["number"],
+            expire_date=plain["expire_date"],
             is_foreign=passport.is_foreign,
-            issued_date=passport.issued_date,
-            issued_authority=passport.issued_authority,
+            issued_date=plain["issued_date"],
+            issued_authority=plain["issued_authority"],
             name_variant=dto_from_orm(name_variant, NameVariantCreateDTO)
             if name_variant
             else None,
@@ -49,8 +66,31 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         )
 
     @required_transaction
+    async def _to_dtos(self, passports: Sequence[PassportORM]) -> list[PassportDTO]:
+        opened = await self._personal_data._open(  # pyright: ignore[reportPrivateUsage]  # composed in this transaction
+            TABLE, [(p.profile_id, p.id, _stored(p)) for p in passports]
+        )
+        return [
+            self._to_dto(passport, plain)
+            for passport, plain in zip(passports, opened, strict=True)
+        ]
+
+    @required_transaction
+    async def _sealed(
+        self, profile_id: UUID, passport_id: UUID, data: dict[str, Any]
+    ) -> dict[str, Any]:
+        return await self._personal_data._seal(  # pyright: ignore[reportPrivateUsage]  # composed in this transaction
+            TABLE, profile_id, passport_id, data
+        )
+
+    @required_transaction
     async def _create(self, passport_create: PassportCreateDTO) -> PassportORM:
-        passport_data = dto_dict(passport_create, exclude={"name_variant"})
+        passport_id = uuid4()
+        passport_data = await self._sealed(
+            passport_create.profile_id,
+            passport_id,
+            {**dto_dict(passport_create, exclude={"name_variant"}), "id": passport_id},
+        )
         name_variant = passport_create.name_variant
 
         passport = await self.uow.passports.add_n_return(data=passport_data)
@@ -76,6 +116,10 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         return passport
 
     @required_transaction
+    async def _read_dto(self, passport_id: UUID) -> PassportDTO:
+        return (await self._to_dtos([await self._read(passport_id)]))[0]
+
+    @required_transaction
     async def _ensure_existance(self, passport_id: UUID):
         if not await self.uow.passports.exists_id(passport_id):
             raise PassportNotExistsException()
@@ -88,8 +132,11 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         *,
         flush: bool = False,
     ) -> PassportORM:
+        current = await self._read(passport_id)
         passport = await self.uow.passports.update_one(
-            passport_id, passport_data, flush
+            passport_id,
+            await self._sealed(current.profile_id, passport_id, passport_data),
+            flush,
         )
         if passport is None:
             raise PassportNotExistsException()
@@ -99,7 +146,11 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
     async def _upsert(self, passport_put: PassportPutDTO) -> PassportORM:
         await self._check_ownership(passport_put.id, passport_put.profile_id)
         passport = await self.uow.passports.upsert(
-            dto_dict(passport_put, exclude={"name_variant"})
+            await self._sealed(
+                passport_put.profile_id,
+                passport_put.id,
+                dto_dict(passport_put, exclude={"name_variant"}),
+            )
         )
         if passport is None:
             raise PassportNotExistsException()
@@ -112,13 +163,13 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
     async def create(self, passport_create: PassportCreateDTO) -> PassportDTO:
         async with self.uow as uow:
             created = await self._create(passport_create)
-            result = self._to_dto(await self._read(created.id))
+            result = await self._read_dto(created.id)
             await uow.commit()
         return result
 
     async def read(self, passport_id: UUID) -> PassportDTO:
         async with self.uow:
-            return self._to_dto(await self._read(passport_id))
+            return await self._read_dto(passport_id)
 
     async def search(
         self,
@@ -130,7 +181,7 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
                 PassportFilter.from_dto(filter), page_params
             )
             return PageDTO(
-                items=[self._to_dto(passport) for passport in passports],
+                items=await self._to_dtos(list(passports)),
                 pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
@@ -149,7 +200,7 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
                 scope=[PassportORM.profile_id == profile_id],
             )
             return PageDTO(
-                items=[self._to_dto(passport) for passport in passports],
+                items=await self._to_dtos(list(passports)),
                 pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
@@ -159,14 +210,14 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         async with self.uow as uow:
             passport_data = dto_dict(passport_patch, only_set=True, exclude={"id"})
             updated = await self._update(passport_patch.id, passport_data)
-            result = self._to_dto(await self._read(updated.id))
+            result = await self._read_dto(updated.id)
             await uow.commit()
         return result
 
     async def put(self, passport_put: PassportPutDTO) -> PassportDTO:
         async with self.uow as uow:
             upserted = await self._upsert(passport_put)
-            result = self._to_dto(await self._read(upserted.id))
+            result = await self._read_dto(upserted.id)
             await uow.commit()
         return result
 

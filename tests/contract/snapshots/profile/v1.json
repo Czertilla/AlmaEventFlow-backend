@@ -4438,7 +4438,7 @@
             }
           },
           {
-            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: expire_date, issued_date, number, is_foreign, created_at, edited_at.",
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: is_foreign, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -4451,8 +4451,8 @@
                   "type": "null"
                 }
               ],
-              "default": "expire_date",
-              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: expire_date, issued_date, number, is_foreign, created_at, edited_at.",
+              "default": "created_at",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: is_foreign, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -4503,74 +4503,6 @@
                 }
               ],
               "title": "Is Foreign"
-            }
-          },
-          {
-            "in": "query",
-            "name": "expire_date__gte",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Expire Date  Gte"
-            }
-          },
-          {
-            "in": "query",
-            "name": "expire_date__lte",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Expire Date  Lte"
-            }
-          },
-          {
-            "in": "query",
-            "name": "issued_date__gte",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Issued Date  Gte"
-            }
-          },
-          {
-            "in": "query",
-            "name": "issued_date__lte",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Issued Date  Lte"
             }
           },
           {
@@ -4658,6 +4590,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -4760,7 +4710,7 @@
             }
           },
           {
-            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: expire_date, issued_date, number, is_foreign, created_at, edited_at.",
+            "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: is_foreign, created_at, edited_at.",
             "in": "query",
             "name": "order_by",
             "required": false,
@@ -4773,8 +4723,8 @@
                   "type": "null"
                 }
               ],
-              "default": "expire_date",
-              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: expire_date, issued_date, number, is_foreign, created_at, edited_at.",
+              "default": "created_at",
+              "description": "Comma-separated fields, prefix a field with `-` for descending order. Allowed: is_foreign, created_at, edited_at.",
               "title": "Order By"
             }
           },
@@ -4825,74 +4775,6 @@
                 }
               ],
               "title": "Is Foreign"
-            }
-          },
-          {
-            "in": "query",
-            "name": "expire_date__gte",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Expire Date  Gte"
-            }
-          },
-          {
-            "in": "query",
-            "name": "expire_date__lte",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Expire Date  Lte"
-            }
-          },
-          {
-            "in": "query",
-            "name": "issued_date__gte",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Issued Date  Gte"
-            }
-          },
-          {
-            "in": "query",
-            "name": "issued_date__lte",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "format": "date",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Issued Date  Lte"
             }
           },
           {
@@ -4998,6 +4880,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -5102,6 +5002,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -5226,6 +5144,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -5350,6 +5286,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -5484,6 +5438,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -5618,6 +5590,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -5724,6 +5714,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -5830,6 +5838,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -5946,6 +5972,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -6062,6 +6106,24 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSONAL_DATA_UNAVAILABLE"
           }
         },
         "security": [
@@ -6533,6 +6595,7 @@
     },
     "/profile/v1/persons": {
       "get": {
+        "description": "Persons whose full name the caller may see.",
         "operationId": "search_person_profile_v1_persons_get",
         "parameters": [
           {
@@ -7238,6 +7301,7 @@
         ]
       },
       "get": {
+        "description": "A person whose full name the caller may see; else `404 PERSON_NOT_FOUND`.",
         "operationId": "get_person_profile_v1_persons__person_id__get",
         "parameters": [
           {
@@ -7333,6 +7397,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Get Person",
         "tags": [
           "person"
@@ -8797,6 +8866,7 @@
         ]
       },
       "get": {
+        "description": "Read by the owner or a superuser; for anyone else `404 PROFILE_NOT_FOUND`.",
         "operationId": "get_profile_profile_v1_profiles__profile_id__get",
         "parameters": [
           {
@@ -11092,6 +11162,7 @@
         ]
       },
       "get": {
+        "description": "Read by the owner or a superuser; for anyone else `404 STUDENT_NOT_FOUND`.",
         "operationId": "get_student_profile_v1_students__student_id__get",
         "parameters": [
           {

@@ -13,7 +13,11 @@ logger = getLogger(__name__)
 class OrganizationService(BaseService[OrganizationUOW]):
     @staticmethod
     def _validate_data(organization: OrganizationData):
-        return {"id": organization.id, "type": organization.type}
+        return {
+            "id": organization.id,
+            "type": organization.type,
+            "principal_id": organization.principal_id,
+        }
 
     @required_transaction
     async def _create(self, organization: OrganizationData):

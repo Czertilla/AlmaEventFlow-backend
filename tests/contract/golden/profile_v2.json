@@ -65,6 +65,90 @@
       }
     }
   },
+  "health.KeyHealthRead": {
+    "full": {
+      "dump": {
+        "status": "ok"
+      },
+      "fields_set": [
+        "status"
+      ],
+      "input": {
+        "status": "ok"
+      }
+    },
+    "required": {
+      "dump": {
+        "status": "ok"
+      },
+      "fields_set": [
+        "status"
+      ],
+      "input": {
+        "status": "ok"
+      }
+    }
+  },
+  "invite.InvitePreviewData": {
+    "full": {
+      "dump": {
+        "token": "x"
+      },
+      "fields_set": [
+        "token"
+      ],
+      "input": {
+        "token": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "token": "x"
+      },
+      "fields_set": [
+        "token"
+      ],
+      "input": {
+        "token": "x"
+      }
+    }
+  },
+  "invite.InvitePreviewRead": {
+    "full": {
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    }
+  },
   "invite.InviteTokenCreate": {
     "full": {
       "dto": {
@@ -154,6 +238,132 @@
       "input": {
         "expires_at": 1,
         "token": "x"
+      }
+    }
+  },
+  "person.PersonNameRead": {
+    "full": {
+      "dump": {
+        "id": "40d2f8c6-899e-5494-b98b-ba95c1ab3f23",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "40d2f8c6-899e-5494-b98b-ba95c1ab3f23",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "40d2f8c6-899e-5494-b98b-ba95c1ab3f23",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "40d2f8c6-899e-5494-b98b-ba95c1ab3f23",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonNamesData": {
+    "full": {
+      "dump": {
+        "ids": [
+          "45a45167-f33a-5176-9b30-ecfad2f0e81c"
+        ]
+      },
+      "fields_set": [
+        "ids"
+      ],
+      "input": {
+        "ids": [
+          "45a45167-f33a-5176-9b30-ecfad2f0e81c"
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "ids": [
+          "45a45167-f33a-5176-9b30-ecfad2f0e81c"
+        ]
+      },
+      "fields_set": [
+        "ids"
+      ],
+      "input": {
+        "ids": [
+          "45a45167-f33a-5176-9b30-ecfad2f0e81c"
+        ]
+      }
+    }
+  },
+  "person.PersonNamesRead": {
+    "full": {
+      "dump": {
+        "items": [
+          {
+            "id": "f55afcac-0ffd-53b6-a96e-4450639704fc",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "items"
+      ],
+      "input": {
+        "items": [
+          {
+            "id": "f55afcac-0ffd-53b6-a96e-4450639704fc",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "items": [
+          {
+            "id": "f55afcac-0ffd-53b6-a96e-4450639704fc",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "items"
+      ],
+      "input": {
+        "items": [
+          {
+            "id": "f55afcac-0ffd-53b6-a96e-4450639704fc",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          }
+        ]
       }
     }
   },
@@ -852,6 +1062,176 @@
         "faculty_id": "b3cfef09-952e-5cb7-a1ef-15c0c3e514bc",
         "grade": 1,
         "name": "x"
+      }
+    }
+  },
+  "visibility.VisibilityEntryRead": {
+    "full": {
+      "dump": {
+        "audience": "private",
+        "audience_default": "private",
+        "audience_max": "private",
+        "audience_min": "private",
+        "configurable": true,
+        "is_default": true,
+        "key": "x",
+        "label": "x"
+      },
+      "fields_set": [
+        "audience",
+        "audience_default",
+        "audience_max",
+        "audience_min",
+        "configurable",
+        "is_default",
+        "key",
+        "label"
+      ],
+      "input": {
+        "audience": "private",
+        "audience_default": "private",
+        "audience_max": "private",
+        "audience_min": "private",
+        "configurable": true,
+        "is_default": true,
+        "key": "x",
+        "label": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "audience": "private",
+        "audience_default": "private",
+        "audience_max": "private",
+        "audience_min": "private",
+        "configurable": true,
+        "is_default": true,
+        "key": "x",
+        "label": "x"
+      },
+      "fields_set": [
+        "audience",
+        "audience_default",
+        "audience_max",
+        "audience_min",
+        "configurable",
+        "is_default",
+        "key",
+        "label"
+      ],
+      "input": {
+        "audience": "private",
+        "audience_default": "private",
+        "audience_max": "private",
+        "audience_min": "private",
+        "configurable": true,
+        "is_default": true,
+        "key": "x",
+        "label": "x"
+      }
+    }
+  },
+  "visibility.VisibilityRead": {
+    "full": {
+      "dump": {
+        "items": [
+          {
+            "audience": "private",
+            "audience_default": "private",
+            "audience_max": "private",
+            "audience_min": "private",
+            "configurable": true,
+            "is_default": true,
+            "key": "x",
+            "label": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "items"
+      ],
+      "input": {
+        "items": [
+          {
+            "audience": "private",
+            "audience_default": "private",
+            "audience_max": "private",
+            "audience_min": "private",
+            "configurable": true,
+            "is_default": true,
+            "key": "x",
+            "label": "x"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "items": [
+          {
+            "audience": "private",
+            "audience_default": "private",
+            "audience_max": "private",
+            "audience_min": "private",
+            "configurable": true,
+            "is_default": true,
+            "key": "x",
+            "label": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "items"
+      ],
+      "input": {
+        "items": [
+          {
+            "audience": "private",
+            "audience_default": "private",
+            "audience_max": "private",
+            "audience_min": "private",
+            "configurable": true,
+            "is_default": true,
+            "key": "x",
+            "label": "x"
+          }
+        ]
+      }
+    }
+  },
+  "visibility.VisibilitySetData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "audience": "private"
+        }
+      },
+      "dump": {
+        "audience": "private"
+      },
+      "fields_set": [
+        "audience"
+      ],
+      "input": {
+        "audience": "private"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "audience": "private"
+        }
+      },
+      "dump": {
+        "audience": "private"
+      },
+      "fields_set": [
+        "audience"
+      ],
+      "input": {
+        "audience": "private"
       }
     }
   }

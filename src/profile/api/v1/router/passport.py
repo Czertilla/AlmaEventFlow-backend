@@ -31,6 +31,7 @@ from core.schema.error import (
     ErrorCode,
     auth_responses,
     detail_400,
+    detail_response,
     entity_not_found_responses,
     error_response,
 )
@@ -40,17 +41,23 @@ router = APIRouter(prefix="/passports", tags=["passport"])
 
 logger = getLogger(__name__)
 
+SEALED_RESPONSES = detail_response(503, ErrorCode.PERSONAL_DATA_UNAVAILABLE)
 MY_RESPONSES: dict[int | str, dict[str, Any]] = {
     **auth_responses(),
     **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED),
+    **SEALED_RESPONSES,
 }
 MY_PASSPORT_RESPONSES: dict[int | str, dict[str, Any]] = {
     **MY_RESPONSES,
     **entity_not_found_responses("passport"),
 }
-PASSPORT_RESPONSES: dict[int | str, dict[str, Any]] = {
+PASSPORT_EXISTS_RESPONSES: dict[int | str, dict[str, Any]] = {
     **auth_responses(),
     **entity_not_found_responses("passport"),
+}
+PASSPORT_RESPONSES: dict[int | str, dict[str, Any]] = {
+    **PASSPORT_EXISTS_RESPONSES,
+    **SEALED_RESPONSES,
 }
 NAME_VARIANT_RESPONSES: dict[int | str, dict[str, Any]] = {
     **auth_responses(),
@@ -160,7 +167,7 @@ async def delete_my_passport(
     await service.delete(passport_id)
 
 
-@router.get("", responses={**auth_responses()})
+@router.get("", responses={**auth_responses(), **SEALED_RESPONSES})
 async def get_passports(
     user: SuperUserJWTDep,
     uow: PassportUOWDep,
@@ -226,7 +233,7 @@ async def get_name_variant(
     return NameVariantRead.from_dto(await NameVariantService(uow).read(passport_id))
 
 
-@router.put("/{passport_id}/name-variant", responses=PASSPORT_RESPONSES)
+@router.put("/{passport_id}/name-variant", responses=PASSPORT_EXISTS_RESPONSES)
 async def put_name_variant(
     passport_id: UUID,
     name_variant_data: NameVariantPutData,
@@ -260,7 +267,9 @@ async def patch_name_variant(
     )
 
 
-@router.delete("/{passport_id}/name-variant", responses=PASSPORT_RESPONSES)
+@router.delete(
+    "/{passport_id}/name-variant", responses=PASSPORT_EXISTS_RESPONSES
+)
 async def delete_name_variant(
     passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
 ) -> None:

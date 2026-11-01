@@ -1,7 +1,7 @@
+from core.worker.polling import PollingWorker
 from notify.config.settings import settings
 from notify.service.reenqueue import RetryReenqueueService
 from notify.uow.outbox import RetryUOW
-from notify.worker._base import PollingWorker
 
 
 class RetryWorker(PollingWorker):

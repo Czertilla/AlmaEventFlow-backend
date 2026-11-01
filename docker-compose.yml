@@ -168,6 +168,10 @@ services:
         source: ./vapid_public.pem
         target: /app/vapid_public.pem
         read_only: true
+      - type: bind
+        source: ./secrets/profile-kek
+        target: /run/secrets/profile-kek
+        read_only: true
     depends_on:
       pg:
         condition: service_healthy
@@ -275,6 +279,10 @@ services:
       - type: bind
         source: ./logs/profile/
         target: /app/logs
+      - type: bind
+        source: ./secrets/profile-kek
+        target: /run/secrets/profile-kek
+        read_only: true
     depends_on:
       pg:
         condition: service_healthy

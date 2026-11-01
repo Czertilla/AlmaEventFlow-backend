@@ -16,6 +16,7 @@ from event.api.v1.schema.attendance import (
     AttendanceRead,
 )
 from event.dependency.attendance import AttendanceUOWDep
+from event.dependency.scope import CollectiveScopeDep
 from event.filter.attendance import AttendanceFilter
 from event.service.attendance import AttendanceService
 
@@ -29,11 +30,15 @@ router = APIRouter(prefix="/attendances", tags=["attendance"])
 async def get_attendances(
     uow: AttendanceUOWDep,
     user: UserJWTDep,
+    scope: CollectiveScopeDep,
     filter: AttendanceFilter = FilterDepends(AttendanceFilter),
     page_param: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[AttendanceRead]:
+    """Places of the collectives the caller leads or belongs to; superusers see all."""
     return PageV1[AttendanceRead].from_dto(
-        await AttendanceService(uow).search(filter.to_dto(), page_param.to_dto())
+        await AttendanceService(uow).search(
+            filter.to_dto(), page_param.to_dto(), scope=scope
+        )
     )
 
 
@@ -53,10 +58,13 @@ async def create_attendance(
     responses={**auth_responses(), **entity_not_found_responses("attendance")},
 )
 async def get_attendance(
-    attendance_id: UUID, user: UserJWTDep, uow: AttendanceUOWDep
+    attendance_id: UUID,
+    user: UserJWTDep,
+    scope: CollectiveScopeDep,
+    uow: AttendanceUOWDep,
 ) -> AttendanceRead:
     return AttendanceRead.from_dto(
-        await AttendanceService(uow).read(attendance_id)
+        await AttendanceService(uow).read(attendance_id, scope=scope)
     )
 
 

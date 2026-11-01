@@ -15,11 +15,14 @@ from profile.api.v1.schema.person import (
     PersonPutData,
     PersonRead,
 )
+from profile.dependency.access import PolicyDep
 from profile.dependency.account import CallerPersonDep, RequiredPersonDep
 from profile.dependency.contact import ContactUOWDep, PersonContactUOWDep
 from profile.dependency.person import PersonUOWDep
+from profile.exc.person import PersonNotExistsException
 from profile.filter.contact import ContactFilter
 from profile.filter.person import PersonFilter
+from profile.registry import PERSON_FULLNAME
 from profile.service.contact import ContactService
 from profile.service.person import PersonService
 from uuid import UUID
@@ -45,12 +48,17 @@ logger = getLogger(__name__)
 @router.get("", responses={**auth_responses()})
 async def search_person(
     uow: PersonUOWDep,
-    user: UserJWTDep,
+    policy: PolicyDep,
     filter: PersonFilter = FilterDepends(PersonFilter),
     page_param: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[PersonItemRead]:
+    """Persons whose full name the caller may see."""
     return PageV1[PersonItemRead].from_dto(
-        await PersonService(uow).search(filter.to_dto(), page_param.to_dto())
+        await PersonService(uow).search(
+            filter.to_dto(),
+            page_param.to_dto(),
+            only=await policy.visible_subjects(PERSON_FULLNAME),
+        )
     )
 
 
@@ -108,7 +116,12 @@ async def patch_my_person(
     "/{person_id}",
     responses={**auth_responses(), **entity_not_found_responses("person")},
 )
-async def get_person(person_id: UUID, uow: PersonUOWDep) -> PersonRead:
+async def get_person(
+    person_id: UUID, policy: PolicyDep, uow: PersonUOWDep
+) -> PersonRead:
+    """A person whose full name the caller may see; else `404 PERSON_NOT_FOUND`."""
+    if not (await policy.can_view(person_id, PERSON_FULLNAME)).allow:
+        raise PersonNotExistsException()
     return PersonRead.from_dto(await PersonService(uow).read(person_id))
 
 

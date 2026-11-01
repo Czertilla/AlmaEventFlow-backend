@@ -16,6 +16,7 @@ from event.dto.member import (
     MemberPutDTO,
 )
 from event.dto.role import RolePreviewDTO
+from event.dto.scope import CollectiveScopeDTO
 from event.exc.event import MemberNotExistsException
 from event.filter.member import MemberFilter
 from event.models.member import MemberORM
@@ -100,10 +101,12 @@ class MemberService(BaseService[MemberUOW]):
             await uow.commit()
         return result
 
-    async def read(self, member_id: UUID) -> MemberDTO:
+    async def read(
+        self, member_id: UUID, *, scope: CollectiveScopeDTO
+    ) -> MemberDTO:
         async with self.uow:
             member = await self._read(member_id)
-            if member is None:
+            if member is None or not scope.allows(member.collective_id):
                 raise MemberNotExistsException()
             return self._to_dto(member)
 
@@ -147,7 +150,11 @@ class MemberService(BaseService[MemberUOW]):
             return [self._to_dto(m) for m in members]
 
     async def search(
-        self, filter: MemberFilterDTO, page_params: PageParamDTO = PageParamDTO()
+        self,
+        filter: MemberFilterDTO,
+        page_params: PageParamDTO = PageParamDTO(),
+        *,
+        scope: CollectiveScopeDTO,
     ) -> PageDTO[MemberDTO]:
         async with self.uow as uow:
             orm_filter = MemberFilter.from_dto(filter)
@@ -155,6 +162,9 @@ class MemberService(BaseService[MemberUOW]):
                 orm_filter,
                 page_params,
                 options=[selectinload(MemberORM.roles)],
+                scope=None
+                if scope.collective_ids is None
+                else [uow.members.in_collectives(scope.collective_ids)],
             )
             return PageDTO(
                 items=[self._to_dto(item) for item in items],

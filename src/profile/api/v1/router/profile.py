@@ -7,8 +7,10 @@ from profile.api.v1.schema.profile import (
     ProfilePutData,
     ProfileRead,
 )
+from profile.dependency.access import PolicyDep
 from profile.dependency.account import RequiredPersonDep
 from profile.dependency.profile import ProfileUOWDep
+from profile.exc.profile import ProfileNotExistsException
 from profile.filter.profile import ProfileFilter
 from profile.service.profile import ProfileService
 from uuid import UUID
@@ -33,7 +35,7 @@ logger = getLogger(__name__)
 @router.get("", responses={**auth_responses()})
 async def get_many(
     uow: ProfileUOWDep,
-    user: UserJWTDep,
+    user: SuperUserJWTDep,
     filter: ProfileFilter = FilterDepends(ProfileFilter),
     page_param: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[ProfileRead]:
@@ -104,8 +106,10 @@ async def patch_my_profile(
     responses={**auth_responses(), **entity_not_found_responses("profile")},
 )
 async def get_profile(
-    profile_id: UUID, user: UserJWTDep, uow: ProfileUOWDep
+    profile_id: UUID, policy: PolicyDep, uow: ProfileUOWDep
 ) -> ProfileRead:
+    """Read by the owner or a superuser; for anyone else `404 PROFILE_NOT_FOUND`."""
+    policy.ensure_owner(profile_id, ProfileNotExistsException())
     return ProfileRead.from_dto(await ProfileService(uow).read(profile_id))
 
 

@@ -23,6 +23,7 @@ dependencies = [
     "redis>=8.0.0",
     "ruff>=0.15.17",
     "sqlalchemy>=2.0.51",
+    "cryptography>=50.0.2",
 ]
 
 [dependency-groups]

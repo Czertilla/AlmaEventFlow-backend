@@ -29,6 +29,7 @@ class EventRPC(StrEnum):
     MY_MEMBERSHIPS = "my-memberships"
     MY_ATTENDANCE = "my-attendance"
     PATCH_MY_ATTENDANCE = "patch-my-attendance"
+    SHARED_COLLECTIVE_SUBJECTS = "shared-collective-subjects"
 
 
 @prefix("rpc.notify.")

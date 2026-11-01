@@ -19,6 +19,15 @@ class MyCollectivesResponse(MQRequest):
     collectives: list[MyCollectiveData]
 
 
+class SharedCollectiveSubjectsRequest(MQRequest):
+    viewer_person_id: UUID
+    subject_ids: list[UUID] | None = None
+
+
+class SharedCollectiveSubjectsResponse(MQRequest):
+    person_ids: list[UUID]
+
+
 class MyAttendanceRequest(MQRequest):
     person_id: UUID
     event_id: UUID

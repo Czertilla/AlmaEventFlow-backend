@@ -16,6 +16,7 @@ from event.dto.attendance import (
     AttendancePutDTO,
 )
 from event.dto.me import MeAttendanceCreateDataDTO
+from event.dto.scope import CollectiveScopeDTO
 from event.exc.event import (
     AttendanceNotExistsException,
     MemberNotExistsException,
@@ -88,10 +89,12 @@ class AttendanceService(
             await notify_event_targets(uow, attendance_ids=[attendance.id])
         return result
 
-    async def read(self, attendance_id: UUID) -> AttendanceDTO:
+    async def read(
+        self, attendance_id: UUID, *, scope: CollectiveScopeDTO
+    ) -> AttendanceDTO:
         async with self.uow:
             attendance = await self._read(attendance_id)
-            if attendance is None:
+            if attendance is None or not await self._in_scope(attendance_id, scope):
                 raise AttendanceNotExistsException()
             return self._to_dto(attendance)
 
@@ -193,12 +196,29 @@ class AttendanceService(
             rows = await uow.attendances.of_person_in_event(person_id, event_id)
             return [self._to_dto(row) for row in rows]
 
+    @required_transaction
+    async def _in_scope(self, attendance_id: UUID, scope: CollectiveScopeDTO) -> bool:
+        if scope.collective_ids is None:
+            return True
+        collective_id = await self.uow.attendances.collective_id_of(attendance_id)
+        return collective_id is not None and scope.allows(collective_id)
+
     async def search(
-        self, filter: AttendanceFilterDTO, page_params: PageParamDTO = PageParamDTO()
+        self,
+        filter: AttendanceFilterDTO,
+        page_params: PageParamDTO = PageParamDTO(),
+        *,
+        scope: CollectiveScopeDTO,
     ) -> PageDTO[AttendanceDTO]:
         async with self.uow as uow:
             orm_filter = AttendanceFilter.from_dto(filter)
-            items, total = await uow.attendances.search(orm_filter, page_params)
+            items, total = await uow.attendances.search(
+                orm_filter,
+                page_params,
+                scope=None
+                if scope.collective_ids is None
+                else [uow.attendances.in_collectives(scope.collective_ids)],
+            )
             return PageDTO(
                 items=[self._to_dto(item) for item in items],
                 pagination=PaginationDTO(

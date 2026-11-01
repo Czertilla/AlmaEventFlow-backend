@@ -11,10 +11,25 @@
       "user_id": "c9c6cde8-7e9d-5bc4-bc27-44a30f2d9837"
     }
   },
+  "invite.InvitePreviewRead": {
+    "response": {
+      "name": "x",
+      "patronymic": "x",
+      "surname": "x"
+    }
+  },
   "invite.InviteTokenRead": {
     "response": {
       "expires_at": 1,
       "token": "x"
+    }
+  },
+  "person.PersonNameRead": {
+    "response": {
+      "id": "b7b22758-0831-5864-938a-62c45f5c9b4d",
+      "name": "x",
+      "patronymic": "x",
+      "surname": "x"
     }
   },
   "profile.MyProfileRead": {
@@ -80,6 +95,18 @@
       "id": "e97b0b17-7e26-5b33-88c6-cb0118b984f5",
       "name": "x",
       "type": "x"
+    }
+  },
+  "visibility.VisibilityEntryRead": {
+    "response": {
+      "audience": "private",
+      "audience_default": "private",
+      "audience_max": "private",
+      "audience_min": "private",
+      "configurable": true,
+      "is_default": true,
+      "key": "x",
+      "label": "x"
     }
   }
 }
