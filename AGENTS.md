@@ -187,7 +187,53 @@ sharing one codebase and one dependency-resolution graph:
   words them (`utils/apiErrors.ts`). The student detail routes are `/{student_id:uuid}`: registered
   before `degrees` and `groups`, a plain `{student_id}` swallowed `GET /students/degrees|groups` (422).
 - The old `/my` endpoints stay: v1 for person, profile and contacts, v2 `/profile/v2/students/my` for
-  the student card. Passports stay for superusers until their storage and encryption are designed.
+  the student card. Passports are the owner's (`/passports/my`) and superusers'.
+- **Sensitive fields are encrypted, and only `PersonalDataService` touches them**
+  (`service/personal_data.py`, `profile/crypto`, `docs/adr/0003-encryption-of-personal-data.md`). A registry field with
+  `encrypted=True` lives in `bytea` columns (checked at start) holding `[format][dek_version][nonce][AES-GCM]`, its AAD
+  binds the value to table, column, person, row and both versions, and `Column.kind` (`text`, `date`, `bool`) says how
+  the value is serialised. Every person has one data key in `person_key`, wrapped by the key ring: `KEY_PROVIDER`
+  (`local`: `kek.v<N>` files in `LOCAL_KEK_DIR`, mode 0400, made by `python -m profile.crypto.keygen`; `vault`: Transit
+  with AppRole or Kubernetes auth; there is no default and no fallback) wraps, `KEY_PROVIDERS_READ` only unwrap. A
+  service writes such a row through `_seal(table, person_id, row_id, values)` (the row id must exist before the insert)
+  and reads it through `_open(table, rows)`; it never decrypts, filters, searches or sorts by those columns itself,
+  and no SQL can (the ciphertext is random). Any key or decryption failure is `503 PERSONAL_DATA_UNAVAILABLE` without
+  the reason, which goes to the log as a code. The profile lifespan builds the ring and round-trips a key before it
+  serves; `GET /profile/v2/health/keys` reports the providers. A new encrypted field is a registry entry plus a
+  migration to `bytea` that refuses to run over existing values; nothing in the layer changes. Plaintext never goes to
+  logs, exceptions or events.
+- **Personal data is described once, in the registry, and read through one policy.**
+  `profile/registry` lists every personal field the user sees or sets («ФИО», «Телефон», a passport number): a key,
+  the columns it covers, and the audience range `audience_default/min/max` (`private` < `context` < `all_users`).
+  A field whose widest audience is `private` is sensitive; an encrypted one can never be opened. `validate_registry()`
+  runs when the routers mount and stops the start on a bad entry; `tests/profile/registry_released.json` keeps released
+  keys and defaults, and a released key never goes away and never gets a wider default. `PersonalDataPolicy`
+  (`profile/access`, `PolicyDep`) is the only place that answers «may this viewer see this field of that person»:
+  self, then superuser, then the owner's audience (the stored setting or the field's default, kept within its range),
+  later a grant. `decide` and `visible_subjects` work on a batch (one question to `event`, one to the organization
+  projection per request). `context` means a shared collective, asked of `event` each time
+  (`rpc.event.shared-collective-subjects`, active leaders and members only, no cache); when `event` does not answer
+  `context` is refused and `all_users` still works, never a 503. The head of a university or a faculty
+  (`organization.principal_id`, types in `UNIT_HEAD_TYPES`) has `all_users` as the default audience of the full name; the
+  organizations announce their head, `python -m org.bootstrap.republish` brings the old ones. Hidden looks like missing:
+  `GET /v1/persons/{id}` is `404 PERSON_NOT_FOUND` for a person the viewer may not see, and
+  `POST /profile/v2/persons/names` answers every requested id, leaving the name out of a hidden or an unknown one. A
+  router never queries models or repositories (`test_profile_layering.py`). `GET /v1/profiles` is superuser-only,
+  `/profiles/{id}` and `/students/{id}` are for the owner and superusers (`policy.ensure_owner`); no endpoint hands
+  another person's field other than the full name to a viewer yet, so the audience of the other fields has no reader.
+  The invitation page names the invitee through `POST /profile/v2/invites/preview`, by the token alone. A new field is
+  one registry entry (and a migration when its column is new); a new endpoint that returns a person's data goes through
+  the policy, and one that returns a stranger's data to any signed-in user is a leak.
+- **The owner's audience is a setting** (`GET/PUT/DELETE /profile/v2/visibility/my[/{field_key}]`,
+  `service/visibility_settings.py`; superusers at `/profile/v2/persons/{id}/visibility`, `source=admin`).
+  `person_field_visibility` keeps only what differs from the registry default (choosing the default deletes the row), and
+  every change is a row of the append-only `person_field_visibility_history` in the same transaction. Widening beyond
+  the effective audience is `409 VISIBILITY_COOLDOWN` for `LINK_COOLDOWN_HOURS` after the last change of the person in
+  `person_account_history` (owners only); narrowing always works. A widening tells the owner through
+  `notification_outbox`, written in the same transaction and handed to `notify` by `NotificationOutboxPublisher`
+  (`ProfileContextManager`, also run by the monolith); a new notification of `profile` goes through that table, never
+  straight to the broker. Append-only tables use the trigger function `append_only_guard()` for row changes and
+  `TRUNCATE`. The settings page (`/visibility` in the frontend) is built from the answer alone.
 
 ## Event-driven sync between services (EDA)
 
@@ -351,6 +397,12 @@ is generated in its own subprocess with a pinned env, so a local `.env` cannot c
   event. The order is `(date, id)`; events without a date are not in a window. List parameters
   are repeated keys (`status=a&status=b`): the frontend sets `axios.defaults.paramsSerializer =
   { indexes: null }`, so the generated client needs no per-call option.
+- **The v1 lists of people are scoped to the caller's collectives.** `GET /event/v1/members` and `/attendances`
+  (and `/{id}` of both) take `CollectiveScopeDep` (`event/dependency/scope.py`): the collectives the caller leads or
+  belongs to as an active member, everything for a superuser, nothing for a caller without a person. `search` by name
+  would otherwise tell any signed-in user who sits in which collective. A service method that reads these takes
+  `scope=` as a required keyword; a router that already checks the collective (`/me/collectives/{id}/…`) passes a
+  scope of that one collective. `rpc.event.shared-collective-subjects` (`service/visibility.py`) is the stricter question `profile` asks: active people only.
 - **Visibility is decided on the server.** Everybody sees `active` events; any other status only the
   leaders of the collectives taking part (and superusers); a template is never in a window and only
   a leader opens its page. The places of a collective (names, marks, comments, roles) go to its
