@@ -1,4 +1,5 @@
 from logging import getLogger
+from profile.dto.access import ViewerDTO
 from profile.dto.person import PersonDTO
 from profile.dto.student import (
     StudentCreateDTO,
@@ -34,10 +35,11 @@ from profile.filter.student import (
     StudentGroupFilter,
 )
 from profile.models.student import StudentDegree, StudentGroupORM, StudentORM
+from profile.service.personal_data import PersonalDataService
 from profile.service.profile import profile_to_dto
 from profile.service.reference import ensure_organizations
 from profile.uow.student import StudentGroupUOW, StudentUOW
-from typing import Any
+from typing import Any, NoReturn
 from uuid import UUID
 
 from core.dto.base import dto_dict, dto_from_orm
@@ -46,6 +48,9 @@ from core.service.base import BaseService, required_transaction
 from core.utils.names import normalize_name
 
 logger = getLogger(__name__)
+
+TABLE = "student"
+NOT_OWNER = "NOT_OWNER"
 
 
 def _group_to_dto(group: StudentGroupORM) -> StudentGroupDTO:
@@ -111,20 +116,40 @@ class StudentService(BaseService[StudentUOW]):
     async def _delete(self, student_id: UUID) -> None:
         await self.uow.students.unenroll(student_id)
 
-    async def create(self, student_create: StudentCreateDTO) -> StudentDTO:
+    @required_transaction
+    async def _disclosed(
+        self, students: list[StudentORM], viewer: ViewerDTO
+    ) -> list[StudentDTO]:
+        await PersonalDataService(self.uow)._open(  # pyright: ignore[reportPrivateUsage]  # composed in this transaction
+            TABLE, [(student.id, student.id, {}) for student in students], viewer
+        )
+        return [self._to_dto(student) for student in students]
+
+    async def refuse(self, student_id: UUID, viewer: ViewerDTO) -> NoReturn:
+        await PersonalDataService(self.uow).deny(
+            viewer, student_id, (TABLE,), NOT_OWNER
+        )
+        raise StudentNotExistsException()
+
+    async def create(
+        self, student_create: StudentCreateDTO, viewer: ViewerDTO
+    ) -> StudentDTO:
         async with self.uow as uow:
             created_id = await self._create(student_create)
-            result = self._to_dto(await self._read(created_id))
+            [result] = await self._disclosed([await self._read(created_id)], viewer)
             await uow.commit()
         return result
 
-    async def read(self, student_id: UUID) -> StudentDTO:
-        async with self.uow:
-            return self._to_dto(await self._read(student_id))
+    async def read(self, student_id: UUID, viewer: ViewerDTO) -> StudentDTO:
+        async with self.uow as uow:
+            [result] = await self._disclosed([await self._read(student_id)], viewer)
+            await uow.commit()
+        return result
 
     async def search(
         self,
         filter: StudentFilterDTO,
+        viewer: ViewerDTO,
         page_params: PageParamDTO = PageParamDTO(),
     ) -> PageDTO[StudentDTO]:
         async with self.uow as uow:
@@ -133,25 +158,29 @@ class StudentService(BaseService[StudentUOW]):
                 page_params,
                 options=uow.students.all_options,
             )
-            return PageDTO(
-                items=[self._to_dto(student) for student in students],
+            result = PageDTO(
+                items=await self._disclosed(list(students), viewer),
                 pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
-
-    async def patch(self, student_patch: StudentPatchDTO) -> StudentDTO:
-        async with self.uow as uow:
-            student_data = dto_dict(student_patch, only_set=True, exclude={"id"})
-            updated_id = await self._update(student_patch.id, student_data)
-            result = self._to_dto(await self._read(updated_id))
             await uow.commit()
         return result
 
-    async def put(self, student_put: StudentPutDTO) -> StudentDTO:
+    async def patch(
+        self, student_patch: StudentPatchDTO, viewer: ViewerDTO
+    ) -> StudentDTO:
+        async with self.uow as uow:
+            student_data = dto_dict(student_patch, only_set=True, exclude={"id"})
+            updated_id = await self._update(student_patch.id, student_data)
+            [result] = await self._disclosed([await self._read(updated_id)], viewer)
+            await uow.commit()
+        return result
+
+    async def put(self, student_put: StudentPutDTO, viewer: ViewerDTO) -> StudentDTO:
         async with self.uow as uow:
             upserted_id = await self._upsert(student_put)
-            result = self._to_dto(await self._read(upserted_id))
+            [result] = await self._disclosed([await self._read(upserted_id)], viewer)
             await uow.commit()
         return result
 

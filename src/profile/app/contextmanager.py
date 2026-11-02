@@ -1,6 +1,6 @@
 from profile.crypto import KeyRing, build_keyring, install_keyring
 from profile.dependency._uow import profile_sessionmaker
-from profile.uow.visibility import OutboxUOW
+from profile.uow.outbox import OutboxUOW
 from profile.worker.outbox import NotificationOutboxPublisher
 
 from fastapi import FastAPI

@@ -12,6 +12,7 @@ from profile.api.v1.schema.student import (
     StudentDegreePatchData,
     StudentDegreePutData,
 )
+from profile.dto.access import ViewerDTO
 from profile.dto.contact import ContactCreateDTO
 from profile.dto.passport import NameVariantCreateDTO, PassportCreateDTO
 from profile.dto.person import PersonCreateDTO
@@ -37,6 +38,7 @@ from core.schema.user import UserJWT
 
 Maker = async_sessionmaker[AsyncSession]
 ADMIN = UserJWT(id=uuid4(), is_active=True, is_verified=True, is_superuser=True)
+VIEWER = ViewerDTO(user_id=ADMIN.id, person_id=None, is_superuser=True)
 
 
 async def test_person_handlers_patch_only_the_sent_fields_and_put_replaces(
@@ -120,19 +122,22 @@ async def test_passport_handlers_patch_only_the_sent_fields(
             expire_date=datetime.date(2030, 1, 1),
             is_foreign=False,
             name_variant=NameVariantCreateDTO(surname="Ivanova", name="Anna"),
-        )
+        ),
+        VIEWER,
     )
 
     patched = await patch_passport(
         passport.id,
         PassportPatchData(number="9999"),
         user=ADMIN,
+        viewer=VIEWER,
         uow=PassportUOW(profile_sessionmaker),
     )
     renamed = await patch_name_variant(
         passport.id,
         NameVariantPatchData(name="Maria"),
         user=ADMIN,
+        viewer=VIEWER,
         uow=PassportUOW(profile_sessionmaker),
     )
 

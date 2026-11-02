@@ -1,7 +1,7 @@
 import json
 from datetime import UTC, datetime, timedelta
 from profile.service.outbox import NotificationOutboxService
-from profile.uow.visibility import OutboxUOW
+from profile.uow.outbox import OutboxUOW
 from uuid import UUID, uuid4
 
 import pytest

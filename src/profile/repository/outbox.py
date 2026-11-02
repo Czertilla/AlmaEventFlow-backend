@@ -15,16 +15,20 @@ class NotificationOutboxRepo(SQLAlchemyRepository[Model]):
     async def enqueue(
         self,
         *,
-        person_id: UUID,
+        person_id: UUID | None = None,
+        user_id: UUID | None = None,
         category: str,
         title: str,
         body: str,
         data: dict[str, Any],
         now: datetime,
     ) -> None:
+        if person_id is None and user_id is None:
+            raise ValueError("a notification needs a person or an account")
         await self.add_one(
             {
                 "person_id": person_id,
+                "user_id": user_id,
                 "category": category,
                 "title": title,
                 "body": body,

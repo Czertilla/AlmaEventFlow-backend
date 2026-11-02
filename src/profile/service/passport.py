@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from logging import getLogger
+from profile.dto.access import ViewerDTO
 from profile.dto.passport import (
     NameVariantCreateDTO,
     NameVariantDTO,
@@ -31,6 +32,8 @@ from core.service.base import BaseService, required_transaction
 logger = getLogger(__name__)
 
 TABLE = "passport"
+NAME_VARIANT = "name_variant"
+NOT_OWNER = "NOT_OWNER"
 
 
 def _stored(passport: PassportORM) -> dict[str, Any]:
@@ -66,9 +69,14 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         )
 
     @required_transaction
-    async def _to_dtos(self, passports: Sequence[PassportORM]) -> list[PassportDTO]:
+    async def _to_dtos(
+        self, passports: Sequence[PassportORM], viewer: ViewerDTO
+    ) -> list[PassportDTO]:
         opened = await self._personal_data._open(  # pyright: ignore[reportPrivateUsage]  # composed in this transaction
-            TABLE, [(p.profile_id, p.id, _stored(p)) for p in passports]
+            TABLE,
+            [(p.profile_id, p.id, _stored(p)) for p in passports],
+            viewer,
+            joined={p.profile_id: (NAME_VARIANT,) for p in passports if p.name_variant},
         )
         return [
             self._to_dto(passport, plain)
@@ -103,9 +111,15 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         return passport
 
     @required_transaction
-    async def _check_ownership(self, passport_id: UUID, profile_id: UUID):
+    async def _check_ownership(
+        self, passport_id: UUID, profile_id: UUID, viewer: ViewerDTO
+    ) -> None:
         exists = await self.uow.passports.get_by_id(passport_id)
         if exists and exists.profile_id != profile_id:
+            if not viewer.is_superuser:
+                await self._personal_data.deny(
+                    viewer, exists.profile_id, (TABLE, NAME_VARIANT), NOT_OWNER
+                )
             raise PassportOwnershipException()
 
     @required_transaction
@@ -116,8 +130,8 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         return passport
 
     @required_transaction
-    async def _read_dto(self, passport_id: UUID) -> PassportDTO:
-        return (await self._to_dtos([await self._read(passport_id)]))[0]
+    async def _read_dto(self, passport_id: UUID, viewer: ViewerDTO) -> PassportDTO:
+        return (await self._to_dtos([await self._read(passport_id)], viewer))[0]
 
     @required_transaction
     async def _ensure_existance(self, passport_id: UUID):
@@ -143,8 +157,10 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
         return passport
 
     @required_transaction
-    async def _upsert(self, passport_put: PassportPutDTO) -> PassportORM:
-        await self._check_ownership(passport_put.id, passport_put.profile_id)
+    async def _upsert(
+        self, passport_put: PassportPutDTO, viewer: ViewerDTO
+    ) -> PassportORM:
+        await self._check_ownership(passport_put.id, passport_put.profile_id, viewer)
         passport = await self.uow.passports.upsert(
             await self._sealed(
                 passport_put.profile_id,
@@ -160,37 +176,45 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
     async def _delete(self, passport_id: UUID) -> None:
         await self.uow.passports.delete_one(passport_id)
 
-    async def create(self, passport_create: PassportCreateDTO) -> PassportDTO:
+    async def create(
+        self, passport_create: PassportCreateDTO, viewer: ViewerDTO
+    ) -> PassportDTO:
         async with self.uow as uow:
             created = await self._create(passport_create)
-            result = await self._read_dto(created.id)
+            result = await self._read_dto(created.id, viewer)
             await uow.commit()
         return result
 
-    async def read(self, passport_id: UUID) -> PassportDTO:
-        async with self.uow:
-            return await self._read_dto(passport_id)
+    async def read(self, passport_id: UUID, viewer: ViewerDTO) -> PassportDTO:
+        async with self.uow as uow:
+            result = await self._read_dto(passport_id, viewer)
+            await uow.commit()
+        return result
 
     async def search(
         self,
         filter: PassportFilterDTO,
+        viewer: ViewerDTO,
         page_params: PageParamDTO = PageParamDTO(),
     ) -> PageDTO[PassportDTO]:
         async with self.uow as uow:
             passports, total = await uow.passports.search(
                 PassportFilter.from_dto(filter), page_params
             )
-            return PageDTO(
-                items=await self._to_dtos(list(passports)),
+            result = PageDTO(
+                items=await self._to_dtos(list(passports), viewer),
                 pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
+            await uow.commit()
+        return result
 
     async def search_by_profile(
         self,
         profile_id: UUID,
         filter: PassportFilterDTO,
+        viewer: ViewerDTO,
         page_params: PageParamDTO = PageParamDTO(),
     ) -> PageDTO[PassportDTO]:
         async with self.uow as uow:
@@ -199,25 +223,29 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
                 page_params,
                 scope=[PassportORM.profile_id == profile_id],
             )
-            return PageDTO(
-                items=await self._to_dtos(list(passports)),
+            result = PageDTO(
+                items=await self._to_dtos(list(passports), viewer),
                 pagination=PaginationDTO(
                     page=page_params.page, limit=page_params.limit, total=total
                 ),
             )
-
-    async def patch(self, passport_patch: PassportPatchDTO) -> PassportDTO:
-        async with self.uow as uow:
-            passport_data = dto_dict(passport_patch, only_set=True, exclude={"id"})
-            updated = await self._update(passport_patch.id, passport_data)
-            result = await self._read_dto(updated.id)
             await uow.commit()
         return result
 
-    async def put(self, passport_put: PassportPutDTO) -> PassportDTO:
+    async def patch(
+        self, passport_patch: PassportPatchDTO, viewer: ViewerDTO
+    ) -> PassportDTO:
         async with self.uow as uow:
-            upserted = await self._upsert(passport_put)
-            result = await self._read_dto(upserted.id)
+            passport_data = dto_dict(passport_patch, only_set=True, exclude={"id"})
+            updated = await self._update(passport_patch.id, passport_data)
+            result = await self._read_dto(updated.id, viewer)
+            await uow.commit()
+        return result
+
+    async def put(self, passport_put: PassportPutDTO, viewer: ViewerDTO) -> PassportDTO:
+        async with self.uow as uow:
+            upserted = await self._upsert(passport_put, viewer)
+            result = await self._read_dto(upserted.id, viewer)
             await uow.commit()
         return result
 
@@ -226,9 +254,11 @@ class PassportService(BaseService[PassportUOW | ProfilePassportUOW]):
             await self._delete(passport_id)
             await uow.commit()
 
-    async def check_ownership(self, passport_id: UUID, profile_id: UUID) -> None:
+    async def check_ownership(
+        self, passport_id: UUID, profile_id: UUID, viewer: ViewerDTO
+    ) -> None:
         async with self.uow:
-            await self._check_ownership(passport_id, profile_id)
+            await self._check_ownership(passport_id, profile_id, viewer)
 
     async def ensure_existance(self, passport_id: UUID) -> None:
         async with self.uow:
@@ -239,6 +269,18 @@ class NameVariantService(BaseService[PassportUOW]):
     @staticmethod
     def _to_dto(name_variant: NameVariantORM) -> NameVariantDTO:
         return dto_from_orm(name_variant, NameVariantDTO)
+
+    @required_transaction
+    async def _disclosed(
+        self, name_variant: NameVariantORM, viewer: ViewerDTO
+    ) -> NameVariantDTO:
+        passport = await self.uow.passports.get_by_id(name_variant.id, None)
+        if passport is None:
+            raise PassportNotExistsException()
+        await PersonalDataService(self.uow)._open(  # pyright: ignore[reportPrivateUsage]  # composed in this transaction
+            NAME_VARIANT, [(passport.profile_id, name_variant.id, {})], viewer
+        )
+        return self._to_dto(name_variant)
 
     @required_transaction
     async def _read(self, name_variant_id: UUID) -> NameVariantORM:
@@ -273,24 +315,30 @@ class NameVariantService(BaseService[PassportUOW]):
     async def _delete(self, name_variant_id: UUID) -> None:
         await self.uow.name_variants.delete_one(name_variant_id)
 
-    async def read(self, name_variant_id: UUID) -> NameVariantDTO:
-        async with self.uow:
-            return self._to_dto(await self._read(name_variant_id))
+    async def read(self, name_variant_id: UUID, viewer: ViewerDTO) -> NameVariantDTO:
+        async with self.uow as uow:
+            result = await self._disclosed(await self._read(name_variant_id), viewer)
+            await uow.commit()
+        return result
 
-    async def patch(self, name_variant_patch: NameVariantPatchDTO) -> NameVariantDTO:
+    async def patch(
+        self, name_variant_patch: NameVariantPatchDTO, viewer: ViewerDTO
+    ) -> NameVariantDTO:
         async with self.uow as uow:
             name_variant_data = dto_dict(
                 name_variant_patch, only_set=True, exclude={"id"}
             )
-            result = self._to_dto(
-                await self._update(name_variant_patch.id, name_variant_data)
+            result = await self._disclosed(
+                await self._update(name_variant_patch.id, name_variant_data), viewer
             )
             await uow.commit()
         return result
 
-    async def put(self, name_variant_put: NameVariantPutDTO) -> NameVariantDTO:
+    async def put(
+        self, name_variant_put: NameVariantPutDTO, viewer: ViewerDTO
+    ) -> NameVariantDTO:
         async with self.uow as uow:
-            result = self._to_dto(await self._upsert(name_variant_put))
+            result = await self._disclosed(await self._upsert(name_variant_put), viewer)
             await uow.commit()
         return result
 

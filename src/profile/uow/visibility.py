@@ -1,7 +1,7 @@
-from profile.repository.outbox import NotificationOutboxRepo
 from profile.repository.visibility import VisibilityHistoryRepo, VisibilityRepo
 from profile.uow.account import AccountMixin
 from profile.uow.organization import OrganizationMixin
+from profile.uow.outbox import OutboxMixin
 from profile.uow.person import PersonMixin
 
 from core.uow.sqlalchemy import UnitOfWork
@@ -15,10 +15,6 @@ class VisibilityHistoryMixin:
     visibility_history: VisibilityHistoryRepo
 
 
-class OutboxMixin:
-    notification_outbox: NotificationOutboxRepo
-
-
 class VisibilityUOW(
     UnitOfWork,
     VisibilityMixin,
@@ -28,6 +24,3 @@ class VisibilityUOW(
     OrganizationMixin,
     PersonMixin,
 ): ...
-
-
-class OutboxUOW(UnitOfWork, OutboxMixin): ...

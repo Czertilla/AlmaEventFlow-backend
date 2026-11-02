@@ -1,4 +1,138 @@
 {
+  "access_log.AccessFieldRead": {
+    "full": {
+      "dump": {
+        "key": "x",
+        "label": "x"
+      },
+      "fields_set": [
+        "key",
+        "label"
+      ],
+      "input": {
+        "key": "x",
+        "label": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "key": "x",
+        "label": "x"
+      },
+      "fields_set": [
+        "key",
+        "label"
+      ],
+      "input": {
+        "key": "x",
+        "label": "x"
+      }
+    }
+  },
+  "access_log.AccessLogEntryRead": {
+    "full": {
+      "dump": {
+        "action": "read",
+        "actor_name": "x",
+        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
+        "by_administrator": true,
+        "by_self": true,
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
+        "outcome": "x",
+        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+      },
+      "fields_set": [
+        "action",
+        "actor_name",
+        "actor_person_id",
+        "by_administrator",
+        "by_self",
+        "comment",
+        "created_at",
+        "fields",
+        "id",
+        "outcome",
+        "request_id"
+      ],
+      "input": {
+        "action": "read",
+        "actor_name": "x",
+        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
+        "by_administrator": true,
+        "by_self": true,
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
+        "outcome": "x",
+        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+      }
+    },
+    "required": {
+      "dump": {
+        "action": "read",
+        "actor_name": "x",
+        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
+        "by_administrator": true,
+        "by_self": true,
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
+        "outcome": "x",
+        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+      },
+      "fields_set": [
+        "action",
+        "actor_name",
+        "actor_person_id",
+        "by_administrator",
+        "by_self",
+        "comment",
+        "created_at",
+        "fields",
+        "id",
+        "outcome",
+        "request_id"
+      ],
+      "input": {
+        "action": "read",
+        "actor_name": "x",
+        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
+        "by_administrator": true,
+        "by_self": true,
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
+        "outcome": "x",
+        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+      }
+    }
+  },
   "account_history.AccountLinkChangeRead": {
     "full": {
       "dump": {

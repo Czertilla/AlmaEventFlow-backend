@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from profile.dto.visibility import VisibilityChangeDTO, VisibilityEntryDTO
 from profile.enum.audience import Audience, clamp
 from profile.exc.person import PersonNotExistsException
@@ -15,10 +15,10 @@ from profile.registry import (
     get_field,
 )
 from profile.registry.fields import UnknownFieldError
+from profile.service.link_cooldown import link_cooldown_left
 from profile.uow.visibility import VisibilityUOW
 from uuid import UUID
 
-from core.config.settings import settings
 from core.enum.notify import NotificationCategory
 from core.service.base import BaseService, required_transaction
 from core.utils.tz import localize
@@ -81,13 +81,10 @@ class VisibilitySettingsService(BaseService[VisibilityUOW]):
 
     @required_transaction
     async def _check_cooldown(self, person_id: UUID, now: datetime) -> None:
-        pause = timedelta(hours=settings.LINK_COOLDOWN_HOURS)
-        if pause <= timedelta(0):
-            return
-        changed = await self.uow.account_history.last_change_of_person(person_id)
-        if changed is not None and now - changed < pause:
-            left = int((pause - (now - changed)).total_seconds()) + 1
-            raise VisibilityCooldown(headers={"Retry-After": str(left)})
+        left = await link_cooldown_left(self.uow.account_history, person_id, now)
+        if left is not None:
+            seconds = int(left.total_seconds()) + 1
+            raise VisibilityCooldown(headers={"Retry-After": str(seconds)})
 
     @required_transaction
     async def _apply(

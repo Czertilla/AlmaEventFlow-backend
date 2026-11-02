@@ -11,6 +11,7 @@ from profile.crypto import (
     install_dek_cache,
     install_keyring,
 )
+from profile.dto.access import ViewerDTO
 from profile.enum.audience import Audience
 from profile.models import PersonORM
 from profile.registry import Column, PersonalField
@@ -363,7 +364,15 @@ async def test_a_new_registered_field_is_encrypted_without_new_code(
             [opened] = await PersonalDataService(uow)._open(
                 "secret_note",
                 [(person_id, row_id, dict(stored._mapping))],
+                ViewerDTO(user_id=uuid4(), person_id=None, is_superuser=True),
             )
+            await uow.commit()
+        journal = await _rows(
+            profile_engine,
+            "SELECT action, via, fields FROM sensitive_access_log "
+            "WHERE subject_person_id = :p",
+            p=person_id,
+        )
     finally:
         async with profile_engine.begin() as conn:
             await conn.execute(text("DROP TABLE secret_note"))
@@ -372,3 +381,6 @@ async def test_a_new_registered_field_is_encrypted_without_new_code(
     assert all(isinstance(value, bytes) for value in stored)
     assert "ключ".encode() not in b"".join(stored)
     assert opened == {"body": plain["body"], "due": plain["due"], "flag": True}
+    assert [tuple(row) for row in journal] == [
+        ("read", "superuser", ["secret_note.content"])
+    ]

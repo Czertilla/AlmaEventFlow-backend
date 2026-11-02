@@ -2,7 +2,7 @@ from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime, timedelta
 from logging import getLogger
 from profile.models.outbox import NotificationOutboxORM
-from profile.uow.visibility import OutboxUOW
+from profile.uow.outbox import OutboxUOW
 from uuid import UUID
 
 from core.config.settings import settings
@@ -71,7 +71,8 @@ class NotificationOutboxService(BaseService[OutboxUOW]):
     def _request(row: NotificationOutboxORM) -> NotificationRequest:
         return NotificationRequest(
             event_id=row.id,
-            person_ids=[row.person_id],
+            person_ids=[row.person_id] if row.person_id is not None else [],
+            user_ids=[row.user_id] if row.user_id is not None else [],
             category=NotificationCategory(row.category),
             title=row.title,
             body=row.body,

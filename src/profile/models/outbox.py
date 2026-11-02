@@ -18,10 +18,15 @@ class NotificationOutboxORM(ModuleBase, Base, UUIDMixin, TimestampMixin):
             "status IN ('pending', 'published', 'dead')",
             name="ck_notification_outbox_status",
         ),
+        CheckConstraint(
+            "person_id IS NOT NULL OR user_id IS NOT NULL",
+            name="ck_notification_outbox_recipient",
+        ),
         Index("ix_notification_outbox_status_due", "status", "next_attempt_at"),
     )
 
-    person_id: Mapped[UUID]
+    person_id: Mapped[UUID | None]
+    user_id: Mapped[UUID | None]
     category: Mapped[str] = mapped_column(String(32))
     title: Mapped[str] = mapped_column(String(200))
     body: Mapped[str] = mapped_column(String(1000))

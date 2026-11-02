@@ -1,4 +1,5 @@
 import datetime
+from profile.dto.access import ViewerDTO
 from profile.dto.contact import (
     ContactCreateDTO,
     ContactFilterDTO,
@@ -70,6 +71,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from core.dto.pagination import PageParamDTO
 
+VIEWER = ViewerDTO(user_id=uuid4(), person_id=None, is_superuser=True)
 Maker = async_sessionmaker[AsyncSession]
 PAGE = PageParamDTO()
 
@@ -238,16 +240,20 @@ async def test_passport_with_a_name_variant(
             expire_date=datetime.date(2030, 1, 1),
             is_foreign=False,
             name_variant=NameVariantCreateDTO(surname="Ivanova", name="Anna"),
-        )
+        ),
+        VIEWER,
     )
     assert created.name_variant == NameVariantCreateDTO(surname="Ivanova", name="Anna")
 
     patched = await passports.patch(
-        PassportPatchDTO(id=created.id, number="9999", fields_set=fields("number"))
+        PassportPatchDTO(id=created.id, number="9999", fields_set=fields("number")),
+        VIEWER,
     )
     assert patched.number == "9999" and patched.name_variant is not None
 
-    mine = await passports.search_by_profile(profile_id, PassportFilterDTO(), PAGE)
+    mine = await passports.search_by_profile(
+        profile_id, PassportFilterDTO(), VIEWER, PAGE
+    )
     assert [item.id for item in mine.items] == [created.id]
 
     replaced = await passports.put(
@@ -257,7 +263,8 @@ async def test_passport_with_a_name_variant(
             number="7777",
             expire_date=datetime.date(2031, 1, 1),
             is_foreign=True,
-        )
+        ),
+        VIEWER,
     )
     assert (replaced.number, replaced.is_foreign) == ("7777", True)
 
@@ -272,17 +279,19 @@ async def test_name_variant_round_trip(profile_sessionmaker: Maker) -> None:
             number="1",
             expire_date=datetime.date(2030, 1, 1),
             is_foreign=False,
-        )
+        ),
+        VIEWER,
     )
     service = NameVariantService(PassportUOW(profile_sessionmaker))
 
     put = await service.put(
-        NameVariantPutDTO(id=passport.id, surname="Petrova", name="Olga")
+        NameVariantPutDTO(id=passport.id, surname="Petrova", name="Olga"), VIEWER
     )
-    assert (await service.read(passport.id)) == put
+    assert (await service.read(passport.id, VIEWER)) == put
 
     patched = await service.patch(
-        NameVariantPatchDTO(id=passport.id, name="Maria", fields_set=fields("name"))
+        NameVariantPatchDTO(id=passport.id, name="Maria", fields_set=fields("name")),
+        VIEWER,
     )
     assert (patched.name, patched.surname) == ("Maria", "Petrova")
 
@@ -334,11 +343,11 @@ async def test_student_with_group_and_degree(
             {"id": profile_id, "group": group.id},
         )
 
-    read = await students.read(profile_id)
+    read = await students.read(profile_id, VIEWER)
     assert read.student_id == "S-1"
     assert read.group is not None and read.group.name == "G-1"
     assert read.person is not None and read.person.id == profile_id
     assert read.profile is not None and read.profile.person is not None
 
-    page = await students.search(StudentFilterDTO(), PAGE)
+    page = await students.search(StudentFilterDTO(), VIEWER, PAGE)
     assert [s.id for s in page.items] == [profile_id]

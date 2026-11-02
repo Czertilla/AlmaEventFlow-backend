@@ -163,6 +163,7 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
     "profile_v2": (
         "profile.api.v2.schema",
         {
+            "access_log.AccessLogEntryRead": "profile.dto.access:AccessLogEntryDTO",
             "account_history.AccountLinkChangeRead": (
                 "profile.dto.account_history:AccountLinkChangeDTO"
             ),

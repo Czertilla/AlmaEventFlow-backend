@@ -4,6 +4,7 @@ from profile.repository.student import (
     StudentRepo,
 )
 from profile.uow.organization import OrganizationMixin
+from profile.uow.person_key import PersonalDataUOW
 from profile.uow.profile import ProfileMixin
 
 from core.uow.sqlalchemy import UnitOfWork
@@ -15,7 +16,7 @@ class StudentMixin:
     student_degrees: StudentDegreeRepo
 
 
-class StudentUOW(UnitOfWork, StudentMixin, ProfileMixin): ...
+class StudentUOW(PersonalDataUOW, StudentMixin, ProfileMixin): ...
 
 
 class StudentGroupUOW(UnitOfWork, StudentMixin, OrganizationMixin): ...

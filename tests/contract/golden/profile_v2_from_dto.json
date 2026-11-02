@@ -1,4 +1,24 @@
 {
+  "access_log.AccessLogEntryRead": {
+    "response": {
+      "action": "read",
+      "actor_name": "x",
+      "actor_person_id": "6e5d95d6-31b3-5424-8f5e-6227b9266f07",
+      "by_administrator": true,
+      "by_self": true,
+      "comment": "x",
+      "created_at": "2026-01-01T10:00:00Z",
+      "fields": [
+        {
+          "key": "x",
+          "label": "x"
+        }
+      ],
+      "id": "2ca732ab-60e6-599a-8af4-02e0bc4315ae",
+      "outcome": "x",
+      "request_id": "ba272794-5c43-583a-a5f3-cb8db0b8747f"
+    }
+  },
   "account_history.AccountLinkChangeRead": {
     "response": {
       "action": "linked",

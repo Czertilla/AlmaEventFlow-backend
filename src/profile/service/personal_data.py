@@ -1,7 +1,9 @@
 import asyncio
 import os
 from collections.abc import Collection, Mapping, Sequence
+from datetime import UTC, datetime, timedelta
 from logging import getLogger
+from profile.access.decision import Via
 from profile.crypto import (
     DecryptionError,
     DekCache,
@@ -13,25 +15,89 @@ from profile.crypto import (
     keyring,
 )
 from profile.crypto.cache import wipe
+from profile.dto.access import ViewerDTO
+from profile.enum.access import OUTCOME_OK, AccessAction
 from profile.exc.personal_data import PersonalDataUnavailable
 from profile.models.person_key import PersonKeyORM
-from profile.registry import Column, encrypted_columns
+from profile.registry import (
+    Column,
+    all_fields,
+    encrypted_columns,
+    get_field,
+    sensitive_fields_of,
+)
 from profile.uow.person_key import PersonalDataUOW
 from typing import Any
 from uuid import UUID
 
 from core.config.settings import settings
+from core.enum.notify import NotificationCategory
 from core.service.base import BaseService, required_transaction
+from core.utils.tz import localize
 
 logger = getLogger(__name__)
 
 FIRST_DEK_VERSION = 1
+SUPERUSER_NOTICE_EVERY = timedelta(hours=1)
 
 SealedRow = tuple[UUID, UUID, Mapping[str, Any]]
 
 
 def dek_context(person_id: UUID, dek_version: int) -> bytes:
     return f"person_key|{person_id}|{dek_version}".encode()
+
+
+def _ordered(keys: Collection[str]) -> list[str]:
+    return [field.key for field in all_fields() if field.key in keys]
+
+
+def _via(viewer: ViewerDTO, subject: UUID) -> str:
+    if viewer.is_subject(subject):
+        return Via.SELF.value
+    if viewer.is_superuser:
+        return Via.SUPERUSER.value
+    return Via.NONE.value
+
+
+def _entry(
+    viewer: ViewerDTO,
+    subject: UUID,
+    action: AccessAction,
+    keys: Collection[str],
+    outcome: str,
+    *,
+    notified: bool = False,
+) -> dict[str, Any]:
+    return {
+        "actor_user_id": viewer.user_id,
+        "actor_person_id": viewer.person_id,
+        "subject_person_id": subject,
+        "action": action.value,
+        "via": (
+            Via.NONE.value if action == AccessAction.DENIED else _via(viewer, subject)
+        ),
+        "fields": _ordered(keys),
+        "outcome": outcome,
+        "notified": notified,
+        "request_id_http": viewer.http_request_id,
+    }
+
+
+def _disclosed(
+    table: str,
+    rows: Sequence[SealedRow],
+    joined: Mapping[UUID, Collection[str]] | None,
+) -> dict[UUID, set[str]]:
+    own = {field.key for field in sensitive_fields_of(table)}
+    disclosed: dict[UUID, set[str]] = {}
+    for person_id, _, _ in rows:
+        disclosed.setdefault(person_id, set()).update(own)
+    for person_id, tables in (joined or {}).items():
+        for other in tables:
+            disclosed.setdefault(person_id, set()).update(
+                field.key for field in sensitive_fields_of(other)
+            )
+    return {person_id: keys for person_id, keys in disclosed.items() if keys}
 
 
 class PersonalDataService(BaseService[PersonalDataUOW]):
@@ -85,8 +151,16 @@ class PersonalDataService(BaseService[PersonalDataUOW]):
 
     @required_transaction
     async def _open(
-        self, table: str, rows: Sequence[SealedRow]
+        self,
+        table: str,
+        rows: Sequence[SealedRow],
+        viewer: ViewerDTO,
+        *,
+        joined: Mapping[UUID, Collection[str]] | None = None,
     ) -> list[dict[str, Any]]:
+        """Decrypts the rows for `viewer` and journals, in this transaction, the
+        sensitive fields they disclose: those of `table` and of the tables
+        `joined` names per person. The caller commits before it answers."""
         columns = encrypted_columns(table)
         needed = {
             person_id
@@ -95,7 +169,7 @@ class PersonalDataService(BaseService[PersonalDataUOW]):
         }
         keys = await self._read_keys(needed)
         try:
-            return [
+            opened = [
                 self._open_row(table, columns, keys, person_id, row_id, values)
                 for person_id, row_id, values in rows
             ]
@@ -105,6 +179,103 @@ class PersonalDataService(BaseService[PersonalDataUOW]):
         finally:
             for dek, _ in keys.values():
                 wipe(dek)
+        await self._record_reads(viewer, _disclosed(table, rows, joined))
+        return opened
+
+    @required_transaction
+    async def _record_reads(
+        self, viewer: ViewerDTO, disclosed: Mapping[UUID, set[str]]
+    ) -> None:
+        if not disclosed:
+            return
+        now = datetime.now(UTC)
+        others = {subject for subject in disclosed if not viewer.is_subject(subject)}
+        told: set[UUID] = set()
+        if viewer.is_superuser:
+            told = await self.uow.access_log.notified_since(
+                viewer.user_id, others, now - SUPERUSER_NOTICE_EVERY
+            )
+        notify = others - told
+        await self.uow.access_log.record_many(
+            [
+                _entry(
+                    viewer,
+                    subject,
+                    AccessAction.READ,
+                    keys,
+                    OUTCOME_OK,
+                    notified=subject in notify,
+                )
+                for subject, keys in disclosed.items()
+            ]
+        )
+        if notify:
+            who = await self._actor_name(viewer)
+            for subject in notify:
+                await self._tell_subject(viewer, who, subject, disclosed[subject], now)
+
+    @required_transaction
+    async def _actor_name(self, viewer: ViewerDTO) -> str:
+        person = (
+            await self.uow.persons.get_by_id(viewer.person_id)
+            if viewer.person_id is not None
+            else None
+        )
+        name = (
+            " ".join(
+                part
+                for part in (person.surname, person.name, person.patronymic)
+                if part
+            )
+            if person is not None
+            else None
+        )
+        if viewer.is_superuser:
+            return f"{name} (администратор)" if name else "администратор"
+        return name or "пользователь без подробной информации"
+
+    @required_transaction
+    async def _tell_subject(
+        self,
+        viewer: ViewerDTO,
+        who: str,
+        subject: UUID,
+        keys: Collection[str],
+        now: datetime,
+    ) -> None:
+        ordered = _ordered(keys)
+        labels = ", ".join(get_field(key).label for key in ordered)
+        local = localize(now)
+        await self.uow.notification_outbox.enqueue(
+            person_id=subject,
+            category=NotificationCategory.system.value,
+            title="Просмотр ваших данных",
+            body=(
+                f"Открыты ваши данные: {labels}. "
+                f"Кто: {who}. Когда: {local:%d.%m.%Y %H:%M} {local.tzname()}."
+            ),
+            data={
+                "kind": "sensitive_access",
+                "fields": ",".join(ordered),
+                "via": _via(viewer, subject),
+                "actor_person_id": str(viewer.person_id or ""),
+            },
+            now=now,
+        )
+
+    async def deny(
+        self, viewer: ViewerDTO, subject_id: UUID, tables: Collection[str], reason: str
+    ) -> None:
+        """Journals a refused read in a transaction of its own: the refused request
+        rolls its own one back."""
+        keys = {field.key for table in tables for field in sensitive_fields_of(table)}
+        if not keys:
+            return
+        async with self.uow() as uow:
+            await uow.access_log.record_many(
+                [_entry(viewer, subject_id, AccessAction.DENIED, keys, reason)]
+            )
+            await uow.commit()
 
     @staticmethod
     def _open_row(

@@ -1,10 +1,12 @@
 from collections.abc import Sequence
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from profile.api.kafka.pub.person import (
     on_person_created,
     on_person_link_changed,
     on_person_updated,
 )
+from profile.dto.access import ViewerDTO
 from profile.dto.contact import ContactDTO
 from profile.dto.diet import DietDTO
 from profile.dto.my_profile import (
@@ -26,6 +28,7 @@ from profile.exc.person import PersonNotExistsException
 from profile.exc.student import StudentGroupNotExistsException
 from profile.models.student import StudentORM
 from profile.repository.profile import ProfileRepo
+from profile.service.personal_data import PersonalDataService
 from profile.service.reference import ensure_organizations
 from profile.uow.my_profile import MyProfileUOW
 from uuid import UUID
@@ -149,7 +152,7 @@ class MyProfileService(BaseService[MyProfileUOW]):
         await self._write_contacts(person_id, data)
 
     @required_transaction
-    async def _read(self, person_id: UUID) -> MyProfileDTO:
+    async def _read(self, person_id: UUID, viewer: ViewerDTO) -> MyProfileDTO:
         person = await self.uow.persons.get_by_id(person_id)
         if person is None:
             raise PersonNotExistsException()
@@ -157,6 +160,10 @@ class MyProfileService(BaseService[MyProfileUOW]):
         student = await self.uow.students.get_by_id(
             person_id, (selectinload(StudentORM.group),)
         )
+        if student is not None:
+            await PersonalDataService(self.uow)._open(  # pyright: ignore[reportPrivateUsage]  # composed in this transaction
+                "student", [(person_id, person_id, {})], viewer
+            )
         contacts = await self.uow.contacts.by_person(person_id)
         diet = profile.diet if profile else None
         return MyProfileDTO(
@@ -187,9 +194,11 @@ class MyProfileService(BaseService[MyProfileUOW]):
             group=dto_from_orm(group, StudentGroupDTO) if group else None,
         )
 
-    async def read(self, person_id: UUID) -> MyProfileDTO:
-        async with self.uow:
-            return await self._read(person_id)
+    async def read(self, person_id: UUID, viewer: ViewerDTO) -> MyProfileDTO:
+        async with self.uow as uow:
+            result = await self._read(person_id, viewer)
+            await uow.commit()
+        return result
 
     @required_transaction
     async def _create(
@@ -197,6 +206,7 @@ class MyProfileService(BaseService[MyProfileUOW]):
         user_id: UUID,
         data: MyProfileWriteDTO,
         claimed_person_id: UUID | None,
+        viewer: ViewerDTO,
     ) -> MyProfileDTO:
         await self._ensure_free(user_id, claimed_person_id)
         await self._check_references(data)
@@ -218,11 +228,11 @@ class MyProfileService(BaseService[MyProfileUOW]):
             actor_id=user_id,
         )
         await self._write_profile(person.id, data)
-        return await self._read(person.id)
+        return await self._read(person.id, replace(viewer, person_id=person.id))
 
     @required_transaction
     async def _replace(
-        self, person_id: UUID, data: MyProfileWriteDTO
+        self, person_id: UUID, data: MyProfileWriteDTO, viewer: ViewerDTO
     ) -> MyProfileDTO:
         await self._check_references(data)
         person = await self.uow.persons.update_one(
@@ -237,19 +247,20 @@ class MyProfileService(BaseService[MyProfileUOW]):
         if person is None:
             raise PersonNotExistsException()
         await self._write_profile(person_id, data)
-        return await self._read(person_id)
+        return await self._read(person_id, viewer)
 
     async def create(
         self,
         user_id: UUID,
         data: MyProfileWriteDTO,
+        viewer: ViewerDTO,
         *,
         claimed_person_id: UUID | None = None,
     ) -> MyProfileDTO:
         await self._ensure_organizations(data)
         try:
             async with self.uow as uow:
-                result = await self._create(user_id, data, claimed_person_id)
+                result = await self._create(user_id, data, claimed_person_id, viewer)
                 await uow.commit()
         except IntegrityError as exc:
             raise ProfileAlreadyExistsException() from exc
@@ -259,10 +270,12 @@ class MyProfileService(BaseService[MyProfileUOW]):
         )
         return result
 
-    async def replace(self, person_id: UUID, data: MyProfileWriteDTO) -> MyProfileDTO:
+    async def replace(
+        self, person_id: UUID, data: MyProfileWriteDTO, viewer: ViewerDTO
+    ) -> MyProfileDTO:
         await self._ensure_organizations(data)
         async with self.uow as uow:
-            result = await self._replace(person_id, data)
+            result = await self._replace(person_id, data, viewer)
             await uow.commit()
         await on_person_updated([self._event(result)])
         return result

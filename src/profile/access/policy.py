@@ -33,8 +33,11 @@ class PersonalDataPolicy:
     def unrestricted(self) -> bool:
         return self.viewer.is_superuser
 
+    def owns(self, subject_id: UUID) -> bool:
+        return self.unrestricted or self.viewer_person_id == subject_id
+
     def ensure_owner(self, subject_id: UUID, hidden: VancedHTTPException) -> None:
-        if not self.unrestricted and self.viewer_person_id != subject_id:
+        if not self.owns(subject_id):
             raise hidden
 
     async def can_view(self, subject_id: UUID, field_key: str) -> Decision:

@@ -1,6 +1,137 @@
 {
   "components": {
     "schemas": {
+      "AccessAction": {
+        "enum": [
+          "read",
+          "export",
+          "request_created",
+          "grant_approved",
+          "grant_declined",
+          "grant_revoked",
+          "key_destroyed",
+          "denied"
+        ],
+        "title": "AccessAction",
+        "type": "string"
+      },
+      "AccessFieldRead": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "AccessFieldRead",
+        "type": "object"
+      },
+      "AccessLogEntryRead": {
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/AccessAction"
+          },
+          "actor_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Name"
+          },
+          "actor_person_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Person Id"
+          },
+          "by_administrator": {
+            "title": "By Administrator",
+            "type": "boolean"
+          },
+          "by_self": {
+            "title": "By Self",
+            "type": "boolean"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the data was asked for, as the requester wrote it.",
+            "title": "Comment"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/AccessFieldRead"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "outcome": {
+            "description": "`ok`, or the code of the refusal.",
+            "title": "Outcome",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "action",
+          "outcome",
+          "fields",
+          "by_self",
+          "by_administrator",
+          "actor_person_id",
+          "actor_name",
+          "request_id",
+          "comment"
+        ],
+        "title": "AccessLogEntryRead",
+        "type": "object"
+      },
       "AccountLinkChangeRead": {
         "properties": {
           "action": {
@@ -750,6 +881,26 @@
         "title": "OrganizationRefRead",
         "type": "object"
       },
+      "PageV1_AccessLogEntryRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AccessLogEntryRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[AccessLogEntryRead]",
+        "type": "object"
+      },
       "PageV1_AccountLinkChangeRead_": {
         "properties": {
           "items": {
@@ -1116,6 +1267,109 @@
     }
   },
   "paths": {
+    "/profile/v2/access-log/my": {
+      "get": {
+        "description": "Who opened the caller's sensitive data, or tried to, and when; newest first.\nEmpty for an account without a person.",
+        "operationId": "get_my_access_log_profile_v2_access_log_my_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_AccessLogEntryRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get My Access Log",
+        "tags": [
+          "access-log"
+        ]
+      }
+    },
     "/profile/v2/account-links/history": {
       "get": {
         "description": "Who linked, moved or unlinked which account, how and when; newest first.\n\n`person_id` matches a change that took the person from an account or gave\nit to one.",

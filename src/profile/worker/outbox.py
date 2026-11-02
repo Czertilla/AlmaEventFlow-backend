@@ -1,5 +1,5 @@
 from profile.service.outbox import NotificationOutboxService
-from profile.uow.visibility import OutboxUOW
+from profile.uow.outbox import OutboxUOW
 
 from core.config.settings import settings
 from core.worker.polling import PollingWorker

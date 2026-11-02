@@ -21,7 +21,7 @@ from profile.api.v1.schema.student import (
 )
 from profile.dependency.access import PolicyDep
 from profile.dependency.student import StudentGroupUOWDep, StudentUOWDep
-from profile.exc.student import StudentNotExistsException
+from profile.dependency.viewer import ViewerDep
 from profile.filter.student import (
     StudentDegreeFilter,
     StudentFilter,
@@ -49,12 +49,15 @@ logger = getLogger(__name__)
 @router.get("", responses={**auth_responses()})
 async def get_students(
     user: SuperUserJWTDep,
+    viewer: ViewerDep,
     uow: StudentUOWDep,
     filter: StudentFilter = FilterDepends(StudentFilter),
     page_param: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[StudentRead]:
     return PageV1[StudentRead].from_dto(
-        await StudentService(uow).search(filter.to_dto(), page_param.to_dto())
+        await StudentService(uow).search(
+            filter.to_dto(), viewer, page_param.to_dto()
+        )
     )
 
 
@@ -63,18 +66,25 @@ async def get_students(
     responses={**auth_responses(), **entity_not_found_responses("student")},
 )
 async def get_student(
-    student_id: UUID, policy: PolicyDep, uow: StudentUOWDep
+    student_id: UUID, policy: PolicyDep, viewer: ViewerDep, uow: StudentUOWDep
 ) -> StudentRead:
     """Read by the owner or a superuser; for anyone else `404 STUDENT_NOT_FOUND`."""
-    policy.ensure_owner(student_id, StudentNotExistsException())
-    return StudentRead.from_dto(await StudentService(uow).read(student_id))
+    service = StudentService(uow)
+    if not policy.owns(student_id):
+        await service.refuse(student_id, viewer)
+    return StudentRead.from_dto(await service.read(student_id, viewer))
 
 
 @router.post("", responses={**auth_responses()})
 async def create_student(
-    student: StudentCreate, user: SuperUserJWTDep, uow: StudentUOWDep
+    student: StudentCreate,
+    user: SuperUserJWTDep,
+    viewer: ViewerDep,
+    uow: StudentUOWDep,
 ) -> StudentRead:
-    return StudentRead.from_dto(await StudentService(uow).create(student.to_dto()))
+    return StudentRead.from_dto(
+        await StudentService(uow).create(student.to_dto(), viewer)
+    )
 
 
 @router.put(
@@ -85,13 +95,15 @@ async def put_student(
     student_id: UUID,
     student: StudentPutData,
     user: SuperUserJWTDep,
+    viewer: ViewerDep,
     uow: StudentUOWDep,
 ) -> StudentRead:
     return StudentRead.from_dto(
         await StudentService(uow).put(
             StudentPut.model_validate(
                 {"id": student_id, **student.model_dump()}
-            ).to_dto()
+            ).to_dto(),
+            viewer,
         )
     )
 
@@ -104,13 +116,15 @@ async def patch_student(
     student_id: UUID,
     student: StudentPatchData,
     user: SuperUserJWTDep,
+    viewer: ViewerDep,
     uow: StudentUOWDep,
 ) -> StudentRead:
     return StudentRead.from_dto(
         await StudentService(uow).patch(
             StudentPatch.model_validate(
                 {"id": student_id, **student.model_dump()}
-            ).to_dto()
+            ).to_dto(),
+            viewer,
         )
     )
 

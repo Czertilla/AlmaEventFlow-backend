@@ -1,3 +1,4 @@
+from .access_log import SensitiveAccessLogORM
 from .account import PersonAccountHistoryORM, PersonAccountORM
 from .contact import ContactORM
 from .diet import DietORM
@@ -24,6 +25,7 @@ __all__ = [
     "PersonKeyORM",
     "PersonORM",
     "ProfileORM",
+    "SensitiveAccessLogORM",
     "StudentDegree",
     "StudentGroupORM",
     "StudentORM",

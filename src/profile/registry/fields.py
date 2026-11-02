@@ -148,3 +148,11 @@ def encrypted_columns(table: str) -> dict[str, Column]:
         for column in field.columns
         if column.table == table
     }
+
+
+def sensitive_fields_of(table: str) -> tuple[PersonalField, ...]:
+    return tuple(
+        field
+        for field in _BY_KEY.values()
+        if field.sensitive and any(column.table == table for column in field.columns)
+    )
