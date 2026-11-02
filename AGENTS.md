@@ -186,8 +186,8 @@ sharing one codebase and one dependency-resolution graph:
   `ensure_organizations`). The new codes are not in the v1 OpenAPI (a released schema); the admin UI
   words them (`utils/apiErrors.ts`). The student detail routes are `/{student_id:uuid}`: registered
   before `degrees` and `groups`, a plain `{student_id}` swallowed `GET /students/degrees|groups` (422).
-- The old `/my` endpoints stay: v1 for person, profile and contacts, v2 `/profile/v2/students/my` for
-  the student card. Passports are the owner's (`/passports/my`) and superusers'.
+- The old `/my` endpoints stay: v1 for person, profile and contacts; the student card is read and written only
+  through `/profile/v2/profiles/my`. Passports are the owner's (`/passports/my`) and superusers'.
 - **Sensitive fields are encrypted, and only `PersonalDataService` touches them**
   (`service/personal_data.py`, `profile/crypto`, `docs/adr/0003-encryption-of-personal-data.md`). A registry field with
   `encrypted=True` lives in `bytea` columns (checked at start) holding `[format][dek_version][nonce][AES-GCM]`, its AAD
@@ -202,6 +202,16 @@ sharing one codebase and one dependency-resolution graph:
   serves; `GET /profile/v2/health/keys` reports the providers. A new encrypted field is a registry entry plus a
   migration to `bytea` that refuses to run over existing values; nothing in the layer changes. Plaintext never goes to
   logs, exceptions or events.
+- **Every disclosure of a sensitive field is journaled** (`sensitive_access_log`, append-only, ADR 0004). `_open`
+  takes the `ViewerDTO` (`ViewerDep`) and, in the same transaction, writes one row per subject with the registry keys of
+  the sensitive fields of the table and of the tables passed in `joined`; reading service methods therefore commit, and a
+  journal that cannot be written means no answer. The owner's own reads are journaled (`via=self`, no notice); a
+  superuser's read of someone else tells the subject through `notification_outbox`, at most once an hour per pair. A
+  refused read of a known subject is `PersonalDataService.deny` (its own transaction, `action=denied`, `outcome` a code).
+  A new endpoint or service method that returns a sensitive field takes a viewer and goes through `_open`, even when
+  nothing is encrypted (a student card). The subject reads the journal at `GET /profile/v2/access-log/my`. A change of
+  the account link by an invite or an administrator notifies the account (`notification_outbox.user_id`);
+  `link_cooldown_left` is the pause after it.
 - **Personal data is described once, in the registry, and read through one policy.**
   `profile/registry` lists every personal field the user sees or sets («ФИО», «Телефон», a passport number): a key,
   the columns it covers, and the audience range `audience_default/min/max` (`private` < `context` < `all_users`).
