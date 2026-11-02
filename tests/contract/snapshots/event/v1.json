@@ -11444,48 +11444,6 @@
       },
       "post": {
         "operationId": "create_reward_event_v1_rewards_post",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "endpoint_url",
-            "required": false,
-            "schema": {
-              "default": "https://s3.twcstorage.ru",
-              "title": "Endpoint Url",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "bucket_name",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Bucket Name",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "access_key",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Access Key",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "secret_key",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Secret Key",
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -11582,46 +11540,6 @@
             "schema": {
               "format": "uuid",
               "title": "Reward Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "endpoint_url",
-            "required": false,
-            "schema": {
-              "default": "https://s3.twcstorage.ru",
-              "title": "Endpoint Url",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "bucket_name",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Bucket Name",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "access_key",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Access Key",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "secret_key",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Secret Key",
               "type": "string"
             }
           }
@@ -11728,46 +11646,6 @@
               "title": "Reward Id",
               "type": "string"
             }
-          },
-          {
-            "in": "query",
-            "name": "endpoint_url",
-            "required": false,
-            "schema": {
-              "default": "https://s3.twcstorage.ru",
-              "title": "Endpoint Url",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "bucket_name",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Bucket Name",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "access_key",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Access Key",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "secret_key",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Secret Key",
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -11872,46 +11750,6 @@
             "schema": {
               "format": "uuid",
               "title": "Reward Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "endpoint_url",
-            "required": false,
-            "schema": {
-              "default": "https://s3.twcstorage.ru",
-              "title": "Endpoint Url",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "bucket_name",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Bucket Name",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "access_key",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Access Key",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "secret_key",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Secret Key",
               "type": "string"
             }
           }
@@ -12027,46 +11865,6 @@
             "schema": {
               "format": "uuid",
               "title": "Reward Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "endpoint_url",
-            "required": false,
-            "schema": {
-              "default": "https://s3.twcstorage.ru",
-              "title": "Endpoint Url",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "bucket_name",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Bucket Name",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "access_key",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Access Key",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "secret_key",
-            "required": false,
-            "schema": {
-              "default": "test",
-              "title": "Secret Key",
               "type": "string"
             }
           }
