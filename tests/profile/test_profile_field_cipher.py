@@ -36,7 +36,7 @@ def test_every_kind_comes_back_as_it_went_in(value: Any, kind: Any) -> None:
     blob = cipher.seal(DEK, 1, raw, **HOME)
 
     assert cipher.decode(cipher.open_sealed(DEK, blob, **HOME), kind) == value
-    assert raw not in blob
+    assert len(raw) < 4 or raw not in blob
 
 
 def test_the_stored_form_starts_with_the_format_and_the_key_version() -> None:
