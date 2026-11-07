@@ -234,6 +234,15 @@ class Settings(BaseSettings):
     """Unwrapped data keys kept in memory; 0 keeps none."""
     KMS_UNWRAP_CONCURRENCY: int = 8
 
+    COMMENT_MIN_LEN: int = 10
+    COMMENT_MAX_LEN: int = 500
+    """Bounds of the comment of an access request, after trimming."""
+    GRANT_MAX_TTL_DAYS: int = 30
+    ACCESS_REQUESTS_PER_HOUR: int = 10
+    ACCESS_EXPORTS_PER_HOUR: int = 30
+    """Per account and process: how many access requests and exports it may make
+    in an hour."""
+
     PROFILE_OUTBOX_BATCH_SIZE: int = 100
     PROFILE_OUTBOX_POLL_INTERVAL_SECONDS: float = 2.0
     PROFILE_OUTBOX_MAX_ATTEMPTS: int = 8

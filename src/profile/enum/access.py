@@ -13,3 +13,29 @@ class AccessAction(StrEnum):
 
 
 OUTCOME_OK = "ok"
+
+
+class GrantStatus(StrEnum):
+    PENDING = "pending"
+    ACTIVE = "active"
+    DECLINED = "declined"
+    REVOKED = "revoked"
+
+
+class GrantState(StrEnum):
+    """What a subject or a grantee sees: the stored status, or `expired` once the
+    request has run out."""
+
+    PENDING = "pending"
+    ACTIVE = "active"
+    DECLINED = "declined"
+    REVOKED = "revoked"
+    EXPIRED = "expired"
+
+
+class SkipReason(StrEnum):
+    PENDING = "pending"
+    DECLINED = "declined"
+    REVOKED = "revoked"
+    EXPIRED = "expired"
+    NOT_MEMBER = "not_member"

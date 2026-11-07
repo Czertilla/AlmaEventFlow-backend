@@ -1,7 +1,7 @@
 from dataclasses import replace
 from profile.enum.audience import Audience
 
-from .field import Column, PersonalField
+from .field import Column, PersonalField, Reference, Source
 
 PERSON_FULLNAME = "person.fullname"
 UNIT_HEAD_TYPES = ("university", "faculty")
@@ -64,11 +64,12 @@ FIELDS: tuple[PersonalField, ...] = (
         audience_default=PRIVATE,
         audience_min=PRIVATE,
         audience_max=ALL_USERS,
+        grantable=False,
     ),
     PersonalField(
         key="profile.diet",
         label="Диета",
-        columns=(Column("profile", "diet_id"),),
+        columns=(Column("profile", "diet_id", ref=Reference("diet")),),
         audience_default=PRIVATE,
         audience_min=PRIVATE,
         audience_max=CONTEXT,
@@ -81,7 +82,7 @@ FIELDS: tuple[PersonalField, ...] = (
     PersonalField(
         key="student.group",
         label="Учебная группа",
-        columns=(Column("student", "group_id"),),
+        columns=(Column("student", "group_id", ref=Reference("student_group")),),
         audience_default=CONTEXT,
         audience_min=PRIVATE,
         audience_max=ALL_USERS,
@@ -123,7 +124,17 @@ FIELDS: tuple[PersonalField, ...] = (
     ),
 )
 
+SOURCES: tuple[Source, ...] = (
+    Source("person", person="id"),
+    Source("profile", person="id"),
+    Source("contact", person="person_id"),
+    Source("student", person="id"),
+    Source("passport", person="profile_id"),
+    Source("name_variant", parent="passport"),
+)
+
 _BY_KEY = {field.key: field for field in FIELDS}
+_SOURCES = {source.table: source for source in SOURCES}
 
 
 class UnknownFieldError(KeyError): ...
@@ -156,3 +167,17 @@ def sensitive_fields_of(table: str) -> tuple[PersonalField, ...]:
         for field in _BY_KEY.values()
         if field.sensitive and any(column.table == table for column in field.columns)
     )
+
+
+def grantable_fields() -> tuple[PersonalField, ...]:
+    return tuple(
+        field for field in _BY_KEY.values() if field.grantable and not field.deprecated
+    )
+
+
+def all_sources() -> tuple[Source, ...]:
+    return tuple(_SOURCES.values())
+
+
+def source_of(table: str) -> Source:
+    return _SOURCES[table]

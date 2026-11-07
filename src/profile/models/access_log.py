@@ -33,12 +33,16 @@ class SensitiveAccessLogORM(ModuleBase, Base, UUIDMixin):
             "ix_sensitive_access_log_actor_created", "actor_person_id", "created_at"
         ),
         Index("ix_sensitive_access_log_request", "request_id"),
+        CheckConstraint(
+            "subject_person_id IS NOT NULL OR request_id IS NOT NULL",
+            name="ck_sensitive_access_log_subject",
+        ),
     )
 
     created_at: Mapped[datetime] = mapped_column(default=func.now())
     actor_user_id: Mapped[UUID | None]
     actor_person_id: Mapped[UUID | None]
-    subject_person_id: Mapped[UUID]
+    subject_person_id: Mapped[UUID | None]
     request_id: Mapped[UUID | None]
     grant_id: Mapped[UUID | None]
     action: Mapped[str] = mapped_column(String(32))

@@ -12,10 +12,8 @@ from profile.crypto import (
     install_keyring,
 )
 from profile.dto.access import ViewerDTO
-from profile.enum.audience import Audience
 from profile.models import PersonORM
-from profile.registry import Column, PersonalField
-from profile.registry import fields as registry_module
+from profile.registry import PersonalField
 from profile.registry.validate import problems
 from profile.service.personal_data import PersonalDataService
 from profile.uow.person_key import PersonalDataUOW
@@ -286,36 +284,6 @@ async def test_passports_are_not_searched_or_sorted_by_their_values(
     assert by_value.json()["items"] == []
     assert [item["id"] for item in by_id.json()["items"]] == [passport_id]
     assert sorted_by_number.status_code == 422
-
-
-@pytest.fixture
-async def secret_note(
-    profile_engine: AsyncEngine, monkeypatch: pytest.MonkeyPatch
-) -> PersonalField:
-    field = PersonalField(
-        key="secret_note.content",
-        label="Секретная заметка",
-        columns=(
-            Column("secret_note", "body"),
-            Column("secret_note", "due", kind="date"),
-            Column("secret_note", "flag", kind="bool"),
-        ),
-        audience_default=Audience.PRIVATE,
-        audience_min=Audience.PRIVATE,
-        audience_max=Audience.PRIVATE,
-        encrypted=True,
-    )
-    monkeypatch.setattr(
-        registry_module, "_BY_KEY", {**registry_module._BY_KEY, field.key: field}
-    )
-    async with profile_engine.begin() as conn:
-        await conn.execute(
-            text(
-                "CREATE TABLE secret_note (id uuid PRIMARY KEY, person_id uuid, "
-                "body bytea, due bytea, flag bytea)"
-            )
-        )
-    return field
 
 
 async def test_a_new_registered_field_is_encrypted_without_new_code(

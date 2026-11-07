@@ -1,4 +1,5 @@
 from .access_log import SensitiveAccessLogORM
+from .access_request import AccessGrantORM, AccessRequestFieldORM, AccessRequestORM
 from .account import PersonAccountHistoryORM, PersonAccountORM
 from .contact import ContactORM
 from .diet import DietORM
@@ -12,6 +13,9 @@ from .student import StudentDegree, StudentGroupORM, StudentORM
 from .visibility import PersonFieldVisibilityHistoryORM, PersonFieldVisibilityORM
 
 __all__ = [
+    "AccessGrantORM",
+    "AccessRequestFieldORM",
+    "AccessRequestORM",
     "ContactORM",
     "DietORM",
     "NameVariantORM",

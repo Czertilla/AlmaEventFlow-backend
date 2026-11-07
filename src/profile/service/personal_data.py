@@ -21,11 +21,14 @@ from profile.exc.personal_data import PersonalDataUnavailable
 from profile.models.person_key import PersonKeyORM
 from profile.registry import (
     Column,
+    PersonalField,
     all_fields,
     encrypted_columns,
     get_field,
     sensitive_fields_of,
+    source_of,
 )
+from profile.repository.registry_rows import StoredRow
 from profile.uow.person_key import PersonalDataUOW
 from typing import Any
 from uuid import UUID
@@ -59,28 +62,59 @@ def _via(viewer: ViewerDTO, subject: UUID) -> str:
     return Via.NONE.value
 
 
-def _entry(
+def labels_of(keys: Collection[str]) -> str:
+    return ", ".join(get_field(key).label for key in _ordered(keys))
+
+
+def access_entry(
     viewer: ViewerDTO,
-    subject: UUID,
+    subject: UUID | None,
     action: AccessAction,
     keys: Collection[str],
-    outcome: str,
+    outcome: str = OUTCOME_OK,
     *,
+    via: Via | None = None,
+    request_id: UUID | None = None,
+    grant_id: UUID | None = None,
     notified: bool = False,
 ) -> dict[str, Any]:
+    """One row of the journal; `subject` is none only for an operation over a
+    whole access request."""
+    if via is None:
+        via = (
+            Via.NONE
+            if action == AccessAction.DENIED or subject is None
+            else Via(_via(viewer, subject))
+        )
     return {
         "actor_user_id": viewer.user_id,
         "actor_person_id": viewer.person_id,
         "subject_person_id": subject,
+        "request_id": request_id,
+        "grant_id": grant_id,
         "action": action.value,
-        "via": (
-            Via.NONE.value if action == AccessAction.DENIED else _via(viewer, subject)
-        ),
+        "via": via.value,
         "fields": _ordered(keys),
         "outcome": outcome,
         "notified": notified,
         "request_id_http": viewer.http_request_id,
     }
+
+
+def _shown(
+    column: Column, value: Any, labels: Mapping[tuple[str, Any], Any]
+) -> Any:
+    if column.ref is None or value is None:
+        return value
+    return labels.get((column.ref.table, value))
+
+
+def _matches(field: PersonalField, values: Mapping[str, Any]) -> bool:
+    return all(
+        str(values.get(column.where[0])) == column.where[1]
+        for column in field.columns
+        if column.where is not None
+    )
 
 
 def _disclosed(
@@ -198,12 +232,11 @@ class PersonalDataService(BaseService[PersonalDataUOW]):
         notify = others - told
         await self.uow.access_log.record_many(
             [
-                _entry(
+                access_entry(
                     viewer,
                     subject,
                     AccessAction.READ,
                     keys,
-                    OUTCOME_OK,
                     notified=subject in notify,
                 )
                 for subject, keys in disclosed.items()
@@ -243,25 +276,39 @@ class PersonalDataService(BaseService[PersonalDataUOW]):
         keys: Collection[str],
         now: datetime,
     ) -> None:
-        ordered = _ordered(keys)
-        labels = ", ".join(get_field(key).label for key in ordered)
         local = localize(now)
-        await self.uow.notification_outbox.enqueue(
-            person_id=subject,
-            category=NotificationCategory.system.value,
-            title="Просмотр ваших данных",
-            body=(
-                f"Открыты ваши данные: {labels}. "
-                f"Кто: {who}. Когда: {local:%d.%m.%Y %H:%M} {local.tzname()}."
-            ),
-            data={
+        await self._tell(
+            subject,
+            "Просмотр ваших данных",
+            f"Открыты ваши данные: {labels_of(keys)}. "
+            f"Кто: {who}. Когда: {local:%d.%m.%Y %H:%M} {local.tzname()}.",
+            {
                 "kind": "sensitive_access",
-                "fields": ",".join(ordered),
+                "fields": ",".join(_ordered(keys)),
                 "via": _via(viewer, subject),
                 "actor_person_id": str(viewer.person_id or ""),
             },
-            now=now,
+            now,
         )
+
+    @required_transaction
+    async def _tell(
+        self, subject: UUID, title: str, body: str, data: dict[str, str], now: datetime
+    ) -> None:
+        await self._tell_many([(subject, title, body, data)], now)
+
+    @required_transaction
+    async def _tell_many(
+        self, notices: Sequence[tuple[UUID, str, str, dict[str, str]]], now: datetime
+    ) -> None:
+        """Notices `(subject, title, body, data)` written in this transaction."""
+        await self.uow.notification_outbox.enqueue_to_persons(
+            notices, NotificationCategory.system.value, now
+        )
+
+    @required_transaction
+    async def _record(self, entries: Sequence[dict[str, Any]]) -> None:
+        await self.uow.access_log.record_many(entries)
 
     async def deny(
         self, viewer: ViewerDTO, subject_id: UUID, tables: Collection[str], reason: str
@@ -269,13 +316,116 @@ class PersonalDataService(BaseService[PersonalDataUOW]):
         """Journals a refused read in a transaction of its own: the refused request
         rolls its own one back."""
         keys = {field.key for table in tables for field in sensitive_fields_of(table)}
-        if not keys:
+        if keys:
+            await self.deny_many(
+                [access_entry(viewer, subject_id, AccessAction.DENIED, keys, reason)]
+            )
+
+    async def deny_many(self, entries: Sequence[dict[str, Any]]) -> None:
+        if not entries:
             return
         async with self.uow() as uow:
-            await uow.access_log.record_many(
-                [_entry(viewer, subject_id, AccessAction.DENIED, keys, reason)]
-            )
+            await uow.access_log.record_many(entries)
             await uow.commit()
+
+    @required_transaction
+    async def _read_fields(
+        self, person_ids: Collection[UUID], keys: Collection[str]
+    ) -> dict[UUID, list[dict[str, Any]]]:
+        """The values of the registry fields `keys` of each person: a record per
+        stored row, and a row that extends another one joins its record. It
+        journals nothing; the caller records what it hands out."""
+        by_table: dict[str, list[PersonalField]] = {}
+        for key in _ordered(keys):
+            field = get_field(key)
+            by_table.setdefault(field.columns[0].table, []).append(field)
+        stored: list[tuple[str, StoredRow]] = []
+        for table, fields in by_table.items():
+            source = source_of(table)
+            parent = source_of(source.parent) if source.parent else None
+            names = {
+                name
+                for field in fields
+                for column in field.columns
+                for name in (column.column, *(column.where or ())[:1])
+            }
+            rows = await self.uow.registry_rows.rows(source, parent, names, person_ids)
+            stored.extend((table, row) for row in rows)
+        opened = await self._open_stored(stored)
+        labels = await self._labels(by_table, opened)
+        records: dict[UUID, dict[tuple[str, Any], dict[str, Any]]] = {
+            person_id: {} for person_id in person_ids
+        }
+        for table, (person_id, row_id, values) in opened:
+            root = source_of(table).parent or table
+            for field in by_table[table]:
+                if not _matches(field, values):
+                    continue
+                shown = {
+                    column.column: _shown(column, values[column.column], labels)
+                    for column in field.columns
+                }
+                records[person_id].setdefault((root, row_id), {})[field.key] = (
+                    next(iter(shown.values())) if len(shown) == 1 else shown
+                )
+        return {person_id: list(rows.values()) for person_id, rows in records.items()}
+
+    @required_transaction
+    async def _open_stored(
+        self, stored: Sequence[tuple[str, StoredRow]]
+    ) -> list[tuple[str, StoredRow]]:
+        needed = {
+            person_id
+            for table, (person_id, _, values) in stored
+            if any(values.get(name) is not None for name in encrypted_columns(table))
+        }
+        keys = await self._read_keys(needed)
+        try:
+            return [
+                (
+                    table,
+                    (
+                        person_id,
+                        row_id,
+                        self._open_row(
+                            table,
+                            encrypted_columns(table),
+                            keys,
+                            person_id,
+                            row_id,
+                            values,
+                        ),
+                    ),
+                )
+                for table, (person_id, row_id, values) in stored
+            ]
+        except DecryptionError as exc:
+            logger.error("Personal data cannot be decrypted: %s", exc.code)
+            raise PersonalDataUnavailable() from None
+        finally:
+            for dek, _ in keys.values():
+                wipe(dek)
+
+    @required_transaction
+    async def _labels(
+        self,
+        by_table: Mapping[str, Sequence[PersonalField]],
+        opened: Sequence[tuple[str, StoredRow]],
+    ) -> dict[tuple[str, Any], Any]:
+        wanted: dict[str, tuple[Column, set[Any]]] = {}
+        for table, (_, _, values) in opened:
+            for field in by_table[table]:
+                for column in field.columns:
+                    value = values.get(column.column)
+                    if column.ref is None or value is None:
+                        continue
+                    wanted.setdefault(column.ref.table, (column, set()))[1].add(value)
+        labels: dict[tuple[str, Any], Any] = {}
+        for ref_table, (column, keys) in wanted.items():
+            assert column.ref is not None
+            found = await self.uow.registry_rows.labels(column.ref, keys)
+            labels.update(((ref_table, key), label) for key, label in found.items())
+        return labels
 
     @staticmethod
     def _open_row(

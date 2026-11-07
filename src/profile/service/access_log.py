@@ -3,6 +3,7 @@ from profile.access.decision import Via
 from profile.dto.access import AccessFieldDTO, AccessLogEntryDTO
 from profile.enum.access import AccessAction
 from profile.models.access_log import SensitiveAccessLogORM
+from profile.models.access_request import AccessRequestORM
 from profile.registry import UnknownFieldError, get_field
 from profile.uow.access_log import AccessLogUOW
 from uuid import UUID
@@ -19,9 +20,13 @@ def _field(key: str) -> AccessFieldDTO:
 
 
 def _entry(
-    row: SensitiveAccessLogORM, subject_id: UUID, names: Mapping[UUID, str]
+    row: SensitiveAccessLogORM,
+    subject_id: UUID,
+    names: Mapping[UUID, str],
+    requests: Mapping[UUID, AccessRequestORM],
 ) -> AccessLogEntryDTO:
     by_self = row.actor_person_id == subject_id
+    request = requests.get(row.request_id) if row.request_id else None
     return AccessLogEntryDTO(
         id=row.id,
         created_at=row.created_at,
@@ -35,7 +40,8 @@ def _entry(
         if by_self or row.actor_person_id is None
         else names.get(row.actor_person_id),
         request_id=row.request_id,
-        comment=None,
+        comment=request.comment if request else None,
+        collective_name=request.collective_name if request else None,
     )
 
 
@@ -63,7 +69,13 @@ class AccessLogService(BaseService[AccessLogUOW]):
                 )
                 for person in (await uow.persons.by_ids(actors) if actors else [])
             }
-            items = [_entry(row, person_id, names) for row in rows]
+            requests = {
+                request.id: request
+                for request in await uow.access_requests.by_ids(
+                    {row.request_id for row in rows if row.request_id}
+                )
+            }
+            items = [_entry(row, person_id, names, requests) for row in rows]
         return PageDTO(
             items=items,
             pagination=PaginationDTO(page=page.page, limit=page.limit, total=total),

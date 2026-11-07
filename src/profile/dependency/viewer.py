@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from fastapi import Depends, Request
 
-from core.dependencies.auth import ActiveUserJWTDep
+from core.dependencies.auth import ActiveUserJWTDep, UserJWTDep
 
 REQUEST_ID = r"[A-Za-z0-9._:-]{1,64}"
 
@@ -30,6 +30,20 @@ async def get_viewer(
 
 
 ViewerDep = Annotated[ViewerDTO, Depends(get_viewer)]
+
+
+async def get_verified_viewer(
+    request: Request, user: UserJWTDep, person_id: CallerPersonDep
+) -> ViewerDTO:
+    return ViewerDTO(
+        user_id=user.id,
+        person_id=person_id,
+        is_superuser=user.is_superuser,
+        http_request_id=http_request_id(request),
+    )
+
+
+VerifiedViewerDep = Annotated[ViewerDTO, Depends(get_verified_viewer)]
 
 
 async def get_account_viewer(request: Request, user: ActiveUserJWTDep) -> ViewerDTO:

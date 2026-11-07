@@ -37,6 +37,61 @@
         "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
         "by_administrator": true,
         "by_self": true,
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
+        "outcome": "x",
+        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+      },
+      "fields_set": [
+        "action",
+        "actor_name",
+        "actor_person_id",
+        "by_administrator",
+        "by_self",
+        "collective_name",
+        "comment",
+        "created_at",
+        "fields",
+        "id",
+        "outcome",
+        "request_id"
+      ],
+      "input": {
+        "action": "read",
+        "actor_name": "x",
+        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
+        "by_administrator": true,
+        "by_self": true,
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
+        "outcome": "x",
+        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+      }
+    },
+    "required": {
+      "dump": {
+        "action": "read",
+        "actor_name": "x",
+        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
+        "by_administrator": true,
+        "by_self": true,
+        "collective_name": null,
         "comment": "x",
         "created_at": "2026-01-01T10:00:00Z",
         "fields": [
@@ -80,56 +135,557 @@
         "outcome": "x",
         "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
       }
+    }
+  },
+  "access_request.AccessExportCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "fields": [
+            "x"
+          ]
+        }
+      },
+      "dump": {
+        "fields": [
+          "x"
+        ]
+      },
+      "fields_set": [
+        "fields"
+      ],
+      "input": {
+        "fields": [
+          "x"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "fields": null
+        }
+      },
+      "dump": {
+        "fields": null
+      },
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "access_request.AccessExportRead": {
+    "full": {
+      "dump": {
+        "exported_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "request_id": "2b65621b-0cac-5d75-8714-192a308dc9a1",
+        "skipped": [
+          {
+            "person_id": "bd1d2e62-4f1d-5a27-8cd9-cbd731f1e7e4",
+            "status": "pending"
+          }
+        ],
+        "subjects": [
+          {
+            "person_id": "314c06ce-ff90-5639-8197-cf1fb42596c1",
+            "records": [
+              {}
+            ]
+          }
+        ]
+      },
+      "fields_set": [
+        "exported_at",
+        "fields",
+        "request_id",
+        "skipped",
+        "subjects"
+      ],
+      "input": {
+        "exported_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "request_id": "2b65621b-0cac-5d75-8714-192a308dc9a1",
+        "skipped": [
+          {
+            "person_id": "bd1d2e62-4f1d-5a27-8cd9-cbd731f1e7e4",
+            "status": "pending"
+          }
+        ],
+        "subjects": [
+          {
+            "person_id": "314c06ce-ff90-5639-8197-cf1fb42596c1",
+            "records": [
+              {}
+            ]
+          }
+        ]
+      }
     },
     "required": {
       "dump": {
-        "action": "read",
-        "actor_name": "x",
-        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
-        "by_administrator": true,
-        "by_self": true,
-        "comment": "x",
-        "created_at": "2026-01-01T10:00:00Z",
+        "exported_at": "2026-01-01T10:00:00Z",
         "fields": [
           {
             "key": "x",
             "label": "x"
           }
         ],
-        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
-        "outcome": "x",
-        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+        "request_id": "2b65621b-0cac-5d75-8714-192a308dc9a1",
+        "skipped": [
+          {
+            "person_id": "bd1d2e62-4f1d-5a27-8cd9-cbd731f1e7e4",
+            "status": "pending"
+          }
+        ],
+        "subjects": [
+          {
+            "person_id": "314c06ce-ff90-5639-8197-cf1fb42596c1",
+            "records": [
+              {}
+            ]
+          }
+        ]
       },
       "fields_set": [
-        "action",
-        "actor_name",
-        "actor_person_id",
-        "by_administrator",
-        "by_self",
-        "comment",
-        "created_at",
+        "exported_at",
         "fields",
-        "id",
-        "outcome",
-        "request_id"
+        "request_id",
+        "skipped",
+        "subjects"
       ],
       "input": {
-        "action": "read",
-        "actor_name": "x",
-        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
-        "by_administrator": true,
-        "by_self": true,
-        "comment": "x",
-        "created_at": "2026-01-01T10:00:00Z",
+        "exported_at": "2026-01-01T10:00:00Z",
         "fields": [
           {
             "key": "x",
             "label": "x"
           }
         ],
-        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
-        "outcome": "x",
-        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+        "request_id": "2b65621b-0cac-5d75-8714-192a308dc9a1",
+        "skipped": [
+          {
+            "person_id": "bd1d2e62-4f1d-5a27-8cd9-cbd731f1e7e4",
+            "status": "pending"
+          }
+        ],
+        "subjects": [
+          {
+            "person_id": "314c06ce-ff90-5639-8197-cf1fb42596c1",
+            "records": [
+              {}
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "access_request.AccessRequestCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+          "comment": "x",
+          "expires_at": "2026-01-01T10:00:00+00:00",
+          "fields": [
+            "x"
+          ]
+        }
+      },
+      "dump": {
+        "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+        "comment": "x",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          "x"
+        ]
+      },
+      "fields_set": [
+        "collective_id",
+        "comment",
+        "expires_at",
+        "fields"
+      ],
+      "input": {
+        "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+        "comment": "x",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          "x"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+          "comment": "x",
+          "expires_at": "2026-01-01T10:00:00+00:00",
+          "fields": [
+            "x"
+          ]
+        }
+      },
+      "dump": {
+        "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+        "comment": "x",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          "x"
+        ]
+      },
+      "fields_set": [
+        "collective_id",
+        "comment",
+        "expires_at",
+        "fields"
+      ],
+      "input": {
+        "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+        "comment": "x",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          "x"
+        ]
+      }
+    }
+  },
+  "access_request.AccessRequestRead": {
+    "full": {
+      "dump": {
+        "collective_id": "4ada39d2-ab1d-5ec9-9afa-13d2bca9f2e7",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grants": [
+          {
+            "person_id": "ee6b964c-f737-5265-bce5-acf4c2ea7eed",
+            "status": "pending"
+          }
+        ],
+        "id": "28c6d7c8-00e0-5ee5-a29b-67973e02ced9",
+        "is_expired": true
+      },
+      "fields_set": [
+        "collective_id",
+        "collective_name",
+        "comment",
+        "created_at",
+        "expires_at",
+        "fields",
+        "grants",
+        "id",
+        "is_expired"
+      ],
+      "input": {
+        "collective_id": "4ada39d2-ab1d-5ec9-9afa-13d2bca9f2e7",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grants": [
+          {
+            "person_id": "ee6b964c-f737-5265-bce5-acf4c2ea7eed",
+            "status": "pending"
+          }
+        ],
+        "id": "28c6d7c8-00e0-5ee5-a29b-67973e02ced9",
+        "is_expired": true
+      }
+    },
+    "required": {
+      "dump": {
+        "collective_id": "4ada39d2-ab1d-5ec9-9afa-13d2bca9f2e7",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grants": [
+          {
+            "person_id": "ee6b964c-f737-5265-bce5-acf4c2ea7eed",
+            "status": "pending"
+          }
+        ],
+        "id": "28c6d7c8-00e0-5ee5-a29b-67973e02ced9",
+        "is_expired": true
+      },
+      "fields_set": [
+        "collective_id",
+        "collective_name",
+        "comment",
+        "created_at",
+        "expires_at",
+        "fields",
+        "grants",
+        "id",
+        "is_expired"
+      ],
+      "input": {
+        "collective_id": "4ada39d2-ab1d-5ec9-9afa-13d2bca9f2e7",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grants": [
+          {
+            "person_id": "ee6b964c-f737-5265-bce5-acf4c2ea7eed",
+            "status": "pending"
+          }
+        ],
+        "id": "28c6d7c8-00e0-5ee5-a29b-67973e02ced9",
+        "is_expired": true
+      }
+    }
+  },
+  "access_request.ExportedSubjectRead": {
+    "full": {
+      "dump": {
+        "person_id": "392c87a6-afa7-53fc-8377-e2edad6fe206",
+        "records": [
+          {}
+        ]
+      },
+      "fields_set": [
+        "person_id",
+        "records"
+      ],
+      "input": {
+        "person_id": "392c87a6-afa7-53fc-8377-e2edad6fe206",
+        "records": [
+          {}
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "person_id": "392c87a6-afa7-53fc-8377-e2edad6fe206",
+        "records": [
+          {}
+        ]
+      },
+      "fields_set": [
+        "person_id",
+        "records"
+      ],
+      "input": {
+        "person_id": "392c87a6-afa7-53fc-8377-e2edad6fe206",
+        "records": [
+          {}
+        ]
+      }
+    }
+  },
+  "access_request.GrantStateRead": {
+    "full": {
+      "dump": {
+        "person_id": "b84f4583-a5c6-5321-a240-4d74f49a0619",
+        "status": "pending"
+      },
+      "fields_set": [
+        "person_id",
+        "status"
+      ],
+      "input": {
+        "person_id": "b84f4583-a5c6-5321-a240-4d74f49a0619",
+        "status": "pending"
+      }
+    },
+    "required": {
+      "dump": {
+        "person_id": "b84f4583-a5c6-5321-a240-4d74f49a0619",
+        "status": "pending"
+      },
+      "fields_set": [
+        "person_id",
+        "status"
+      ],
+      "input": {
+        "person_id": "b84f4583-a5c6-5321-a240-4d74f49a0619",
+        "status": "pending"
+      }
+    }
+  },
+  "access_request.IncomingGrantRead": {
+    "full": {
+      "dump": {
+        "collective_id": "30c3bf66-f434-588c-a4a6-6262de589c91",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "decided_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grantee_name": "x",
+        "grantee_person_id": "38208cfd-3043-5786-a711-8a7ecb2a2924",
+        "id": "f79c87ef-1b04-5b85-b31c-a09ee0f42caa",
+        "request_id": "6301a000-8ede-59fc-a88e-bc84bf3661ee",
+        "revoked_at": "2026-01-01T10:00:00Z",
+        "status": "pending"
+      },
+      "fields_set": [
+        "collective_id",
+        "collective_name",
+        "comment",
+        "created_at",
+        "decided_at",
+        "expires_at",
+        "fields",
+        "grantee_name",
+        "grantee_person_id",
+        "id",
+        "request_id",
+        "revoked_at",
+        "status"
+      ],
+      "input": {
+        "collective_id": "30c3bf66-f434-588c-a4a6-6262de589c91",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "decided_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grantee_name": "x",
+        "grantee_person_id": "38208cfd-3043-5786-a711-8a7ecb2a2924",
+        "id": "f79c87ef-1b04-5b85-b31c-a09ee0f42caa",
+        "request_id": "6301a000-8ede-59fc-a88e-bc84bf3661ee",
+        "revoked_at": "2026-01-01T10:00:00Z",
+        "status": "pending"
+      }
+    },
+    "required": {
+      "dump": {
+        "collective_id": "30c3bf66-f434-588c-a4a6-6262de589c91",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "decided_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grantee_name": "x",
+        "grantee_person_id": "38208cfd-3043-5786-a711-8a7ecb2a2924",
+        "id": "f79c87ef-1b04-5b85-b31c-a09ee0f42caa",
+        "request_id": "6301a000-8ede-59fc-a88e-bc84bf3661ee",
+        "revoked_at": "2026-01-01T10:00:00Z",
+        "status": "pending"
+      },
+      "fields_set": [
+        "collective_id",
+        "collective_name",
+        "comment",
+        "created_at",
+        "decided_at",
+        "expires_at",
+        "fields",
+        "grantee_name",
+        "grantee_person_id",
+        "id",
+        "request_id",
+        "revoked_at",
+        "status"
+      ],
+      "input": {
+        "collective_id": "30c3bf66-f434-588c-a4a6-6262de589c91",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "decided_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grantee_name": "x",
+        "grantee_person_id": "38208cfd-3043-5786-a711-8a7ecb2a2924",
+        "id": "f79c87ef-1b04-5b85-b31c-a09ee0f42caa",
+        "request_id": "6301a000-8ede-59fc-a88e-bc84bf3661ee",
+        "revoked_at": "2026-01-01T10:00:00Z",
+        "status": "pending"
+      }
+    }
+  },
+  "access_request.SkippedSubjectRead": {
+    "full": {
+      "dump": {
+        "person_id": "d6049dee-5c32-5701-9675-91ee60f05799",
+        "status": "pending"
+      },
+      "fields_set": [
+        "person_id",
+        "status"
+      ],
+      "input": {
+        "person_id": "d6049dee-5c32-5701-9675-91ee60f05799",
+        "status": "pending"
+      }
+    },
+    "required": {
+      "dump": {
+        "person_id": "d6049dee-5c32-5701-9675-91ee60f05799",
+        "status": "pending"
+      },
+      "fields_set": [
+        "person_id",
+        "status"
+      ],
+      "input": {
+        "person_id": "d6049dee-5c32-5701-9675-91ee60f05799",
+        "status": "pending"
       }
     }
   },

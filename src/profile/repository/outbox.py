@@ -1,10 +1,10 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from datetime import datetime
 from profile.models.outbox import NotificationOutboxORM as Model
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import insert, select, update
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 
@@ -35,6 +35,31 @@ class NotificationOutboxRepo(SQLAlchemyRepository[Model]):
                 "data": data,
                 "next_attempt_at": now,
             }
+        )
+
+    async def enqueue_to_persons(
+        self,
+        notices: Sequence[tuple[UUID, str, str, dict[str, Any]]],
+        category: str,
+        now: datetime,
+    ) -> None:
+        """One statement for many notices: `(person_id, title, body, data)`."""
+        if not notices:
+            return
+        await self.session.execute(
+            insert(Model),
+            [
+                {
+                    "person_id": person_id,
+                    "user_id": None,
+                    "category": category,
+                    "title": title,
+                    "body": body,
+                    "data": data,
+                    "next_attempt_at": now,
+                }
+                for person_id, title, body, data in notices
+            ],
         )
 
     async def claim_due(self, limit: int, now: datetime) -> list[Model]:

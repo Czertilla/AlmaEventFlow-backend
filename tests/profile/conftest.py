@@ -1,5 +1,8 @@
 import os
 from collections.abc import AsyncIterator
+from profile.enum.audience import Audience
+from profile.registry import Column, PersonalField, Source
+from profile.registry import fields as registry_module
 from typing import Any
 from uuid import NAMESPACE_URL, UUID, uuid5
 
@@ -107,3 +110,49 @@ async def api(
 
     async with api_client(app, profile_sessionmaker) as client:
         yield client
+
+
+SECRET_NOTE = PersonalField(
+    key="secret_note.content",
+    label="Секретная заметка",
+    columns=(
+        Column("secret_note", "body"),
+        Column("secret_note", "due", kind="date"),
+        Column("secret_note", "flag", kind="bool"),
+    ),
+    audience_default=Audience.PRIVATE,
+    audience_min=Audience.PRIVATE,
+    audience_max=Audience.PRIVATE,
+    encrypted=True,
+)
+
+
+@pytest.fixture
+async def secret_note(
+    profile_engine: AsyncEngine, monkeypatch: pytest.MonkeyPatch
+) -> AsyncIterator[PersonalField]:
+    monkeypatch.setattr(
+        registry_module,
+        "_BY_KEY",
+        {**registry_module._BY_KEY, SECRET_NOTE.key: SECRET_NOTE},  # pyright: ignore[reportPrivateUsage]
+    )
+    monkeypatch.setattr(
+        registry_module,
+        "_SOURCES",
+        {
+            **registry_module._SOURCES,  # pyright: ignore[reportPrivateUsage]
+            "secret_note": Source("secret_note", person="person_id"),
+        },
+    )
+    async with profile_engine.begin() as conn:
+        await conn.execute(
+            text(
+                "CREATE TABLE secret_note (id uuid PRIMARY KEY, person_id uuid, "
+                "body bytea, due bytea, flag bytea)"
+            )
+        )
+    try:
+        yield SECRET_NOTE
+    finally:
+        async with profile_engine.begin() as conn:
+            await conn.execute(text("DROP TABLE IF EXISTS secret_note"))

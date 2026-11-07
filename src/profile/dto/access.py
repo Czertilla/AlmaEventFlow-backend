@@ -37,3 +37,4 @@ class AccessLogEntryDTO:
     actor_name: str | None
     request_id: UUID | None
     comment: str | None
+    collective_name: str | None = None

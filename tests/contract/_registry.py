@@ -164,6 +164,24 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
         "profile.api.v2.schema",
         {
             "access_log.AccessLogEntryRead": "profile.dto.access:AccessLogEntryDTO",
+            "access_request.AccessExportRead": (
+                "profile.dto.access_request:AccessExportDTO"
+            ),
+            "access_request.AccessRequestRead": (
+                "profile.dto.access_request:AccessRequestDTO"
+            ),
+            "access_request.ExportedSubjectRead": (
+                "profile.dto.access_request:ExportedSubjectDTO"
+            ),
+            "access_request.GrantStateRead": (
+                "profile.dto.access_request:GrantStateDTO"
+            ),
+            "access_request.IncomingGrantRead": (
+                "profile.dto.access_request:IncomingGrantDTO"
+            ),
+            "access_request.SkippedSubjectRead": (
+                "profile.dto.access_request:SkippedSubjectDTO"
+            ),
             "account_history.AccountLinkChangeRead": (
                 "profile.dto.account_history:AccountLinkChangeDTO"
             ),

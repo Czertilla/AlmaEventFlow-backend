@@ -15,7 +15,7 @@ class AccessLogRepo(SQLAlchemyRepository[Model]):
 
     async def record_many(self, rows: Sequence[dict[str, Any]]) -> None:
         if rows:
-            await self.execute(insert(Model).values(list(rows)))
+            await self.session.execute(insert(Model), list(rows))
 
     async def notified_since(
         self, actor_user_id: UUID, subjects: Collection[UUID], since: datetime

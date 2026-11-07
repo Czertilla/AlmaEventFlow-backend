@@ -4,11 +4,32 @@ from profile.enum.value_kind import ValueKind
 
 
 @dataclass(frozen=True, slots=True)
+class Reference:
+    """The stored value is the `key` of a row of `table`, shown by its `label`."""
+
+    table: str
+    label: str = "name"
+    key: str = "id"
+
+
+@dataclass(frozen=True, slots=True)
 class Column:
     table: str
     column: str
     where: tuple[str, str] | None = None
     kind: ValueKind = "text"
+    ref: Reference | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class Source:
+    """How a row of `table` reaches its person: the `person` column holds the
+    person's id, or the row extends the row of `parent` with the same id."""
+
+    table: str
+    person: str | None = None
+    parent: str | None = None
+    row: str = "id"
 
 
 @dataclass(frozen=True, slots=True)
