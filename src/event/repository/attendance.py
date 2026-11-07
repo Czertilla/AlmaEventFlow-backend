@@ -46,6 +46,14 @@ class AttendanceRepo(
             filter, pagination, options=options, scope=scope
         )
 
+    @staticmethod
+    def in_collectives(collective_ids: Collection[UUID]) -> ColumnElement[bool]:
+        return Model.participation_id.in_(
+            select(ParticipationORM.id).where(
+                ParticipationORM.collective_id.in_(list(collective_ids))
+            )
+        )
+
     async def collective_id_of(self, attendance_id: UUID) -> UUID | None:
         stmt = (
             select(ParticipationORM.collective_id)

@@ -1,8 +1,7 @@
-from datetime import date
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.sqlalchemy.core import Base
@@ -34,11 +33,11 @@ class PassportORM(ModuleBase, Base, UUIDMixin, TimestampMixin):
     profile_id: Mapped[UUID] = mapped_column(
         ForeignKey("profile.id", ondelete="CASCADE")
     )
-    number: Mapped[str] = mapped_column(String(32))
-    expire_date: Mapped[date]
+    number: Mapped[bytes] = mapped_column(LargeBinary)
+    expire_date: Mapped[bytes] = mapped_column(LargeBinary)
     is_foreign: Mapped[bool]
-    issued_date: Mapped[date | None]
-    issued_authority: Mapped[str | None]
+    issued_date: Mapped[bytes | None] = mapped_column(LargeBinary)
+    issued_authority: Mapped[bytes | None] = mapped_column(LargeBinary)
 
     name_variant: Mapped[Optional["NameVariantORM"]] = relationship(
         back_populates="passport"

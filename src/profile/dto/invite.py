@@ -12,3 +12,10 @@ class InviteTokenCreateDTO:
 class InviteTokenDTO:
     token: str
     expires_at: int
+
+
+@dataclass(frozen=True, slots=True)
+class InvitePreviewDTO:
+    surname: str
+    name: str
+    patronymic: str | None

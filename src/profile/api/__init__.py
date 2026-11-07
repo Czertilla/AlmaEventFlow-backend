@@ -1,3 +1,4 @@
+from profile.registry import validate_registry
 from profile.utils.rsa import ensure_invite_keys
 
 from fastapi import APIRouter, FastAPI
@@ -9,6 +10,7 @@ from core.utils.imports import load_common
 
 
 def include_routers(app: FastAPI):
+    validate_registry()
     ensure_invite_keys()
     api_routers = load_common(__name__, "router", (APIRouter))
     kafka_routers = load_common(__name__, "router", (KafkaRouter))

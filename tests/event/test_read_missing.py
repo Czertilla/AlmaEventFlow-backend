@@ -3,6 +3,7 @@ from uuid import uuid4
 
 import pytest
 
+from event.dto.scope import CollectiveScopeDTO
 from event.exc.event import (
     AttendanceNotExistsException,
     EventNotExistsException,
@@ -64,6 +65,10 @@ MISSING = [
     (RoleService, RoleNotExistsException),
     (StageService, StageNotExistsException),
 ]
+READ_KWARGS: dict[Any, dict[str, Any]] = {
+    AttendanceService: {"scope": CollectiveScopeDTO()},
+    MemberService: {"scope": CollectiveScopeDTO()},
+}
 
 
 @pytest.mark.parametrize(("service", "exception"), MISSING)
@@ -71,7 +76,7 @@ async def test_read_of_a_missing_row_raises_not_exists(
     service: Any, exception: type[Exception]
 ) -> None:
     with pytest.raises(exception):
-        await service(EmptyUoW()).read(uuid4())
+        await service(EmptyUoW()).read(uuid4(), **READ_KWARGS.get(service, {}))
 
 
 @pytest.mark.parametrize(("service", "exception"), MISSING)

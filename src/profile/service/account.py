@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from logging import getLogger
 from profile.api.kafka.pub.person import on_person_link_changed
 from profile.exc.account import PersonAlreadyHasAccountException
@@ -9,6 +10,8 @@ from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
 
+from core.config.settings import settings
+from core.enum.notify import NotificationCategory
 from core.enum.profile import PersonLinkSource
 from core.schema.message.profile import PersonLinkData
 from core.schema.user import UserJWT
@@ -18,6 +21,8 @@ logger = getLogger(__name__)
 
 REANNOUNCE_INTERVAL = 30.0
 _announced: dict[UUID, float] = {}
+
+TOLD_SOURCES = frozenset({PersonLinkSource.INVITE, PersonLinkSource.ADMIN})
 
 
 class PersonAccountService(BaseService[PersonUOW]):
@@ -57,6 +62,38 @@ class PersonAccountService(BaseService[PersonUOW]):
             new_person_id=person_id,
             source=source,
             actor_id=actor_id,
+        )
+        if source in TOLD_SOURCES:
+            await self._tell_account(user_id, person_id, moved=current is not None)
+
+    @required_transaction
+    async def _tell_account(
+        self, user_id: UUID, person_id: UUID, *, moved: bool
+    ) -> None:
+        person = await self.uow.persons.get_by_id(person_id)
+        name = (
+            " ".join(p for p in (person.surname, person.name, person.patronymic) if p)
+            if person is not None
+            else ""
+        )
+        target = f": {name}" if name else ""
+        parts = [
+            f"Аккаунт перенесён на другую подробную информацию{target}."
+            if moved
+            else f"Аккаунт связан с подробной информацией{target}."
+        ]
+        pause = settings.LINK_COOLDOWN_HOURS
+        if pause > 0:
+            parts.append(f"Следующие {pause} ч видимость данных нельзя расширить.")
+        parts.append("Если это сделали не вы, сообщите администратору.")
+        body = " ".join(parts)
+        await self.uow.notification_outbox.enqueue(
+            user_id=user_id,
+            category=NotificationCategory.system.value,
+            title="Привязка аккаунта изменена",
+            body=body,
+            data={"kind": "account_link_changed", "person_id": str(person_id)},
+            now=datetime.now(UTC),
         )
 
     async def person_of(self, user_id: UUID) -> UUID | None:

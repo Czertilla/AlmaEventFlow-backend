@@ -325,14 +325,14 @@ async def test_roles_members_and_participations(
         headers=ADMIN,
     )
 
-    found = await api.get(f"{BASE}/members", params={"search": "Petr"}, headers=USER)
+    found = await api.get(f"{BASE}/members", params={"search": "Petr"}, headers=ADMIN)
     both = await api.get(
         f"{BASE}/members",
         params={"collective_id__in": str(collective_id), "order_by": "-created_at"},
-        headers=USER,
+        headers=ADMIN,
     )
     by_surname = await api.get(
-        f"{BASE}/members", params={"order_by": "-person__surname"}, headers=USER
+        f"{BASE}/members", params={"order_by": "-person__surname"}, headers=ADMIN
     )
     patched_member = await api.patch(
         f"{BASE}/members/{member.json()['id']}",
@@ -340,7 +340,7 @@ async def test_roles_members_and_participations(
         headers=ADMIN,
     )
     inactive = await api.get(
-        f"{BASE}/members", params={"is_active": False}, headers=USER
+        f"{BASE}/members", params={"is_active": False}, headers=ADMIN
     )
     roles = await api.get(
         f"{BASE}/roles",
@@ -494,21 +494,21 @@ async def test_attendance_filters(
     )
 
     attended = await api.get(
-        f"{BASE}/attendances", params={"is_attended": True}, headers=USER
+        f"{BASE}/attendances", params={"is_attended": True}, headers=ADMIN
     )
     absent = await api.get(
-        f"{BASE}/attendances", params={"is_attended": False}, headers=USER
+        f"{BASE}/attendances", params={"is_attended": False}, headers=ADMIN
     )
     verified = await api.get(
-        f"{BASE}/attendances", params={"is_verified": False}, headers=USER
+        f"{BASE}/attendances", params={"is_verified": False}, headers=ADMIN
     )
     of_member = await api.get(
         f"{BASE}/attendances",
         params={"member_id__in": member.json()["id"], "order_by": "-created_at"},
-        headers=USER,
+        headers=ADMIN,
     )
     edited = await api.get(
-        f"{BASE}/attendances", params={"edited_at__isnull": False}, headers=USER
+        f"{BASE}/attendances", params={"edited_at__isnull": False}, headers=ADMIN
     )
 
     assert created.status_code == 200, created.text

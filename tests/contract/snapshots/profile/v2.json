@@ -1,6 +1,318 @@
 {
   "components": {
     "schemas": {
+      "AccessAction": {
+        "enum": [
+          "read",
+          "export",
+          "request_created",
+          "grant_approved",
+          "grant_declined",
+          "grant_revoked",
+          "key_destroyed",
+          "denied"
+        ],
+        "title": "AccessAction",
+        "type": "string"
+      },
+      "AccessExportCreate": {
+        "properties": {
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 64,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Fields of the request to export; all of them when omitted.",
+            "title": "Fields"
+          }
+        },
+        "title": "AccessExportCreate",
+        "type": "object"
+      },
+      "AccessExportRead": {
+        "properties": {
+          "exported_at": {
+            "format": "date-time",
+            "title": "Exported At",
+            "type": "string"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/AccessFieldRead"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "request_id": {
+            "format": "uuid",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "skipped": {
+            "items": {
+              "$ref": "#/components/schemas/SkippedSubjectRead"
+            },
+            "title": "Skipped",
+            "type": "array"
+          },
+          "subjects": {
+            "items": {
+              "$ref": "#/components/schemas/ExportedSubjectRead"
+            },
+            "title": "Subjects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "request_id",
+          "exported_at",
+          "fields",
+          "subjects",
+          "skipped"
+        ],
+        "title": "AccessExportRead",
+        "type": "object"
+      },
+      "AccessFieldRead": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "AccessFieldRead",
+        "type": "object"
+      },
+      "AccessLogEntryRead": {
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/AccessAction"
+          },
+          "actor_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Name"
+          },
+          "actor_person_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Person Id"
+          },
+          "by_administrator": {
+            "title": "By Administrator",
+            "type": "boolean"
+          },
+          "by_self": {
+            "title": "By Self",
+            "type": "boolean"
+          },
+          "collective_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The collective the request was made in.",
+            "title": "Collective Name"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the data was asked for, as the requester wrote it.",
+            "title": "Comment"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/AccessFieldRead"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "outcome": {
+            "description": "`ok`, or the code of the refusal.",
+            "title": "Outcome",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "action",
+          "outcome",
+          "fields",
+          "by_self",
+          "by_administrator",
+          "actor_person_id",
+          "actor_name",
+          "request_id",
+          "comment"
+        ],
+        "title": "AccessLogEntryRead",
+        "type": "object"
+      },
+      "AccessRequestCreate": {
+        "properties": {
+          "collective_id": {
+            "format": "uuid",
+            "title": "Collective Id",
+            "type": "string"
+          },
+          "comment": {
+            "description": "Why the data is needed. Shown to every member as written; its length after trimming is bounded by the server settings.",
+            "maxLength": 4000,
+            "title": "Comment",
+            "type": "string"
+          },
+          "expires_at": {
+            "description": "When the grants of this request stop opening the data.",
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "fields": {
+            "description": "Keys of grantable fields (`GET /access-requests/fields`).",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 64,
+            "minItems": 1,
+            "title": "Fields",
+            "type": "array"
+          }
+        },
+        "required": [
+          "collective_id",
+          "fields",
+          "comment",
+          "expires_at"
+        ],
+        "title": "AccessRequestCreate",
+        "type": "object"
+      },
+      "AccessRequestRead": {
+        "properties": {
+          "collective_id": {
+            "format": "uuid",
+            "title": "Collective Id",
+            "type": "string"
+          },
+          "collective_name": {
+            "title": "Collective Name",
+            "type": "string"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/AccessFieldRead"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "grants": {
+            "description": "One per member asked: who and how they answered, no data.",
+            "items": {
+              "$ref": "#/components/schemas/GrantStateRead"
+            },
+            "title": "Grants",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_expired": {
+            "title": "Is Expired",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "collective_id",
+          "collective_name",
+          "fields",
+          "comment",
+          "expires_at",
+          "created_at",
+          "is_expired",
+          "grants"
+        ],
+        "title": "AccessRequestRead",
+        "type": "object"
+      },
       "AccountLinkChangeRead": {
         "properties": {
           "action": {
@@ -78,6 +390,15 @@
         "title": "AccountLinkChangeRead",
         "type": "object"
       },
+      "Audience": {
+        "enum": [
+          "private",
+          "context",
+          "all_users"
+        ],
+        "title": "Audience",
+        "type": "string"
+      },
       "ContactItemRead": {
         "properties": {
           "id": {
@@ -131,6 +452,68 @@
           "name"
         ],
         "title": "DegreeReference",
+        "type": "object"
+      },
+      "DestroyKeyData": {
+        "properties": {
+          "confirm_person_id": {
+            "description": "The id of the person once more: a mistyped path destroys nothing.",
+            "format": "uuid",
+            "title": "Confirm Person Id",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Why; told to the person with the notice.",
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirm_person_id",
+          "reason"
+        ],
+        "title": "DestroyKeyData",
+        "type": "object"
+      },
+      "DestroyedKeyRead": {
+        "properties": {
+          "destroyed_at": {
+            "format": "date-time",
+            "title": "Destroyed At",
+            "type": "string"
+          },
+          "fields": {
+            "description": "The encrypted fields destroyed.",
+            "items": {
+              "$ref": "#/components/schemas/AccessFieldRead"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "person_id": {
+            "format": "uuid",
+            "title": "Person Id",
+            "type": "string"
+          },
+          "rows_cleared": {
+            "title": "Rows Cleared",
+            "type": "integer"
+          },
+          "rows_deleted": {
+            "title": "Rows Deleted",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "person_id",
+          "destroyed_at",
+          "fields",
+          "rows_deleted",
+          "rows_cleared"
+        ],
+        "title": "DestroyedKeyRead",
         "type": "object"
       },
       "DietRead": {
@@ -202,6 +585,30 @@
         "title": "ErrorModel",
         "type": "object"
       },
+      "ExportedSubjectRead": {
+        "properties": {
+          "person_id": {
+            "format": "uuid",
+            "title": "Person Id",
+            "type": "string"
+          },
+          "records": {
+            "description": "One record per stored row (a passport with its name variant, a contact, the person's profile): field key to value, a field of several columns as an object of them.",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Records",
+            "type": "array"
+          }
+        },
+        "required": [
+          "person_id",
+          "records"
+        ],
+        "title": "ExportedSubjectRead",
+        "type": "object"
+      },
       "FacultyReference": {
         "properties": {
           "name": {
@@ -223,6 +630,36 @@
         "title": "FacultyReference",
         "type": "object"
       },
+      "GrantState": {
+        "description": "What a subject or a grantee sees: the stored status, or `expired` once the\nrequest has run out.",
+        "enum": [
+          "pending",
+          "active",
+          "declined",
+          "revoked",
+          "expired"
+        ],
+        "title": "GrantState",
+        "type": "string"
+      },
+      "GrantStateRead": {
+        "properties": {
+          "person_id": {
+            "format": "uuid",
+            "title": "Person Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GrantState"
+          }
+        },
+        "required": [
+          "person_id",
+          "status"
+        ],
+        "title": "GrantStateRead",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -234,6 +671,163 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Health": {
+        "enum": [
+          "ok",
+          "unavailable"
+        ],
+        "title": "Health",
+        "type": "string"
+      },
+      "IncomingGrantRead": {
+        "properties": {
+          "collective_id": {
+            "format": "uuid",
+            "title": "Collective Id",
+            "type": "string"
+          },
+          "collective_name": {
+            "title": "Collective Name",
+            "type": "string"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/AccessFieldRead"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "grantee_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grantee Name"
+          },
+          "grantee_person_id": {
+            "format": "uuid",
+            "title": "Grantee Person Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "request_id": {
+            "format": "uuid",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GrantState"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "created_at",
+          "decided_at",
+          "revoked_at",
+          "request_id",
+          "grantee_person_id",
+          "grantee_name",
+          "collective_id",
+          "collective_name",
+          "fields",
+          "comment",
+          "expires_at"
+        ],
+        "title": "IncomingGrantRead",
+        "type": "object"
+      },
+      "InvitePreviewData": {
+        "properties": {
+          "token": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "title": "InvitePreviewData",
+        "type": "object"
+      },
+      "InvitePreviewRead": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "patronymic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Patronymic"
+          },
+          "surname": {
+            "title": "Surname",
+            "type": "string"
+          }
+        },
+        "required": [
+          "surname",
+          "name",
+          "patronymic"
+        ],
+        "title": "InvitePreviewRead",
         "type": "object"
       },
       "InviteTokenData": {
@@ -271,6 +865,18 @@
           "expires_at"
         ],
         "title": "InviteTokenRead",
+        "type": "object"
+      },
+      "KeyHealthRead": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/Health"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "KeyHealthRead",
         "type": "object"
       },
       "MyContactData": {
@@ -676,6 +1282,46 @@
         "title": "OrganizationRefRead",
         "type": "object"
       },
+      "PageV1_AccessLogEntryRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AccessLogEntryRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[AccessLogEntryRead]",
+        "type": "object"
+      },
+      "PageV1_AccessRequestRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AccessRequestRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[AccessRequestRead]",
+        "type": "object"
+      },
       "PageV1_AccountLinkChangeRead_": {
         "properties": {
           "items": {
@@ -694,6 +1340,26 @@
           "pagination"
         ],
         "title": "PageV1[AccountLinkChangeRead]",
+        "type": "object"
+      },
+      "PageV1_IncomingGrantRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IncomingGrantRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationV1"
+          }
+        },
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "PageV1[IncomingGrantRead]",
         "type": "object"
       },
       "PaginationV1": {
@@ -741,6 +1407,90 @@
         "title": "PersonLinkSource",
         "type": "string"
       },
+      "PersonNameRead": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "patronymic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Patronymic"
+          },
+          "surname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Surname"
+          }
+        },
+        "required": [
+          "id",
+          "surname",
+          "name",
+          "patronymic"
+        ],
+        "title": "PersonNameRead",
+        "type": "object"
+      },
+      "PersonNamesData": {
+        "properties": {
+          "ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 200,
+            "title": "Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ids"
+        ],
+        "title": "PersonNamesData",
+        "type": "object"
+      },
+      "PersonNamesRead": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PersonNameRead"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "PersonNamesRead",
+        "type": "object"
+      },
       "ReferenceName": {
         "properties": {
           "name": {
@@ -754,6 +1504,35 @@
           "name"
         ],
         "title": "ReferenceName",
+        "type": "object"
+      },
+      "SkipReason": {
+        "enum": [
+          "pending",
+          "declined",
+          "revoked",
+          "expired",
+          "not_member"
+        ],
+        "title": "SkipReason",
+        "type": "string"
+      },
+      "SkippedSubjectRead": {
+        "properties": {
+          "person_id": {
+            "format": "uuid",
+            "title": "Person Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SkipReason"
+          }
+        },
+        "required": [
+          "person_id",
+          "status"
+        ],
+        "title": "SkippedSubjectRead",
         "type": "object"
       },
       "StudentDegreeRead": {
@@ -882,10 +1661,848 @@
         ],
         "title": "ValidationError",
         "type": "object"
+      },
+      "VisibilityEntryRead": {
+        "properties": {
+          "audience": {
+            "$ref": "#/components/schemas/Audience"
+          },
+          "audience_default": {
+            "$ref": "#/components/schemas/Audience"
+          },
+          "audience_max": {
+            "$ref": "#/components/schemas/Audience"
+          },
+          "audience_min": {
+            "$ref": "#/components/schemas/Audience"
+          },
+          "configurable": {
+            "title": "Configurable",
+            "type": "boolean"
+          },
+          "is_default": {
+            "title": "Is Default",
+            "type": "boolean"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "configurable",
+          "audience_min",
+          "audience_max",
+          "audience_default",
+          "audience",
+          "is_default"
+        ],
+        "title": "VisibilityEntryRead",
+        "type": "object"
+      },
+      "VisibilityRead": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/VisibilityEntryRead"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "VisibilityRead",
+        "type": "object"
+      },
+      "VisibilitySetData": {
+        "properties": {
+          "audience": {
+            "$ref": "#/components/schemas/Audience"
+          }
+        },
+        "required": [
+          "audience"
+        ],
+        "title": "VisibilitySetData",
+        "type": "object"
       }
     }
   },
   "paths": {
+    "/profile/v2/access-log/my": {
+      "get": {
+        "description": "Who opened the caller's sensitive data, or tried to, and when; newest first.\nEmpty for an account without a person.",
+        "operationId": "get_my_access_log_profile_v2_access_log_my_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_AccessLogEntryRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get My Access Log",
+        "tags": [
+          "access-log"
+        ]
+      }
+    },
+    "/profile/v2/access-requests": {
+      "get": {
+        "description": "The caller's own requests, newest first.",
+        "operationId": "get_my_access_requests_profile_v2_access_requests_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "collective_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Collective Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_AccessRequestRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get My Access Requests",
+        "tags": [
+          "access-requests"
+        ]
+      },
+      "post": {
+        "description": "The leader of a confirmed collective asks its active members for fields, with\na comment that says why. Every member gets a pending grant and a notice; the\nrequest, its fields, comment and term never change.",
+        "operationId": "create_access_request_profile_v2_access_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccessRequestCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessRequestRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "COLLECTIVE_NOT_VERIFIED": {
+                    "summary": "COLLECTIVE_NOT_VERIFIED",
+                    "value": {
+                      "detail": "COLLECTIVE_NOT_VERIFIED"
+                    }
+                  },
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  },
+                  "NOT_COLLECTIVE_PRINCIPAL": {
+                    "summary": "NOT_COLLECTIVE_PRINCIPAL",
+                    "value": {
+                      "detail": "NOT_COLLECTIVE_PRINCIPAL"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "COLLECTIVE_NOT_VERIFIED, FORBIDDEN, NOT_COLLECTIVE_PRINCIPAL"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ACCESS_COMMENT_LENGTH": {
+                    "summary": "ACCESS_COMMENT_LENGTH",
+                    "value": {
+                      "detail": "ACCESS_COMMENT_LENGTH"
+                    }
+                  },
+                  "ACCESS_EXPIRES_OUT_OF_RANGE": {
+                    "summary": "ACCESS_EXPIRES_OUT_OF_RANGE",
+                    "value": {
+                      "detail": "ACCESS_EXPIRES_OUT_OF_RANGE"
+                    }
+                  },
+                  "ACCESS_FIELD_NOT_GRANTABLE": {
+                    "summary": "ACCESS_FIELD_NOT_GRANTABLE",
+                    "value": {
+                      "detail": "ACCESS_FIELD_NOT_GRANTABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ACCESS_FIELD_NOT_GRANTABLE, ACCESS_COMMENT_LENGTH, ACCESS_EXPIRES_OUT_OF_RANGE"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "TOO_MANY_REQUESTS": {
+                    "summary": "TOO_MANY_REQUESTS",
+                    "value": {
+                      "detail": "TOO_MANY_REQUESTS"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "TOO_MANY_REQUESTS"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "EVENT_SERVICE_UNAVAILABLE": {
+                    "summary": "EVENT_SERVICE_UNAVAILABLE",
+                    "value": {
+                      "detail": "EVENT_SERVICE_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "EVENT_SERVICE_UNAVAILABLE"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Access Request",
+        "tags": [
+          "access-requests"
+        ]
+      }
+    },
+    "/profile/v2/access-requests/fields": {
+      "get": {
+        "description": "The fields a leader may ask the members of a collective for.",
+        "operationId": "get_access_fields_profile_v2_access_requests_fields_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AccessFieldRead"
+                  },
+                  "title": "Response Get Access Fields Profile V2 Access Requests Fields Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Access Fields",
+        "tags": [
+          "access-requests"
+        ]
+      }
+    },
+    "/profile/v2/access-requests/{request_id}": {
+      "get": {
+        "description": "How each member answered; no data. Only for the one who asked.",
+        "operationId": "get_access_request_profile_v2_access_requests__request_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "request_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Request Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessRequestRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ACCESS_REQUEST_NOT_FOUND": {
+                    "summary": "ACCESS_REQUEST_NOT_FOUND",
+                    "value": {
+                      "detail": "ACCESS_REQUEST_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ACCESS_REQUEST_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Access Request",
+        "tags": [
+          "access-requests"
+        ]
+      }
+    },
+    "/profile/v2/access-requests/{request_id}/export": {
+      "post": {
+        "description": "The fields of the members whose grant is active, for the leader who asked\nwhile they still lead the collective and the members still belong to it. The\nrest are listed in `skipped`. Each export is journaled and told to every member\nit covers.",
+        "operationId": "export_access_request_profile_v2_access_requests__request_id__export_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "request_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Request Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/AccessExportCreate"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Data"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessExportRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "COLLECTIVE_NOT_VERIFIED": {
+                    "summary": "COLLECTIVE_NOT_VERIFIED",
+                    "value": {
+                      "detail": "COLLECTIVE_NOT_VERIFIED"
+                    }
+                  },
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  },
+                  "NOT_COLLECTIVE_PRINCIPAL": {
+                    "summary": "NOT_COLLECTIVE_PRINCIPAL",
+                    "value": {
+                      "detail": "NOT_COLLECTIVE_PRINCIPAL"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "COLLECTIVE_NOT_VERIFIED, FORBIDDEN, NOT_COLLECTIVE_PRINCIPAL"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ACCESS_REQUEST_NOT_FOUND": {
+                    "summary": "ACCESS_REQUEST_NOT_FOUND",
+                    "value": {
+                      "detail": "ACCESS_REQUEST_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ACCESS_REQUEST_NOT_FOUND"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ACCESS_REQUEST_EXPIRED": {
+                    "summary": "ACCESS_REQUEST_EXPIRED",
+                    "value": {
+                      "detail": "ACCESS_REQUEST_EXPIRED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ACCESS_REQUEST_EXPIRED"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ACCESS_FIELD_NOT_REQUESTED": {
+                    "summary": "ACCESS_FIELD_NOT_REQUESTED",
+                    "value": {
+                      "detail": "ACCESS_FIELD_NOT_REQUESTED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ACCESS_FIELD_NOT_REQUESTED"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "TOO_MANY_REQUESTS": {
+                    "summary": "TOO_MANY_REQUESTS",
+                    "value": {
+                      "detail": "TOO_MANY_REQUESTS"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "TOO_MANY_REQUESTS"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "EVENT_SERVICE_UNAVAILABLE": {
+                    "summary": "EVENT_SERVICE_UNAVAILABLE",
+                    "value": {
+                      "detail": "EVENT_SERVICE_UNAVAILABLE"
+                    }
+                  },
+                  "PERSONAL_DATA_UNAVAILABLE": {
+                    "summary": "PERSONAL_DATA_UNAVAILABLE",
+                    "value": {
+                      "detail": "PERSONAL_DATA_UNAVAILABLE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "EVENT_SERVICE_UNAVAILABLE, PERSONAL_DATA_UNAVAILABLE"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Export Access Request",
+        "tags": [
+          "access-requests"
+        ]
+      }
+    },
     "/profile/v2/account-links/history": {
       "get": {
         "description": "Who linked, moved or unlinked which account, how and when; newest first.\n\n`person_id` matches a change that took the person from an account or gave\nit to one.",
@@ -1337,6 +2954,611 @@
         ]
       }
     },
+    "/profile/v2/grants/incoming": {
+      "get": {
+        "description": "Requests for the caller's data: who asks, in which collective, for what,\nwhy and until when; newest first.",
+        "operationId": "get_incoming_grants_profile_v2_grants_incoming_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageV1_IncomingGrantRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Incoming Grants",
+        "tags": [
+          "grants"
+        ]
+      }
+    },
+    "/profile/v2/grants/{grant_id}/approve": {
+      "post": {
+        "description": "Opens the asked fields to the leader until the request expires. Held back\n(`409 GRANT_COOLDOWN`) for a while after the account link changed.",
+        "operationId": "approve_grant_profile_v2_grants__grant_id__approve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "grant_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Grant Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncomingGrantRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "GRANT_NOT_FOUND": {
+                    "summary": "GRANT_NOT_FOUND",
+                    "value": {
+                      "detail": "GRANT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "GRANT_NOT_FOUND"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ACCESS_REQUEST_EXPIRED": {
+                    "summary": "ACCESS_REQUEST_EXPIRED",
+                    "value": {
+                      "detail": "ACCESS_REQUEST_EXPIRED"
+                    }
+                  },
+                  "GRANT_COOLDOWN": {
+                    "summary": "GRANT_COOLDOWN",
+                    "value": {
+                      "detail": "GRANT_COOLDOWN"
+                    }
+                  },
+                  "GRANT_STATE_CONFLICT": {
+                    "summary": "GRANT_STATE_CONFLICT",
+                    "value": {
+                      "detail": "GRANT_STATE_CONFLICT"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "ACCESS_REQUEST_EXPIRED, GRANT_COOLDOWN, GRANT_STATE_CONFLICT"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Approve Grant",
+        "tags": [
+          "grants"
+        ]
+      }
+    },
+    "/profile/v2/grants/{grant_id}/decline": {
+      "post": {
+        "operationId": "decline_grant_profile_v2_grants__grant_id__decline_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "grant_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Grant Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncomingGrantRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "GRANT_NOT_FOUND": {
+                    "summary": "GRANT_NOT_FOUND",
+                    "value": {
+                      "detail": "GRANT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "GRANT_NOT_FOUND"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "GRANT_STATE_CONFLICT": {
+                    "summary": "GRANT_STATE_CONFLICT",
+                    "value": {
+                      "detail": "GRANT_STATE_CONFLICT"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "GRANT_STATE_CONFLICT"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Decline Grant",
+        "tags": [
+          "grants"
+        ]
+      }
+    },
+    "/profile/v2/grants/{grant_id}/revoke": {
+      "post": {
+        "description": "Closes an approved grant for good; a new request is needed to ask again.",
+        "operationId": "revoke_grant_profile_v2_grants__grant_id__revoke_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "grant_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Grant Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncomingGrantRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "GRANT_NOT_FOUND": {
+                    "summary": "GRANT_NOT_FOUND",
+                    "value": {
+                      "detail": "GRANT_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "GRANT_NOT_FOUND"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "GRANT_STATE_CONFLICT": {
+                    "summary": "GRANT_STATE_CONFLICT",
+                    "value": {
+                      "detail": "GRANT_STATE_CONFLICT"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "GRANT_STATE_CONFLICT"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Revoke Grant",
+        "tags": [
+          "grants"
+        ]
+      }
+    },
+    "/profile/v2/health/keys": {
+      "get": {
+        "description": "Whether personal data can be encrypted and decrypted now; `503` when a key\nprovider does not answer. The liveness probe stays `/profile/v1/health`.",
+        "operationId": "get_key_health_profile_v2_health_keys_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyHealthRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyHealthRead"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Get Key Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/profile/v2/invites/preview": {
+      "post": {
+        "description": "Whom an invitation is for, read by whoever holds the token.\n\n`400 INVITE_TOKEN_EXPIRED` for an old token and `400 PERSON_ALREADY_HAS_ACCOUNT`\nwhen the person has registered already.",
+        "operationId": "preview_invite_profile_v2_invites_preview_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitePreviewData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitePreviewRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVITE_TOKEN_INVALID": {
+                    "summary": "INVITE_TOKEN_INVALID",
+                    "value": {
+                      "detail": "INVITE_TOKEN_INVALID"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "INVITE_TOKEN_INVALID"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVITE_PERSON_NOT_FOUND": {
+                    "summary": "INVITE_PERSON_NOT_FOUND",
+                    "value": {
+                      "detail": "INVITE_PERSON_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "INVITE_PERSON_NOT_FOUND"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Preview Invite",
+        "tags": [
+          "invite"
+        ]
+      }
+    },
     "/profile/v2/organizations": {
       "post": {
         "description": "For a workplace: an organization, or a university, with that name.",
@@ -1423,6 +3645,241 @@
         "summary": "Resolve Organization",
         "tags": [
           "reference"
+        ]
+      }
+    },
+    "/profile/v2/persons/names": {
+      "post": {
+        "description": "The full names of the requested persons.\n\nEvery requested id gets an entry. The name is left out when the caller may not see\nit or the person does not exist: the two look the same.",
+        "operationId": "get_person_names_profile_v2_persons_names_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonNamesData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonNamesRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Person Names",
+        "tags": [
+          "person"
+        ]
+      }
+    },
+    "/profile/v2/persons/{person_id}/destroy-key": {
+      "post": {
+        "description": "Destroys the person's data key and the encrypted data with it, for good: a\npassport is deleted, an optional encrypted value is emptied. The person is\ntold; new data is sealed with a new key.",
+        "operationId": "destroy_person_key_profile_v2_persons__person_id__destroy_key_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Person Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DestroyKeyData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestroyedKeyRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSON_NOT_FOUND": {
+                    "summary": "PERSON_NOT_FOUND",
+                    "value": {
+                      "detail": "PERSON_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSON_NOT_FOUND"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "PERSON_KEY_ABSENT": {
+                    "summary": "PERSON_KEY_ABSENT",
+                    "value": {
+                      "detail": "PERSON_KEY_ABSENT"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "PERSON_KEY_ABSENT"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "DESTROY_NOT_CONFIRMED": {
+                    "summary": "DESTROY_NOT_CONFIRMED",
+                    "value": {
+                      "detail": "DESTROY_NOT_CONFIRMED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "DESTROY_NOT_CONFIRMED"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Destroy Person Key",
+        "tags": [
+          "person",
+          "personal-data"
         ]
       }
     },
@@ -1579,6 +4036,394 @@
         "tags": [
           "person",
           "invite"
+        ]
+      }
+    },
+    "/profile/v2/persons/{person_id}/visibility": {
+      "get": {
+        "operationId": "get_person_visibility_profile_v2_persons__person_id__visibility_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Person Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisibilityRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Person Visibility",
+        "tags": [
+          "visibility",
+          "person"
+        ]
+      }
+    },
+    "/profile/v2/persons/{person_id}/visibility/{field_key}": {
+      "delete": {
+        "operationId": "reset_person_visibility_profile_v2_persons__person_id__visibility__field_key__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Person Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "field_key",
+            "required": true,
+            "schema": {
+              "title": "Field Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisibilityEntryRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_FIELD_NOT_FOUND": {
+                    "summary": "VISIBILITY_FIELD_NOT_FOUND",
+                    "value": {
+                      "detail": "VISIBILITY_FIELD_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_FIELD_NOT_FOUND"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_COOLDOWN": {
+                    "summary": "VISIBILITY_COOLDOWN",
+                    "value": {
+                      "detail": "VISIBILITY_COOLDOWN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_COOLDOWN"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_OUT_OF_RANGE": {
+                    "summary": "VISIBILITY_OUT_OF_RANGE",
+                    "value": {
+                      "detail": "VISIBILITY_OUT_OF_RANGE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_OUT_OF_RANGE"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Reset Person Visibility",
+        "tags": [
+          "visibility",
+          "person"
+        ]
+      },
+      "put": {
+        "description": "An administrator sets the audience; the change is kept with `source=admin`.",
+        "operationId": "set_person_visibility_profile_v2_persons__person_id__visibility__field_key__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "person_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Person Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "field_key",
+            "required": true,
+            "schema": {
+              "title": "Field Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VisibilitySetData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisibilityEntryRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_FIELD_NOT_FOUND": {
+                    "summary": "VISIBILITY_FIELD_NOT_FOUND",
+                    "value": {
+                      "detail": "VISIBILITY_FIELD_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_FIELD_NOT_FOUND"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_COOLDOWN": {
+                    "summary": "VISIBILITY_COOLDOWN",
+                    "value": {
+                      "detail": "VISIBILITY_COOLDOWN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_COOLDOWN"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_OUT_OF_RANGE": {
+                    "summary": "VISIBILITY_OUT_OF_RANGE",
+                    "value": {
+                      "detail": "VISIBILITY_OUT_OF_RANGE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_OUT_OF_RANGE"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Set Person Visibility",
+        "tags": [
+          "visibility",
+          "person"
         ]
       }
     },
@@ -2160,6 +5005,351 @@
         "summary": "Resolve University",
         "tags": [
           "reference"
+        ]
+      }
+    },
+    "/profile/v2/visibility/my": {
+      "get": {
+        "description": "Who may see each personal field of the caller; the defaults without a person.",
+        "operationId": "get_my_visibility_profile_v2_visibility_my_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisibilityRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get My Visibility",
+        "tags": [
+          "visibility"
+        ]
+      }
+    },
+    "/profile/v2/visibility/my/{field_key}": {
+      "delete": {
+        "description": "Returns the field to its default audience.",
+        "operationId": "reset_my_visibility_profile_v2_visibility_my__field_key__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "field_key",
+            "required": true,
+            "schema": {
+              "title": "Field Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisibilityEntryRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_FIELD_NOT_FOUND": {
+                    "summary": "VISIBILITY_FIELD_NOT_FOUND",
+                    "value": {
+                      "detail": "VISIBILITY_FIELD_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_FIELD_NOT_FOUND"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_COOLDOWN": {
+                    "summary": "VISIBILITY_COOLDOWN",
+                    "value": {
+                      "detail": "VISIBILITY_COOLDOWN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_COOLDOWN"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_OUT_OF_RANGE": {
+                    "summary": "VISIBILITY_OUT_OF_RANGE",
+                    "value": {
+                      "detail": "VISIBILITY_OUT_OF_RANGE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_OUT_OF_RANGE"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Reset My Visibility",
+        "tags": [
+          "visibility"
+        ]
+      },
+      "put": {
+        "description": "Sets the audience of a field. Narrowing is always allowed; widening is held\nback (`409 VISIBILITY_COOLDOWN`) for a while after the account link changed.",
+        "operationId": "set_my_visibility_profile_v2_visibility_my__field_key__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "field_key",
+            "required": true,
+            "schema": {
+              "title": "Field Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VisibilitySetData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisibilityEntryRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "Token decode failed",
+                    "value": {
+                      "detail": "INVALID_AUTHENTICATION_CREDENTIALS"
+                    }
+                  },
+                  "NOT_AUTHENTICATED": {
+                    "summary": "Missing or invalid authentication token",
+                    "value": {
+                      "detail": "NOT_AUTHENTICATED"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Missing or invalid authentication token"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "Not superuser or not verified",
+                    "value": {
+                      "detail": "FORBIDDEN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Insufficient permissions"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_FIELD_NOT_FOUND": {
+                    "summary": "VISIBILITY_FIELD_NOT_FOUND",
+                    "value": {
+                      "detail": "VISIBILITY_FIELD_NOT_FOUND"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_FIELD_NOT_FOUND"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_COOLDOWN": {
+                    "summary": "VISIBILITY_COOLDOWN",
+                    "value": {
+                      "detail": "VISIBILITY_COOLDOWN"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_COOLDOWN"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VISIBILITY_OUT_OF_RANGE": {
+                    "summary": "VISIBILITY_OUT_OF_RANGE",
+                    "value": {
+                      "detail": "VISIBILITY_OUT_OF_RANGE"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "VISIBILITY_OUT_OF_RANGE"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Set My Visibility",
+        "tags": [
+          "visibility"
         ]
       }
     }

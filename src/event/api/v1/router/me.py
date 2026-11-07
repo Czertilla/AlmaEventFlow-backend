@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from core.dependencies.auth import UserJWTDep
+from core.dependencies.auth import SuperUserJWTDep, UserJWTDep
 from core.filter.depends import FilterDepends
 from core.schema.error import auth_responses
 from core.schema.user import UserJWT
@@ -61,6 +61,7 @@ from event.dependency.principal import (
 )
 from event.dependency.role import RoleUOWDep
 from event.dto.principal import CollectivePrincipalDTO, MemberIdentityDTO
+from event.dto.scope import CollectiveScopeDTO
 from event.filter.member import MemberFilter
 from event.filter.role import RoleFilter
 from event.service.attendance import AttendanceService
@@ -108,7 +109,11 @@ async def get_my_collective_members(
 ) -> PageV1[MemberRead]:
     filter.collective_id = collective_id
     return PageV1[MemberRead].from_dto(
-        await MemberService(uow).search(filter.to_dto(), page_param.to_dto())
+        await MemberService(uow).search(
+            filter.to_dto(),
+            page_param.to_dto(),
+            scope=CollectiveScopeDTO(frozenset({collective_id})),
+        )
     )
 
 
@@ -118,9 +123,11 @@ async def get_my_collective_members(
 async def create_my_collective_member(
     collective_id: UUID,
     member_data: MemberCreateData,
+    user: SuperUserJWTDep,
     uow: MemberUOWDep,
     _: tuple[CollectivePrincipalDTO, UserJWT] = Depends(verify_collective_principal),
 ) -> MemberRead:
+    """Only a superuser adds a person to a collective; a leader asks them to."""
     member_create = MemberCreate(
         collective_id=collective_id,
         person_id=member_data.person_id,
@@ -304,7 +311,9 @@ async def get_my_collective_attendance(
     ),
 ) -> AttendanceRead:
     return AttendanceRead.from_dto(
-        await AttendanceService(uow).read(attendance_id)
+        await AttendanceService(uow).read(
+            attendance_id, scope=CollectiveScopeDTO(frozenset({collective_id}))
+        )
     )
 
 

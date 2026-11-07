@@ -2513,6 +2513,7 @@
   "paths": {
     "/event/v1/attendances": {
       "get": {
+        "description": "Places of the collectives the caller leads or belongs to; superusers see all.",
         "operationId": "get_attendances_event_v1_attendances_get",
         "parameters": [
           {
@@ -7373,6 +7374,7 @@
         ]
       },
       "post": {
+        "description": "Only a superuser adds a person to a collective; a leader asks them to.",
         "operationId": "create_my_collective_member_event_v1_me_collectives__collective_id__members_post",
         "parameters": [
           {
@@ -9342,6 +9344,7 @@
     },
     "/event/v1/members": {
       "get": {
+        "description": "Members of the collectives the caller leads or belongs to; superusers see all.",
         "operationId": "get_members_event_v1_members_get",
         "parameters": [
           {

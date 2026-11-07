@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from typing import Any
 from uuid import UUID
 
@@ -14,6 +14,7 @@ from core.database.sqlalchemy.mixins.repositories import (
     UpsertRepositoryMixin,
 )
 from core.dto.pagination import PageParams
+from event.models.collective import CollectiveORM
 from event.models.member import MemberORM as Model
 from event.models.member import MemberRoleAssociation
 from event.models.role import RoleORM
@@ -38,6 +39,43 @@ class MemberRepo(
         return await super().search(
             filter, pagination, options=options, scope=scope
         )
+
+    @staticmethod
+    def in_collectives(collective_ids: Collection[UUID]) -> ColumnElement[bool]:
+        return Model.collective_id.in_(list(collective_ids))
+
+    async def collective_ids_of(self, person_id: UUID) -> set[UUID]:
+        """The collectives the person leads or belongs to as an active member."""
+        led = select(CollectiveORM.id).where(CollectiveORM.principal_id == person_id)
+        joined = select(self.model.collective_id).where(
+            self.model.person_id == person_id, self.model.is_active.is_(True)
+        )
+        return set((await self.execute(led.union(joined))).scalars().all())
+
+    async def active_person_ids_in(
+        self, collective_ids: Collection[UUID], candidates: Collection[UUID] | None
+    ) -> set[UUID]:
+        """Active members of the collectives and their leaders."""
+        if not collective_ids:
+            return set()
+        members = select(self.model.person_id).where(
+            self.model.collective_id.in_(list(collective_ids)),
+            self.model.is_active.is_(True),
+        )
+        leaders = select(CollectiveORM.principal_id).where(
+            CollectiveORM.id.in_(list(collective_ids)),
+            CollectiveORM.principal_id.is_not(None),
+        )
+        if candidates is not None:
+            members = members.where(self.model.person_id.in_(list(candidates)))
+            leaders = leaders.where(CollectiveORM.principal_id.in_(list(candidates)))
+        return set((await self.execute(members.union(leaders))).scalars().all())
+
+    async def active_person_ids_of(self, collective_id: UUID) -> set[UUID]:
+        stmt = select(self.model.person_id).where(
+            self.model.collective_id == collective_id, self.model.is_active.is_(True)
+        )
+        return set((await self.execute(stmt)).scalars().all())
 
     async def get_by_person_id(self, person_id: UUID | None) -> list[Model]:
         stmt = (

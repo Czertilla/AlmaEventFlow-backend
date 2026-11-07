@@ -1,4 +1,120 @@
 {
+  "access_log.AccessLogEntryRead": {
+    "response": {
+      "action": "read",
+      "actor_name": "x",
+      "actor_person_id": "6e5d95d6-31b3-5424-8f5e-6227b9266f07",
+      "by_administrator": true,
+      "by_self": true,
+      "collective_name": "x",
+      "comment": "x",
+      "created_at": "2026-01-01T10:00:00Z",
+      "fields": [
+        {
+          "key": "x",
+          "label": "x"
+        }
+      ],
+      "id": "2ca732ab-60e6-599a-8af4-02e0bc4315ae",
+      "outcome": "x",
+      "request_id": "ba272794-5c43-583a-a5f3-cb8db0b8747f"
+    }
+  },
+  "access_request.AccessExportRead": {
+    "response": {
+      "exported_at": "2026-01-01T10:00:00Z",
+      "fields": [
+        {
+          "key": "x",
+          "label": "x"
+        }
+      ],
+      "request_id": "c1d233e0-a37b-597d-9cfe-5db3ba7dd5d0",
+      "skipped": [
+        {
+          "person_id": "ba0eda31-33c8-5207-84cb-ef05412068e3",
+          "status": "pending"
+        }
+      ],
+      "subjects": [
+        {
+          "person_id": "c4fc18f4-2796-5068-ab2b-ae900039082a",
+          "records": [
+            {
+              "x": "x"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "access_request.AccessRequestRead": {
+    "response": {
+      "collective_id": "38bfa83a-e4e5-5d48-91b8-4fe28aa76ad3",
+      "collective_name": "x",
+      "comment": "x",
+      "created_at": "2026-01-01T10:00:00Z",
+      "expires_at": "2026-01-01T10:00:00Z",
+      "fields": [
+        {
+          "key": "x",
+          "label": "x"
+        }
+      ],
+      "grants": [
+        {
+          "person_id": "66e030b0-0f8d-58d3-8d3c-5ec26a38d680",
+          "status": "pending"
+        }
+      ],
+      "id": "f99af4c8-1a48-5857-9a0e-c07ec9e20a45",
+      "is_expired": true
+    }
+  },
+  "access_request.ExportedSubjectRead": {
+    "response": {
+      "person_id": "50e70190-bf07-57e7-b89b-8c305d2374ca",
+      "records": [
+        {
+          "x": "x"
+        }
+      ]
+    }
+  },
+  "access_request.GrantStateRead": {
+    "response": {
+      "person_id": "d85f8a02-ea93-5192-ba36-95af74ac95c0",
+      "status": "pending"
+    }
+  },
+  "access_request.IncomingGrantRead": {
+    "response": {
+      "collective_id": "94b383c6-0db7-55dc-ac20-48986021762c",
+      "collective_name": "x",
+      "comment": "x",
+      "created_at": "2026-01-01T10:00:00Z",
+      "decided_at": "2026-01-01T10:00:00Z",
+      "expires_at": "2026-01-01T10:00:00Z",
+      "fields": [
+        {
+          "key": "x",
+          "label": "x"
+        }
+      ],
+      "grantee_name": "x",
+      "grantee_person_id": "a403bb49-d6d1-58d1-826a-6668c87969bd",
+      "id": "3a197ef9-531f-5c5e-8002-34a818d080e5",
+      "request_id": "ac270b03-b7e6-5b19-baec-68417c7f1554",
+      "revoked_at": "2026-01-01T10:00:00Z",
+      "status": "pending"
+    }
+  },
+  "access_request.SkippedSubjectRead": {
+    "response": {
+      "person_id": "16c49763-4f85-5e1b-a233-fdba899916bc",
+      "status": "pending"
+    }
+  },
   "account_history.AccountLinkChangeRead": {
     "response": {
       "action": "linked",
@@ -11,10 +127,39 @@
       "user_id": "c9c6cde8-7e9d-5bc4-bc27-44a30f2d9837"
     }
   },
+  "invite.InvitePreviewRead": {
+    "response": {
+      "name": "x",
+      "patronymic": "x",
+      "surname": "x"
+    }
+  },
   "invite.InviteTokenRead": {
     "response": {
       "expires_at": 1,
       "token": "x"
+    }
+  },
+  "person.PersonNameRead": {
+    "response": {
+      "id": "b7b22758-0831-5864-938a-62c45f5c9b4d",
+      "name": "x",
+      "patronymic": "x",
+      "surname": "x"
+    }
+  },
+  "person_key.DestroyedKeyRead": {
+    "response": {
+      "destroyed_at": "2026-01-01T10:00:00Z",
+      "fields": [
+        {
+          "key": "x",
+          "label": "x"
+        }
+      ],
+      "person_id": "affc48a4-5148-569c-a006-39c0bd8700f5",
+      "rows_cleared": 1,
+      "rows_deleted": 1
     }
   },
   "profile.MyProfileRead": {
@@ -80,6 +225,18 @@
       "id": "e97b0b17-7e26-5b33-88c6-cb0118b984f5",
       "name": "x",
       "type": "x"
+    }
+  },
+  "visibility.VisibilityEntryRead": {
+    "response": {
+      "audience": "private",
+      "audience_default": "private",
+      "audience_max": "private",
+      "audience_min": "private",
+      "configurable": true,
+      "is_default": true,
+      "key": "x",
+      "label": "x"
     }
   }
 }

@@ -1,6 +1,5 @@
 from profile.repository.passport import NameVariantRepo, PassportRepo
-
-from core.uow.sqlalchemy import UnitOfWork
+from profile.uow.person_key import PersonalDataUOW
 
 
 class PassportMixin:
@@ -8,4 +7,4 @@ class PassportMixin:
     name_variants: NameVariantRepo
 
 
-class PassportUOW(UnitOfWork, PassportMixin): ...
+class PassportUOW(PersonalDataUOW, PassportMixin): ...

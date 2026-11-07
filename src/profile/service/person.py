@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from logging import getLogger
 from profile.api.kafka.pub.person import (
     on_person_created,
@@ -9,6 +10,7 @@ from profile.dto.person import (
     PersonCreateDTO,
     PersonDTO,
     PersonFilterDTO,
+    PersonNameDTO,
     PersonPatchDTO,
     PersonPutDTO,
 )
@@ -18,6 +20,8 @@ from profile.models.person import PersonORM
 from profile.uow.person import PersonUOW
 from typing import Any
 from uuid import UUID
+
+from sqlalchemy import ColumnElement
 
 from core.dto.base import dto_dict, dto_from_orm
 from core.dto.pagination import PageDTO, PageParamDTO, PaginationDTO
@@ -99,14 +103,39 @@ class PersonService(BaseService[PersonUOW]):
         async with self.uow:
             return self._to_dto(await self._read(person_id, True))
 
+    async def names(
+        self, requested: Collection[UUID], allowed: Collection[UUID]
+    ) -> list[PersonNameDTO]:
+        """One entry per requested id; the name is left out of an id that is not
+        allowed or does not exist."""
+        async with self.uow:
+            known = {
+                person.id: person for person in await self.uow.persons.by_ids(allowed)
+            }
+        return [
+            PersonNameDTO(
+                id=person_id,
+                surname=person.surname if person else None,
+                name=person.name if person else None,
+                patronymic=person.patronymic if person else None,
+            )
+            for person_id in dict.fromkeys(requested)
+            for person in [known.get(person_id)]
+        ]
+
     async def search(
         self,
         filter: PersonFilterDTO,
         page_params: PageParamDTO = PageParamDTO(),
+        *,
+        only: Collection[UUID] | None = None,
     ) -> PageDTO[PersonDTO]:
+        scope: list[ColumnElement[bool]] | None = (
+            None if only is None else [PersonORM.id.in_(only)]
+        )
         async with self.uow as uow:
             persons, total = await uow.persons.search(
-                PersonFilter.from_dto(filter), page_params
+                PersonFilter.from_dto(filter), page_params, scope=scope
             )
             return PageDTO(
                 items=[self._to_dto(person) for person in persons],

@@ -1,6 +1,7 @@
 from profile.api.v2.schema.profile import MyProfileRead, MyProfileWrite
 from profile.dependency.account import CallerPersonDep
 from profile.dependency.my_profile import MyProfileUOWDep
+from profile.dependency.viewer import AccountViewerDep, ViewerDep
 from profile.exc.profile import ProfileNotExistsException
 from profile.service.my_profile import MyProfileService
 
@@ -23,7 +24,10 @@ router = APIRouter(prefix="/profiles", tags=["profile"])
     responses={**auth_responses(), **entity_not_found_responses("profile")},
 )
 async def get_my_profile(
-    user: ActiveUserJWTDep, person_id: CallerPersonDep, uow: MyProfileUOWDep
+    user: ActiveUserJWTDep,
+    person_id: CallerPersonDep,
+    viewer: ViewerDep,
+    uow: MyProfileUOWDep,
 ) -> MyProfileRead:
     """The caller's whole profile: name, birthdate, diet, student card, contacts.
 
@@ -31,7 +35,7 @@ async def get_my_profile(
     """
     if person_id is None:
         raise ProfileNotExistsException()
-    return MyProfileRead.from_dto(await MyProfileService(uow).read(person_id))
+    return MyProfileRead.from_dto(await MyProfileService(uow).read(person_id, viewer))
 
 
 @router.post(
@@ -47,7 +51,10 @@ async def get_my_profile(
     },
 )
 async def create_my_profile(
-    profile: MyProfileWrite, user: UserJWTDep, uow: MyProfileUOWDep
+    profile: MyProfileWrite,
+    user: UserJWTDep,
+    viewer: AccountViewerDep,
+    uow: MyProfileUOWDep,
 ) -> MyProfileRead:
     """Makes the caller's profile in one transaction and links it to the account.
 
@@ -57,7 +64,7 @@ async def create_my_profile(
     """
     return MyProfileRead.from_dto(
         await MyProfileService(uow).create(
-            user.id, profile.to_dto(), claimed_person_id=user.person_id
+            user.id, profile.to_dto(), viewer, claimed_person_id=user.person_id
         )
     )
 
@@ -70,11 +77,12 @@ async def put_my_profile(
     profile: MyProfileWrite,
     user: UserJWTDep,
     person_id: CallerPersonDep,
+    viewer: ViewerDep,
     uow: MyProfileUOWDep,
 ) -> MyProfileRead:
     """Replaces the whole profile: a student card or a contact left out is removed."""
     if person_id is None:
         raise ProfileNotExistsException()
     return MyProfileRead.from_dto(
-        await MyProfileService(uow).replace(person_id, profile.to_dto())
+        await MyProfileService(uow).replace(person_id, profile.to_dto(), viewer)
     )

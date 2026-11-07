@@ -1,0 +1,87 @@
+{
+  "contact.address": {
+    "default": "private",
+    "max": "context",
+    "min": "private"
+  },
+  "contact.email": {
+    "default": "private",
+    "max": "all_users",
+    "min": "private"
+  },
+  "contact.phone": {
+    "default": "private",
+    "max": "all_users",
+    "min": "private"
+  },
+  "contact.tg": {
+    "default": "private",
+    "max": "all_users",
+    "min": "private"
+  },
+  "contact.vk": {
+    "default": "private",
+    "max": "all_users",
+    "min": "private"
+  },
+  "name_variant.fullname": {
+    "default": "private",
+    "max": "private",
+    "min": "private"
+  },
+  "passport.expire_date": {
+    "default": "private",
+    "max": "private",
+    "min": "private"
+  },
+  "passport.issued_authority": {
+    "default": "private",
+    "max": "private",
+    "min": "private"
+  },
+  "passport.issued_date": {
+    "default": "private",
+    "max": "private",
+    "min": "private"
+  },
+  "passport.number": {
+    "default": "private",
+    "max": "private",
+    "min": "private"
+  },
+  "person.fullname": {
+    "default": "context",
+    "max": "all_users",
+    "min": "context"
+  },
+  "profile.birthdate": {
+    "default": "private",
+    "max": "all_users",
+    "min": "private"
+  },
+  "profile.diet": {
+    "default": "private",
+    "max": "context",
+    "min": "private"
+  },
+  "profile.workplace": {
+    "default": "private",
+    "max": "all_users",
+    "min": "private"
+  },
+  "student.group": {
+    "default": "context",
+    "max": "all_users",
+    "min": "private"
+  },
+  "student.student_id": {
+    "default": "private",
+    "max": "private",
+    "min": "private"
+  },
+  "student.study_terms": {
+    "default": "private",
+    "max": "private",
+    "min": "private"
+  }
+}

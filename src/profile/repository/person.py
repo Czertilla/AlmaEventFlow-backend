@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from profile.models.contact import ContactORM
 from profile.models.person import PersonORM as Model
 from typing import Any
@@ -29,6 +29,16 @@ class PersonRepo(
     with_contacts = selectinload(Model.contacts)
     with_main_contacts = with_loader_criteria(ContactORM, ContactORM.is_main)
     all_options = (with_contacts, with_main_contacts)
+
+    async def by_ids(self, ids: Collection[UUID]) -> list[Model]:
+        if not ids:
+            return []
+        stmt = (
+            select(self.model)
+            .where(self.model.id.in_(ids))
+            .order_by(self.model.surname, self.model.name, self.model.id)
+        )
+        return list((await self.execute(stmt)).scalars().all())
 
     async def get_with_contacts(self, id: UUID) -> Model | None:
         return await self.get_by_id(

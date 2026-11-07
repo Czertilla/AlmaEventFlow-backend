@@ -16,6 +16,7 @@ from event.api.v1.schema.member import (
     MemberRead,
 )
 from event.dependency.member import MemberUOWDep
+from event.dependency.scope import CollectiveScopeDep
 from event.filter.member import MemberFilter
 from event.service.member import MemberService
 
@@ -28,11 +29,15 @@ logger = getLogger(__name__)
 async def get_members(
     uow: MemberUOWDep,
     user: UserJWTDep,
+    scope: CollectiveScopeDep,
     filter: MemberFilter = FilterDepends(MemberFilter),
     page_param: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[MemberRead]:
+    """Members of the collectives the caller leads or belongs to; superusers see all."""
     return PageV1[MemberRead].from_dto(
-        await MemberService(uow).search(filter.to_dto(), page_param.to_dto())
+        await MemberService(uow).search(
+            filter.to_dto(), page_param.to_dto(), scope=scope
+        )
     )
 
 
@@ -48,9 +53,9 @@ async def create_member(
     responses={**auth_responses(), **entity_not_found_responses("member")},
 )
 async def get_member(
-    member_id: UUID, user: UserJWTDep, uow: MemberUOWDep
+    member_id: UUID, user: UserJWTDep, scope: CollectiveScopeDep, uow: MemberUOWDep
 ) -> MemberRead:
-    return MemberRead.from_dto(await MemberService(uow).read(member_id))
+    return MemberRead.from_dto(await MemberService(uow).read(member_id, scope=scope))
 
 
 @router.put(

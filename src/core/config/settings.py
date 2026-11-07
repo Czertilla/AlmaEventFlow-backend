@@ -200,6 +200,61 @@ class Settings(BaseSettings):
 
     INVITE_TOKEN_LIFETIME: int = 604800
 
+    LINK_COOLDOWN_HOURS: int = 48
+    """After the link of an account with its person changes, the owner cannot open
+    the visibility of their data wider for this long; 0 turns the pause off."""
+
+    KEY_PROVIDER: str | None = None
+    """Where `profile` keeps the keys that wrap the keys of personal data: `local`
+    or `vault` (`aws`, `gcp`, `yc`, `azure` are not implemented). Required by
+    `profile`; there is no default."""
+    KEY_PROVIDERS_READ: list[str] = []
+    """Other providers kept configured only to unwrap the keys they wrapped, while
+    the keys move to `KEY_PROVIDER`."""
+    LOCAL_KEK_DIR: str | None = None
+    """Directory with the key files `kek.v1`, `kek.v2`, ... (32 random bytes each,
+    mode 0400, outside the data, the image and the repository)."""
+    LOCAL_KEK_ACTIVE: int = 1
+    LOCAL_KEK_PASSPHRASE_FILE: str | None = None
+    """When set, the key files are sealed with this passphrase (Argon2id)."""
+    VAULT_ADDR: str | None = None
+    VAULT_NAMESPACE: str | None = None
+    VAULT_CA_FILE: str | None = None
+    VAULT_TRANSIT_MOUNT: str = "transit"
+    VAULT_TRANSIT_KEY: str = "profile-kek"
+    VAULT_AUTH_METHOD: str = "approle"
+    VAULT_AUTH_MOUNT: str | None = None
+    VAULT_APPROLE_ROLE_ID_FILE: str | None = None
+    VAULT_APPROLE_SECRET_ID_FILE: str | None = None
+    VAULT_K8S_ROLE: str | None = None
+    VAULT_K8S_TOKEN_FILE: str = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+    VAULT_TIMEOUT_SECONDS: float = 2.0
+    DEK_CACHE_MAX: int = 256
+    DEK_CACHE_TTL_SEC: int = 60
+    """Unwrapped data keys kept in memory; 0 keeps none."""
+    KMS_UNWRAP_CONCURRENCY: int = 8
+
+    MIGRATION_BATCH_SIZE: int = 100
+    MIGRATION_SLEEP_MS: int = 50
+    """Batch and pause of the key jobs (`python -m profile.manage.keys`), so they
+    do not crowd out the work of a small host."""
+
+    COMMENT_MIN_LEN: int = 10
+    COMMENT_MAX_LEN: int = 500
+    """Bounds of the comment of an access request, after trimming."""
+    GRANT_MAX_TTL_DAYS: int = 30
+    ACCESS_REQUESTS_PER_HOUR: int = 10
+    ACCESS_EXPORTS_PER_HOUR: int = 30
+    """Per account and process: how many access requests and exports it may make
+    in an hour."""
+
+    PROFILE_OUTBOX_BATCH_SIZE: int = 100
+    PROFILE_OUTBOX_POLL_INTERVAL_SECONDS: float = 2.0
+    PROFILE_OUTBOX_MAX_ATTEMPTS: int = 8
+    PROFILE_OUTBOX_RETRY_BASE_SECONDS: float = 30.0
+    """Notifications of `profile` wait in a table until they are handed to `notify`;
+    a failed hand-over is retried after this many seconds, doubling up to an hour."""
+
     MAX_PAGE_SIZE: int = 100
     """Maximum number of items to be displayed on a single page.
     Default is 100."""

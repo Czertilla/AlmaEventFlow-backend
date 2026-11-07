@@ -17,6 +17,7 @@ from profile.api.v1.schema.passport import (
 from profile.dependency.account import RequiredPersonDep
 from profile.dependency.passport import PassportUOWDep
 from profile.dependency.profile import ProfilePassportUOWDep
+from profile.dependency.viewer import ViewerDep
 from profile.filter.passport import PassportFilter
 from profile.service.passport import NameVariantService, PassportService
 from profile.service.profile import ProfileService
@@ -31,6 +32,7 @@ from core.schema.error import (
     ErrorCode,
     auth_responses,
     detail_400,
+    detail_response,
     entity_not_found_responses,
     error_response,
 )
@@ -40,17 +42,23 @@ router = APIRouter(prefix="/passports", tags=["passport"])
 
 logger = getLogger(__name__)
 
+SEALED_RESPONSES = detail_response(503, ErrorCode.PERSONAL_DATA_UNAVAILABLE)
 MY_RESPONSES: dict[int | str, dict[str, Any]] = {
     **auth_responses(),
     **detail_400(ErrorCode.ATTACHED_PERSON_REQUIRED),
+    **SEALED_RESPONSES,
 }
 MY_PASSPORT_RESPONSES: dict[int | str, dict[str, Any]] = {
     **MY_RESPONSES,
     **entity_not_found_responses("passport"),
 }
-PASSPORT_RESPONSES: dict[int | str, dict[str, Any]] = {
+PASSPORT_EXISTS_RESPONSES: dict[int | str, dict[str, Any]] = {
     **auth_responses(),
     **entity_not_found_responses("passport"),
+}
+PASSPORT_RESPONSES: dict[int | str, dict[str, Any]] = {
+    **PASSPORT_EXISTS_RESPONSES,
+    **SEALED_RESPONSES,
 }
 NAME_VARIANT_RESPONSES: dict[int | str, dict[str, Any]] = {
     **auth_responses(),
@@ -69,6 +77,7 @@ NAME_VARIANT_RESPONSES: dict[int | str, dict[str, Any]] = {
 async def get_my_passports(
     user: UserJWTDep,
     person_id: RequiredPersonDep,
+    viewer: ViewerDep,
     uow: ProfilePassportUOWDep,
     filter: PassportFilter = FilterDepends(PassportFilter),
     page_params: PageParamV1 = Depends(PageParamV1),
@@ -76,7 +85,7 @@ async def get_my_passports(
     await ProfileService(uow).ensure_existance(person_id)
     return PageV1[PassportItemRead].from_dto(
         await PassportService(uow).search_by_profile(
-            person_id, filter.to_dto(), page_params.to_dto()
+            person_id, filter.to_dto(), viewer, page_params.to_dto()
         )
     )
 
@@ -86,6 +95,7 @@ async def create_my_passport(
     passport_data: PassportItemCreate,
     user: UserJWTDep,
     person_id: RequiredPersonDep,
+    viewer: ViewerDep,
     uow: ProfilePassportUOWDep,
 ) -> PassportRead:
     await ProfileService(uow).ensure_existance(person_id)
@@ -93,7 +103,8 @@ async def create_my_passport(
         await PassportService(uow).create(
             PassportCreate(
                 profile_id=person_id, **passport_data.model_dump()
-            ).to_dto()
+            ).to_dto(),
+            viewer,
         )
     )
 
@@ -103,10 +114,12 @@ async def get_my_passport(
     passport_id: UUID,
     user: UserJWTDep,
     person_id: RequiredPersonDep,
+    viewer: ViewerDep,
     uow: ProfilePassportUOWDep,
 ) -> PassportRead:
-    await (service := PassportService(uow)).check_ownership(passport_id, person_id)
-    return PassportRead.from_dto(await service.read(passport_id))
+    service = PassportService(uow)
+    await service.check_ownership(passport_id, person_id, viewer)
+    return PassportRead.from_dto(await service.read(passport_id, viewer))
 
 
 @router.put("/my/{passport_id}", responses=MY_PASSPORT_RESPONSES)
@@ -115,6 +128,7 @@ async def put_my_passport(
     passport_data: PassportItemCreate,
     user: UserJWTDep,
     person_id: RequiredPersonDep,
+    viewer: ViewerDep,
     uow: ProfilePassportUOWDep,
 ) -> PassportRead:
     await ProfileService(uow).ensure_existance(person_id)
@@ -126,7 +140,8 @@ async def put_my_passport(
                     "profile_id": person_id,
                     **passport_data.model_dump(),
                 }
-            ).to_dto()
+            ).to_dto(),
+            viewer,
         )
     )
 
@@ -137,14 +152,17 @@ async def patch_my_passport(
     passport_data: PassportPatchData,
     user: UserJWTDep,
     person_id: RequiredPersonDep,
+    viewer: ViewerDep,
     uow: ProfilePassportUOWDep,
 ) -> PassportRead:
-    await (service := PassportService(uow)).check_ownership(passport_id, person_id)
+    service = PassportService(uow)
+    await service.check_ownership(passport_id, person_id, viewer)
     return PassportRead.from_dto(
         await service.patch(
             PassportPatch.model_validate(
                 {"id": passport_id, **passport_data.model_dump()}
-            ).to_dto()
+            ).to_dto(),
+            viewer,
         )
     )
 
@@ -154,29 +172,34 @@ async def delete_my_passport(
     passport_id: UUID,
     user: UserJWTDep,
     person_id: RequiredPersonDep,
+    viewer: ViewerDep,
     uow: ProfilePassportUOWDep,
 ) -> None:
-    await (service := PassportService(uow)).check_ownership(passport_id, person_id)
+    service = PassportService(uow)
+    await service.check_ownership(passport_id, person_id, viewer)
     await service.delete(passport_id)
 
 
-@router.get("", responses={**auth_responses()})
+@router.get("", responses={**auth_responses(), **SEALED_RESPONSES})
 async def get_passports(
     user: SuperUserJWTDep,
+    viewer: ViewerDep,
     uow: PassportUOWDep,
     filter: PassportFilter = FilterDepends(PassportFilter),
     page_params: PageParamV1 = Depends(PageParamV1),
 ) -> PageV1[PassportItemRead]:
     return PageV1[PassportItemRead].from_dto(
-        await PassportService(uow).search(filter.to_dto(), page_params.to_dto())
+        await PassportService(uow).search(
+            filter.to_dto(), viewer, page_params.to_dto()
+        )
     )
 
 
 @router.get("/{passport_id}", responses=PASSPORT_RESPONSES)
 async def get_passport(
-    passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
+    passport_id: UUID, user: SuperUserJWTDep, viewer: ViewerDep, uow: PassportUOWDep
 ) -> PassportRead:
-    return PassportRead.from_dto(await PassportService(uow).read(passport_id))
+    return PassportRead.from_dto(await PassportService(uow).read(passport_id, viewer))
 
 
 @router.put("/{passport_id}", responses=PASSPORT_RESPONSES)
@@ -184,13 +207,15 @@ async def put_passport(
     passport_id: UUID,
     passport: PassportPutData,
     user: SuperUserJWTDep,
+    viewer: ViewerDep,
     uow: PassportUOWDep,
 ) -> PassportRead:
     return PassportRead.from_dto(
         await PassportService(uow).put(
             PassportPut.model_validate(
                 {"id": passport_id, **passport.model_dump()}
-            ).to_dto()
+            ).to_dto(),
+            viewer,
         )
     )
 
@@ -200,13 +225,15 @@ async def patch_passport(
     passport_id: UUID,
     passport: PassportPatchData,
     user: SuperUserJWTDep,
+    viewer: ViewerDep,
     uow: PassportUOWDep,
 ) -> PassportRead:
     return PassportRead.from_dto(
         await PassportService(uow).patch(
             PassportPatch.model_validate(
                 {"id": passport_id, **passport.model_dump()}
-            ).to_dto()
+            ).to_dto(),
+            viewer,
         )
     )
 
@@ -220,17 +247,20 @@ async def delete_passport(
 
 @router.get("/{passport_id}/name-variant", responses=NAME_VARIANT_RESPONSES)
 async def get_name_variant(
-    passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
+    passport_id: UUID, user: SuperUserJWTDep, viewer: ViewerDep, uow: PassportUOWDep
 ) -> NameVariantRead:
     await PassportService(uow).ensure_existance(passport_id)
-    return NameVariantRead.from_dto(await NameVariantService(uow).read(passport_id))
+    return NameVariantRead.from_dto(
+        await NameVariantService(uow).read(passport_id, viewer)
+    )
 
 
-@router.put("/{passport_id}/name-variant", responses=PASSPORT_RESPONSES)
+@router.put("/{passport_id}/name-variant", responses=PASSPORT_EXISTS_RESPONSES)
 async def put_name_variant(
     passport_id: UUID,
     name_variant_data: NameVariantPutData,
     user: SuperUserJWTDep,
+    viewer: ViewerDep,
     uow: PassportUOWDep,
 ) -> NameVariantRead:
     await PassportService(uow).ensure_existance(passport_id)
@@ -238,7 +268,8 @@ async def put_name_variant(
         await NameVariantService(uow).put(
             NameVariantPut.model_validate(
                 {"id": passport_id, **name_variant_data.model_dump()}
-            ).to_dto()
+            ).to_dto(),
+            viewer,
         )
     )
 
@@ -248,6 +279,7 @@ async def patch_name_variant(
     passport_id: UUID,
     name_variant_data: NameVariantPatchData,
     user: SuperUserJWTDep,
+    viewer: ViewerDep,
     uow: PassportUOWDep,
 ) -> NameVariantRead:
     await PassportService(uow).ensure_existance(passport_id)
@@ -255,12 +287,15 @@ async def patch_name_variant(
         await NameVariantService(uow).patch(
             NameVariantPatch.model_validate(
                 {"id": passport_id, **name_variant_data.model_dump()}
-            ).to_dto()
+            ).to_dto(),
+            viewer,
         )
     )
 
 
-@router.delete("/{passport_id}/name-variant", responses=PASSPORT_RESPONSES)
+@router.delete(
+    "/{passport_id}/name-variant", responses=PASSPORT_EXISTS_RESPONSES
+)
 async def delete_name_variant(
     passport_id: UUID, user: SuperUserJWTDep, uow: PassportUOWDep
 ) -> None:

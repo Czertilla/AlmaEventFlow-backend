@@ -21,3 +21,13 @@ class InviteTokenCreate(InviteTokenData, ToDTOMixinV1):
 class InviteTokenRead(FromDTOMixinV1, BaseModel):
     token: str
     expires_at: int
+
+
+class InvitePreviewData(BaseModel):
+    token: str = Field(min_length=1, max_length=4096)
+
+
+class InvitePreviewRead(FromDTOMixinV1, BaseModel):
+    surname: str
+    name: str
+    patronymic: str | None

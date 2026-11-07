@@ -41,3 +41,6 @@ vapid_public.pem
 
 profile_rsa_private.pem
 profile_rsa_public.pem
+
+# master keys of personal data (KEY_PROVIDER=local)
+secrets/profile-kek/

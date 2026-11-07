@@ -1,4 +1,694 @@
 {
+  "access_log.AccessFieldRead": {
+    "full": {
+      "dump": {
+        "key": "x",
+        "label": "x"
+      },
+      "fields_set": [
+        "key",
+        "label"
+      ],
+      "input": {
+        "key": "x",
+        "label": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "key": "x",
+        "label": "x"
+      },
+      "fields_set": [
+        "key",
+        "label"
+      ],
+      "input": {
+        "key": "x",
+        "label": "x"
+      }
+    }
+  },
+  "access_log.AccessLogEntryRead": {
+    "full": {
+      "dump": {
+        "action": "read",
+        "actor_name": "x",
+        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
+        "by_administrator": true,
+        "by_self": true,
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
+        "outcome": "x",
+        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+      },
+      "fields_set": [
+        "action",
+        "actor_name",
+        "actor_person_id",
+        "by_administrator",
+        "by_self",
+        "collective_name",
+        "comment",
+        "created_at",
+        "fields",
+        "id",
+        "outcome",
+        "request_id"
+      ],
+      "input": {
+        "action": "read",
+        "actor_name": "x",
+        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
+        "by_administrator": true,
+        "by_self": true,
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
+        "outcome": "x",
+        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+      }
+    },
+    "required": {
+      "dump": {
+        "action": "read",
+        "actor_name": "x",
+        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
+        "by_administrator": true,
+        "by_self": true,
+        "collective_name": null,
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
+        "outcome": "x",
+        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+      },
+      "fields_set": [
+        "action",
+        "actor_name",
+        "actor_person_id",
+        "by_administrator",
+        "by_self",
+        "comment",
+        "created_at",
+        "fields",
+        "id",
+        "outcome",
+        "request_id"
+      ],
+      "input": {
+        "action": "read",
+        "actor_name": "x",
+        "actor_person_id": "64a2bd53-2f97-582e-be2a-d9d9862da771",
+        "by_administrator": true,
+        "by_self": true,
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "id": "985b4b54-0d89-5c8e-b46d-b86b4c43a1fc",
+        "outcome": "x",
+        "request_id": "93fc9cf8-f527-5edc-b7a5-dcf8d9988ce1"
+      }
+    }
+  },
+  "access_request.AccessExportCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "fields": [
+            "x"
+          ]
+        }
+      },
+      "dump": {
+        "fields": [
+          "x"
+        ]
+      },
+      "fields_set": [
+        "fields"
+      ],
+      "input": {
+        "fields": [
+          "x"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "fields": null
+        }
+      },
+      "dump": {
+        "fields": null
+      },
+      "fields_set": [],
+      "input": {}
+    }
+  },
+  "access_request.AccessExportRead": {
+    "full": {
+      "dump": {
+        "exported_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "request_id": "2b65621b-0cac-5d75-8714-192a308dc9a1",
+        "skipped": [
+          {
+            "person_id": "bd1d2e62-4f1d-5a27-8cd9-cbd731f1e7e4",
+            "status": "pending"
+          }
+        ],
+        "subjects": [
+          {
+            "person_id": "314c06ce-ff90-5639-8197-cf1fb42596c1",
+            "records": [
+              {}
+            ]
+          }
+        ]
+      },
+      "fields_set": [
+        "exported_at",
+        "fields",
+        "request_id",
+        "skipped",
+        "subjects"
+      ],
+      "input": {
+        "exported_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "request_id": "2b65621b-0cac-5d75-8714-192a308dc9a1",
+        "skipped": [
+          {
+            "person_id": "bd1d2e62-4f1d-5a27-8cd9-cbd731f1e7e4",
+            "status": "pending"
+          }
+        ],
+        "subjects": [
+          {
+            "person_id": "314c06ce-ff90-5639-8197-cf1fb42596c1",
+            "records": [
+              {}
+            ]
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "exported_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "request_id": "2b65621b-0cac-5d75-8714-192a308dc9a1",
+        "skipped": [
+          {
+            "person_id": "bd1d2e62-4f1d-5a27-8cd9-cbd731f1e7e4",
+            "status": "pending"
+          }
+        ],
+        "subjects": [
+          {
+            "person_id": "314c06ce-ff90-5639-8197-cf1fb42596c1",
+            "records": [
+              {}
+            ]
+          }
+        ]
+      },
+      "fields_set": [
+        "exported_at",
+        "fields",
+        "request_id",
+        "skipped",
+        "subjects"
+      ],
+      "input": {
+        "exported_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "request_id": "2b65621b-0cac-5d75-8714-192a308dc9a1",
+        "skipped": [
+          {
+            "person_id": "bd1d2e62-4f1d-5a27-8cd9-cbd731f1e7e4",
+            "status": "pending"
+          }
+        ],
+        "subjects": [
+          {
+            "person_id": "314c06ce-ff90-5639-8197-cf1fb42596c1",
+            "records": [
+              {}
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "access_request.AccessRequestCreate": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+          "comment": "x",
+          "expires_at": "2026-01-01T10:00:00+00:00",
+          "fields": [
+            "x"
+          ]
+        }
+      },
+      "dump": {
+        "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+        "comment": "x",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          "x"
+        ]
+      },
+      "fields_set": [
+        "collective_id",
+        "comment",
+        "expires_at",
+        "fields"
+      ],
+      "input": {
+        "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+        "comment": "x",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          "x"
+        ]
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+          "comment": "x",
+          "expires_at": "2026-01-01T10:00:00+00:00",
+          "fields": [
+            "x"
+          ]
+        }
+      },
+      "dump": {
+        "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+        "comment": "x",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          "x"
+        ]
+      },
+      "fields_set": [
+        "collective_id",
+        "comment",
+        "expires_at",
+        "fields"
+      ],
+      "input": {
+        "collective_id": "30c6d020-87a0-59c8-9dac-578a49ef9787",
+        "comment": "x",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          "x"
+        ]
+      }
+    }
+  },
+  "access_request.AccessRequestRead": {
+    "full": {
+      "dump": {
+        "collective_id": "4ada39d2-ab1d-5ec9-9afa-13d2bca9f2e7",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grants": [
+          {
+            "person_id": "ee6b964c-f737-5265-bce5-acf4c2ea7eed",
+            "status": "pending"
+          }
+        ],
+        "id": "28c6d7c8-00e0-5ee5-a29b-67973e02ced9",
+        "is_expired": true
+      },
+      "fields_set": [
+        "collective_id",
+        "collective_name",
+        "comment",
+        "created_at",
+        "expires_at",
+        "fields",
+        "grants",
+        "id",
+        "is_expired"
+      ],
+      "input": {
+        "collective_id": "4ada39d2-ab1d-5ec9-9afa-13d2bca9f2e7",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grants": [
+          {
+            "person_id": "ee6b964c-f737-5265-bce5-acf4c2ea7eed",
+            "status": "pending"
+          }
+        ],
+        "id": "28c6d7c8-00e0-5ee5-a29b-67973e02ced9",
+        "is_expired": true
+      }
+    },
+    "required": {
+      "dump": {
+        "collective_id": "4ada39d2-ab1d-5ec9-9afa-13d2bca9f2e7",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grants": [
+          {
+            "person_id": "ee6b964c-f737-5265-bce5-acf4c2ea7eed",
+            "status": "pending"
+          }
+        ],
+        "id": "28c6d7c8-00e0-5ee5-a29b-67973e02ced9",
+        "is_expired": true
+      },
+      "fields_set": [
+        "collective_id",
+        "collective_name",
+        "comment",
+        "created_at",
+        "expires_at",
+        "fields",
+        "grants",
+        "id",
+        "is_expired"
+      ],
+      "input": {
+        "collective_id": "4ada39d2-ab1d-5ec9-9afa-13d2bca9f2e7",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grants": [
+          {
+            "person_id": "ee6b964c-f737-5265-bce5-acf4c2ea7eed",
+            "status": "pending"
+          }
+        ],
+        "id": "28c6d7c8-00e0-5ee5-a29b-67973e02ced9",
+        "is_expired": true
+      }
+    }
+  },
+  "access_request.ExportedSubjectRead": {
+    "full": {
+      "dump": {
+        "person_id": "392c87a6-afa7-53fc-8377-e2edad6fe206",
+        "records": [
+          {}
+        ]
+      },
+      "fields_set": [
+        "person_id",
+        "records"
+      ],
+      "input": {
+        "person_id": "392c87a6-afa7-53fc-8377-e2edad6fe206",
+        "records": [
+          {}
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "person_id": "392c87a6-afa7-53fc-8377-e2edad6fe206",
+        "records": [
+          {}
+        ]
+      },
+      "fields_set": [
+        "person_id",
+        "records"
+      ],
+      "input": {
+        "person_id": "392c87a6-afa7-53fc-8377-e2edad6fe206",
+        "records": [
+          {}
+        ]
+      }
+    }
+  },
+  "access_request.GrantStateRead": {
+    "full": {
+      "dump": {
+        "person_id": "b84f4583-a5c6-5321-a240-4d74f49a0619",
+        "status": "pending"
+      },
+      "fields_set": [
+        "person_id",
+        "status"
+      ],
+      "input": {
+        "person_id": "b84f4583-a5c6-5321-a240-4d74f49a0619",
+        "status": "pending"
+      }
+    },
+    "required": {
+      "dump": {
+        "person_id": "b84f4583-a5c6-5321-a240-4d74f49a0619",
+        "status": "pending"
+      },
+      "fields_set": [
+        "person_id",
+        "status"
+      ],
+      "input": {
+        "person_id": "b84f4583-a5c6-5321-a240-4d74f49a0619",
+        "status": "pending"
+      }
+    }
+  },
+  "access_request.IncomingGrantRead": {
+    "full": {
+      "dump": {
+        "collective_id": "30c3bf66-f434-588c-a4a6-6262de589c91",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "decided_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grantee_name": "x",
+        "grantee_person_id": "38208cfd-3043-5786-a711-8a7ecb2a2924",
+        "id": "f79c87ef-1b04-5b85-b31c-a09ee0f42caa",
+        "request_id": "6301a000-8ede-59fc-a88e-bc84bf3661ee",
+        "revoked_at": "2026-01-01T10:00:00Z",
+        "status": "pending"
+      },
+      "fields_set": [
+        "collective_id",
+        "collective_name",
+        "comment",
+        "created_at",
+        "decided_at",
+        "expires_at",
+        "fields",
+        "grantee_name",
+        "grantee_person_id",
+        "id",
+        "request_id",
+        "revoked_at",
+        "status"
+      ],
+      "input": {
+        "collective_id": "30c3bf66-f434-588c-a4a6-6262de589c91",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "decided_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grantee_name": "x",
+        "grantee_person_id": "38208cfd-3043-5786-a711-8a7ecb2a2924",
+        "id": "f79c87ef-1b04-5b85-b31c-a09ee0f42caa",
+        "request_id": "6301a000-8ede-59fc-a88e-bc84bf3661ee",
+        "revoked_at": "2026-01-01T10:00:00Z",
+        "status": "pending"
+      }
+    },
+    "required": {
+      "dump": {
+        "collective_id": "30c3bf66-f434-588c-a4a6-6262de589c91",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "decided_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grantee_name": "x",
+        "grantee_person_id": "38208cfd-3043-5786-a711-8a7ecb2a2924",
+        "id": "f79c87ef-1b04-5b85-b31c-a09ee0f42caa",
+        "request_id": "6301a000-8ede-59fc-a88e-bc84bf3661ee",
+        "revoked_at": "2026-01-01T10:00:00Z",
+        "status": "pending"
+      },
+      "fields_set": [
+        "collective_id",
+        "collective_name",
+        "comment",
+        "created_at",
+        "decided_at",
+        "expires_at",
+        "fields",
+        "grantee_name",
+        "grantee_person_id",
+        "id",
+        "request_id",
+        "revoked_at",
+        "status"
+      ],
+      "input": {
+        "collective_id": "30c3bf66-f434-588c-a4a6-6262de589c91",
+        "collective_name": "x",
+        "comment": "x",
+        "created_at": "2026-01-01T10:00:00Z",
+        "decided_at": "2026-01-01T10:00:00Z",
+        "expires_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "grantee_name": "x",
+        "grantee_person_id": "38208cfd-3043-5786-a711-8a7ecb2a2924",
+        "id": "f79c87ef-1b04-5b85-b31c-a09ee0f42caa",
+        "request_id": "6301a000-8ede-59fc-a88e-bc84bf3661ee",
+        "revoked_at": "2026-01-01T10:00:00Z",
+        "status": "pending"
+      }
+    }
+  },
+  "access_request.SkippedSubjectRead": {
+    "full": {
+      "dump": {
+        "person_id": "d6049dee-5c32-5701-9675-91ee60f05799",
+        "status": "pending"
+      },
+      "fields_set": [
+        "person_id",
+        "status"
+      ],
+      "input": {
+        "person_id": "d6049dee-5c32-5701-9675-91ee60f05799",
+        "status": "pending"
+      }
+    },
+    "required": {
+      "dump": {
+        "person_id": "d6049dee-5c32-5701-9675-91ee60f05799",
+        "status": "pending"
+      },
+      "fields_set": [
+        "person_id",
+        "status"
+      ],
+      "input": {
+        "person_id": "d6049dee-5c32-5701-9675-91ee60f05799",
+        "status": "pending"
+      }
+    }
+  },
   "account_history.AccountLinkChangeRead": {
     "full": {
       "dump": {
@@ -62,6 +752,90 @@
         "old_person_id": "54dd2874-626c-58ff-8a61-f3cde56d83cc",
         "source": "own_profile",
         "user_id": "9887ab34-623a-5148-a38c-8d08eedc64da"
+      }
+    }
+  },
+  "health.KeyHealthRead": {
+    "full": {
+      "dump": {
+        "status": "ok"
+      },
+      "fields_set": [
+        "status"
+      ],
+      "input": {
+        "status": "ok"
+      }
+    },
+    "required": {
+      "dump": {
+        "status": "ok"
+      },
+      "fields_set": [
+        "status"
+      ],
+      "input": {
+        "status": "ok"
+      }
+    }
+  },
+  "invite.InvitePreviewData": {
+    "full": {
+      "dump": {
+        "token": "x"
+      },
+      "fields_set": [
+        "token"
+      ],
+      "input": {
+        "token": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "token": "x"
+      },
+      "fields_set": [
+        "token"
+      ],
+      "input": {
+        "token": "x"
+      }
+    }
+  },
+  "invite.InvitePreviewRead": {
+    "full": {
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
       }
     }
   },
@@ -154,6 +928,244 @@
       "input": {
         "expires_at": 1,
         "token": "x"
+      }
+    }
+  },
+  "person.PersonNameRead": {
+    "full": {
+      "dump": {
+        "id": "40d2f8c6-899e-5494-b98b-ba95c1ab3f23",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "40d2f8c6-899e-5494-b98b-ba95c1ab3f23",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "id": "40d2f8c6-899e-5494-b98b-ba95c1ab3f23",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      },
+      "fields_set": [
+        "id",
+        "name",
+        "patronymic",
+        "surname"
+      ],
+      "input": {
+        "id": "40d2f8c6-899e-5494-b98b-ba95c1ab3f23",
+        "name": "x",
+        "patronymic": "x",
+        "surname": "x"
+      }
+    }
+  },
+  "person.PersonNamesData": {
+    "full": {
+      "dump": {
+        "ids": [
+          "45a45167-f33a-5176-9b30-ecfad2f0e81c"
+        ]
+      },
+      "fields_set": [
+        "ids"
+      ],
+      "input": {
+        "ids": [
+          "45a45167-f33a-5176-9b30-ecfad2f0e81c"
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "ids": [
+          "45a45167-f33a-5176-9b30-ecfad2f0e81c"
+        ]
+      },
+      "fields_set": [
+        "ids"
+      ],
+      "input": {
+        "ids": [
+          "45a45167-f33a-5176-9b30-ecfad2f0e81c"
+        ]
+      }
+    }
+  },
+  "person.PersonNamesRead": {
+    "full": {
+      "dump": {
+        "items": [
+          {
+            "id": "f55afcac-0ffd-53b6-a96e-4450639704fc",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "items"
+      ],
+      "input": {
+        "items": [
+          {
+            "id": "f55afcac-0ffd-53b6-a96e-4450639704fc",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "items": [
+          {
+            "id": "f55afcac-0ffd-53b6-a96e-4450639704fc",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "items"
+      ],
+      "input": {
+        "items": [
+          {
+            "id": "f55afcac-0ffd-53b6-a96e-4450639704fc",
+            "name": "x",
+            "patronymic": "x",
+            "surname": "x"
+          }
+        ]
+      }
+    }
+  },
+  "person_key.DestroyKeyData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+          "reason": "xxxxxxxxxx"
+        }
+      },
+      "dump": {
+        "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+        "reason": "xxxxxxxxxx"
+      },
+      "fields_set": [
+        "confirm_person_id",
+        "reason"
+      ],
+      "input": {
+        "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+        "reason": "xxxxxxxxxx"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+          "reason": "xxxxxxxxxx"
+        }
+      },
+      "dump": {
+        "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+        "reason": "xxxxxxxxxx"
+      },
+      "fields_set": [
+        "confirm_person_id",
+        "reason"
+      ],
+      "input": {
+        "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+        "reason": "xxxxxxxxxx"
+      }
+    }
+  },
+  "person_key.DestroyedKeyRead": {
+    "full": {
+      "dump": {
+        "destroyed_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "person_id": "59862e97-f536-5688-850f-4753990daec4",
+        "rows_cleared": 1,
+        "rows_deleted": 1
+      },
+      "fields_set": [
+        "destroyed_at",
+        "fields",
+        "person_id",
+        "rows_cleared",
+        "rows_deleted"
+      ],
+      "input": {
+        "destroyed_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "person_id": "59862e97-f536-5688-850f-4753990daec4",
+        "rows_cleared": 1,
+        "rows_deleted": 1
+      }
+    },
+    "required": {
+      "dump": {
+        "destroyed_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "person_id": "59862e97-f536-5688-850f-4753990daec4",
+        "rows_cleared": 1,
+        "rows_deleted": 1
+      },
+      "fields_set": [
+        "destroyed_at",
+        "fields",
+        "person_id",
+        "rows_cleared",
+        "rows_deleted"
+      ],
+      "input": {
+        "destroyed_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "person_id": "59862e97-f536-5688-850f-4753990daec4",
+        "rows_cleared": 1,
+        "rows_deleted": 1
       }
     }
   },
@@ -852,6 +1864,176 @@
         "faculty_id": "b3cfef09-952e-5cb7-a1ef-15c0c3e514bc",
         "grade": 1,
         "name": "x"
+      }
+    }
+  },
+  "visibility.VisibilityEntryRead": {
+    "full": {
+      "dump": {
+        "audience": "private",
+        "audience_default": "private",
+        "audience_max": "private",
+        "audience_min": "private",
+        "configurable": true,
+        "is_default": true,
+        "key": "x",
+        "label": "x"
+      },
+      "fields_set": [
+        "audience",
+        "audience_default",
+        "audience_max",
+        "audience_min",
+        "configurable",
+        "is_default",
+        "key",
+        "label"
+      ],
+      "input": {
+        "audience": "private",
+        "audience_default": "private",
+        "audience_max": "private",
+        "audience_min": "private",
+        "configurable": true,
+        "is_default": true,
+        "key": "x",
+        "label": "x"
+      }
+    },
+    "required": {
+      "dump": {
+        "audience": "private",
+        "audience_default": "private",
+        "audience_max": "private",
+        "audience_min": "private",
+        "configurable": true,
+        "is_default": true,
+        "key": "x",
+        "label": "x"
+      },
+      "fields_set": [
+        "audience",
+        "audience_default",
+        "audience_max",
+        "audience_min",
+        "configurable",
+        "is_default",
+        "key",
+        "label"
+      ],
+      "input": {
+        "audience": "private",
+        "audience_default": "private",
+        "audience_max": "private",
+        "audience_min": "private",
+        "configurable": true,
+        "is_default": true,
+        "key": "x",
+        "label": "x"
+      }
+    }
+  },
+  "visibility.VisibilityRead": {
+    "full": {
+      "dump": {
+        "items": [
+          {
+            "audience": "private",
+            "audience_default": "private",
+            "audience_max": "private",
+            "audience_min": "private",
+            "configurable": true,
+            "is_default": true,
+            "key": "x",
+            "label": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "items"
+      ],
+      "input": {
+        "items": [
+          {
+            "audience": "private",
+            "audience_default": "private",
+            "audience_max": "private",
+            "audience_min": "private",
+            "configurable": true,
+            "is_default": true,
+            "key": "x",
+            "label": "x"
+          }
+        ]
+      }
+    },
+    "required": {
+      "dump": {
+        "items": [
+          {
+            "audience": "private",
+            "audience_default": "private",
+            "audience_max": "private",
+            "audience_min": "private",
+            "configurable": true,
+            "is_default": true,
+            "key": "x",
+            "label": "x"
+          }
+        ]
+      },
+      "fields_set": [
+        "items"
+      ],
+      "input": {
+        "items": [
+          {
+            "audience": "private",
+            "audience_default": "private",
+            "audience_max": "private",
+            "audience_min": "private",
+            "configurable": true,
+            "is_default": true,
+            "key": "x",
+            "label": "x"
+          }
+        ]
+      }
+    }
+  },
+  "visibility.VisibilitySetData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "audience": "private"
+        }
+      },
+      "dump": {
+        "audience": "private"
+      },
+      "fields_set": [
+        "audience"
+      ],
+      "input": {
+        "audience": "private"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "audience": "private"
+        }
+      },
+      "dump": {
+        "audience": "private"
+      },
+      "fields_set": [
+        "audience"
+      ],
+      "input": {
+        "audience": "private"
       }
     }
   }

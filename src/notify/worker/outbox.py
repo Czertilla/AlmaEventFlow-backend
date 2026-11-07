@@ -1,8 +1,8 @@
 from core.broker.kafka import KafkaBroker
+from core.worker.polling import PollingWorker
 from notify.config.settings import settings
 from notify.service.outbox import OutboxPublishService
 from notify.uow.outbox import OutboxUOW
-from notify.worker._base import PollingWorker
 
 
 class OutboxPublisher(PollingWorker):

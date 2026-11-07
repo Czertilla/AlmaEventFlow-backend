@@ -39,6 +39,14 @@ class PersonDTO:
 
 
 @dataclass(frozen=True, slots=True)
+class PersonNameDTO:
+    id: UUID
+    surname: str | None
+    name: str | None
+    patronymic: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class PersonFilterDTO(TimestampFilterDTOMixin):
     order_by: list[str] | None = None
     search: str | None = None

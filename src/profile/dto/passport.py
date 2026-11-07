@@ -97,7 +97,3 @@ class PassportFilterDTO(TimestampFilterDTOMixin):
     search: str | None = None
     profile_id: UUID | None = None
     is_foreign: bool | None = None
-    expire_date__gte: datetime.date | None = None
-    expire_date__lte: datetime.date | None = None
-    issued_date__gte: datetime.date | None = None
-    issued_date__lte: datetime.date | None = None

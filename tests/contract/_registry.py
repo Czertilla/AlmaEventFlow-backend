@@ -163,14 +163,41 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
     "profile_v2": (
         "profile.api.v2.schema",
         {
+            "access_log.AccessLogEntryRead": "profile.dto.access:AccessLogEntryDTO",
+            "access_request.AccessExportRead": (
+                "profile.dto.access_request:AccessExportDTO"
+            ),
+            "access_request.AccessRequestRead": (
+                "profile.dto.access_request:AccessRequestDTO"
+            ),
+            "access_request.ExportedSubjectRead": (
+                "profile.dto.access_request:ExportedSubjectDTO"
+            ),
+            "access_request.GrantStateRead": (
+                "profile.dto.access_request:GrantStateDTO"
+            ),
+            "access_request.IncomingGrantRead": (
+                "profile.dto.access_request:IncomingGrantDTO"
+            ),
+            "access_request.SkippedSubjectRead": (
+                "profile.dto.access_request:SkippedSubjectDTO"
+            ),
             "account_history.AccountLinkChangeRead": (
                 "profile.dto.account_history:AccountLinkChangeDTO"
             ),
+            "invite.InvitePreviewRead": "profile.dto.invite:InvitePreviewDTO",
             "invite.InviteTokenRead": "profile.dto.invite:InviteTokenDTO",
+            "person.PersonNameRead": "profile.dto.person:PersonNameDTO",
+            "person_key.DestroyedKeyRead": (
+                "profile.dto.key_maintenance:DestroyedKeyDTO"
+            ),
             "profile.MyProfileRead": "profile.dto.my_profile:MyProfileDTO",
             "profile.MyStudentRead": "profile.dto.my_profile:MyStudentReadDTO",
             "reference.OrganizationRefRead": (
                 "profile.dto.reference:OrganizationRefDTO"
+            ),
+            "visibility.VisibilityEntryRead": (
+                "profile.dto.visibility:VisibilityEntryDTO"
             ),
         },
     ),
