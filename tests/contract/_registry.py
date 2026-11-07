@@ -188,6 +188,9 @@ RESPONSES: dict[str, tuple[str, dict[str, str]]] = {
             "invite.InvitePreviewRead": "profile.dto.invite:InvitePreviewDTO",
             "invite.InviteTokenRead": "profile.dto.invite:InviteTokenDTO",
             "person.PersonNameRead": "profile.dto.person:PersonNameDTO",
+            "person_key.DestroyedKeyRead": (
+                "profile.dto.key_maintenance:DestroyedKeyDTO"
+            ),
             "profile.MyProfileRead": "profile.dto.my_profile:MyProfileDTO",
             "profile.MyStudentRead": "profile.dto.my_profile:MyStudentReadDTO",
             "reference.OrganizationRefRead": (

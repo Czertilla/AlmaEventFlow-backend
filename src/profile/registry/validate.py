@@ -11,7 +11,10 @@ class RegistryError(Exception):
 
 
 def _source_problems(
-    tables: set[str], sources: Iterable[Source], metadata: MetaData
+    tables: set[str],
+    sources: Iterable[Source],
+    metadata: MetaData,
+    encrypted: dict[str, set[str]],
 ) -> list[str]:
     found: list[str] = []
     by_table = {source.table: source for source in sources}
@@ -35,6 +38,12 @@ def _source_problems(
             parent = by_table.get(source.parent)
             if parent is None or parent.person is None:
                 found.append(f"`{name}`: the parent must reach the person itself")
+        if source.person == source.row:
+            found.extend(
+                f"`{name}.{column}`: a destroyed key would have to delete the person"
+                for column in sorted(encrypted.get(name, ()))
+                if column in table.columns and not table.columns[column].nullable
+            )
     return found
 
 
@@ -112,9 +121,17 @@ def problems(
                 found.append(
                     f"{field.key}: `{column.table}.{column.column}` holds ciphertext"
                 )
+    encrypted: dict[str, set[str]] = {}
+    for field in fields:
+        if field.encrypted:
+            for column in field.columns:
+                encrypted.setdefault(column.table, set()).add(column.column)
     found.extend(
         _source_problems(
-            tables, all_sources() if sources is None else sources, metadata
+            tables,
+            all_sources() if sources is None else sources,
+            metadata,
+            encrypted,
         )
     )
     return found

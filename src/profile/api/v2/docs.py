@@ -78,6 +78,12 @@ ACCESS_EXPORT_ERRORS = merged(
         503, ErrorCode.EVENT_SERVICE_UNAVAILABLE, ErrorCode.PERSONAL_DATA_UNAVAILABLE
     ),
 )
+DESTROY_KEY_ERRORS = merged(
+    auth_responses(),
+    _codes(404, ErrorCode.PERSON_NOT_FOUND),
+    _codes(409, ErrorCode.PERSON_KEY_ABSENT),
+    _codes(422, ErrorCode.DESTROY_NOT_CONFIRMED),
+)
 GRANT_ERRORS = merged(
     auth_responses(),
     _codes(404, ErrorCode.GRANT_NOT_FOUND),

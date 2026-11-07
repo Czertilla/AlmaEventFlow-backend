@@ -1057,6 +1057,118 @@
       }
     }
   },
+  "person_key.DestroyKeyData": {
+    "full": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+          "reason": "xxxxxxxxxx"
+        }
+      },
+      "dump": {
+        "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+        "reason": "xxxxxxxxxx"
+      },
+      "fields_set": [
+        "confirm_person_id",
+        "reason"
+      ],
+      "input": {
+        "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+        "reason": "xxxxxxxxxx"
+      }
+    },
+    "required": {
+      "dto": {
+        "dropped": [],
+        "mapped": {
+          "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+          "reason": "xxxxxxxxxx"
+        }
+      },
+      "dump": {
+        "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+        "reason": "xxxxxxxxxx"
+      },
+      "fields_set": [
+        "confirm_person_id",
+        "reason"
+      ],
+      "input": {
+        "confirm_person_id": "3e006764-384e-5fba-8b29-bf1d75fd4a85",
+        "reason": "xxxxxxxxxx"
+      }
+    }
+  },
+  "person_key.DestroyedKeyRead": {
+    "full": {
+      "dump": {
+        "destroyed_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "person_id": "59862e97-f536-5688-850f-4753990daec4",
+        "rows_cleared": 1,
+        "rows_deleted": 1
+      },
+      "fields_set": [
+        "destroyed_at",
+        "fields",
+        "person_id",
+        "rows_cleared",
+        "rows_deleted"
+      ],
+      "input": {
+        "destroyed_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "person_id": "59862e97-f536-5688-850f-4753990daec4",
+        "rows_cleared": 1,
+        "rows_deleted": 1
+      }
+    },
+    "required": {
+      "dump": {
+        "destroyed_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "person_id": "59862e97-f536-5688-850f-4753990daec4",
+        "rows_cleared": 1,
+        "rows_deleted": 1
+      },
+      "fields_set": [
+        "destroyed_at",
+        "fields",
+        "person_id",
+        "rows_cleared",
+        "rows_deleted"
+      ],
+      "input": {
+        "destroyed_at": "2026-01-01T10:00:00Z",
+        "fields": [
+          {
+            "key": "x",
+            "label": "x"
+          }
+        ],
+        "person_id": "59862e97-f536-5688-850f-4753990daec4",
+        "rows_cleared": 1,
+        "rows_deleted": 1
+      }
+    }
+  },
   "profile.MyContactData": {
     "full": {
       "dto": {

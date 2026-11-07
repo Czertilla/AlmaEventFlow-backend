@@ -148,6 +148,20 @@
       "surname": "x"
     }
   },
+  "person_key.DestroyedKeyRead": {
+    "response": {
+      "destroyed_at": "2026-01-01T10:00:00Z",
+      "fields": [
+        {
+          "key": "x",
+          "label": "x"
+        }
+      ],
+      "person_id": "affc48a4-5148-569c-a006-39c0bd8700f5",
+      "rows_cleared": 1,
+      "rows_deleted": 1
+    }
+  },
   "profile.MyProfileRead": {
     "response": {
       "birthdate": "2026-01-01",

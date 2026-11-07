@@ -67,7 +67,7 @@ def labels_of(keys: Collection[str]) -> str:
 
 
 def access_entry(
-    viewer: ViewerDTO,
+    viewer: ViewerDTO | None,
     subject: UUID | None,
     action: AccessAction,
     keys: Collection[str],
@@ -79,16 +79,16 @@ def access_entry(
     notified: bool = False,
 ) -> dict[str, Any]:
     """One row of the journal; `subject` is none only for an operation over a
-    whole access request."""
+    whole access request, `viewer` only for an operator's job."""
     if via is None:
         via = (
             Via.NONE
-            if action == AccessAction.DENIED or subject is None
+            if action == AccessAction.DENIED or subject is None or viewer is None
             else Via(_via(viewer, subject))
         )
     return {
-        "actor_user_id": viewer.user_id,
-        "actor_person_id": viewer.person_id,
+        "actor_user_id": viewer.user_id if viewer else None,
+        "actor_person_id": viewer.person_id if viewer else None,
         "subject_person_id": subject,
         "request_id": request_id,
         "grant_id": grant_id,
@@ -97,7 +97,7 @@ def access_entry(
         "fields": _ordered(keys),
         "outcome": outcome,
         "notified": notified,
-        "request_id_http": viewer.http_request_id,
+        "request_id_http": viewer.http_request_id if viewer else None,
     }
 
 
@@ -452,24 +452,35 @@ class PersonalDataService(BaseService[PersonalDataUOW]):
 
     @required_transaction
     async def _write_key(self, person_id: UUID) -> tuple[bytearray, int]:
-        stored = await self.uow.person_keys.of_persons([person_id])
-        if person_id not in stored:
-            dek = bytearray(os.urandom(cipher.DEK_SIZE))
-            try:
-                wrapped = await self.ring.wrap(
-                    bytes(dek), dek_context(person_id, FIRST_DEK_VERSION)
-                )
-            except KeyProviderError as exc:
-                wipe(dek)
-                logger.error("A data key cannot be wrapped: %s", exc.code)
-                raise PersonalDataUnavailable() from None
-            if await self.uow.person_keys.insert_if_absent(
-                person_id, wrapped.to_bytes(), wrapped.ref, FIRST_DEK_VERSION
-            ):
-                self.cache.put((person_id, FIRST_DEK_VERSION), dek)
-                return dek, FIRST_DEK_VERSION
+        """The data key to seal with; a person without one, or whose key was
+        destroyed, gets a new one (the next version after a destroyed key)."""
+        row = (
+            await self.uow.person_keys.of_persons([person_id], lock="update")
+        ).get(person_id)
+        if row is not None and row.wrapped_dek is not None:
+            return (await self._read_keys([person_id]))[person_id]
+        version = FIRST_DEK_VERSION if row is None else row.dek_version + 1
+        if version > cipher.MAX_DEK_VERSION:
+            logger.error("A person ran out of data key versions")
+            raise PersonalDataUnavailable()
+        dek = bytearray(os.urandom(cipher.DEK_SIZE))
+        try:
+            wrapped = await self.ring.wrap(bytes(dek), dek_context(person_id, version))
+        except KeyProviderError as exc:
             wipe(dek)
-        return (await self._read_keys([person_id]))[person_id]
+            logger.error("A data key cannot be wrapped: %s", exc.code)
+            raise PersonalDataUnavailable() from None
+        if row is not None:
+            await self.uow.person_keys.replace(
+                person_id, wrapped.to_bytes(), wrapped.ref, version, None
+            )
+        elif not await self.uow.person_keys.insert_if_absent(
+            person_id, wrapped.to_bytes(), wrapped.ref, version
+        ):
+            wipe(dek)
+            return (await self._read_keys([person_id]))[person_id]
+        self.cache.put((person_id, version), dek)
+        return dek, version
 
     @required_transaction
     async def _read_keys(
@@ -477,7 +488,7 @@ class PersonalDataService(BaseService[PersonalDataUOW]):
     ) -> dict[UUID, tuple[bytearray, int]]:
         if not person_ids:
             return {}
-        stored = await self.uow.person_keys.of_persons(person_ids)
+        stored = await self.uow.person_keys.of_persons(person_ids, lock="share")
         keys: dict[UUID, tuple[bytearray, int]] = {}
         pending: list[PersonKeyORM] = []
         for person_id in person_ids:

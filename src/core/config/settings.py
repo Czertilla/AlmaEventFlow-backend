@@ -234,6 +234,11 @@ class Settings(BaseSettings):
     """Unwrapped data keys kept in memory; 0 keeps none."""
     KMS_UNWRAP_CONCURRENCY: int = 8
 
+    MIGRATION_BATCH_SIZE: int = 100
+    MIGRATION_SLEEP_MS: int = 50
+    """Batch and pause of the key jobs (`python -m profile.manage.keys`), so they
+    do not crowd out the work of a small host."""
+
     COMMENT_MIN_LEN: int = 10
     COMMENT_MAX_LEN: int = 500
     """Bounds of the comment of an access request, after trimming."""

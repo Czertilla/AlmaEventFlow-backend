@@ -4,7 +4,7 @@ from profile.registry import Reference, Source
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import ColumnClause, column, select, table
+from sqlalchemy import ColumnClause, column, delete, select, table, update
 
 from core.database.sqlalchemy.core import SQLAlchemyRepository
 
@@ -53,6 +53,22 @@ class RegistryRowsRepo(SQLAlchemyRepository[PersonORM]):
             (row[0], row[1], dict(zip(names, row[2:], strict=True)))
             for row in (await self.execute(stmt)).all()
         ]
+
+    async def update_row(
+        self, source: Source, row_id: Any, values: dict[str, Any]
+    ) -> None:
+        own = table(
+            source.table, _column(source.row), *(_column(name) for name in values)
+        )
+        await self.execute(
+            update(own).where(own.c[source.row] == row_id).values(values)
+        )
+
+    async def delete_rows(self, source: Source, row_ids: Collection[Any]) -> None:
+        if not row_ids:
+            return
+        own = table(source.table, _column(source.row))
+        await self.execute(delete(own).where(own.c[source.row].in_(list(row_ids))))
 
     async def labels(
         self, ref: Reference, keys: Collection[Hashable]

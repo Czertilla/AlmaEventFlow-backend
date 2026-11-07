@@ -181,3 +181,14 @@ def all_sources() -> tuple[Source, ...]:
 
 def source_of(table: str) -> Source:
     return _SOURCES[table]
+
+
+def encrypted_tables() -> tuple[str, ...]:
+    return tuple(
+        dict.fromkeys(
+            column.table
+            for field in _BY_KEY.values()
+            if field.encrypted
+            for column in field.columns
+        )
+    )
