@@ -212,6 +212,19 @@ sharing one codebase and one dependency-resolution graph:
   nothing is encrypted (a student card). The subject reads the journal at `GET /profile/v2/access-log/my`. A change of
   the account link by an invite or an administrator notifies the account (`notification_outbox.user_id`);
   `link_cooldown_left` is the pause after it.
+- **A leader reaches the data of members only through an access request** (`/profile/v2/access-requests`,
+  `/profile/v2/grants`, `service/access_request.py`, `service/grant.py`, ADR 0005). The leader of a confirmed
+  collective (`rpc.event.collective-principal-check`, asked each time, no cache, a failure is
+  `503 EVENT_SERVICE_UNAVAILABLE`) asks its active members (`rpc.event.collective-active-members`) for
+  `grantable` fields with a comment; `access_request` and `access_request_field` never change (triggers),
+  every member gets a `pending` `access_grant` and a notice. Only the subject answers (approve after the link
+  cooldown, decline, revoke; `expired` is computed from `expires_at`). The export checks the grantee, the term,
+  the fields and, again over RPC, the leader and the membership, journals a refusal as `denied` (without a
+  subject when it is about the whole request) and hands out the active grants only, one record per stored
+  row. It reads through the registry alone: a table's `Source` says how a row reaches its person, a column's
+  `Reference` names the label of an id (`RegistryRowsRepo`, `PersonalDataService._read_fields`), so a new
+  grantable field needs a registry entry and a source, nothing in the export. Requests and exports are limited
+  per account and hour in the process (`ACCESS_REQUESTS_PER_HOUR`, `ACCESS_EXPORTS_PER_HOUR`).
 - **Personal data is described once, in the registry, and read through one policy.**
   `profile/registry` lists every personal field the user sees or sets («ФИО», «Телефон», a passport number): a key,
   the columns it covers, and the audience range `audience_default/min/max` (`private` < `context` < `all_users`).
@@ -695,7 +708,8 @@ is a defect, not a style choice.
   (+ `--sm`, `--set`: the compact select of a toolbar, with a leading icon and room for a
   direction button) and the `ui-pop` transition,
   `ui-icon-btn` (+ `--primary`, `--danger`, `--delete`, `--active`), `ui-help` (the round «?» button of a hint,
-  drawn by `common/HelpTip`, its bubble is `ui-help-tip`), `ui-chips` and `ui-chip` (+ `--active`),
+  drawn by `common/HelpTip`, its bubble is `ui-help-tip`), `ui-chips` and `ui-chip` (+ `--active`;
+  `--static` for a chip that only shows a value),
   `ui-btn` (+ `--primary`, `--ghost`, `--sm`); `ui-card`, `ui-card-head` and `ui-card-title` (a section
   card; `HomePage`'s own `.section-card` is a copy of it, see the debt below), `ui-count` (the number
   badge in a card head) and `ui-banner` (a tinted line with a close button: the day picked on a
@@ -861,6 +875,12 @@ Rules:
   (`utils/adminPickers`: one entry per resource with its `search` and the `ResourceKind` that names a
   picked id); a reference field of a form shows the name of the saved value by asking for that id
   (`resolveResourceLabel`), never by looking for it among the first search results.
+- **Access to personal data in the UI.** A member answers requests and reads who opened their data at
+  `/data-access` (`views/DataAccessPage.vue`, tabs «Запросы» and «Журнал», reached from the settings). The
+  leader asks and exports in the panel tab «Доступ к данным» `/principal/access`
+  (`views/principal/AccessRequestsPage.vue`, `components/access/`); the term is a choice of days, never a date
+  field, and the export becomes a CSV in the browser (`utils/dataAccess.ts`: one row per member, `;`, BOM,
+  formulas defused), nothing is stored. The API pages from 0.
 - **The collective profile** (`views/principal/CollectiveProfilePage.vue`) is the member profile for
   the whole roster and lives in two places the same way: the panel tab «Дашборд» `/principal/dashboard`
   (the landing tab; the layout passes the active collective as `collectiveId`) and `/collective/<id>`
