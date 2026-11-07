@@ -202,6 +202,15 @@ sharing one codebase and one dependency-resolution graph:
   serves; `GET /profile/v2/health/keys` reports the providers. A new encrypted field is a registry entry plus a
   migration to `bytea` that refuses to run over existing values; nothing in the layer changes. Plaintext never goes to
   logs, exceptions or events.
+- **Keys are maintained by `python -m profile.manage.keys`** (`service/key_maintenance.py`, ADR 0006,
+  `docs/runbook/personal-data-keys.md`): `status [--retired <key_ref>]`, `rewrap --to <provider>` (moves the wrapped
+  data keys under the current key of a provider, data untouched, resumable), `rotate-dek` (a new data key per person and
+  its values sealed again, one transaction each; scheduling is cron's) and `destroy` (also
+  `POST /profile/v2/persons/{id}/destroy-key` for superusers: deletes the rows whose encrypted value is required, nulls
+  the optional ones, erases the wrapped key, journals `key_destroyed`, tells the person; new data gets the next key
+  version). Reads lock `person_key` `FOR SHARE`, writes and these jobs `FOR UPDATE`, so a rotation is never half-seen.
+  An encrypted `NOT NULL` column in a table whose row is the person itself is refused at start. The threat model is
+  `docs/threat-model.md`.
 - **Every disclosure of a sensitive field is journaled** (`sensitive_access_log`, append-only, ADR 0004). `_open`
   takes the `ViewerDTO` (`ViewerDep`) and, in the same transaction, writes one row per subject with the registry keys of
   the sensitive fields of the table and of the tables passed in `joined`; reading service methods therefore commit, and a
