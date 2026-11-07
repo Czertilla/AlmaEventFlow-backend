@@ -28,6 +28,25 @@ class SharedCollectiveSubjectsResponse(MQRequest):
     person_ids: list[UUID]
 
 
+class CollectivePrincipalCheckRequest(MQRequest):
+    person_id: UUID
+    collective_id: UUID
+
+
+class CollectivePrincipalCheckResponse(MQRequest):
+    is_principal: bool
+    name: str | None = None
+    is_verified: bool = False
+
+
+class CollectiveActiveMembersRequest(MQRequest):
+    collective_id: UUID
+
+
+class CollectiveActiveMembersResponse(MQRequest):
+    person_ids: list[UUID]
+
+
 class MyAttendanceRequest(MQRequest):
     person_id: UUID
     event_id: UUID

@@ -71,6 +71,12 @@ class MemberRepo(
             leaders = leaders.where(CollectiveORM.principal_id.in_(list(candidates)))
         return set((await self.execute(members.union(leaders))).scalars().all())
 
+    async def active_person_ids_of(self, collective_id: UUID) -> set[UUID]:
+        stmt = select(self.model.person_id).where(
+            self.model.collective_id == collective_id, self.model.is_active.is_(True)
+        )
+        return set((await self.execute(stmt)).scalars().all())
+
     async def get_by_person_id(self, person_id: UUID | None) -> list[Model]:
         stmt = (
             select(self.model)

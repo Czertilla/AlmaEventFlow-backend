@@ -6,8 +6,18 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 from support import event_seed as seed
 from support.http import principal
 
-from core.schema.message.event import SharedCollectiveSubjectsRequest
-from event.api.kafka.sub.visibility import on_shared_collective_subjects
+from core.schema.message.event import (
+    CollectiveActiveMembersRequest,
+    CollectivePrincipalCheckRequest,
+    CollectivePrincipalCheckResponse,
+    SharedCollectiveSubjectsRequest,
+)
+from event.api.kafka.sub.visibility import (
+    on_collective_active_members,
+    on_collective_principal_check,
+    on_shared_collective_subjects,
+)
+from event.uow.collective_access import CollectiveAccessUOW
 from event.uow.member import MemberUOW
 
 BASE = "/event/v1"
@@ -329,3 +339,59 @@ async def test_the_shared_people_are_narrowed_to_the_subjects_asked(
     )
 
     assert shared == {world.choir_leader}
+
+
+async def _principal(
+    sessionmaker: async_sessionmaker[AsyncSession], person: UUID, collective: UUID
+) -> CollectivePrincipalCheckResponse:
+    response = await on_collective_principal_check(
+        CollectivePrincipalCheckRequest(person_id=person, collective_id=collective),
+        CollectiveAccessUOW(sessionmaker),
+    )
+    assert response.error is None
+    assert response.data is not None
+    return response.data
+
+
+async def test_the_principal_check_answers_only_for_the_leader(
+    event_engine: AsyncEngine, event_sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    world = await _world(event_engine)
+    pending = await seed.collective(
+        event_engine, "Drafts", world.dance_leader, verified=False
+    )
+
+    leader = await _principal(event_sessionmaker, world.choir_leader, world.choir)
+    member = await _principal(event_sessionmaker, world.singer, world.choir)
+    other = await _principal(event_sessionmaker, world.dance_leader, world.choir)
+    missing = await _principal(event_sessionmaker, world.choir_leader, uuid4())
+    unverified = await _principal(event_sessionmaker, world.dance_leader, pending)
+
+    assert leader == CollectivePrincipalCheckResponse(
+        is_principal=True, name="Choir", is_verified=True
+    )
+    assert member == other == missing == CollectivePrincipalCheckResponse(
+        is_principal=False
+    )
+    assert unverified.is_principal
+    assert not unverified.is_verified
+
+
+async def test_the_active_members_leave_out_the_former_ones_and_the_leader(
+    event_engine: AsyncEngine, event_sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    world = await _world(event_engine)
+
+    response = await on_collective_active_members(
+        CollectiveActiveMembersRequest(collective_id=world.choir),
+        CollectiveAccessUOW(event_sessionmaker),
+    )
+    unknown = await on_collective_active_members(
+        CollectiveActiveMembersRequest(collective_id=uuid4()),
+        CollectiveAccessUOW(event_sessionmaker),
+    )
+
+    assert response.data is not None
+    assert set(response.data.person_ids) == {world.singer}
+    assert unknown.data is not None
+    assert unknown.data.person_ids == []
