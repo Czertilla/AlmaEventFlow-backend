@@ -24,6 +24,9 @@ letsencrypt/
 .env*
 .mongo-keyfile
 
+# compose settings of one server (a shared Traefik on the production host)
+docker-compose.override.yml
+
 # kafka TLS keystore/truststore (только метка каталога коммитится)
 secrets/kafka/*
 !secrets/kafka/.gitkeep
