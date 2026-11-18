@@ -27,7 +27,11 @@ from event.service.attendance_stats import (
 )
 from event.uow.member_profile import MemberProfileUOW
 
-COUNTED_STATUSES = (EventStatusEnumV1.active, EventStatusEnumV1.archived)
+COUNTED_STATUSES = (
+    EventStatusEnumV1.active,
+    EventStatusEnumV1.planned,
+    EventStatusEnumV1.archived,
+)
 DEFAULT_WINDOW_DAYS = 365
 
 

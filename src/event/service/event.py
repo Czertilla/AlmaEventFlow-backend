@@ -120,7 +120,11 @@ class EventService(BaseService[EventComposeUOW]):
             if isinstance(status, EventStatusEnumV1)
             else status
         )
-        if status_value == EventStatusEnumV1.active.value and date is None:
+        if (
+            status_value
+            in (EventStatusEnumV1.active.value, EventStatusEnumV1.planned.value)
+            and date is None
+        ):
             raise VancedHTTPException(
                 status_code=422,
                 detail=ErrorCode.EVENT_ACTIVE_REQUIRES_DATE,

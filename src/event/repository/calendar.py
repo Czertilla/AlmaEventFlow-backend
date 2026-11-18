@@ -23,9 +23,13 @@ from event.models.participation import ParticipationORM
 from event.models.person import PersonORM
 from event.models.stage import EventStageORM
 
-_PARTICIPANT_STATUSES = (EventStatusEnumV1.active.value,)
+_PARTICIPANT_STATUSES = (
+    EventStatusEnumV1.active.value,
+    EventStatusEnumV1.planned.value,
+)
 _PRINCIPAL_STATUSES = (
     EventStatusEnumV1.active.value,
+    EventStatusEnumV1.planned.value,
     EventStatusEnumV1.draft.value,
     EventStatusEnumV1.archived.value,
 )

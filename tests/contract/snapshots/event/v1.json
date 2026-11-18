@@ -833,6 +833,7 @@
         "enum": [
           "draft",
           "template",
+          "planned",
           "active",
           "archived"
         ],

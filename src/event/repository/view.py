@@ -46,11 +46,13 @@ class ViewRepo(SQLAlchemyRepository[EventORM]):
     def _visible(viewer: ProfileViewerDTO) -> ColumnElement[bool]:
         """Everyone sees active events; a draft or an archived one is for the
         leaders of the collectives taking part in it."""
-        active = EventStatusORM.name == "active"
+        visible_to_all = EventStatusORM.name.in_(
+            ("active", "planned")
+        )
         if viewer.is_superuser:
             return true()
         if viewer.person_id is None:
-            return active
+            return visible_to_all
         led = (
             select(ParticipationORM.event_id)
             .join(
@@ -59,7 +61,7 @@ class ViewRepo(SQLAlchemyRepository[EventORM]):
             )
             .where(CollectiveORM.principal_id == viewer.person_id)
         )
-        return or_(active, EventORM.id.in_(led))
+        return or_(visible_to_all, EventORM.id.in_(led))
 
     @staticmethod
     def _events(
