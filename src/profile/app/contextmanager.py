@@ -19,8 +19,16 @@ class ProfileContextManager(AppContextManager):
 
     async def startup(self, app: FastAPI | FastStream) -> None:
         await super().startup(app)
-        ring = build_keyring()
-        await ring.self_test()
+        try:
+            ring = build_keyring()
+            await ring.self_test()
+        except Exception as exc:
+            import logging
+
+            logging.getLogger(__name__).critical(
+                "Profile key ring is missing or unavailable at startup: %s", exc
+            )
+            raise
         install_keyring(ring)
         self.ring = ring
         self.outbox_publisher.start()

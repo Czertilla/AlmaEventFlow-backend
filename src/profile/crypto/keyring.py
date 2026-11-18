@@ -1,7 +1,9 @@
 import hmac
+import logging
 import os
 from collections.abc import Iterable
 from pathlib import Path
+from typing import NoReturn
 
 from core.config.settings import Settings, settings
 
@@ -12,6 +14,13 @@ from .vault import AppRoleAuth, KubernetesAuth, VaultAuth, VaultTransitProvider
 
 NOT_IMPLEMENTED = ("aws", "gcp", "yc", "azure")
 SELF_TEST_CONTEXT = b"aef-profile/self-test"
+
+logger = logging.getLogger(__name__)
+
+
+def _config_error(message: str) -> NoReturn:
+    logger.critical("Profile key configuration error: %s", message)
+    raise KeyConfigError(message)
 
 
 class KeyRing:
@@ -25,7 +34,7 @@ class KeyRing:
         self._providers: dict[str, KeyProvider] = {}
         for provider in (active, *readers):
             if provider.provider_id in self._providers:
-                raise KeyConfigError(
+                _config_error(
                     f"provider {provider.provider_id} is configured twice"
                 )
             self._providers[provider.provider_id] = provider
@@ -37,6 +46,9 @@ class KeyRing:
     def provider(self, provider_id: str) -> KeyProvider:
         provider = self._providers.get(provider_id)
         if provider is None:
+            logger.critical(
+                "Profile key provider %r is not configured", provider_id
+            )
             raise KeyUnwrapError("the provider of the key is not configured")
         return provider
 
@@ -70,10 +82,10 @@ class KeyRing:
 
 def _path(value: str | None, name: str) -> Path:
     if not value:
-        raise KeyConfigError(f"{name} is required")
+        _config_error(f"{name} is required")
     path = Path(value)
     if not path.is_file():
-        raise KeyConfigError(f"{name}: no file {path}")
+        _config_error(f"{name}: no file {path}")
     return path
 
 
@@ -91,21 +103,21 @@ def _vault_auth(config: Settings) -> VaultAuth:
             )
         case "kubernetes":
             if not config.VAULT_K8S_ROLE:
-                raise KeyConfigError("VAULT_K8S_ROLE is required")
+                _config_error("VAULT_K8S_ROLE is required")
             return KubernetesAuth(
                 mount,
                 config.VAULT_K8S_ROLE,
                 _path(config.VAULT_K8S_TOKEN_FILE, "VAULT_K8S_TOKEN_FILE"),
             )
         case _:
-            raise KeyConfigError("VAULT_AUTH_METHOD must be approle or kubernetes")
+            _config_error("VAULT_AUTH_METHOD must be approle or kubernetes")
 
 
 def build_provider(name: str, config: Settings = settings) -> KeyProvider:
     match name:
         case "local":
             if not config.LOCAL_KEK_DIR:
-                raise KeyConfigError("LOCAL_KEK_DIR is required for KEY_PROVIDER=local")
+                _config_error("LOCAL_KEK_DIR is required for KEY_PROVIDER=local")
             return LocalKeyProvider(
                 config.LOCAL_KEK_DIR,
                 config.LOCAL_KEK_ACTIVE,
@@ -113,7 +125,7 @@ def build_provider(name: str, config: Settings = settings) -> KeyProvider:
             )
         case "vault":
             if not config.VAULT_ADDR:
-                raise KeyConfigError("VAULT_ADDR is required for KEY_PROVIDER=vault")
+                _config_error("VAULT_ADDR is required for KEY_PROVIDER=vault")
             return VaultTransitProvider(
                 config.VAULT_ADDR,
                 auth=_vault_auth(config),
@@ -124,16 +136,16 @@ def build_provider(name: str, config: Settings = settings) -> KeyProvider:
                 ca_file=config.VAULT_CA_FILE,
             )
         case _ if name in NOT_IMPLEMENTED:
-            raise KeyConfigError(
+            _config_error(
                 f"KEY_PROVIDER={name} is not implemented yet: use local or vault"
             )
         case _:
-            raise KeyConfigError(f"unknown key provider {name!r}: use local or vault")
+            _config_error(f"unknown key provider {name!r}: use local or vault")
 
 
 def build_keyring(config: Settings = settings) -> KeyRing:
     if not config.KEY_PROVIDER:
-        raise KeyConfigError("KEY_PROVIDER is required: local or vault")
+        _config_error("KEY_PROVIDER is required: local or vault")
     readers = [
         name for name in config.KEY_PROVIDERS_READ if name != config.KEY_PROVIDER
     ]
