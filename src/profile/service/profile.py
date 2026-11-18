@@ -1,6 +1,5 @@
 from logging import getLogger
 from profile.dto.diet import DietDTO
-from profile.dto.organization import OrganizationDTO
 from profile.dto.person import PersonDTO
 from profile.dto.profile import (
     ProfileCreateDTO,
@@ -26,7 +25,6 @@ logger = getLogger(__name__)
 def profile_to_dto(profile: ProfileORM) -> ProfileDTO:
     person = profile.person
     diet = profile.diet
-    workplace = profile.workplace
     return ProfileDTO(
         id=profile.id,
         birthdate=profile.birthdate,
@@ -36,7 +34,7 @@ def profile_to_dto(profile: ProfileORM) -> ProfileDTO:
         edited_at=profile.edited_at,
         person=dto_from_orm(person, PersonDTO) if person else None,
         diet=dto_from_orm(diet, DietDTO) if diet else None,
-        workplace=dto_from_orm(workplace, OrganizationDTO) if workplace else None,
+        workplace=None,
     )
 
 

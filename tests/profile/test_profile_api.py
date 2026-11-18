@@ -415,3 +415,30 @@ async def test_degree_and_group_endpoints_use_integer_ids(
 
     assert group.status_code == 200, group.text
     assert patched.json()["grade"] == 2
+
+
+async def test_profiles_with_a_workplace_are_listed_by_its_id_only(
+    api: httpx.AsyncClient, profile_engine: AsyncEngine
+) -> None:
+    workplace_id = uuid4()
+    async with profile_engine.begin() as conn:
+        await conn.execute(
+            text("INSERT INTO organization (id, type) VALUES (:id, 'organization')"),
+            {"id": workplace_id},
+        )
+    person_id = await _person(api)
+    created = await api.post(
+        f"{BASE}/profiles",
+        json={"id": str(person_id), "workplace_id": str(workplace_id)},
+        headers=ADMIN,
+    )
+    assert created.status_code == 200, created.text
+
+    listed = await api.get(f"{BASE}/profiles", headers=ADMIN)
+    one = await api.get(f"{BASE}/profiles/{person_id}", headers=ADMIN)
+
+    assert listed.status_code == 200, listed.text
+    assert one.status_code == 200, one.text
+    for body in (listed.json()["items"][0], one.json()):
+        assert body["workplace_id"] == str(workplace_id)
+        assert body["workplace"] is None

@@ -43,7 +43,6 @@ class StudentRepo(
         selectinload(Model.group),
         selectinload(Model.profile).selectinload(ProfileORM.person),
         selectinload(Model.profile).joinedload(ProfileORM.diet),
-        selectinload(Model.profile).selectinload(ProfileORM.workplace),
     )
 
     table: Table = cast(
