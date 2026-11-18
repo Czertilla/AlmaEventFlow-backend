@@ -139,3 +139,71 @@ async def test_retry_due_delivery_is_reenqueued(sessionmaker_, seed):
     outbox = await seed.all(OutboxEventORM)
     assert len(outbox) == 1
     assert outbox[0].payload["delivery_ids"] == [str(deliveries[0].id)]
+
+
+async def _seed_client_retry(sessionmaker_, user_id, *, client_active):
+    from notify.models.client import ClientORM
+
+    async with sessionmaker_() as session:
+        notification = NotificationORM(
+            event_id=uuid4(),
+            category=NotificationCategory.system,
+            title="t",
+            body="b",
+            data={},
+        )
+        client = ClientORM(
+            user_id=user_id,
+            transport=TransportTypeEnum.telegram,
+            endpoint="12345",
+            is_active=client_active,
+        )
+        session.add_all([notification, client])
+        await session.flush()
+        recipient = NotificationRecipientORM(
+            notification_id=notification.id, user_id=user_id
+        )
+        session.add(recipient)
+        await session.flush()
+        session.add(
+            NotificationDeliveryORM(
+                notification_id=notification.id,
+                recipient_id=recipient.id,
+                user_id=user_id,
+                transport=TransportTypeEnum.telegram,
+                client_id=client.id,
+                status=DeliveryStatus.retry_scheduled,
+                attempts=1,
+                max_attempts=5,
+                next_attempt_at=datetime.now(UTC) - timedelta(minutes=5),
+            )
+        )
+        await session.commit()
+
+
+async def test_retry_of_a_client_delivery_keeps_its_client(sessionmaker_, seed):
+    (user_id,) = await seed.accounts(1)
+    await _seed_client_retry(sessionmaker_, user_id, client_active=True)
+
+    moved = await RetryReenqueueService(RetryUOW(sessionmaker_)).reenqueue_due()
+
+    assert moved == 1
+    (delivery,) = await seed.all(NotificationDeliveryORM)
+    assert delivery.status == DeliveryStatus.pending
+    (row,) = await seed.all(OutboxEventORM)
+    assert row.payload["items"][0]["chat_id"] == "12345"
+
+
+async def test_retry_of_a_delivery_whose_client_is_gone_fails_alone(
+    sessionmaker_, seed
+):
+    (user_id,) = await seed.accounts(1)
+    await _seed_client_retry(sessionmaker_, user_id, client_active=False)
+
+    moved = await RetryReenqueueService(RetryUOW(sessionmaker_)).reenqueue_due()
+
+    assert moved == 0
+    (delivery,) = await seed.all(NotificationDeliveryORM)
+    assert delivery.status == DeliveryStatus.failed
+    assert delivery.last_error == "address_unresolved"
+    assert await seed.count(OutboxEventORM) == 0

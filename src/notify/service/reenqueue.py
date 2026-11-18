@@ -7,6 +7,7 @@ from core.enum.notify import TransportTypeEnum
 from core.service.base import BaseService, required_transaction
 from notify.config.settings import settings
 from notify.dto.account import AccountDTO
+from notify.dto.client import ClientTargetDTO
 from notify.dto.notification import NotificationContent
 from notify.models.delivery import NotificationDeliveryORM
 from notify.models.notification import NotificationORM
@@ -28,8 +29,7 @@ class RetryReenqueueService(BaseService[RetryUOW]):
     async def reenqueue_due(self) -> int:
         async with self.uow as uow:
             count = await self._reenqueue_due()
-            if count:
-                await uow.commit()
+            await uow.commit()
         return count
 
     @required_transaction
@@ -105,7 +105,17 @@ class RetryReenqueueService(BaseService[RetryUOW]):
         if transport is None:
             return None
         account = None
-        if not transport.requires_client:
+        target = DeliveryTarget()
+        if transport.requires_client:
+            client = (
+                await self.uow.clients.get_by_id(delivery.client_id)
+                if delivery.client_id is not None
+                else None
+            )
+            if client is None or not client.is_active:
+                return None
+            target = DeliveryTarget(client=dto_from_orm(client, ClientTargetDTO))
+        else:
             account = await self._account(delivery.user_id, accounts)
             if account is None or not account.email:
                 return None
@@ -117,7 +127,7 @@ class RetryReenqueueService(BaseService[RetryUOW]):
             expires_at=notification.expires_at,
         )
         return DeliveryDraft(
-            delivery_id=delivery.id, ctx=ctx, target=DeliveryTarget()
+            delivery_id=delivery.id, ctx=ctx, target=target
         )
 
     @required_transaction
