@@ -8,7 +8,11 @@ from aiogram.types import Message
 
 from bot.enum.emoji import Emoji
 from bot.enum.locales import LocaleKey
-from bot.exc.user import InvalidLinkTokenException, LinkTokenExpiredException
+from bot.exc.user import (
+    InvalidLinkTokenException,
+    LinkTokenExpiredException,
+    LinkUnavailableException,
+)
 from bot.tg.dependency.account_link import AccountLinkUOWDep
 from bot.tg.dependency.actor import ActorDep
 from bot.tg.dependency.usecase.account import AccountStateUserUseCaseDep
@@ -155,11 +159,15 @@ async def _handle_link(
     state: FSMContext,
 ) -> ActorDTO:
     text_builder = TextBuilder(lang=user.language_code)
+    logger.info("link attempt by tgid=%r", user.id)
     try:
         updated = await AccountLinkService(uow).link(user.id, token)
     except LinkTokenExpiredException:
         logger.info("expired link token for tg user user.id=%r", user.id)
         await message.answer(text=await text_builder.on_link_expired())
+        return actor
+    except LinkUnavailableException:
+        await message.answer(text=await text_builder.on_link_unavailable())
         return actor
     except InvalidLinkTokenException:
         logger.info("invalid link token for tg user user.id=%r", user.id)

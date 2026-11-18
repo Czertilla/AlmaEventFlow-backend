@@ -7,6 +7,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage
 from fastapi import Depends
 
+from bot.tg.utils.state.storage import FallbackStorage
 from core.dependencies.redis import RedisDep, redis
 
 
@@ -15,8 +16,8 @@ def memory_storage_factory() -> MemoryStorage:
     return MemoryStorage()
 
 
-def redis_storage_factory(redis: RedisDep) -> RedisStorage:
-    return RedisStorage(redis=redis)
+def redis_storage_factory(redis: RedisDep) -> BaseStorage:
+    return FallbackStorage(RedisStorage(redis=redis))
 
 
 @lru_cache
@@ -37,4 +38,4 @@ def dp_factory(
 
 DpDep = Annotated[Dispatcher, Depends(dp_factory)]
 
-dp = dp_factory(RedisStorage(redis), init_dp_factory())
+dp = dp_factory(FallbackStorage(RedisStorage(redis)), init_dp_factory())

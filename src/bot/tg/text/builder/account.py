@@ -51,6 +51,11 @@ class AccountMixin(RolesMixin):
             LocaleKey.Account.link_expired, ch=Emoji.warning
         )
 
+    async def on_link_unavailable(self) -> str:
+        return await self.get_phrase(
+            LocaleKey.Account.link_unavailable, ch=Emoji.warning
+        )
+
     async def on_notifications_toggled(self, is_enabled: bool) -> str:
         key = (
             LocaleKey.Account.notifications_on

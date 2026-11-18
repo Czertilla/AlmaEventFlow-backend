@@ -119,6 +119,8 @@ class LocaleKey(Enum):
 		"""%{ch} This link is invalid. Request a new one on the website."""
 		link_expired = "link_expired"
 		"""%{ch} This link has expired. Request a new one on the website."""
+		link_unavailable = "link_unavailable"
+		"""%{ch} Couldn't link right now. Open the link again in a minute."""
 		notifications_on = "notifications_on"
 		"""%{ch} Telegram notifications turned on."""
 		notifications_off = "notifications_off"

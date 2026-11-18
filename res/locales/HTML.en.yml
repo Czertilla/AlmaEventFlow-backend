@@ -78,6 +78,7 @@ en:
     linked_success: "%{ch} Telegram linked to your AlmaEventFlow account!"
     link_invalid: "%{ch} This link is invalid. Request a new one on the website."
     link_expired: "%{ch} This link has expired. Request a new one on the website."
+    link_unavailable: "%{ch} Couldn't link right now. Open the link again in a minute."
     notifications_on: "%{ch} Telegram notifications turned on."
     notifications_off: "%{ch} Telegram notifications turned off."
     notifications_error: "%{ch} Couldn't change that setting. Try again later."

@@ -78,6 +78,7 @@ ru:
     linked_success: "%{ch} Telegram привязан к вашему аккаунту AlmaEventFlow!"
     link_invalid: "%{ch} Эта ссылка недействительна. Запросите новую на сайте."
     link_expired: "%{ch} Эта ссылка устарела. Запросите новую на сайте."
+    link_unavailable: "%{ch} Не удалось привязать сейчас. Откройте ссылку ещё раз через минуту."
     notifications_on: "%{ch} Уведомления в Telegram включены."
     notifications_off: "%{ch} Уведомления в Telegram отключены."
     notifications_error: "%{ch} Не удалось изменить настройку. Попробуйте позже."

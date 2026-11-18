@@ -1,7 +1,13 @@
 from logging import getLogger
 from uuid import UUID
 
-from bot.exc.user import InvalidLinkTokenException, LinkTokenExpiredException
+from redis.exceptions import RedisError
+
+from bot.exc.user import (
+    InvalidLinkTokenException,
+    LinkTokenExpiredException,
+    LinkUnavailableException,
+)
 from bot.tg.schema.user import TGUser
 from bot.tg.uow.account_link import AccountLinkUOW
 from bot.tg.utils.aef_client import (
@@ -29,16 +35,25 @@ class AccountLinkService(BaseService[AccountLinkUOW]):
 
     @staticmethod
     async def _resolve(code: str) -> UUID:
-        raw = await redis.getdel(f"{TELEGRAM_LINK_REDIS_PREFIX}{code}")
+        try:
+            raw = await redis.getdel(f"{TELEGRAM_LINK_REDIS_PREFIX}{code}")
+        except (RedisError, OSError) as exc:
+            logger.error(
+                "link code store unavailable: %s: %s", type(exc).__name__, exc
+            )
+            raise LinkUnavailableException() from exc
         if raw is None:
+            logger.warning("link code not found (expired or never delivered)")
             raise LinkTokenExpiredException()
         try:
             return UUID(raw.decode() if isinstance(raw, bytes) else raw)
         except (ValueError, TypeError, AttributeError) as exc:
+            logger.warning("link code holds a malformed person id")
             raise InvalidLinkTokenException() from exc
 
     async def link(self, tgid: int, token: str) -> TGUser:
         person_id = await self._resolve(token)
+        logger.info("link code accepted for tgid=%r person_id=%s", tgid, person_id)
         async with self.uow as uow:
             account = await uow.users.get_by_person_id(person_id)
             if account is None:
@@ -51,8 +66,14 @@ class AccountLinkService(BaseService[AccountLinkUOW]):
                 tgid, {"user_id": account.id}
             )
             await uow.commit(True)
-            logger.debug("linked tg user %s to person %s", tgid, person_id)
             result = TGUser.model_validate(tg_model)
+            logger.info(
+                "link saved: tgid=%r account=%s person_id=%s user_id=%s",
+                tgid,
+                account.id,
+                person_id,
+                result.user_id,
+            )
 
         client_id = await register_notify_client(person_id, tgid)
         if client_id is not None:
